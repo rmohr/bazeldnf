@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/rmohr/bazel-dnf/pkg/api"
+	"github.com/rmohr/bazel-dnf/pkg/rpm"
 	"github.com/sirupsen/logrus"
 )
 
@@ -32,7 +33,7 @@ type Var struct {
 
 type Resolver struct {
 	varsCount int
-	// provides allows accessing variables which can resolve an unversioned requirement
+	// provides allows accessing variables which can resolve unversioned requirement to build proper clauses
 	provides map[string][]*Var
 	// pkgProvides allows accessing all variables which get pulled in if a specific package get's pulled in
 	// this is useful to construct xor clauses
@@ -69,8 +70,11 @@ func (r *Resolver) LoadInvolvedPackages(packages []*api.Package) error {
 	return nil
 }
 
-func (r *Resolver) ConstructRequirements(packages []*api.Package) error {
-
+func (r *Resolver) ConstructRequirements(packages []string) error {
+	for _, pkgName := range packages {
+		req := r.resolveNewest(pkgName)
+		logrus.Infof("Selecting %s: %v", pkgName, req.Package.Version)
+	}
 	return nil
 }
 
@@ -80,7 +84,7 @@ func (r *Resolver) Resolve() error {
 
 func (r *Resolver) explodePackageToVars(pkg *api.Package) (pkgVar *Var, resourceVars []*Var) {
 	for _, p := range pkg.Format.Provides.Entries {
-		if p.Text == pkg.Name {
+		if p.Name == pkg.Name {
 			pkgVar = &Var{
 				satVarName: r.ticket(),
 				varType:    VarTypePackage,
@@ -122,36 +126,55 @@ func (r *Resolver) explodePackageToVars(pkg *api.Package) (pkgVar *Var, resource
 	return pkgVar, resourceVars
 }
 
-func (r *Resolver) explodePackageRequires(pkg *api.Package) {
+func (r *Resolver) explodePackageRequires(pkg *api.Package)  {
 	for _, req := range pkg.Format.Requires.Entries {
-		r.explodeSingleRequires(req, r.provides[req.Name])
+		satisfies, err := r.explodeSingleRequires(req, r.provides[req.Name])
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf("%s:%s:\n", pkg.Name, req.Name)
+		for _, dep := range satisfies {
+			fmt.Println(*dep)
+		}
 	}
 }
 
+func (r *Resolver) resolveNewest(pkgName string) *Var {
+	pkgs := r.provides[pkgName]
+	newest := pkgs[0]
+	for _, p := range pkgs {
+		if rpm.Compare(p.Package.Version, newest.Package.Version) == 1 {
+			newest = p
+		}
+	}
+	return newest
+}
+
 func (r *Resolver) explodeSingleRequires(entry api.Entry, packages []*Var) (accepts []*Var, err error) {
+	entryVer := api.Version{
+		Text:  entry.Text,
+		Epoch: entry.Epoch,
+		Ver:   entry.Ver,
+		Rel:   entry.Rel,
+	}
+
+	var cmp int
 	switch entry.Flags {
 	case "EQ":
-		for _, dep := range packages {
-			if entry.Epoch == dep.Package.Version.Epoch &&
-				entry.Ver == dep.Package.Version.Ver &&
-				entry.Rel == dep.Package.Version.Rel {
-				accepts = append(accepts, dep)
-				break
-			}
-		}
+		cmp = 0
 	case "LE":
-		for _, dep := range packages {
-			if entry.Epoch == dep.Package.Version.Epoch &&
-				entry.Ver == dep.Package.Version.Ver &&
-				entry.Rel == dep.Package.Version.Rel {
-				accepts = append(accepts, dep)
-			}
-		}
-		return accepts, nil
+		cmp =-1
 	case "GE":
+		cmp =1
 	case "":
+		return packages, nil
 	default:
 		return nil, fmt.Errorf("can't interprate flags value %s", entry.Flags)
 	}
-	return nil, nil
+	for _, dep := range packages {
+		if rpm.Compare(entryVer, dep.Package.Version) == cmp {
+			accepts = append(accepts, dep)
+		}
+	}
+	return accepts, nil
 }
