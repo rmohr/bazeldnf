@@ -3,6 +3,8 @@ package rpm
 import (
 	"reflect"
 	"testing"
+
+	"github.com/rmohr/bazel-dnf/pkg/api"
 )
 
 func TestTokenizer_NextToken(t *testing.T) {
@@ -37,6 +39,151 @@ func TestTokenizer_NextToken(t *testing.T) {
 
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NextToken() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_compare(t *testing.T) {
+	type args struct {
+		a string
+		b string
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{name: "", args: args{"", ""}, want: 0},
+		{name: "", args: args{".", "."}, want: 0},
+		{name: "", args: args{"..", ".."}, want: 0},
+		{name: "", args: args{"..", "..."}, want: 1},
+		{name: "", args: args{"...", ".."}, want: -1},
+		{name: "", args: args{"..1", ".1."}, want: -1},
+		{name: "", args: args{".1.", "..1"}, want: 1},
+		{name: "", args: args{"001.1", "1.1"}, want: 0},
+		{name: "", args: args{"001.01", "000001.1"}, want: 0},
+		{name: "", args: args{"001.02", "000001.1"}, want: 1},
+		{name: "", args: args{"001.01", "000001.2"}, want: -1},
+		{name: "", args: args{"~1", "~1"}, want: 0},
+		{name: "", args: args{"1", "~1"}, want: 1},
+		{name: "", args: args{"~1", "1"}, want: -1},
+		{name: "", args: args{"1", "1"}, want: 0},
+		{name: "", args: args{"1", "2"}, want: -1},
+		{name: "", args: args{"2", "1"}, want: 1},
+		{name: "", args: args{"a1", "a1"}, want: 0},
+		{name: "", args: args{"a1", "1"}, want: -1},
+		{name: "", args: args{"1", "a1"}, want: 1},
+		{name: "", args: args{"1.2", "1.2"}, want: 0},
+		{name: "", args: args{"1.2", "1.3"}, want: -1},
+		{name: "", args: args{"1.3", "1.2"}, want: 1},
+		{name: "", args: args{"1.2.3", "1.2.3"}, want: 0},
+		{name: "", args: args{"1.2.2", "1.2.3"}, want: -1},
+		{name: "", args: args{"1.2.3", "1.2.2"}, want: 1},
+		{name: "", args: args{"1.a1", "1.a1"}, want: 0},
+		{name: "", args: args{"1.a1", "1.1"}, want: -1},
+		{name: "", args: args{"1.1", "1.a1"}, want: 1},
+		{name: "", args: args{"1.1", "1.1.2"}, want: 1},
+		{name: "", args: args{"1.1.2", "1.1"}, want: -1},
+		{name: "", args: args{"1.a", "1.a1"}, want: -1},
+		{name: "", args: args{"1.a1", "1.a"}, want: 1},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := compare(tt.args.a, tt.args.b); got != tt.want {
+				t.Errorf("compare() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestCompare(t *testing.T) {
+	type args struct {
+		a api.Version
+		b api.Version
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{
+			name: "Epoch equal",
+			args: args{
+				a: api.Version{Epoch: "1"},
+				b: api.Version{Epoch: "1"},
+			},
+			want: 0,
+		},
+		{
+			name: "Epoch less",
+			args: args{
+				a: api.Version{Epoch: "1"},
+				b: api.Version{Epoch: "2"},
+			},
+			want: -1,
+		},
+		{
+			name: "Epoch more",
+			args: args{
+				a: api.Version{Epoch: "2"},
+				b: api.Version{Epoch: "1"},
+			},
+			want: 1,
+		},
+		{
+			name: "Version equal",
+			args: args{
+				a: api.Version{Epoch: "1", Ver: "1"},
+				b: api.Version{Epoch: "1", Ver: "1"},
+			},
+			want: 0,
+		},
+		{
+			name: "Version less",
+			args: args{
+				a: api.Version{Epoch: "1", Ver: "1"},
+				b: api.Version{Epoch: "1", Ver: "2"},
+			},
+			want: -1,
+		},
+		{
+			name: "Version more",
+			args: args{
+				a: api.Version{Epoch: "1", Ver: "2"},
+				b: api.Version{Epoch: "1", Ver: "1"},
+			},
+			want: 1,
+		},
+		{
+			name: "Release equal",
+			args: args{
+				a: api.Version{Epoch: "1", Ver: "1", Rel: "1"},
+				b: api.Version{Epoch: "1", Ver: "1", Rel: "1"},
+			},
+			want: 0,
+		},
+		{
+			name: "Release less",
+			args: args{
+				a: api.Version{Epoch: "1", Ver: "1", Rel: "1"},
+				b: api.Version{Epoch: "1", Ver: "1", Rel: "2"},
+			},
+			want: -1,
+		},
+		{
+			name: "Release more",
+			args: args{
+				a: api.Version{Epoch: "1", Ver: "1", Rel: "2"},
+				b: api.Version{Epoch: "1", Ver: "1", Rel: "1"},
+			},
+			want: 1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Compare(tt.args.a, tt.args.b); got != tt.want {
+				t.Errorf("Compare() = %v, want %v", got, tt.want)
 			}
 		})
 	}

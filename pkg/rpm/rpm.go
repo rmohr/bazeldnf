@@ -1,19 +1,21 @@
 package rpm
 
 import (
-	"regexp"
 	"strings"
 
 	"github.com/rmohr/bazel-dnf/pkg/api"
 )
 
-var (
-	alpa = regexp.MustCompile("[a-zA-Z]*")
-	num  = regexp.MustCompile("[0.9]*")
-)
-
 func Compare(a api.Version, b api.Version) int {
-
+	if res := compare(a.Epoch, b.Epoch); res != 0 {
+		return res
+	}
+	if res := compare(a.Ver, b.Ver); res != 0 {
+		return res
+	}
+	if res := compare(a.Rel, b.Rel); res != 0 {
+		return res
+	}
 	return 0
 }
 
@@ -28,6 +30,10 @@ func compare(a string, b string) int {
 		return 1
 	}
 
+	if len(a) == 0 && len(b) == 0 {
+		return 0
+	}
+
 	// if a starts with a ~ and b does not, a is older
 	if a[0] == '~' && b[0] != '~' {
 		return -1
@@ -37,28 +43,22 @@ func compare(a string, b string) int {
 		return 1
 	}
 
+	if a[0] == '~' && b[0] == '~' {
+		a = a[1:]
+		b = b[1:]
+	}
+
+	toA := Tokenizer{text: a}
+	toB := Tokenizer{text: b}
 	for {
-		var ca, cb int
-		// take digits
-		if a[ca] <= 9 {
-		}
+		ta := toA.NextToken()
+		tb := toB.NextToken()
+		res := ta.Compare(tb)
 
-		if ca == len(a) {
-			break
-		}
-		if cb == len(b) {
-			break
+		if res != 0 || ta.Type == "" || tb.Type == "" {
+			return res
 		}
 	}
-
-	// the longest string wins from that point on
-	if len(a) > len(b) {
-		return 1
-	} else if len(a) < len(b) {
-		return -1
-	}
-	// the strings are completely equal
-	return 0
 }
 
 type Tokenizer struct {
@@ -92,7 +92,7 @@ func (tk *Tokenizer) NextToken() *Token {
 			}
 		}
 		if t == '.' {
-			end = idx-1
+			end = idx - 1
 			break
 		} else if isNum(t) && token.Type == NumToken {
 			token.Text = token.Text + string(t)
@@ -130,14 +130,6 @@ type Token struct {
 }
 
 func (a *Token) Compare(b *Token) int {
-	if a != nil && b == nil {
-		return 1
-	} else if a == nil && b != nil {
-		return -1
-	} else if a == nil && b == nil {
-		return 0
-	}
-
 	if a.Type == "" && b.Type == "" {
 		return 0
 	}
@@ -167,5 +159,5 @@ type TokenType string
 const (
 	NumToken   TokenType = "num"
 	AlphaToken TokenType = "alpha"
-	SepToken TokenType = "sep"
+	SepToken   TokenType = "sep"
 )
