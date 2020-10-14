@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/rmohr/bazel-dnf/pkg/repoquery"
 	"github.com/rmohr/bazel-dnf/pkg/sat"
 	"github.com/sirupsen/logrus"
@@ -35,7 +37,21 @@ func NewResolveCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			logrus.Info("Adding required packages to the resolver.")
+			err = solver.ConstructRequirements(required)
+			if err != nil {
+				return err
+			}
+			logrus.Info("Solving.")
+			install, excluded, err := solver.Resolve()
+			fmt.Println(install)
+			fmt.Println(excluded)
 			logrus.Info("Done.")
+			fmt.Println(err)
+			mus, err := solver.MUS()
+			fmt.Println(err)
+			fmt.Println(mus.CNF())
+
 			return nil
 		},
 	}

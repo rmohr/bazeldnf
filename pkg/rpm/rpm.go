@@ -1,6 +1,7 @@
 package rpm
 
 import (
+	"strconv"
 	"strings"
 
 	"github.com/rmohr/bazel-dnf/pkg/api"
@@ -134,15 +135,15 @@ func (a *Token) Compare(b *Token) int {
 		return 0
 	}
 
-	if a.Type != SepToken && b.Type == SepToken {
-		return 1
-	} else if a.Type == SepToken && b.Type != SepToken {
-		return -1
-	}
-
 	if a.Type != "" && b.Type == "" {
 		return 1
 	} else if a.Type == "" && b.Type != "" {
+		return -1
+	}
+
+	if a.Type != SepToken && b.Type == SepToken {
+		return 1
+	} else if a.Type == SepToken && b.Type != SepToken {
 		return -1
 	}
 
@@ -151,7 +152,20 @@ func (a *Token) Compare(b *Token) int {
 	} else if a.Type == AlphaToken && b.Type == NumToken {
 		return -1
 	}
-	return strings.Compare(a.Text, b.Text)
+
+	if a.Type == NumToken && b.Type == NumToken {
+		aInt, _ := strconv.Atoi(a.Text)
+		bInt, _ := strconv.Atoi(b.Text)
+		if aInt == bInt {
+			return 0
+		} else if aInt > bInt {
+			return 1
+		} else {
+			return -1
+		}
+	} else {
+		return strings.Compare(a.Text, b.Text)
+	}
 }
 
 type TokenType string

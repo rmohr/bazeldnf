@@ -78,7 +78,7 @@ func (r *RepoQuery) Resolve(packages []string) (involved []*api.Package, err err
 
 	current := []string{}
 	for k := range discovered {
-		involved = append(involved, discovered[k])
+		involved = append(involved, r.provides[k]...)
 		current = append(current, k)
 	}
 	fmt.Println(strings.Join(current, ","))
@@ -92,9 +92,6 @@ func (r *RepoQuery) requires(p *api.Package) (wants []*api.Package) {
 			var packages []string
 			for _, p := range val {
 				packages = append(packages, p.Name)
-			}
-			if strings.HasPrefix(requires.Name, "glibc-langpack") {
-				continue
 			}
 			logrus.Debugf("%s wants %v because of %v\n", p.Name, packages, requires)
 			wants = append(wants, val...)

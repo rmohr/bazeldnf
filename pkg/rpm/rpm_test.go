@@ -57,8 +57,8 @@ func Test_compare(t *testing.T) {
 		{name: "", args: args{"", ""}, want: 0},
 		{name: "", args: args{".", "."}, want: 0},
 		{name: "", args: args{"..", ".."}, want: 0},
-		{name: "", args: args{"..", "..."}, want: 1},
-		{name: "", args: args{"...", ".."}, want: -1},
+		{name: "", args: args{"..", "..."}, want: -1},
+		{name: "", args: args{"...", ".."}, want: 1},
 		{name: "", args: args{"..1", ".1."}, want: -1},
 		{name: "", args: args{".1.", "..1"}, want: 1},
 		{name: "", args: args{"001.1", "1.1"}, want: 0},
@@ -83,8 +83,8 @@ func Test_compare(t *testing.T) {
 		{name: "", args: args{"1.a1", "1.a1"}, want: 0},
 		{name: "", args: args{"1.a1", "1.1"}, want: -1},
 		{name: "", args: args{"1.1", "1.a1"}, want: 1},
-		{name: "", args: args{"1.1", "1.1.2"}, want: 1},
-		{name: "", args: args{"1.1.2", "1.1"}, want: -1},
+		{name: "", args: args{"1.1", "1.1.2"}, want: -1},
+		{name: "", args: args{"1.1.2", "1.1"}, want: 1},
 		{name: "", args: args{"1.a", "1.a1"}, want: -1},
 		{name: "", args: args{"1.a1", "1.a"}, want: 1},
 	}
@@ -176,6 +176,22 @@ func TestCompare(t *testing.T) {
 			args: args{
 				a: api.Version{Epoch: "1", Ver: "1", Rel: "2"},
 				b: api.Version{Epoch: "1", Ver: "1", Rel: "1"},
+			},
+			want: 1,
+		},
+		{
+			name: "Version more in subversion",
+			args: args{
+				a: api.Version{Epoch: "0", Ver: "3.14", Rel: "2.fc32"},
+				b: api.Version{Epoch: "0", Ver: "3", Rel: ""},
+			},
+			want: 1,
+		},
+		{
+			name: "Release more",
+			args: args{
+				a: api.Version{Epoch: "0", Ver: "4.16.0", Rel: ""},
+				b: api.Version{Epoch: "0", Ver: "4.3", Rel: ""},
 			},
 			want: 1,
 		},

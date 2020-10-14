@@ -1,6 +1,9 @@
 package api
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"fmt"
+)
 
 type URL struct {
 	Text       string `xml:",chardata"`
@@ -68,6 +71,18 @@ type Entry struct {
 	Rel   string `xml:"rel,attr"`
 }
 
+func (e Entry) String() string {
+	if e.Flags != "" {
+		v := Version{
+			Epoch: e.Epoch,
+			Ver:   e.Ver,
+			Rel:   e.Rel,
+		}
+		return fmt.Sprintf("%s-%s-%s", e.Name, e.Flags, v.String())
+	}
+	return e.Name
+}
+
 type Dependencies struct {
 	Text    string  `xml:",chardata"`
 	Entries []Entry `xml:"entry"`
@@ -83,6 +98,21 @@ type Version struct {
 	Epoch string `xml:"epoch,attr"`
 	Ver   string `xml:"ver,attr"`
 	Rel   string `xml:"rel,attr"`
+}
+
+func (v *Version) String() string {
+	var version string
+	if v.Epoch == "" {
+		version = "0"
+	} else {
+		version = v.Epoch
+	}
+	version = version + ":" + v.Ver
+
+	if v.Rel != "" {
+		version = version + "-" + v.Rel
+	}
+	return version
 }
 
 type Package struct {
@@ -137,6 +167,10 @@ type Package struct {
 		Enhances    Dependencies   `xml:"enhances"`
 		Supplements Dependencies   `xml:"supplements"`
 	} `xml:"format"`
+}
+
+func (p *Package) String() string {
+	return p.Name + "-" + p.Version.String()
 }
 
 type Repository struct {
