@@ -1,12 +1,46 @@
 package sat
 
 import (
+	"encoding/xml"
 	"fmt"
+	"os"
 	"testing"
 
 	. "github.com/onsi/gomega"
 	"github.com/rmohr/bazel-dnf/pkg/api"
 )
+
+func Test(t *testing.T) {
+	g := NewGomegaWithT(t)
+	f, err := os.Open("../../testdata/test.xml")
+	g.Expect(err).ToNot(HaveOccurred())
+	defer f.Close()
+	repo := &api.Repository{}
+	err = xml.NewDecoder(f).Decode(repo)
+	g.Expect(err).ToNot(HaveOccurred())
+
+	resolver := NewResolver(false)
+	packages := []*api.Package{}
+	for i, _ := range repo.Packages {
+		packages = append(packages, &repo.Packages[i])
+	}
+	err = resolver.LoadInvolvedPackages(packages)
+	g.Expect(err).ToNot(HaveOccurred())
+	err = resolver.ConstructRequirements([]string{"bash"})
+	g.Expect(err).ToNot(HaveOccurred())
+	install, exclude, err := resolver.Resolve()
+	g.Expect(pkgToString(install)).To(ConsistOf(
+		"ncurses-base-0:6.1-15.20191109.fc32",
+		"bash-0:5.0.17-1.fc32",
+		"glibc-common-0:2.31-4.fc32",
+		"libgcc-0:10.2.1-1.fc32",
+		"glibc-0:2.31-4.fc32",
+		"ncurses-libs-0:6.1-15.20191109.fc32",
+		"tzdata-0:2020a-1.fc32",
+	))
+	g.Expect(exclude).To(BeEmpty())
+	g.Expect(err).ToNot(HaveOccurred())
+}
 
 func TestNewResolver(t *testing.T) {
 	tests := []struct {
@@ -39,8 +73,8 @@ func TestNewResolver(t *testing.T) {
 		}, requires: []string{
 			"testa",
 		},
-			install: []string{"testa-0:1", "testc-0:1", "testd-0:1", "teste-0:1"},
-			exclude: []string{"testb-0:1"},
+			install:  []string{"testa-0:1", "testc-0:1", "testd-0:1", "teste-0:1"},
+			exclude:  []string{"testb-0:1"},
 			solvable: true,
 		},
 		{name: "with an unresolvable dependency", packages: []*api.Package{
@@ -50,22 +84,22 @@ func TestNewResolver(t *testing.T) {
 		},
 			solvable: false,
 		},
-		{name: "with two sources to choose from", packages: []*api.Package{
+		{name: "with two sources to choose from, should use the newer one", packages: []*api.Package{
 			newPkg("testa", "1", []string{"testa", "a", "b"}, []string{"d"}),
 			newPkg("testb", "1", []string{"testb", "d"}, []string{}),
 			newPkg("testb", "2", []string{"testb", "d"}, []string{}),
 		}, requires: []string{
 			"testa",
 		},
-			install:  []string{"testa-0:1", "testb-0:1"},
-			exclude:  []string{"testb-0:2"},
+			install:  []string{"testa-0:1", "testb-0:2"},
+			exclude:  []string{},
 			solvable: true,
 		},
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			resolver := NewResolver()
+			resolver := NewResolver(false)
 			err := resolver.LoadInvolvedPackages(tt.packages)
 			if err != nil {
 				t.Fail()
@@ -83,8 +117,8 @@ func TestNewResolver(t *testing.T) {
 				g.Expect(err).To(HaveOccurred())
 				return
 			}
-			g.Expect(install).To(ConsistOf(strToPkg(tt.install, tt.packages)))
-			g.Expect(exclude).To(ConsistOf(strToPkg(tt.exclude, tt.packages)))
+			g.Expect(pkgToString(install)).To(ConsistOf(tt.install))
+			g.Expect(pkgToString(exclude)).To(ConsistOf(tt.exclude))
 		})
 	}
 }
@@ -117,4 +151,11 @@ func strToPkg(wanted []string, given []*api.Package) (resolved []*api.Package) {
 		resolved = append(resolved, m[w])
 	}
 	return resolved
+}
+
+func pkgToString(given[]*api.Package) (resolved []string) {
+	for _, p := range given {
+		resolved = append(resolved, p.String())
+	}
+	return
 }

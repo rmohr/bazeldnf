@@ -12,14 +12,13 @@ import (
 var in []string
 var lang string
 
-
 func NewResolveCmd() *cobra.Command {
 
 	resolveCmd := &cobra.Command{
 		Use:   "resolve",
 		Short: "resolves depencencies of the given packages",
-		Long: `resolves dependencies of the given packages with the assumption of a SCRATCH container as install target`,
-		Args: cobra.MinimumNArgs(1),
+		Long:  `resolves dependencies of the given packages with the assumption of a SCRATCH container as install target`,
+		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, required []string) error {
 			repo := repoquery.NewRepoQuerier(in, lang)
 			logrus.Info("Loading packages.")
@@ -31,7 +30,7 @@ func NewResolveCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			solver := sat.NewResolver()
+			solver := sat.NewResolver(false)
 			logrus.Info("Loading involved packages into the resolver.")
 			err = solver.LoadInvolvedPackages(involved)
 			if err != nil {
@@ -43,15 +42,13 @@ func NewResolveCmd() *cobra.Command {
 				return err
 			}
 			logrus.Info("Solving.")
-			install, excluded, err := solver.Resolve()
+			install, _, err := solver.Resolve()
+			if err != nil {
+				return err
+			}
 			fmt.Println(install)
-			fmt.Println(excluded)
+			fmt.Println(len(install))
 			logrus.Info("Done.")
-			fmt.Println(err)
-			mus, err := solver.MUS()
-			fmt.Println(err)
-			fmt.Println(mus.CNF())
-
 			return nil
 		},
 	}

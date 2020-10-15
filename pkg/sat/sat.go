@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"strconv"
-	"strings"
 
 	"github.com/crillab/gophersat/explain"
 	"github.com/rmohr/bazel-dnf/pkg/api"
@@ -37,6 +36,13 @@ type Var struct {
 	Package    *api.Package
 }
 
+func toBFVars(vars []*Var) (bfvars []bf.Formula) {
+	for _, v := range vars {
+		bfvars = append(bfvars, bf.Var(v.satVarName))
+	}
+	return
+}
+
 type Resolver struct {
 	varsCount int
 	// provides allows accessing variables which can resolve unversioned requirement to build proper clauses
@@ -48,14 +54,16 @@ type Resolver struct {
 
 	ands         []bf.Formula
 	unresolvable []api.Entry
+	nobest       bool
 }
 
-func NewResolver() *Resolver {
+func NewResolver(nobest bool) *Resolver {
 	return &Resolver{
 		varsCount:   0,
 		provides:    map[string][]*Var{},
 		vars:        map[string]*Var{},
 		pkgProvides: map[VarContext][]*Var{},
+		nobest:      nobest,
 	}
 }
 
@@ -65,32 +73,36 @@ func (r *Resolver) ticket() string {
 }
 
 func (r *Resolver) LoadInvolvedPackages(packages []*api.Package) error {
-	// Generate variables
-	for _, pkg := range packages {
-		if strings.HasPrefix(pkg.Name, "glibc-langpack") {
-			if pkg.Name != "glibc-langpack-en" {
-				continue
+	// Create an index to pick the best candidates
+	if !r.nobest {
+		idx := map[string]*api.Package{}
+		for _, pkg := range packages {
+			if idx[pkg.Name] == nil {
+				idx[pkg.Name] = pkg
+			} else if rpm.Compare(pkg.Version, idx[pkg.Name].Version) == 1 {
+				idx[pkg.Name] = pkg
 			}
 		}
+		packages = nil
+		for _, v := range idx {
+			packages = append(packages, v)
+		}
+	}
+	// Generate variables
+	for _, pkg := range packages {
 		pkgVar, resourceVars := r.explodePackageToVars(pkg)
-		r.pkgProvides[pkgVar.Context] = append(resourceVars, pkgVar)
-		for _, v := range append(resourceVars, pkgVar) {
+		r.pkgProvides[pkgVar.Context] = resourceVars
+		for _, v := range resourceVars {
 			r.provides[v.Context.Provides] = append(r.provides[v.Context.Provides], v)
 			r.vars[v.satVarName] = v
 		}
 	}
+	logrus.Infof("Loaded %v packages.", len(r.pkgProvides))
 	// Generate imply rules
 	for _, resourceVars := range r.pkgProvides {
 		// Create imply rules for every package and add them to the formula
 		// one provided dependency implies all dependencies from that package
-		var bfVar bf.Formula = nil
-		for _, res := range resourceVars {
-			if bfVar == nil {
-				bfVar = bf.Var(res.satVarName)
-			} else {
-				bfVar = bf.And(bfVar, bf.Var(res.satVarName))
-			}
-		}
+		bfVar := bf.And(toBFVars(resourceVars)...)
 		var ands []bf.Formula
 		for _, res := range resourceVars {
 			ands = append(ands, bf.Implies(bf.Var(res.satVarName), bfVar))
@@ -99,6 +111,7 @@ func (r *Resolver) LoadInvolvedPackages(packages []*api.Package) error {
 		ands = append(ands, bf.Implies(bf.Var(pkgVar.satVarName), r.explodePackageRequires(pkgVar)))
 		r.ands = append(r.ands, ands...)
 	}
+	logrus.Infof("Generated %v variables.", len(r.vars))
 	return nil
 }
 
@@ -125,7 +138,7 @@ func (res *Resolver) Resolve() (install []*api.Package, excluded []*api.Package,
 		excludedMap := map[VarContext]*api.Package{}
 		for k, v := range vars {
 			resVar := res.vars[k]
-			if resVar.varType == VarTypePackage {
+			if resVar != nil && resVar.varType == VarTypePackage {
 				if v {
 					installMap[resVar.Context] = resVar.Package
 				} else {
@@ -159,7 +172,7 @@ func (res *Resolver) MUS() (mus *explain.Problem, err error) {
 	if err != nil {
 		return nil, err
 	}
-	mus, err = problem.MUS()
+	mus, err = problem.MUSInsertion()
 	if err != nil {
 		return nil, err
 	}
@@ -281,7 +294,6 @@ func (r *Resolver) explodeSingleRequires(entry api.Entry, provides []*Var) (acce
 			accepts = append(accepts, dep)
 		}
 	}
-
 
 	if len(accepts) == 0 {
 		return nil, fmt.Errorf("Nothing can satisfy %s", entry.Name)

@@ -1,0 +1,806 @@
+<metadata xmlns="" rpm="" packages="">
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>ncurses-base</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="6.1" rel="15.20191109.fc32"></version>
+    <checksum type="sha256" pkgid="YES">25fc5d288536e1973436da38357690575ed58e03e17ca48d2b3840364f830659</checksum>
+    <summary>Descriptions of common terminals</summary>
+    <description>This package contains descriptions of common terminals. Other terminal&#xA;descriptions are included in the ncurses-term package.</description>
+    <packager>Fedora Project</packager>
+    <url>https://invisible-island.net/ncurses/ncurses.html</url>
+    <time file="1580381506" build="1580316686"></time>
+    <size package="60820" installed="285229" archive="309828"></size>
+    <location href="Packages/n/ncurses-base-6.1-15.20191109.fc32.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-05.arm.fedoraproject.org</buildhost>
+      <sourcerpm>ncurses-6.1-15.20191109.fc32.src.rpm</sourcerpm>
+      <header-range start="4504" end="29732"></header-range>
+      <provides>&#xA;      &#xA;    
+        <entry name="ncurses-base" flags="EQ" epoch="0" ver="6.1" rel="15.20191109.fc32"></entry>
+      </provides>
+      <requires></requires>
+      <file type="dir">/etc/terminfo</file>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="rxvt-unicode" flags="LT" epoch="0" ver="9.22" rel="15"></entry>
+      </conflicts>
+      <obsoletes>&#xA;      &#xA;    
+        <entry name="rxvt-unicode-terminfo" flags="LT" epoch="0" ver="9.22" rel="18"></entry>
+      </obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>glibc-common</name>
+    <arch>x86_64</arch>
+    <version epoch="0" ver="2.31" rel="2.fc32"></version>
+    <checksum type="sha256" pkgid="YES">e80533822e2a892345b869395b2c17c0bcc98d3c3c47787da30123096835db00</checksum>
+    <summary>Common binaries and locale data for glibc</summary>
+    <description>The glibc-common package includes common binaries for the GNU libc&#xA;libraries, as well as national language (locale) support.</description>
+    <packager>Fedora Project</packager>
+    <url>http://www.gnu.org/software/glibc/</url>
+    <time file="1585165752" build="1584751863"></time>
+    <size package="1768684" installed="8188318" archive="8195992"></size>
+    <location href="Packages/g/glibc-common-2.31-2.fc32.x86_64.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>LGPLv2+ and LGPLv2+ with exceptions and GPLv2+ and GPLv2+ with exceptions and BSD and Inner-Net and ISC and Public Domain and GFDL</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-29.phx2.fedoraproject.org</buildhost>
+      <sourcerpm>glibc-2.31-2.fc32.src.rpm</sourcerpm>
+      <header-range start="4504" end="67348"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;    
+        <entry name="glibc-common" flags="EQ" epoch="0" ver="2.31" rel="2.fc32"></entry>
+        <entry name="glibc-common(x86-64)" flags="EQ" epoch="0" ver="2.31" rel="2.fc32"></entry>
+      </provides>
+      <requires>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="/bin/sh" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="/usr/bin/bash" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="/usr/bin/sh" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="glibc" flags="EQ" epoch="0" ver="2.31" rel="2.fc32"></entry>
+        <entry name="libdl.so.2()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libdl.so.2(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="tzdata" flags="GE" epoch="0" ver="2003a" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.15)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+      </requires>
+      <file type="">/usr/bin/catchsegv</file>
+      <file type="">/usr/bin/gencat</file>
+      <file type="">/usr/bin/getconf</file>
+      <file type="">/usr/bin/getent</file>
+      <file type="">/usr/bin/iconv</file>
+      <file type="">/usr/bin/ldd</file>
+      <file type="">/usr/bin/locale</file>
+      <file type="">/usr/bin/localedef</file>
+      <file type="">/usr/bin/pldd</file>
+      <file type="">/usr/bin/sotruss</file>
+      <file type="">/usr/bin/sprof</file>
+      <file type="">/usr/bin/tzselect</file>
+      <file type="">/usr/sbin/zdump</file>
+      <file type="">/usr/sbin/zic</file>
+      <conflicts></conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>glibc-common</name>
+    <arch>x86_64</arch>
+    <version epoch="0" ver="2.31" rel="4.fc32"></version>
+    <checksum type="sha256" pkgid="YES">41b67774fd01311ee1813ac1c1c1f555fc1cf938fa67668b727f863c244948b8</checksum>
+    <summary>Common binaries and locale data for glibc</summary>
+    <description>The glibc-common package includes common binaries for the GNU libc&#xA;libraries, as well as national language (locale) support.</description>
+    <packager>Fedora Project</packager>
+    <url>http://www.gnu.org/software/glibc/</url>
+    <time file="1595014485" build="1594866296"></time>
+    <size package="1856973" installed="8187534" archive="8195344"></size>
+    <location href="Packages/g/glibc-common-2.31-4.fc32.x86_64.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>LGPLv2+ and LGPLv2+ with exceptions and GPLv2+ and GPLv2+ with exceptions and BSD and Inner-Net and ISC and Public Domain and GFDL</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildhw-x86-09.iad2.fedoraproject.org</buildhost>
+      <sourcerpm>glibc-2.31-4.fc32.src.rpm</sourcerpm>
+      <header-range start="4504" end="69296"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;    
+        <entry name="glibc-common" flags="EQ" epoch="0" ver="2.31" rel="4.fc32"></entry>
+        <entry name="glibc-common(x86-64)" flags="EQ" epoch="0" ver="2.31" rel="4.fc32"></entry>
+      </provides>
+      <requires>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="/bin/sh" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="/usr/bin/bash" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="/usr/bin/sh" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="glibc" flags="EQ" epoch="0" ver="2.31" rel="4.fc32"></entry>
+        <entry name="libdl.so.2()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libdl.so.2(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="tzdata" flags="GE" epoch="0" ver="2003a" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.15)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+      </requires>
+      <file type="">/usr/bin/catchsegv</file>
+      <file type="">/usr/bin/gencat</file>
+      <file type="">/usr/bin/getconf</file>
+      <file type="">/usr/bin/getent</file>
+      <file type="">/usr/bin/iconv</file>
+      <file type="">/usr/bin/ldd</file>
+      <file type="">/usr/bin/locale</file>
+      <file type="">/usr/bin/localedef</file>
+      <file type="">/usr/bin/pldd</file>
+      <file type="">/usr/bin/sotruss</file>
+      <file type="">/usr/bin/sprof</file>
+      <file type="">/usr/bin/tzselect</file>
+      <file type="">/usr/sbin/zdump</file>
+      <file type="">/usr/sbin/zic</file>
+      <conflicts></conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>bash</name>
+    <arch>x86_64</arch>
+    <version epoch="0" ver="5.0.11" rel="2.fc32"></version>
+    <checksum type="sha256" pkgid="YES">7a97e71cd552285ead303d07dbb6417403edf45c0a531e02cf4ebfb0efda4975</checksum>
+    <summary>The GNU Bourne Again shell</summary>
+    <description>The GNU Bourne Again shell (Bash) is a shell or command language&#xA;interpreter that is compatible with the Bourne shell (sh). Bash&#xA;incorporates useful features from the Korn shell (ksh) and the C shell&#xA;(csh). Most sh scripts can be run by bash without modification.</description>
+    <packager>Fedora Project</packager>
+    <url>https://www.gnu.org/software/bash</url>
+    <time file="1580220137" build="1580215628"></time>
+    <size package="1680385" installed="7589870" archive="7608956"></size>
+    <location href="Packages/b/bash-5.0.11-2.fc32.x86_64.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>GPLv3+</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-32.phx2.fedoraproject.org</buildhost>
+      <sourcerpm>bash-5.0.11-2.fc32.src.rpm</sourcerpm>
+      <header-range start="4504" end="29244"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="/bin/bash" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="/bin/sh" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="bash" flags="EQ" epoch="0" ver="5.0.11" rel="2.fc32"></entry>
+        <entry name="bash(x86-64)" flags="EQ" epoch="0" ver="5.0.11" rel="2.fc32"></entry>
+        <entry name="config(bash)" flags="EQ" epoch="0" ver="5.0.11" rel="2.fc32"></entry>
+      </provides>
+      <requires>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="libdl.so.2()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libdl.so.2(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libtinfo.so.6()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="rtld(GNU_HASH)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.15)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+      </requires>
+      <file type="">/etc/skel/.bash_logout</file>
+      <file type="">/etc/skel/.bash_profile</file>
+      <file type="">/etc/skel/.bashrc</file>
+      <file type="">/usr/bin/alias</file>
+      <file type="">/usr/bin/bash</file>
+      <file type="">/usr/bin/bashbug</file>
+      <file type="">/usr/bin/bashbug-64</file>
+      <file type="">/usr/bin/bg</file>
+      <file type="">/usr/bin/cd</file>
+      <file type="">/usr/bin/command</file>
+      <file type="">/usr/bin/fc</file>
+      <file type="">/usr/bin/fg</file>
+      <file type="">/usr/bin/getopts</file>
+      <file type="">/usr/bin/hash</file>
+      <file type="">/usr/bin/jobs</file>
+      <file type="">/usr/bin/read</file>
+      <file type="">/usr/bin/sh</file>
+      <file type="">/usr/bin/type</file>
+      <file type="">/usr/bin/ulimit</file>
+      <file type="">/usr/bin/umask</file>
+      <file type="">/usr/bin/unalias</file>
+      <file type="">/usr/bin/wait</file>
+      <conflicts></conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>bash</name>
+    <arch>x86_64</arch>
+    <version epoch="0" ver="5.0.17" rel="1.fc32"></version>
+    <checksum type="sha256" pkgid="YES">31d92d4ef9080bd349188c6f835db0f8b7cf3fe57c6dcff37582f9ee14860ec0</checksum>
+    <summary>The GNU Bourne Again shell</summary>
+    <description>The GNU Bourne Again shell (Bash) is a shell or command language&#xA;interpreter that is compatible with the Bourne shell (sh). Bash&#xA;incorporates useful features from the Korn shell (ksh) and the C shell&#xA;(csh). Most sh scripts can be run by bash without modification.</description>
+    <packager>Fedora Project</packager>
+    <url>https://www.gnu.org/software/bash</url>
+    <time file="1591103002" build="1591101863"></time>
+    <size package="1680188" installed="7589830" archive="7608916"></size>
+    <location href="Packages/b/bash-5.0.17-1.fc32.x86_64.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>GPLv3+</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-32.phx2.fedoraproject.org</buildhost>
+      <sourcerpm>bash-5.0.17-1.fc32.src.rpm</sourcerpm>
+      <header-range start="4504" end="28940"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="/bin/bash" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="/bin/sh" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="bash" flags="EQ" epoch="0" ver="5.0.17" rel="1.fc32"></entry>
+        <entry name="bash(x86-64)" flags="EQ" epoch="0" ver="5.0.17" rel="1.fc32"></entry>
+        <entry name="config(bash)" flags="EQ" epoch="0" ver="5.0.17" rel="1.fc32"></entry>
+      </provides>
+      <requires>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="libdl.so.2()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libdl.so.2(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libtinfo.so.6()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="rtld(GNU_HASH)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.15)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+      </requires>
+      <file type="">/etc/skel/.bash_logout</file>
+      <file type="">/etc/skel/.bash_profile</file>
+      <file type="">/etc/skel/.bashrc</file>
+      <file type="">/usr/bin/alias</file>
+      <file type="">/usr/bin/bash</file>
+      <file type="">/usr/bin/bashbug</file>
+      <file type="">/usr/bin/bashbug-64</file>
+      <file type="">/usr/bin/bg</file>
+      <file type="">/usr/bin/cd</file>
+      <file type="">/usr/bin/command</file>
+      <file type="">/usr/bin/fc</file>
+      <file type="">/usr/bin/fg</file>
+      <file type="">/usr/bin/getopts</file>
+      <file type="">/usr/bin/hash</file>
+      <file type="">/usr/bin/jobs</file>
+      <file type="">/usr/bin/read</file>
+      <file type="">/usr/bin/sh</file>
+      <file type="">/usr/bin/type</file>
+      <file type="">/usr/bin/ulimit</file>
+      <file type="">/usr/bin/umask</file>
+      <file type="">/usr/bin/unalias</file>
+      <file type="">/usr/bin/wait</file>
+      <conflicts></conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>glibc</name>
+    <arch>x86_64</arch>
+    <version epoch="0" ver="2.31" rel="2.fc32"></version>
+    <checksum type="sha256" pkgid="YES">dc9c0401522bcf73fe5a692184c141b214947ad83364be97de0413ab46b712e5</checksum>
+    <summary>The GNU libc libraries</summary>
+    <description>The glibc package contains standard libraries which are used by&#xA;multiple programs on the system. In order to save disk space and&#xA;memory, as well as to make upgrading easier, common system code is&#xA;kept in one place and shared between programs. This particular package&#xA;contains the most important sets of shared libraries: the standard C&#xA;library and the standard math library. Without these two libraries, a&#xA;Linux system will not function.</description>
+    <packager>Fedora Project</packager>
+    <url>http://www.gnu.org/software/glibc/</url>
+    <time file="1585165757" build="1584751863"></time>
+    <size package="3643881" installed="17299546" archive="17425696"></size>
+    <location href="Packages/g/glibc-2.31-2.fc32.x86_64.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>LGPLv2+ and LGPLv2+ with exceptions and GPLv2+ and GPLv2+ with exceptions and BSD and Inner-Net and ISC and Public Domain and GFDL</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-29.phx2.fedoraproject.org</buildhost>
+      <sourcerpm>glibc-2.31-2.fc32.src.rpm</sourcerpm>
+      <header-range start="4504" end="212488"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="bundled(gnulib)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="config(glibc)" flags="EQ" epoch="0" ver="2.31" rel="2.fc32"></entry>
+        <entry name="glibc" flags="EQ" epoch="0" ver="2.31" rel="2.fc32"></entry>
+        <entry name="glibc(x86-64)" flags="EQ" epoch="0" ver="2.31" rel="2.fc32"></entry>
+        <entry name="ld-linux-x86-64.so.2()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="ld-linux-x86-64.so.2(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="ld-linux-x86-64.so.2(GLIBC_2.3)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="ld-linux-x86-64.so.2(GLIBC_2.4)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="ldconfig" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libBrokenLocale.so.1()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libBrokenLocale.so.1(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libCNS.so()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libGB.so()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libISOIR165.so()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libJIS.so()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libJISX0213.so()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libKSC.so()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libSegFault.so()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libanl.so.1()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libanl.so.1(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.10)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.11)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.12)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.13)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.14)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.15)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.16)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.17)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.18)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.2.6)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.22)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.23)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.24)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.25)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.26)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.27)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.28)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.29)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.3)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.3.2)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.3.3)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.3.4)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.30)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.4)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.6)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.7)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.8)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.9)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libdl.so.2()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libdl.so.2(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libdl.so.2(GLIBC_2.3.3)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libdl.so.2(GLIBC_2.3.4)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6(GLIBC_2.15)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6(GLIBC_2.18)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6(GLIBC_2.23)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6(GLIBC_2.24)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6(GLIBC_2.25)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6(GLIBC_2.26)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6(GLIBC_2.27)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6(GLIBC_2.28)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6(GLIBC_2.29)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6(GLIBC_2.31)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6(GLIBC_2.4)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libmemusage.so()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libmvec.so.1()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libmvec.so.1(GLIBC_2.22)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libnss_compat.so.2()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libnss_dns.so.2()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libnss_files.so.2()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpcprofile.so()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0(GLIBC_2.11)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0(GLIBC_2.12)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0(GLIBC_2.18)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0(GLIBC_2.2.6)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0(GLIBC_2.28)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0(GLIBC_2.3.2)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0(GLIBC_2.3.3)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0(GLIBC_2.3.4)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0(GLIBC_2.30)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0(GLIBC_2.31)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0(GLIBC_2.4)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libresolv.so.2()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libresolv.so.2(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libresolv.so.2(GLIBC_2.3.2)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libresolv.so.2(GLIBC_2.9)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="librt.so.1()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="librt.so.1(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="librt.so.1(GLIBC_2.3.3)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="librt.so.1(GLIBC_2.3.4)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="librt.so.1(GLIBC_2.4)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="librt.so.1(GLIBC_2.7)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libthread_db.so.1()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libthread_db.so.1(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libthread_db.so.1(GLIBC_2.3)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libthread_db.so.1(GLIBC_2.3.3)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libutil.so.1()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libutil.so.1(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="rtld(GNU_HASH)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="glibc-common" flags="EQ" epoch="0" ver="2.31" rel="2.fc32"></entry>
+        <entry name="libgcc(x86-64)" flags="" epoch="" ver="" rel=""></entry>
+      </requires>
+      <file type="ghost">/etc/gai.conf</file>
+      <file type="ghost">/etc/ld.so.cache</file>
+      <file type="">/etc/ld.so.conf</file>
+      <file type="dir">/etc/ld.so.conf.d</file>
+      <file type="">/etc/nsswitch.conf</file>
+      <file type="">/etc/rpc</file>
+      <file type="">/sbin/ldconfig</file>
+      <file type="">/usr/sbin/iconvconfig</file>
+      <conflicts>&#xA;      &#xA;      &#xA;    
+        <entry name="kernel" flags="LT" epoch="0" ver="3.2" rel=""></entry>
+        <entry name="prelink" flags="LT" epoch="0" ver="0.4.2" rel=""></entry>
+      </conflicts>
+      <obsoletes>&#xA;      &#xA;    
+        <entry name="glibc-profile" flags="LT" epoch="0" ver="2.4" rel=""></entry>
+      </obsoletes>
+      <recommends></recommends>
+      <suggests>&#xA;      &#xA;    
+        <entry name="glibc-all-langpacks" flags="EQ" epoch="0" ver="2.31" rel="2.fc32"></entry>
+      </suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>glibc</name>
+    <arch>x86_64</arch>
+    <version epoch="0" ver="2.31" rel="4.fc32"></version>
+    <checksum type="sha256" pkgid="YES">2145ee8f8af2d8c1023fc2ace21483e246f31fb4d0294d39e48551300d919a5d</checksum>
+    <summary>The GNU libc libraries</summary>
+    <description>The glibc package contains standard libraries which are used by&#xA;multiple programs on the system. In order to save disk space and&#xA;memory, as well as to make upgrading easier, common system code is&#xA;kept in one place and shared between programs. This particular package&#xA;contains the most important sets of shared libraries: the standard C&#xA;library and the standard math library. Without these two libraries, a&#xA;Linux system will not function.</description>
+    <packager>Fedora Project</packager>
+    <url>http://www.gnu.org/software/glibc/</url>
+    <time file="1595014484" build="1594866296"></time>
+    <size package="3641773" installed="17289835" archive="17416120"></size>
+    <location href="Packages/g/glibc-2.31-4.fc32.x86_64.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>LGPLv2+ and LGPLv2+ with exceptions and GPLv2+ and GPLv2+ with exceptions and BSD and Inner-Net and ISC and Public Domain and GFDL</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildhw-x86-09.iad2.fedoraproject.org</buildhost>
+      <sourcerpm>glibc-2.31-4.fc32.src.rpm</sourcerpm>
+      <header-range start="4504" end="214464"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="bundled(gnulib)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="config(glibc)" flags="EQ" epoch="0" ver="2.31" rel="4.fc32"></entry>
+        <entry name="glibc" flags="EQ" epoch="0" ver="2.31" rel="4.fc32"></entry>
+        <entry name="glibc(x86-64)" flags="EQ" epoch="0" ver="2.31" rel="4.fc32"></entry>
+        <entry name="ld-linux-x86-64.so.2()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="ld-linux-x86-64.so.2(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="ld-linux-x86-64.so.2(GLIBC_2.3)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="ld-linux-x86-64.so.2(GLIBC_2.4)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="ldconfig" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libBrokenLocale.so.1()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libBrokenLocale.so.1(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libCNS.so()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libGB.so()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libISOIR165.so()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libJIS.so()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libJISX0213.so()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libKSC.so()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libSegFault.so()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libanl.so.1()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libanl.so.1(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.10)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.11)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.12)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.13)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.14)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.15)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.16)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.17)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.18)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.2.6)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.22)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.23)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.24)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.25)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.26)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.27)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.28)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.29)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.3)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.3.2)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.3.3)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.3.4)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.30)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.4)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.6)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.7)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.8)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.9)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libdl.so.2()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libdl.so.2(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libdl.so.2(GLIBC_2.3.3)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libdl.so.2(GLIBC_2.3.4)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6(GLIBC_2.15)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6(GLIBC_2.18)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6(GLIBC_2.23)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6(GLIBC_2.24)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6(GLIBC_2.25)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6(GLIBC_2.26)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6(GLIBC_2.27)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6(GLIBC_2.28)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6(GLIBC_2.29)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6(GLIBC_2.31)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libm.so.6(GLIBC_2.4)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libmemusage.so()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libmvec.so.1()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libmvec.so.1(GLIBC_2.22)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libnss_compat.so.2()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libnss_dns.so.2()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libnss_files.so.2()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpcprofile.so()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0(GLIBC_2.11)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0(GLIBC_2.12)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0(GLIBC_2.18)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0(GLIBC_2.2.6)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0(GLIBC_2.28)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0(GLIBC_2.3.2)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0(GLIBC_2.3.3)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0(GLIBC_2.3.4)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0(GLIBC_2.30)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0(GLIBC_2.31)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpthread.so.0(GLIBC_2.4)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libresolv.so.2()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libresolv.so.2(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libresolv.so.2(GLIBC_2.3.2)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libresolv.so.2(GLIBC_2.9)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="librt.so.1()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="librt.so.1(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="librt.so.1(GLIBC_2.3.3)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="librt.so.1(GLIBC_2.3.4)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="librt.so.1(GLIBC_2.4)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="librt.so.1(GLIBC_2.7)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libthread_db.so.1()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libthread_db.so.1(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libthread_db.so.1(GLIBC_2.3)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libthread_db.so.1(GLIBC_2.3.3)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libutil.so.1()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libutil.so.1(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="rtld(GNU_HASH)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="glibc-common" flags="EQ" epoch="0" ver="2.31" rel="4.fc32"></entry>
+        <entry name="libgcc(x86-64)" flags="" epoch="" ver="" rel=""></entry>
+      </requires>
+      <file type="ghost">/etc/gai.conf</file>
+      <file type="ghost">/etc/ld.so.cache</file>
+      <file type="">/etc/ld.so.conf</file>
+      <file type="dir">/etc/ld.so.conf.d</file>
+      <file type="">/etc/nsswitch.conf</file>
+      <file type="">/etc/rpc</file>
+      <file type="">/sbin/ldconfig</file>
+      <file type="">/usr/sbin/iconvconfig</file>
+      <conflicts>&#xA;      &#xA;      &#xA;    
+        <entry name="kernel" flags="LT" epoch="0" ver="3.2" rel=""></entry>
+        <entry name="prelink" flags="LT" epoch="0" ver="0.4.2" rel=""></entry>
+      </conflicts>
+      <obsoletes>&#xA;      &#xA;    
+        <entry name="glibc-profile" flags="LT" epoch="0" ver="2.4" rel=""></entry>
+      </obsoletes>
+      <recommends></recommends>
+      <suggests>&#xA;      &#xA;    
+        <entry name="glibc-all-langpacks" flags="EQ" epoch="0" ver="2.31" rel="4.fc32"></entry>
+      </suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>tzdata</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="2019c" rel="3.fc32"></version>
+    <checksum type="sha256" pkgid="YES">2db6d80760ab0e99f4e9c9816615e4f06b967bbb23a8c8c941b3f2d4b5f176c2</checksum>
+    <summary>Timezone data</summary>
+    <description>This package contains data files with rules for various timezones around&#xA;the world.</description>
+    <packager>Fedora Project</packager>
+    <url>https://www.iana.org/time-zones</url>
+    <time file="1580446855" build="1580446671"></time>
+    <size package="438892" installed="1892615" archive="2175820"></size>
+    <location href="Packages/t/tzdata-2019c-3.fc32.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>Public Domain</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-05.phx2.fedoraproject.org</buildhost>
+      <sourcerpm>tzdata-2019c-3.fc32.src.rpm</sourcerpm>
+      <header-range start="4504" end="240476"></header-range>
+      <provides>&#xA;      &#xA;    
+        <entry name="tzdata" flags="EQ" epoch="0" ver="2019c" rel="3.fc32"></entry>
+      </provides>
+      <requires></requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="glibc-common" flags="LE" epoch="0" ver="2.3.2" rel="63"></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>tzdata</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="2020a" rel="1.fc32"></version>
+    <checksum type="sha256" pkgid="YES">df3f5d6c41e2be1f4fb2b5a58e70833b414d307bbe85709f2636f0c464499ec5</checksum>
+    <summary>Timezone data</summary>
+    <description>This package contains data files with rules for various timezones around&#xA;the world.</description>
+    <packager>Fedora Project</packager>
+    <url>https://www.iana.org/time-zones</url>
+    <time file="1588683563" build="1588682835"></time>
+    <size package="440052" installed="1892179" archive="2175836"></size>
+    <location href="Packages/t/tzdata-2020a-1.fc32.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>Public Domain</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-aarch64-19.arm.fedoraproject.org</buildhost>
+      <sourcerpm>tzdata-2020a-1.fc32.src.rpm</sourcerpm>
+      <header-range start="4504" end="240464"></header-range>
+      <provides>&#xA;      &#xA;    
+        <entry name="tzdata" flags="EQ" epoch="0" ver="2020a" rel="1.fc32"></entry>
+      </provides>
+      <requires></requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="glibc-common" flags="LE" epoch="0" ver="2.3.2" rel="63"></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>ncurses-libs</name>
+    <arch>x86_64</arch>
+    <version epoch="0" ver="6.1" rel="15.20191109.fc32"></version>
+    <checksum type="sha256" pkgid="YES">04152a3a608d022a58830c0e3dac0818e2c060469b0f41d8d731f659981a4464</checksum>
+    <summary>Ncurses libraries</summary>
+    <description>The curses library routines are a terminal-independent method of&#xA;updating character screens with reasonable optimization.  The ncurses&#xA;(new curses) library is a freely distributable replacement for the&#xA;discontinued 4.4 BSD classic curses library.&#xA;&#xA;This package contains the ncurses libraries.</description>
+    <packager>Fedora Project</packager>
+    <url>https://invisible-island.net/ncurses/ncurses.html</url>
+    <time file="1580381505" build="1580316517"></time>
+    <size package="335039" installed="999600" archive="1006832"></size>
+    <location href="Packages/n/ncurses-libs-6.1-15.20191109.fc32.x86_64.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-10.phx2.fedoraproject.org</buildhost>
+      <sourcerpm>ncurses-6.1-15.20191109.fc32.src.rpm</sourcerpm>
+      <header-range start="4504" end="16264"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="libform.so.6()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libformw.so.6()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libmenu.so.6()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libmenuw.so.6()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libncurses.so.6()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libncursesw.so.6()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpanel.so.6()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libpanelw.so.6()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libtic.so.6()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libtinfo.so.6()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="ncurses-libs" flags="EQ" epoch="0" ver="6.1" rel="15.20191109.fc32"></entry>
+        <entry name="ncurses-libs(x86-64)" flags="EQ" epoch="0" ver="6.1" rel="15.20191109.fc32"></entry>
+      </provides>
+      <requires>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="libdl.so.2()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libdl.so.2(GLIBC_2.2.5)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="ncurses-base" flags="EQ" epoch="0" ver="6.1" rel="15.20191109.fc32"></entry>
+        <entry name="rtld(GNU_HASH)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libc.so.6(GLIBC_2.16)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+      </requires>
+      <conflicts></conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>libgcc</name>
+    <arch>x86_64</arch>
+    <version epoch="0" ver="10.0.1" rel="0.11.fc32"></version>
+    <checksum type="sha256" pkgid="YES">48cf5ab32f6af8f2283d4d4834e8dd262aa412be7ea07c2292483e150d614bef</checksum>
+    <summary>GCC version 10 shared support library</summary>
+    <description>This package contains GCC shared support library which is needed&#xA;e.g. for exception handling support.</description>
+    <packager>Fedora Project</packager>
+    <url>http://gcc.gnu.org</url>
+    <time file="1585567059" build="1585391035"></time>
+    <size package="88737" installed="198880" archive="200692"></size>
+    <location href="Packages/l/libgcc-10.0.1-0.11.fc32.x86_64.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-16.phx2.fedoraproject.org</buildhost>
+      <sourcerpm>gcc-10.0.1-0.11.fc32.src.rpm</sourcerpm>
+      <header-range start="4504" end="20312"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="libgcc" flags="EQ" epoch="0" ver="10.0.1" rel="0.11.fc32"></entry>
+        <entry name="libgcc(x86-64)" flags="EQ" epoch="0" ver="10.0.1" rel="0.11.fc32"></entry>
+        <entry name="libgcc_s.so.1()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcc_s.so.1(GCC_3.0)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcc_s.so.1(GCC_3.3)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcc_s.so.1(GCC_3.3.1)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcc_s.so.1(GCC_3.4)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcc_s.so.1(GCC_3.4.2)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcc_s.so.1(GCC_3.4.4)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcc_s.so.1(GCC_4.0.0)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcc_s.so.1(GCC_4.2.0)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcc_s.so.1(GCC_4.3.0)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcc_s.so.1(GCC_4.7.0)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcc_s.so.1(GCC_4.8.0)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcc_s.so.1(GCC_7.0.0)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires></requires>
+      <conflicts></conflicts>
+      <obsoletes>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="libcilkrts" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libcilkrts-static" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcj" flags="LT" epoch="0" ver="10.0.1" rel="0.11.fc32"></entry>
+        <entry name="libgcj-devel" flags="LT" epoch="0" ver="10.0.1" rel="0.11.fc32"></entry>
+        <entry name="libgcj-src" flags="LT" epoch="0" ver="10.0.1" rel="0.11.fc32"></entry>
+        <entry name="libmpx" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libmpx-static" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libmudflap" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libmudflap-devel" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libmudflap-static" flags="" epoch="" ver="" rel=""></entry>
+      </obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>libgcc</name>
+    <arch>x86_64</arch>
+    <version epoch="0" ver="10.2.1" rel="1.fc32"></version>
+    <checksum type="sha256" pkgid="YES">d652eb720f24d5db7efbbc43f79052d8d161b2435a0e348e2ab9a1333cfbc793</checksum>
+    <summary>GCC version 10 shared support library</summary>
+    <description>This package contains GCC shared support library which is needed&#xA;e.g. for exception handling support.</description>
+    <packager>Fedora Project</packager>
+    <url>http://gcc.gnu.org</url>
+    <time file="1595850002" build="1595503764"></time>
+    <size package="97098" installed="198880" archive="200692"></size>
+    <location href="Packages/l/libgcc-10.2.1-1.fc32.x86_64.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>GPLv3+ and GPLv3+ with exceptions and GPLv2+ with exceptions and LGPLv2+ and BSD</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-x86-08.iad2.fedoraproject.org</buildhost>
+      <sourcerpm>gcc-10.2.1-1.fc32.src.rpm</sourcerpm>
+      <header-range start="4504" end="28668"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="libgcc" flags="EQ" epoch="0" ver="10.2.1" rel="1.fc32"></entry>
+        <entry name="libgcc(x86-64)" flags="EQ" epoch="0" ver="10.2.1" rel="1.fc32"></entry>
+        <entry name="libgcc_s.so.1()(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcc_s.so.1(GCC_3.0)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcc_s.so.1(GCC_3.3)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcc_s.so.1(GCC_3.3.1)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcc_s.so.1(GCC_3.4)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcc_s.so.1(GCC_3.4.2)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcc_s.so.1(GCC_3.4.4)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcc_s.so.1(GCC_4.0.0)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcc_s.so.1(GCC_4.2.0)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcc_s.so.1(GCC_4.3.0)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcc_s.so.1(GCC_4.7.0)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcc_s.so.1(GCC_4.8.0)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcc_s.so.1(GCC_7.0.0)(64bit)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires></requires>
+      <conflicts></conflicts>
+      <obsoletes>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="libcilkrts" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libcilkrts-static" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libgcj" flags="LT" epoch="0" ver="10.2.1" rel="1.fc32"></entry>
+        <entry name="libgcj-devel" flags="LT" epoch="0" ver="10.2.1" rel="1.fc32"></entry>
+        <entry name="libgcj-src" flags="LT" epoch="0" ver="10.2.1" rel="1.fc32"></entry>
+        <entry name="libmpx" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libmpx-static" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libmudflap" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libmudflap-devel" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="libmudflap-static" flags="" epoch="" ver="" rel=""></entry>
+      </obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+</metadata>
