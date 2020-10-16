@@ -11,6 +11,7 @@ import (
 
 var in []string
 var lang string
+var nobest bool
 
 func NewResolveCmd() *cobra.Command {
 
@@ -30,7 +31,7 @@ func NewResolveCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			solver := sat.NewResolver(false)
+			solver := sat.NewResolver(nobest)
 			logrus.Info("Loading involved packages into the resolver.")
 			err = solver.LoadInvolvedPackages(involved)
 			if err != nil {
@@ -55,5 +56,6 @@ func NewResolveCmd() *cobra.Command {
 
 	resolveCmd.PersistentFlags().StringArrayVarP(&in, "input", "i", []string{"primary.xml"}, "primary.xml of the repository")
 	resolveCmd.PersistentFlags().StringVarP(&lang, "lang", "l", "en", "language to use for locale decisions (like glibc-lang)")
+	resolveCmd.PersistentFlags().BoolVarP(&nobest, "nobest", "n", false, "allow picking versions which are not the newest")
 	return resolveCmd
 }

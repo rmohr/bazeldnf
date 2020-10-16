@@ -11,35 +11,44 @@ import (
 )
 
 func Test(t *testing.T) {
-	g := NewGomegaWithT(t)
-	f, err := os.Open("../../testdata/test.xml")
-	g.Expect(err).ToNot(HaveOccurred())
-	defer f.Close()
-	repo := &api.Repository{}
-	err = xml.NewDecoder(f).Decode(repo)
-	g.Expect(err).ToNot(HaveOccurred())
+	t.Run("should resolve bash", func(t *testing.T) {
+		g := NewGomegaWithT(t)
+		f, err := os.Open("../../testdata/bash-fc31.xml")
+		g.Expect(err).ToNot(HaveOccurred())
+		defer f.Close()
+		repo := &api.Repository{}
+		err = xml.NewDecoder(f).Decode(repo)
+		g.Expect(err).ToNot(HaveOccurred())
 
-	resolver := NewResolver(false)
-	packages := []*api.Package{}
-	for i, _ := range repo.Packages {
-		packages = append(packages, &repo.Packages[i])
-	}
-	err = resolver.LoadInvolvedPackages(packages)
-	g.Expect(err).ToNot(HaveOccurred())
-	err = resolver.ConstructRequirements([]string{"bash"})
-	g.Expect(err).ToNot(HaveOccurred())
-	install, exclude, err := resolver.Resolve()
-	g.Expect(pkgToString(install)).To(ConsistOf(
-		"ncurses-base-0:6.1-15.20191109.fc32",
-		"bash-0:5.0.17-1.fc32",
-		"glibc-common-0:2.31-4.fc32",
-		"libgcc-0:10.2.1-1.fc32",
-		"glibc-0:2.31-4.fc32",
-		"ncurses-libs-0:6.1-15.20191109.fc32",
-		"tzdata-0:2020a-1.fc32",
-	))
-	g.Expect(exclude).To(BeEmpty())
-	g.Expect(err).ToNot(HaveOccurred())
+		resolver := NewResolver(false)
+		packages := []*api.Package{}
+		for i, _ := range repo.Packages {
+			packages = append(packages, &repo.Packages[i])
+		}
+		err = resolver.LoadInvolvedPackages(packages)
+		g.Expect(err).ToNot(HaveOccurred())
+		err = resolver.ConstructRequirements([]string{"bash", "fedora-release-server", "glibc-langpack-en"})
+		g.Expect(err).ToNot(HaveOccurred())
+		install, _, err := resolver.Resolve()
+		g.Expect(pkgToString(install)).To(ConsistOf(
+			"libgcc-0:10.2.1-1.fc32",
+			"fedora-gpg-keys-0:32-6",
+			"glibc-0:2.31-4.fc32",
+			"glibc-langpack-en-0:2.31-4.fc32",
+			"fedora-release-common-0:32-3",
+			"glibc-common-0:2.31-4.fc32",
+			"ncurses-base-0:6.1-15.20191109.fc32",
+			"ncurses-libs-0:6.1-15.20191109.fc32",
+			"fedora-release-server-0:32-3",
+			"tzdata-0:2020a-1.fc32",
+			"setup-0:2.13.6-2.fc32",
+			"basesystem-0:11-9.fc32",
+			"bash-0:5.0.17-1.fc32",
+			"filesystem-0:3.14-2.fc32",
+			"fedora-repos-0:32-6",
+		))
+		g.Expect(err).ToNot(HaveOccurred())
+	})
 }
 
 func TestNewResolver(t *testing.T) {
@@ -153,7 +162,7 @@ func strToPkg(wanted []string, given []*api.Package) (resolved []*api.Package) {
 	return resolved
 }
 
-func pkgToString(given[]*api.Package) (resolved []string) {
+func pkgToString(given []*api.Package) (resolved []string) {
 	for _, p := range given {
 		resolved = append(resolved, p.String())
 	}

@@ -52,6 +52,8 @@ type Resolver struct {
 	// vars contain as key an exact identifier for a provided resource and the actual SAT variable as value
 	vars map[string]*Var
 
+	bestPackages map[string]*api.Package
+
 	ands         []bf.Formula
 	unresolvable []api.Entry
 	nobest       bool
@@ -64,6 +66,7 @@ func NewResolver(nobest bool) *Resolver {
 		vars:        map[string]*Var{},
 		pkgProvides: map[VarContext][]*Var{},
 		nobest:      nobest,
+		bestPackages: map[string]*api.Package{},
 	}
 }
 
@@ -74,17 +77,17 @@ func (r *Resolver) ticket() string {
 
 func (r *Resolver) LoadInvolvedPackages(packages []*api.Package) error {
 	// Create an index to pick the best candidates
-	if !r.nobest {
-		idx := map[string]*api.Package{}
-		for _, pkg := range packages {
-			if idx[pkg.Name] == nil {
-				idx[pkg.Name] = pkg
-			} else if rpm.Compare(pkg.Version, idx[pkg.Name].Version) == 1 {
-				idx[pkg.Name] = pkg
-			}
+	for _, pkg := range packages {
+		if r.bestPackages[pkg.Name] == nil {
+			r.bestPackages[pkg.Name] = pkg
+		} else if rpm.Compare(pkg.Version, r.bestPackages[pkg.Name].Version) == 1 {
+			r.bestPackages[pkg.Name] = pkg
 		}
+	}
+
+	if !r.nobest {
 		packages = nil
-		for _, v := range idx {
+		for _, v := range r.bestPackages {
 			packages = append(packages, v)
 		}
 	}
@@ -109,6 +112,9 @@ func (r *Resolver) LoadInvolvedPackages(packages []*api.Package) error {
 		}
 		pkgVar := resourceVars[len(resourceVars)-1]
 		ands = append(ands, bf.Implies(bf.Var(pkgVar.satVarName), r.explodePackageRequires(pkgVar)))
+		if conflicts := r.explodePackageConflicts(pkgVar); conflicts != nil {
+			ands = append(ands, bf.Implies(bf.Var(pkgVar.satVarName), bf.Not(conflicts)))
+		}
 		r.ands = append(r.ands, ands...)
 	}
 	logrus.Infof("Generated %v variables.", len(r.vars))
@@ -148,6 +154,9 @@ func (res *Resolver) Resolve() (install []*api.Package, excluded []*api.Package,
 			//fmt.Printf("%s:%s:%v\n", k, res.vars[k].Context.Provides, v)
 		}
 		for _, v := range installMap {
+			if rpm.Compare(res.bestPackages[v.Name].Version, v.Version) != 0 {
+				logrus.Infof("Picking %v instead of best candiate %v", v, res.bestPackages[v.Name])
+			}
 			install = append(install, v)
 		}
 
@@ -239,6 +248,28 @@ func (r *Resolver) explodePackageRequires(pkgVar *Var) bf.Formula {
 		bfunique = bf.And(bf.Unique(uniqueVars...), bfunique)
 	}
 	return bfunique
+}
+
+func (r *Resolver) explodePackageConflicts(pkgVar *Var) bf.Formula {
+	conflictingVars := []bf.Formula{}
+	for _, req := range pkgVar.Package.Format.Conflicts.Entries {
+		conflicts, err := r.explodeSingleRequires(req, r.provides[req.Name])
+		if err != nil {
+			// if a conflicting resource does not exist, we don't care
+			continue
+		}
+		for _, s := range conflicts {
+			if s.Package == pkgVar.Package {
+				// don't conflict with yourself
+				continue
+			}
+			conflictingVars = append(conflictingVars, bf.Var(s.satVarName))
+		}
+	}
+	if len(conflictingVars) == 0 {
+		return nil
+	}
+	return bf.Or(conflictingVars...)
 }
 
 func (r *Resolver) resolveNewest(pkgName string) *Var {
