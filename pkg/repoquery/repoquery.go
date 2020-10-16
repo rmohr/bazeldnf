@@ -37,6 +37,15 @@ func (r *RepoQuery) Load() error {
 		if p.Arch == "i686" {
 			continue
 		}
+		// remove langpack references
+		newRequires :=  []api.Entry{}
+		for _, requires := range p.Format.Requires.Entries {
+			if strings.HasPrefix(requires.Name, "glibc-langpack") {
+				requires.Name="glibc-langpack-en"
+			}
+			newRequires=append(newRequires, requires)
+		}
+		r.packages[i].Format.Requires.Entries = newRequires
 		for _, provides := range p.Format.Provides.Entries {
 			r.provides[provides.Name] = append(r.provides[provides.Name], &r.packages[i])
 		}
