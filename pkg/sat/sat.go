@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"strings"
 
 	"github.com/crillab/gophersat/explain"
 	"github.com/rmohr/bazel-dnf/pkg/api"
@@ -34,6 +35,7 @@ type Var struct {
 	varType    VarType
 	Context    VarContext
 	Package    *api.Package
+	ResourceVersion *api.Version
 }
 
 func toBFVars(vars []*Var) (bfvars []bf.Formula) {
@@ -200,6 +202,7 @@ func (r *Resolver) explodePackageToVars(pkg *api.Package) (pkgVar *Var, resource
 					Version:  pkg.Version,
 				},
 				Package: pkg,
+				ResourceVersion: &pkg.Version,
 			}
 			resourceVars = append(resourceVars, pkgVar)
 		} else {
@@ -210,6 +213,11 @@ func (r *Resolver) explodePackageToVars(pkg *api.Package) (pkgVar *Var, resource
 					Package:  pkg.Name,
 					Provides: p.Name,
 					Version:  pkg.Version,
+				},
+				ResourceVersion: &api.Version{
+					Rel: p.Rel,
+					Ver: p.Ver,
+					Epoch: p.Epoch,
 				},
 				Package: pkg,
 			}
@@ -227,6 +235,7 @@ func (r *Resolver) explodePackageToVars(pkg *api.Package) (pkgVar *Var, resource
 				Version:  pkg.Version,
 			},
 			Package: pkg,
+			ResourceVersion: &api.Version{},
 		}
 		resourceVars = append(resourceVars, resVar)
 	}
@@ -261,7 +270,11 @@ func (r *Resolver) explodePackageConflicts(pkgVar *Var) bf.Formula {
 		for _, s := range conflicts {
 			if s.Package == pkgVar.Package {
 				// don't conflict with yourself
+				//logrus.Infof("%s does not conflict with %s", s.Package.String(), pkgVar.Package.String())
 				continue
+			}
+			if !strings.HasPrefix(s.Package.Name, "fedora-release")  && !strings.HasPrefix(pkgVar.Package.String(), "fedora-release") {
+				logrus.Infof("%s conflicts with %s", s.Package.String(), pkgVar.Package.String())
 			}
 			conflictingVars = append(conflictingVars, bf.Var(s.satVarName))
 		}
@@ -292,38 +305,42 @@ func (r *Resolver) explodeSingleRequires(entry api.Entry, provides []*Var) (acce
 	}
 
 	for _, dep := range provides {
-		cmp := rpm.Compare(dep.Package.Version, entryVer)
 		works := false
-		switch entry.Flags {
-		case "EQ":
-			if cmp == 0 {
-				works = true
+		if dep.ResourceVersion.Epoch == "" && dep.ResourceVersion.Ver == "" && dep.ResourceVersion.Rel == "" {
+			works = true
+		} else {
+			cmp := rpm.Compare(*dep.ResourceVersion, entryVer)
+			switch entry.Flags {
+			case "EQ":
+				if cmp == 0 {
+					works = true
+				}
+				cmp = 0
+			case "LE":
+				if cmp <= 0 {
+					works = true
+				}
+			case "GE":
+				if cmp >= 0 {
+					works = true
+				}
+			case "LT":
+				if cmp == -1 {
+					works = true
+				}
+			case "GT":
+				if cmp == 1 {
+					works = true
+				}
+			case "":
+				return provides, nil
+			default:
+				return nil, fmt.Errorf("can't interprate flags value %s", entry.Flags)
 			}
-			cmp = 0
-		case "LE":
-			if cmp <= 0 {
-				works = true
-			}
-		case "GE":
-			if cmp >= 0 {
-				works = true
-			}
-		case "LT":
-			if cmp == -1 {
-				works = true
-			}
-		case "GT":
-			if cmp == 1 {
-				works = true
-			}
-		case "":
-			return provides, nil
-		default:
-			return nil, fmt.Errorf("can't interprate flags value %s", entry.Flags)
 		}
-		if works {
-			accepts = append(accepts, dep)
-		}
+			if works {
+				accepts = append(accepts, dep)
+			}
 	}
 
 	if len(accepts) == 0 {
