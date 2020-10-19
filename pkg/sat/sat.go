@@ -31,10 +31,10 @@ type VarContext struct {
 }
 
 type Var struct {
-	satVarName string
-	varType    VarType
-	Context    VarContext
-	Package    *api.Package
+	satVarName      string
+	varType         VarType
+	Context         VarContext
+	Package         *api.Package
 	ResourceVersion *api.Version
 }
 
@@ -63,11 +63,11 @@ type Resolver struct {
 
 func NewResolver(nobest bool) *Resolver {
 	return &Resolver{
-		varsCount:   0,
-		provides:    map[string][]*Var{},
-		vars:        map[string]*Var{},
-		pkgProvides: map[VarContext][]*Var{},
-		nobest:      nobest,
+		varsCount:    0,
+		provides:     map[string][]*Var{},
+		vars:         map[string]*Var{},
+		pkgProvides:  map[VarContext][]*Var{},
+		nobest:       nobest,
 		bestPackages: map[string]*api.Package{},
 	}
 }
@@ -125,7 +125,10 @@ func (r *Resolver) LoadInvolvedPackages(packages []*api.Package) error {
 
 func (r *Resolver) ConstructRequirements(packages []string) error {
 	for _, pkgName := range packages {
-		req := r.resolveNewest(pkgName)
+		req, err := r.resolveNewest(pkgName)
+		if err != nil {
+			return err
+		}
 		logrus.Infof("Selecting %s: %v", pkgName, req.Package)
 		r.ands = append(r.ands, bf.Var(req.satVarName))
 	}
@@ -201,7 +204,7 @@ func (r *Resolver) explodePackageToVars(pkg *api.Package) (pkgVar *Var, resource
 					Provides: pkg.Name,
 					Version:  pkg.Version,
 				},
-				Package: pkg,
+				Package:         pkg,
 				ResourceVersion: &pkg.Version,
 			}
 			resourceVars = append(resourceVars, pkgVar)
@@ -215,8 +218,8 @@ func (r *Resolver) explodePackageToVars(pkg *api.Package) (pkgVar *Var, resource
 					Version:  pkg.Version,
 				},
 				ResourceVersion: &api.Version{
-					Rel: p.Rel,
-					Ver: p.Ver,
+					Rel:   p.Rel,
+					Ver:   p.Ver,
 					Epoch: p.Epoch,
 				},
 				Package: pkg,
@@ -234,7 +237,7 @@ func (r *Resolver) explodePackageToVars(pkg *api.Package) (pkgVar *Var, resource
 				Provides: f.Text,
 				Version:  pkg.Version,
 			},
-			Package: pkg,
+			Package:         pkg,
 			ResourceVersion: &api.Version{},
 		}
 		resourceVars = append(resourceVars, resVar)
@@ -273,7 +276,7 @@ func (r *Resolver) explodePackageConflicts(pkgVar *Var) bf.Formula {
 				//logrus.Infof("%s does not conflict with %s", s.Package.String(), pkgVar.Package.String())
 				continue
 			}
-			if !strings.HasPrefix(s.Package.Name, "fedora-release")  && !strings.HasPrefix(pkgVar.Package.String(), "fedora-release") {
+			if !strings.HasPrefix(s.Package.Name, "fedora-release") && !strings.HasPrefix(pkgVar.Package.String(), "fedora-release") {
 				logrus.Infof("%s conflicts with %s", s.Package.String(), pkgVar.Package.String())
 			}
 			conflictingVars = append(conflictingVars, bf.Var(s.satVarName))
@@ -285,32 +288,28 @@ func (r *Resolver) explodePackageConflicts(pkgVar *Var) bf.Formula {
 	return bf.Or(conflictingVars...)
 }
 
-func (r *Resolver) resolveNewest(pkgName string) *Var {
+func (r *Resolver) resolveNewest(pkgName string) (*Var, error) {
 	pkgs := r.provides[pkgName]
+	if len(pkgs) == 0 {
+		return nil, fmt.Errorf("package %s does not exist", pkgName)
+	}
 	newest := pkgs[0]
 	for _, p := range pkgs {
 		if rpm.Compare(p.Package.Version, newest.Package.Version) == 1 {
 			newest = p
 		}
 	}
-	return newest
+	return newest, nil
 }
 
-func (r *Resolver) explodeSingleRequires(entry api.Entry, provides []*Var) (accepts []*Var, err error) {
-	entryVer := api.Version{
-		Text:  entry.Text,
-		Epoch: entry.Epoch,
-		Ver:   entry.Ver,
-		Rel:   entry.Rel,
-	}
-
+func compareRequires(entryVer api.Version, flag string, provides []*Var) (accepts []*Var, err error) {
 	for _, dep := range provides {
 		works := false
 		if dep.ResourceVersion.Epoch == "" && dep.ResourceVersion.Ver == "" && dep.ResourceVersion.Rel == "" {
 			works = true
 		} else {
 			cmp := rpm.Compare(*dep.ResourceVersion, entryVer)
-			switch entry.Flags {
+			switch flag {
 			case "EQ":
 				if cmp == 0 {
 					works = true
@@ -335,12 +334,38 @@ func (r *Resolver) explodeSingleRequires(entry api.Entry, provides []*Var) (acce
 			case "":
 				return provides, nil
 			default:
-				return nil, fmt.Errorf("can't interprate flags value %s", entry.Flags)
+				return nil, fmt.Errorf("can't interprate flags value %s", flag)
 			}
 		}
-			if works {
-				accepts = append(accepts, dep)
-			}
+		if works {
+			accepts = append(accepts, dep)
+		}
+	}
+	return accepts, nil
+}
+
+func (r *Resolver) explodeSingleRequires(entry api.Entry, provides []*Var) (accepts []*Var, err error) {
+	entryVer := api.Version{
+		Text:  entry.Text,
+		Epoch: entry.Epoch,
+		Ver:   entry.Ver,
+		Rel:   entry.Rel,
+	}
+
+	provPerPkg := map[VarContext][]*Var{}
+	for _, prov := range provides {
+		provPerPkg[prov.Context] = append(provPerPkg[prov.Context], prov)
+	}
+
+	for _, pkgProv := range provPerPkg {
+		acceptsFromPkg, err := compareRequires(entryVer, entry.Flags, pkgProv)
+		if err != nil {
+			return nil, err
+		}
+		if len(acceptsFromPkg) > 0 {
+			// just pick one to avoid excluding each  other
+			accepts = append(accepts, acceptsFromPkg[0])
+		}
 	}
 
 	if len(accepts) == 0 {

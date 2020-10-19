@@ -1,0 +1,2975 @@
+<metadata xmlns="" rpm="" packages="">
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-container</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">e4301dfe6794c1c89303435ebb6c6e6f1aaef361de7205b4cdd42d1215ea6837</checksum>
+    <summary>Base package for Fedora container specific default configurations</summary>
+    <description>Provides a base package for Fedora container specific configuration files to&#xA;depend on as well as container system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="13075" installed="1516" archive="1960"></size>
+    <location href="Packages/f/fedora-release-container-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12248"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-container" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-container</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">1e6b278665bb1ef379dfb2d14302f87eece8580ac3c9c5ed25459c0b8c4ed907</checksum>
+    <summary>Base package for Fedora container specific default configurations</summary>
+    <description>Provides a base package for Fedora container specific configuration files to&#xA;depend on as well as container system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="13242" installed="1516" archive="1960"></size>
+    <location href="Packages/f/fedora-release-container-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12416"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-container" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-coreos</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">5e6a6af0d7c492ca901394ea680ea5f60ea4862d891f063bc7ab1aa92419e1ba</checksum>
+    <summary>Base package for Fedora CoreOS-specific default configurations</summary>
+    <description>Provides a base package for Fedora CoreOS Host-specific configuration files to&#xA;depend.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="13291" installed="1714" archive="2324"></size>
+    <location href="Packages/f/fedora-release-coreos-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12368"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-coreos" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-coreos</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">e122b50e8543339288e04a7b929516ad1a7f7d90b465ff79e9112fc53e91a84e</checksum>
+    <summary>Base package for Fedora CoreOS-specific default configurations</summary>
+    <description>Provides a base package for Fedora CoreOS Host-specific configuration files to&#xA;depend.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="13456" installed="1714" archive="2324"></size>
+    <location href="Packages/f/fedora-release-coreos-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12536"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-coreos" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-matecompiz</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">813d7c6560eb2b7a0d2f2dbc5c1055ded8f084a5cc87bf3bfce70161d83425c3</checksum>
+    <summary>Base package for Fedora MATE-Compiz-specific default configurations</summary>
+    <description>Provides a base package for Fedora MATE-compiz-specific configuration files to&#xA;depend on as well as MATE-Compiz system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="13087" installed="1509" archive="1956"></size>
+    <location href="Packages/f/fedora-release-matecompiz-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12256"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-matecompiz" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-matecompiz</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">1d33db1bcc9b5c74dd6952c372729bd482dae329626ceb78f029c1a6cb8bdb58</checksum>
+    <summary>Base package for Fedora MATE-Compiz-specific default configurations</summary>
+    <description>Provides a base package for Fedora MATE-compiz-specific configuration files to&#xA;depend on as well as MATE-Compiz system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="13255" installed="1509" archive="1956"></size>
+    <location href="Packages/f/fedora-release-matecompiz-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12424"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-matecompiz" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-repos</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">21e3fd914a3bcc65b79de022782967903c55a4aed9a3c7d3464bc2fef32d02b3</checksum>
+    <summary>Fedora package repositories</summary>
+    <description>Fedora package repository files for yum and dnf along with gpg public keys</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489549" build="1586489175"></time>
+    <size package="10527" installed="8640" archive="9968"></size>
+    <location href="Packages/f/fedora-repos-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildhw-08.phx2.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-repos-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="9632"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="config(fedora-repos)" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-repos" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-repos(32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-repos-modular" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </provides>
+      <requires>&#xA;      &#xA;      &#xA;    
+        <entry name="fedora-gpg-keys" flags="GE" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </requires>
+      <file type="dir">/etc/yum.repos.d</file>
+      <file type="">/etc/yum.repos.d/fedora-cisco-openh264.repo</file>
+      <file type="">/etc/yum.repos.d/fedora-modular.repo</file>
+      <file type="">/etc/yum.repos.d/fedora-updates-modular.repo</file>
+      <file type="">/etc/yum.repos.d/fedora-updates-testing-modular.repo</file>
+      <file type="">/etc/yum.repos.d/fedora-updates-testing.repo</file>
+      <file type="">/etc/yum.repos.d/fedora-updates.repo</file>
+      <file type="">/etc/yum.repos.d/fedora.repo</file>
+      <conflicts></conflicts>
+      <obsoletes>&#xA;      &#xA;      &#xA;    
+        <entry name="fedora-repos-anaconda" flags="LT" epoch="0" ver="22" rel="0.3"></entry>
+        <entry name="fedora-repos-modular" flags="LT" epoch="0" ver="29" rel="0.6"></entry>
+      </obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-repos</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="6"></version>
+    <checksum type="sha256" pkgid="YES">c2c9f516de0db66e7df2833d4dee3d54855a613b5da46951adc65975bb5d3132</checksum>
+    <summary>Fedora package repositories</summary>
+    <description>Fedora package repository files for yum and dnf along with gpg public keys</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1598387610" build="1598387494"></time>
+    <size package="10852" installed="8640" archive="9968"></size>
+    <location href="Packages/f/fedora-repos-32-6.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-s390x-22.s390.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-repos-32-6.src.rpm</sourcerpm>
+      <header-range start="4504" end="9956"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="config(fedora-repos)" flags="EQ" epoch="0" ver="32" rel="6"></entry>
+        <entry name="fedora-repos" flags="EQ" epoch="0" ver="32" rel="6"></entry>
+        <entry name="fedora-repos(32)" flags="EQ" epoch="0" ver="6" rel=""></entry>
+        <entry name="fedora-repos-modular" flags="EQ" epoch="0" ver="32" rel="6"></entry>
+      </provides>
+      <requires>&#xA;      &#xA;      &#xA;    
+        <entry name="fedora-gpg-keys" flags="GE" epoch="0" ver="32" rel="6"></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </requires>
+      <file type="dir">/etc/yum.repos.d</file>
+      <file type="">/etc/yum.repos.d/fedora-cisco-openh264.repo</file>
+      <file type="">/etc/yum.repos.d/fedora-modular.repo</file>
+      <file type="">/etc/yum.repos.d/fedora-updates-modular.repo</file>
+      <file type="">/etc/yum.repos.d/fedora-updates-testing-modular.repo</file>
+      <file type="">/etc/yum.repos.d/fedora-updates-testing.repo</file>
+      <file type="">/etc/yum.repos.d/fedora-updates.repo</file>
+      <file type="">/etc/yum.repos.d/fedora.repo</file>
+      <conflicts></conflicts>
+      <obsoletes>&#xA;      &#xA;      &#xA;    
+        <entry name="fedora-repos-anaconda" flags="LT" epoch="0" ver="22" rel="0.3"></entry>
+        <entry name="fedora-repos-modular" flags="LT" epoch="0" ver="29" rel="0.6"></entry>
+      </obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-cloud</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">0c8f8925dacc9a0e57b4446d5f67d9041bfc0a939191a7606ba93b74512a97d1</checksum>
+    <summary>Base package for Fedora Cloud-specific default configurations</summary>
+    <description>Provides a base package for Fedora Cloud-specific configuration files to&#xA;depend on.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="13022" installed="1498" archive="1944"></size>
+    <location href="Packages/f/fedora-release-cloud-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12196"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-cloud" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-cloud</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">426a1fa2927a0429692d4424943aadaca63d059b3e18ee4f1e0811f90a2dd862</checksum>
+    <summary>Base package for Fedora Cloud-specific default configurations</summary>
+    <description>Provides a base package for Fedora Cloud-specific configuration files to&#xA;depend on.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="13189" installed="1498" archive="1944"></size>
+    <location href="Packages/f/fedora-release-cloud-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12364"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-cloud" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-iot</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">5e7a16df5bdfab2acfd8ac061827ace0642f2e5521689d6b9f0812f2a6ece231</checksum>
+    <summary>Base package for Fedora IoT specific default configurations</summary>
+    <description>Provides a base package for Fedora IoT specific configuration files to&#xA;depend on as well as IoT system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="13804" installed="2076" archive="2984"></size>
+    <location href="Packages/f/fedora-release-iot-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12688"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-iot" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-iot</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">a631613262ec2b2763cd5205eee5f33929305b7dea5b29219d9f490677350098</checksum>
+    <summary>Base package for Fedora IoT specific default configurations</summary>
+    <description>Provides a base package for Fedora IoT specific configuration files to&#xA;depend on as well as IoT system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="13978" installed="2100" archive="3008"></size>
+    <location href="Packages/f/fedora-release-iot-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12856"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-iot" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-xfce</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">0d5b2a6558eaa3d886b3a33e479f8e87634601b0dd71ab5a13ff31c7f945b0e6</checksum>
+    <summary>Base package for Fedora Xfce specific default configurations</summary>
+    <description>Provides a base package for Fedora Xfce specific configuration files to&#xA;depend on as well as Xfce system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="13045" installed="1468" archive="1916"></size>
+    <location href="Packages/f/fedora-release-xfce-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12224"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-xfce" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-xfce</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">2bad5020c1a86ac78c00bfc00fc78bd8d0a8f818fc6f6a90af3af71a11f46662</checksum>
+    <summary>Base package for Fedora Xfce specific default configurations</summary>
+    <description>Provides a base package for Fedora Xfce specific configuration files to&#xA;depend on as well as Xfce system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="13212" installed="1468" archive="1916"></size>
+    <location href="Packages/f/fedora-release-xfce-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12392"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-xfce" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-gpg-keys</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">09fea9af8b695af862b19c1a8fbe1b1e8854257825ee4f663f67b3782a75d58a</checksum>
+    <summary>Fedora RPM keys</summary>
+    <description>This package provides the RPM signature keys.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489549" build="1586489175"></time>
+    <size package="105477" installed="105452" archive="146452"></size>
+    <location href="Packages/f/fedora-gpg-keys-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildhw-08.phx2.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-repos-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="34684"></header-range>
+      <provides>&#xA;      &#xA;    
+        <entry name="fedora-gpg-keys" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </provides>
+      <requires></requires>
+      <file type="dir">/etc/pki/rpm-gpg</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-32-fedora</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-10-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-10-ppc</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-10-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-10-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-10-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-11-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-11-ppc</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-11-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-11-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-11-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-12-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-12-ppc</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-12-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-12-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-12-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-13-arm</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-13-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-13-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-13-mips</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-13-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-13-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-13-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-14-arm</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-14-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-14-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-14-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-14-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-15-arm</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-15-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-15-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-15-ppc</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-15-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-15-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-15-s390</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-15-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-15-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-15-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-16-arm</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-16-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-16-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-16-ppc</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-16-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-16-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-16-s390</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-16-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-16-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-16-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-17-arm</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-17-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-17-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-17-ppc</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-17-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-17-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-17-s390</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-17-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-17-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-17-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-18-arm</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-18-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-18-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-18-ppc</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-18-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-18-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-18-s390</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-18-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-18-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-18-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-19-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-19-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-19-ppc</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-19-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-19-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-19-s390</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-19-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-19-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-19-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-20-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-20-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-20-ppc</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-20-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-20-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-20-s390</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-20-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-20-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-20-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-21-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-21-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-21-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-21-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-21-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-21-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-21-s390</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-21-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-21-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-21-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-22-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-22-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-22-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-22-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-22-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-22-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-22-s390</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-22-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-22-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-22-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-23-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-23-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-23-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-23-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-23-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-23-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-23-s390</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-23-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-23-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-23-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-24-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-24-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-24-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-24-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-24-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-24-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-24-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-24-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-24-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-25-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-25-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-25-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-25-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-25-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-25-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-25-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-25-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-25-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-26-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-26-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-26-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-26-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-26-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-26-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-26-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-26-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-26-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-27-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-27-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-27-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-27-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-27-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-27-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-27-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-27-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-29-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-29-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-29-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-29-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-29-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-29-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-29-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-29-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-30-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-30-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-30-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-30-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-30-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-30-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-30-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-31-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-31-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-31-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-31-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-31-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-31-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-31-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-32-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-32-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-32-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-32-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-32-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-32-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-32-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-33-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-33-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-33-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-33-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-33-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-33-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-33-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-7-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-7-ppc</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-7-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-7-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-7-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-8-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-8-ppc</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-8-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-8-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-8-primary-original</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-8-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-9-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-9-ia64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-9-ppc</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-9-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-9-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-9-primary-original</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-9-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-9-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-iot-2019</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-iot-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-iot-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-iot-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-iot-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-iot-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-iot-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-modularity</file>
+      <conflicts></conflicts>
+      <obsoletes>&#xA;      &#xA;    
+        <entry name="fedora-release-rawhide" flags="LE" epoch="0" ver="22" rel="0.3"></entry>
+      </obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-gpg-keys</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="6"></version>
+    <checksum type="sha256" pkgid="YES">2492cee4c05119dc883e92d9b22d552cf4be045d17edd34b3ddc3f803f43c240</checksum>
+    <summary>Fedora RPM keys</summary>
+    <description>This package provides the RPM signature keys.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1598387610" build="1598387494"></time>
+    <size package="107689" installed="107120" archive="149424"></size>
+    <location href="Packages/f/fedora-gpg-keys-32-6.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-s390x-22.s390.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-repos-32-6.src.rpm</sourcerpm>
+      <header-range start="4504" end="35816"></header-range>
+      <provides>&#xA;      &#xA;    
+        <entry name="fedora-gpg-keys" flags="EQ" epoch="0" ver="32" rel="6"></entry>
+      </provides>
+      <requires></requires>
+      <file type="dir">/etc/pki/rpm-gpg</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-32-fedora</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-10-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-10-ppc</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-10-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-10-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-10-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-11-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-11-ppc</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-11-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-11-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-11-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-12-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-12-ppc</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-12-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-12-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-12-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-13-arm</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-13-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-13-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-13-mips</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-13-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-13-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-13-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-14-arm</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-14-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-14-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-14-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-14-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-15-arm</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-15-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-15-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-15-ppc</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-15-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-15-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-15-s390</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-15-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-15-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-15-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-16-arm</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-16-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-16-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-16-ppc</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-16-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-16-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-16-s390</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-16-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-16-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-16-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-17-arm</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-17-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-17-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-17-ppc</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-17-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-17-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-17-s390</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-17-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-17-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-17-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-18-arm</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-18-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-18-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-18-ppc</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-18-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-18-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-18-s390</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-18-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-18-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-18-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-19-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-19-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-19-ppc</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-19-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-19-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-19-s390</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-19-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-19-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-19-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-20-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-20-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-20-ppc</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-20-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-20-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-20-s390</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-20-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-20-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-20-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-21-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-21-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-21-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-21-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-21-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-21-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-21-s390</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-21-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-21-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-21-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-22-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-22-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-22-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-22-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-22-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-22-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-22-s390</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-22-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-22-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-22-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-23-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-23-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-23-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-23-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-23-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-23-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-23-s390</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-23-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-23-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-23-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-24-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-24-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-24-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-24-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-24-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-24-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-24-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-24-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-24-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-25-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-25-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-25-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-25-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-25-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-25-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-25-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-25-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-25-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-26-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-26-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-26-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-26-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-26-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-26-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-26-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-26-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-26-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-27-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-27-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-27-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-27-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-27-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-27-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-27-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-27-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-28-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-29-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-29-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-29-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-29-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-29-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-29-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-29-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-29-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-30-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-30-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-30-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-30-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-30-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-30-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-30-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-31-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-31-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-31-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-31-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-31-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-31-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-31-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-32-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-32-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-32-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-32-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-32-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-32-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-32-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-33-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-33-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-33-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-33-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-33-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-33-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-33-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-34-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-34-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-34-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-34-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-34-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-34-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-34-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-7-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-7-ppc</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-7-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-7-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-7-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-8-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-8-ppc</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-8-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-8-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-8-primary-original</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-8-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-9-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-9-ia64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-9-ppc</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-9-ppc64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-9-primary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-9-primary-original</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-9-secondary</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-9-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-iot-2019</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-iot-aarch64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-iot-armhfp</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-iot-i386</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-iot-ppc64le</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-iot-s390x</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-iot-x86_64</file>
+      <file type="">/etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-modularity</file>
+      <conflicts></conflicts>
+      <obsoletes>&#xA;      &#xA;    
+        <entry name="fedora-release-rawhide" flags="LE" epoch="0" ver="22" rel="0.3"></entry>
+      </obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-cinnamon</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">82f5caea0646623e7a6c00afb64b694a174d5f2cede39c4852c4e6debbd0e9d3</checksum>
+    <summary>Base package for Fedora Cinnamon-specific default configurations</summary>
+    <description>Provides a base package for Fedora Cinnamon-specific configuration files to&#xA;depend on as well as Cinnamon system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="13068" installed="1492" archive="1940"></size>
+    <location href="Packages/f/fedora-release-cinnamon-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12244"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-cinnamon" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-cinnamon</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">5978822d7d7102be65abbd0ad495acc0145f4e61683741f04e997719a07244a0</checksum>
+    <summary>Base package for Fedora Cinnamon-specific default configurations</summary>
+    <description>Provides a base package for Fedora Cinnamon-specific configuration files to&#xA;depend on as well as Cinnamon system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="13236" installed="1492" archive="1940"></size>
+    <location href="Packages/f/fedora-release-cinnamon-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12412"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-cinnamon" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-silverblue</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">1965a614845c9a6ab2e81fd2adcf9120da89063a3d1a4f99652c254930f68d1d</checksum>
+    <summary>Base package for Fedora Silverblue-specific default configurations</summary>
+    <description>Provides a base package for Fedora Silverblue-specific configuration files to&#xA;depend on as well as Silverblue system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="14124" installed="3099" archive="4064"></size>
+    <location href="Packages/f/fedora-release-silverblue-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12788"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-silverblue" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-silverblue</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">4e5c8579dbd744a5a0bc75a1bf787053f73f92237b9f13df5180d5ad7bfffadd</checksum>
+    <summary>Base package for Fedora Silverblue-specific default configurations</summary>
+    <description>Provides a base package for Fedora Silverblue-specific configuration files to&#xA;depend on as well as Silverblue system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="14291" installed="3099" archive="4064"></size>
+    <location href="Packages/f/fedora-release-silverblue-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12956"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-silverblue" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-soas</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">83b03517f32907739fb73d0dd31f0f51d97f74653aff8cee064dbdcf6474a576</checksum>
+    <summary>Base package for Fedora Sugar on a Stick-specific default configurations</summary>
+    <description>Provides a base package for Fedora Sugar on a Stick-specific configuration files to&#xA;depend on as well as SoaS system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="13078" installed="1506" archive="1952"></size>
+    <location href="Packages/f/fedora-release-soas-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12248"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-soas" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-soas</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">9055ea0b403ae219cce08d4a31af1cf4ba08dac68e3bdd5b5fb3589732ea9288</checksum>
+    <summary>Base package for Fedora Sugar on a Stick-specific default configurations</summary>
+    <description>Provides a base package for Fedora Sugar on a Stick-specific configuration files to&#xA;depend on as well as SoaS system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="13246" installed="1506" archive="1952"></size>
+    <location href="Packages/f/fedora-release-soas-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12416"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-soas" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-workstation</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">e431cf8c0ab5985e9a8609e90dd8a263c9ebebe88cf517f8ca78697401aadf18</checksum>
+    <summary>Base package for Fedora Workstation-specific default configurations</summary>
+    <description>Provides a base package for Fedora Workstation-specific configuration files to&#xA;depend on.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="14135" installed="3150" archive="4112"></size>
+    <location href="Packages/f/fedora-release-workstation-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12780"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-workstation" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release-product" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-workstation</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">c3984f88755d0eedb7886b0713fbcaf02cf9edd3a2c43b7f56d35d965be4d877</checksum>
+    <summary>Base package for Fedora Workstation-specific default configurations</summary>
+    <description>Provides a base package for Fedora Workstation-specific configuration files to&#xA;depend on.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="14301" installed="3150" archive="4112"></size>
+    <location href="Packages/f/fedora-release-workstation-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12948"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-workstation" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release-product" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>generic-release-common</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="0.1"></version>
+    <checksum type="sha256" pkgid="YES">98ceecbd7348dd800a780c1b85907cbe0cc80415207aeeee59053e29687e515b</checksum>
+    <summary>Generic release files</summary>
+    <description>Release files common to all Editions and Spins</description>
+    <packager>Fedora Project</packager>
+    <url></url>
+    <time file="1573581430" build="1573581323"></time>
+    <size package="14060" installed="10724" archive="14044"></size>
+    <location href="Packages/g/generic-release-common-32-0.1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-24.phx2.fedoraproject.org</buildhost>
+      <sourcerpm>generic-release-32-0.1.src.rpm</sourcerpm>
+      <header-range start="4504" end="10120"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="config(generic-release-common)" flags="EQ" epoch="0" ver="32" rel="0.1"></entry>
+        <entry name="generic-release-common" flags="EQ" epoch="0" ver="32" rel="0.1"></entry>
+        <entry name="redhat-release" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;      &#xA;    
+        <entry name="fedora-repos(32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="generic-release-variant" flags="EQ" epoch="0" ver="32" rel="0.1"></entry>
+      </requires>
+      <file type="">/etc/fedora-release</file>
+      <file type="">/etc/issue</file>
+      <file type="">/etc/issue.net</file>
+      <file type="">/etc/os-release</file>
+      <file type="">/etc/redhat-release</file>
+      <file type="">/etc/system-release</file>
+      <file type="">/etc/system-release-cpe</file>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes>&#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="convert-to-edition" flags="LT" epoch="0" ver="30" rel="0.7"></entry>
+        <entry name="generic-release" flags="LT" epoch="0" ver="30" rel="0.1"></entry>
+        <entry name="redhat-release" flags="" epoch="" ver="" rel=""></entry>
+      </obsoletes>
+      <recommends></recommends>
+      <suggests>&#xA;      &#xA;    
+        <entry name="generic-release" flags="" epoch="" ver="" rel=""></entry>
+      </suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-common</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">a1835a7929d3c1613f3890caef878e9bdf857dcc0f63eb4d63a1140370b3f21b</checksum>
+    <summary>Fedora release files</summary>
+    <description>Release files common to all Editions and Spins of Fedora</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="21059" installed="14831" archive="19360"></size>
+    <location href="Packages/f/fedora-release-common-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="15284"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="config(fedora-release-common)" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="redhat-release" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;      &#xA;    
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-repos(32)" flags="GE" epoch="0" ver="1" rel=""></entry>
+      </requires>
+      <file type="">/etc/fedora-release</file>
+      <file type="">/etc/issue</file>
+      <file type="dir">/etc/issue.d</file>
+      <file type="">/etc/issue.net</file>
+      <file type="">/etc/os-release</file>
+      <file type="">/etc/redhat-release</file>
+      <file type="dir">/etc/swid</file>
+      <file type="dir">/etc/swid/swidtags.d</file>
+      <file type="">/etc/swid/swidtags.d/fedoraproject.org</file>
+      <file type="">/etc/system-release</file>
+      <file type="">/etc/system-release-cpe</file>
+      <conflicts></conflicts>
+      <obsoletes>&#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="convert-to-edition" flags="LT" epoch="0" ver="30" rel="0.7"></entry>
+        <entry name="fedora-release" flags="LT" epoch="0" ver="30" rel="0.12"></entry>
+        <entry name="redhat-release" flags="" epoch="" ver="" rel=""></entry>
+      </obsoletes>
+      <recommends></recommends>
+      <suggests>&#xA;      &#xA;    
+        <entry name="fedora-release" flags="" epoch="" ver="" rel=""></entry>
+      </suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-common</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">588ae46d47f051fc130b9f74c99537738903e0ee3a4de9e4af36078ec4e9bf4e</checksum>
+    <summary>Fedora release files</summary>
+    <description>Release files common to all Editions and Spins of Fedora</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="21245" installed="14960" archive="19488"></size>
+    <location href="Packages/f/fedora-release-common-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="15448"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="config(fedora-release-common)" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="redhat-release" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;      &#xA;    
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-repos(32)" flags="GE" epoch="0" ver="1" rel=""></entry>
+      </requires>
+      <file type="">/etc/fedora-release</file>
+      <file type="">/etc/issue</file>
+      <file type="dir">/etc/issue.d</file>
+      <file type="">/etc/issue.net</file>
+      <file type="">/etc/os-release</file>
+      <file type="">/etc/redhat-release</file>
+      <file type="dir">/etc/swid</file>
+      <file type="dir">/etc/swid/swidtags.d</file>
+      <file type="">/etc/swid/swidtags.d/fedoraproject.org</file>
+      <file type="">/etc/system-release</file>
+      <file type="">/etc/system-release-cpe</file>
+      <conflicts></conflicts>
+      <obsoletes>&#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="convert-to-edition" flags="LT" epoch="0" ver="30" rel="0.7"></entry>
+        <entry name="fedora-release" flags="LT" epoch="0" ver="30" rel="0.12"></entry>
+        <entry name="redhat-release" flags="" epoch="" ver="" rel=""></entry>
+      </obsoletes>
+      <recommends></recommends>
+      <suggests>&#xA;      &#xA;    
+        <entry name="fedora-release" flags="" epoch="" ver="" rel=""></entry>
+      </suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">1f2ba0fc562864ad1bea31a42da124030fc188d23a84d144be616c2d066e1531</checksum>
+    <summary>Fedora release files</summary>
+    <description>Fedora release files such as various /etc/ files that define the release&#xA;and systemd preset files that determine which services are enabled by default.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="12421" installed="691" archive="948"></size>
+    <location href="Packages/f/fedora-release-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="11968"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-cinnamon</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">82f5caea0646623e7a6c00afb64b694a174d5f2cede39c4852c4e6debbd0e9d3</checksum>
+    <summary>Base package for Fedora Cinnamon-specific default configurations</summary>
+    <description>Provides a base package for Fedora Cinnamon-specific configuration files to&#xA;depend on as well as Cinnamon system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="13068" installed="1492" archive="1940"></size>
+    <location href="Packages/f/fedora-release-cinnamon-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12244"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-cinnamon" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-cloud</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">0c8f8925dacc9a0e57b4446d5f67d9041bfc0a939191a7606ba93b74512a97d1</checksum>
+    <summary>Base package for Fedora Cloud-specific default configurations</summary>
+    <description>Provides a base package for Fedora Cloud-specific configuration files to&#xA;depend on.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="13022" installed="1498" archive="1944"></size>
+    <location href="Packages/f/fedora-release-cloud-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12196"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-cloud" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-container</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">e4301dfe6794c1c89303435ebb6c6e6f1aaef361de7205b4cdd42d1215ea6837</checksum>
+    <summary>Base package for Fedora container specific default configurations</summary>
+    <description>Provides a base package for Fedora container specific configuration files to&#xA;depend on as well as container system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="13075" installed="1516" archive="1960"></size>
+    <location href="Packages/f/fedora-release-container-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12248"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-container" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-coreos</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">5e6a6af0d7c492ca901394ea680ea5f60ea4862d891f063bc7ab1aa92419e1ba</checksum>
+    <summary>Base package for Fedora CoreOS-specific default configurations</summary>
+    <description>Provides a base package for Fedora CoreOS Host-specific configuration files to&#xA;depend.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="13291" installed="1714" archive="2324"></size>
+    <location href="Packages/f/fedora-release-coreos-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12368"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-coreos" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-iot</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">5e7a16df5bdfab2acfd8ac061827ace0642f2e5521689d6b9f0812f2a6ece231</checksum>
+    <summary>Base package for Fedora IoT specific default configurations</summary>
+    <description>Provides a base package for Fedora IoT specific configuration files to&#xA;depend on as well as IoT system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="13804" installed="2076" archive="2984"></size>
+    <location href="Packages/f/fedora-release-iot-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12688"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-iot" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-kde</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">6c565588cbceaec1fd97d290d53f16ef778373e72bbb5e69779f64a1290d3e0e</checksum>
+    <summary>Base package for Fedora KDE Plasma-specific default configurations</summary>
+    <description>Provides a base package for Fedora KDE Plasma-specific configuration files to&#xA;depend on as well as KDE Plasma system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="13065" installed="1483" archive="1928"></size>
+    <location href="Packages/f/fedora-release-kde-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12240"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-kde" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-matecompiz</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">813d7c6560eb2b7a0d2f2dbc5c1055ded8f084a5cc87bf3bfce70161d83425c3</checksum>
+    <summary>Base package for Fedora MATE-Compiz-specific default configurations</summary>
+    <description>Provides a base package for Fedora MATE-compiz-specific configuration files to&#xA;depend on as well as MATE-Compiz system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="13087" installed="1509" archive="1956"></size>
+    <location href="Packages/f/fedora-release-matecompiz-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12256"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-matecompiz" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-server</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">96cd542bace64a92f630712a90c6435c4adb25ff87adfba3daa8b7533c51de81</checksum>
+    <summary>Base package for Fedora Server-specific default configurations</summary>
+    <description>Provides a base package for Fedora Server-specific configuration files to&#xA;depend on.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="13284" installed="1597" archive="2208"></size>
+    <location href="Packages/f/fedora-release-server-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12368"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-server" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-silverblue</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">1965a614845c9a6ab2e81fd2adcf9120da89063a3d1a4f99652c254930f68d1d</checksum>
+    <summary>Base package for Fedora Silverblue-specific default configurations</summary>
+    <description>Provides a base package for Fedora Silverblue-specific configuration files to&#xA;depend on as well as Silverblue system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="14124" installed="3099" archive="4064"></size>
+    <location href="Packages/f/fedora-release-silverblue-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12788"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-silverblue" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-snappy</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">eba09979d89daaf71109e23abd51043105054314dac4879ee6344d372b1a2e81</checksum>
+    <summary>Base package for Fedora snap specific default configurations</summary>
+    <description>Provides a base package for Fedora snap specific configuration files to&#xA;depend on as well as Snappy system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="13049" installed="1480" archive="1928"></size>
+    <location href="Packages/f/fedora-release-snappy-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12228"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-snappy" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-soas</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">83b03517f32907739fb73d0dd31f0f51d97f74653aff8cee064dbdcf6474a576</checksum>
+    <summary>Base package for Fedora Sugar on a Stick-specific default configurations</summary>
+    <description>Provides a base package for Fedora Sugar on a Stick-specific configuration files to&#xA;depend on as well as SoaS system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="13078" installed="1506" archive="1952"></size>
+    <location href="Packages/f/fedora-release-soas-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12248"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-soas" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-workstation</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">e431cf8c0ab5985e9a8609e90dd8a263c9ebebe88cf517f8ca78697401aadf18</checksum>
+    <summary>Base package for Fedora Workstation-specific default configurations</summary>
+    <description>Provides a base package for Fedora Workstation-specific configuration files to&#xA;depend on.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="14135" installed="3150" archive="4112"></size>
+    <location href="Packages/f/fedora-release-workstation-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12780"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-workstation" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release-product" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-xfce</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">0d5b2a6558eaa3d886b3a33e479f8e87634601b0dd71ab5a13ff31c7f945b0e6</checksum>
+    <summary>Base package for Fedora Xfce specific default configurations</summary>
+    <description>Provides a base package for Fedora Xfce specific configuration files to&#xA;depend on as well as Xfce system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="13045" installed="1468" archive="1916"></size>
+    <location href="Packages/f/fedora-release-xfce-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12224"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-xfce" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">eb6daf716768a379dc032112ae10d2129fbd8ed6ed1a7fa49731b91bda9a6272</checksum>
+    <summary>Fedora release files</summary>
+    <description>Fedora release files such as various /etc/ files that define the release&#xA;and systemd preset files that determine which services are enabled by default.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="12589" installed="691" archive="948"></size>
+    <location href="Packages/f/fedora-release-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12136"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-cinnamon</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">5978822d7d7102be65abbd0ad495acc0145f4e61683741f04e997719a07244a0</checksum>
+    <summary>Base package for Fedora Cinnamon-specific default configurations</summary>
+    <description>Provides a base package for Fedora Cinnamon-specific configuration files to&#xA;depend on as well as Cinnamon system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="13236" installed="1492" archive="1940"></size>
+    <location href="Packages/f/fedora-release-cinnamon-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12412"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-cinnamon" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-cloud</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">426a1fa2927a0429692d4424943aadaca63d059b3e18ee4f1e0811f90a2dd862</checksum>
+    <summary>Base package for Fedora Cloud-specific default configurations</summary>
+    <description>Provides a base package for Fedora Cloud-specific configuration files to&#xA;depend on.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="13189" installed="1498" archive="1944"></size>
+    <location href="Packages/f/fedora-release-cloud-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12364"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-cloud" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-container</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">1e6b278665bb1ef379dfb2d14302f87eece8580ac3c9c5ed25459c0b8c4ed907</checksum>
+    <summary>Base package for Fedora container specific default configurations</summary>
+    <description>Provides a base package for Fedora container specific configuration files to&#xA;depend on as well as container system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="13242" installed="1516" archive="1960"></size>
+    <location href="Packages/f/fedora-release-container-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12416"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-container" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-coreos</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">e122b50e8543339288e04a7b929516ad1a7f7d90b465ff79e9112fc53e91a84e</checksum>
+    <summary>Base package for Fedora CoreOS-specific default configurations</summary>
+    <description>Provides a base package for Fedora CoreOS Host-specific configuration files to&#xA;depend.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="13456" installed="1714" archive="2324"></size>
+    <location href="Packages/f/fedora-release-coreos-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12536"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-coreos" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-iot</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">a631613262ec2b2763cd5205eee5f33929305b7dea5b29219d9f490677350098</checksum>
+    <summary>Base package for Fedora IoT specific default configurations</summary>
+    <description>Provides a base package for Fedora IoT specific configuration files to&#xA;depend on as well as IoT system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="13978" installed="2100" archive="3008"></size>
+    <location href="Packages/f/fedora-release-iot-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12856"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-iot" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-kde</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">8760f36bf2c73df1e2e3f5843786ed0043aa576e7eea2269d3bf15c435fed256</checksum>
+    <summary>Base package for Fedora KDE Plasma-specific default configurations</summary>
+    <description>Provides a base package for Fedora KDE Plasma-specific configuration files to&#xA;depend on as well as KDE Plasma system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="13232" installed="1483" archive="1928"></size>
+    <location href="Packages/f/fedora-release-kde-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12408"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-kde" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-matecompiz</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">1d33db1bcc9b5c74dd6952c372729bd482dae329626ceb78f029c1a6cb8bdb58</checksum>
+    <summary>Base package for Fedora MATE-Compiz-specific default configurations</summary>
+    <description>Provides a base package for Fedora MATE-compiz-specific configuration files to&#xA;depend on as well as MATE-Compiz system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="13255" installed="1509" archive="1956"></size>
+    <location href="Packages/f/fedora-release-matecompiz-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12424"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-matecompiz" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-server</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">026f61b5ae9ca13414c300e163234eaf6fd04ac3f910fc7ff6d288976a8a100d</checksum>
+    <summary>Base package for Fedora Server-specific default configurations</summary>
+    <description>Provides a base package for Fedora Server-specific configuration files to&#xA;depend on.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="13451" installed="1597" archive="2208"></size>
+    <location href="Packages/f/fedora-release-server-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12536"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-server" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-silverblue</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">4e5c8579dbd744a5a0bc75a1bf787053f73f92237b9f13df5180d5ad7bfffadd</checksum>
+    <summary>Base package for Fedora Silverblue-specific default configurations</summary>
+    <description>Provides a base package for Fedora Silverblue-specific configuration files to&#xA;depend on as well as Silverblue system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="14291" installed="3099" archive="4064"></size>
+    <location href="Packages/f/fedora-release-silverblue-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12956"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-silverblue" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-snappy</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">739b2c59bd6e5e6d68014af8d5c60ba6fdb939e14dd38e5161d3aa4a66267d44</checksum>
+    <summary>Base package for Fedora snap specific default configurations</summary>
+    <description>Provides a base package for Fedora snap specific configuration files to&#xA;depend on as well as Snappy system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="13216" installed="1480" archive="1928"></size>
+    <location href="Packages/f/fedora-release-snappy-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12396"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-snappy" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-soas</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">9055ea0b403ae219cce08d4a31af1cf4ba08dac68e3bdd5b5fb3589732ea9288</checksum>
+    <summary>Base package for Fedora Sugar on a Stick-specific default configurations</summary>
+    <description>Provides a base package for Fedora Sugar on a Stick-specific configuration files to&#xA;depend on as well as SoaS system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="13246" installed="1506" archive="1952"></size>
+    <location href="Packages/f/fedora-release-soas-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12416"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-soas" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-workstation</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">c3984f88755d0eedb7886b0713fbcaf02cf9edd3a2c43b7f56d35d965be4d877</checksum>
+    <summary>Base package for Fedora Workstation-specific default configurations</summary>
+    <description>Provides a base package for Fedora Workstation-specific configuration files to&#xA;depend on.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="14301" installed="3150" archive="4112"></size>
+    <location href="Packages/f/fedora-release-workstation-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12948"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-workstation" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release-product" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-xfce</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">2bad5020c1a86ac78c00bfc00fc78bd8d0a8f818fc6f6a90af3af71a11f46662</checksum>
+    <summary>Base package for Fedora Xfce specific default configurations</summary>
+    <description>Provides a base package for Fedora Xfce specific configuration files to&#xA;depend on as well as Xfce system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="13212" installed="1468" archive="1916"></size>
+    <location href="Packages/f/fedora-release-xfce-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12392"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-xfce" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-kde</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">6c565588cbceaec1fd97d290d53f16ef778373e72bbb5e69779f64a1290d3e0e</checksum>
+    <summary>Base package for Fedora KDE Plasma-specific default configurations</summary>
+    <description>Provides a base package for Fedora KDE Plasma-specific configuration files to&#xA;depend on as well as KDE Plasma system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="13065" installed="1483" archive="1928"></size>
+    <location href="Packages/f/fedora-release-kde-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12240"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-kde" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-kde</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">8760f36bf2c73df1e2e3f5843786ed0043aa576e7eea2269d3bf15c435fed256</checksum>
+    <summary>Base package for Fedora KDE Plasma-specific default configurations</summary>
+    <description>Provides a base package for Fedora KDE Plasma-specific configuration files to&#xA;depend on as well as KDE Plasma system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="13232" installed="1483" archive="1928"></size>
+    <location href="Packages/f/fedora-release-kde-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12408"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-kde" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-server</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">96cd542bace64a92f630712a90c6435c4adb25ff87adfba3daa8b7533c51de81</checksum>
+    <summary>Base package for Fedora Server-specific default configurations</summary>
+    <description>Provides a base package for Fedora Server-specific configuration files to&#xA;depend on.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="13284" installed="1597" archive="2208"></size>
+    <location href="Packages/f/fedora-release-server-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12368"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-server" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-server</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">026f61b5ae9ca13414c300e163234eaf6fd04ac3f910fc7ff6d288976a8a100d</checksum>
+    <summary>Base package for Fedora Server-specific default configurations</summary>
+    <description>Provides a base package for Fedora Server-specific configuration files to&#xA;depend on.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="13451" installed="1597" archive="2208"></size>
+    <location href="Packages/f/fedora-release-server-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12536"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-server" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-snappy</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="1"></version>
+    <checksum type="sha256" pkgid="YES">eba09979d89daaf71109e23abd51043105054314dac4879ee6344d372b1a2e81</checksum>
+    <summary>Base package for Fedora snap specific default configurations</summary>
+    <description>Provides a base package for Fedora snap specific configuration files to&#xA;depend on as well as Snappy system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1586489545" build="1586489304"></time>
+    <size package="13049" installed="1480" archive="1928"></size>
+    <location href="Packages/f/fedora-release-snappy-32-1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-15.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-1.src.rpm</sourcerpm>
+      <header-range start="4504" end="12228"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-snappy" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>fedora-release-snappy</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="3"></version>
+    <checksum type="sha256" pkgid="YES">739b2c59bd6e5e6d68014af8d5c60ba6fdb939e14dd38e5161d3aa4a66267d44</checksum>
+    <summary>Base package for Fedora snap specific default configurations</summary>
+    <description>Provides a base package for Fedora snap specific configuration files to&#xA;depend on as well as Snappy system defaults.</description>
+    <packager>Fedora Project</packager>
+    <url>https://fedoraproject.org/</url>
+    <time file="1591389352" build="1591387250"></time>
+    <size package="13216" installed="1480" archive="1928"></size>
+    <location href="Packages/f/fedora-release-snappy-32-3.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-armv7-10.arm.fedoraproject.org</buildhost>
+      <sourcerpm>fedora-release-32-3.src.rpm</sourcerpm>
+      <header-range start="4504" end="12396"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="base-module(platform:f32)" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="fedora-release" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-snappy" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="fedora-release-variant" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="fedora-release-common" flags="EQ" epoch="0" ver="32" rel="3"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;    
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+  <package type="rpm">&#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;  &#xA;
+    <name>generic-release</name>
+    <arch>noarch</arch>
+    <version epoch="0" ver="32" rel="0.1"></version>
+    <checksum type="sha256" pkgid="YES">171b5c0ffac4ac3d56a7fce611342b7a424689b734df37976f9f71128736c09a</checksum>
+    <summary>Generic release files</summary>
+    <description>Generic release files such as yum configs and various /etc/ files that&#xA;define the release. This package explicitly is a replacement for the&#xA;trademarked release package, if you are unable for any reason to abide by the&#xA;trademark restrictions on that release package.</description>
+    <packager>Fedora Project</packager>
+    <url></url>
+    <time file="1573581431" build="1573581323"></time>
+    <size package="8147" installed="522" archive="780"></size>
+    <location href="Packages/g/generic-release-32-0.1.noarch.rpm"></location>
+    <format>&#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;    &#xA;  
+      <license>MIT</license>
+      <vendor>Fedora Project</vendor>
+      <group>Unspecified</group>
+      <buildhost>buildvm-24.phx2.fedoraproject.org</buildhost>
+      <sourcerpm>generic-release-32-0.1.src.rpm</sourcerpm>
+      <header-range start="4504" end="7760"></header-range>
+      <provides>&#xA;      &#xA;      &#xA;      &#xA;      &#xA;    
+        <entry name="generic-release" flags="EQ" epoch="0" ver="32" rel="0.1"></entry>
+        <entry name="generic-release-variant" flags="EQ" epoch="0" ver="32" rel="0.1"></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release(32)" flags="" epoch="" ver="" rel=""></entry>
+      </provides>
+      <requires>&#xA;      &#xA;    
+        <entry name="generic-release-common" flags="EQ" epoch="0" ver="32" rel="0.1"></entry>
+      </requires>
+      <conflicts>&#xA;      &#xA;      &#xA;    
+        <entry name="fedora-release" flags="" epoch="" ver="" rel=""></entry>
+        <entry name="system-release" flags="" epoch="" ver="" rel=""></entry>
+      </conflicts>
+      <obsoletes></obsoletes>
+      <recommends></recommends>
+      <suggests></suggests>
+      <enhances></enhances>
+      <supplements></supplements>
+    </format>
+  </package>
+</metadata>
