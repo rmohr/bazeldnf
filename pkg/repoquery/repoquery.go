@@ -12,10 +12,14 @@ import (
 )
 
 type RepoQuery struct {
-	packages      []api.Package
-	lang      string
-	repoFiles []string
-	provides  map[string][]*api.Package
+	packages         []api.Package
+	lang             string
+	repoFiles        []string
+	provides         map[string][]*api.Package
+	implicitRequires []string
+	arch             string
+	architectures    []string
+	glibcLangpack    bool
 }
 
 func (r *RepoQuery) Load() error {
@@ -34,18 +38,15 @@ func (r *RepoQuery) Load() error {
 	}
 
 	for i, p := range r.packages {
-		if p.Arch == "i686" {
+		if skip(p.Arch, r.architectures) {
 			continue
 		}
-		// remove langpack references
-		newRequires :=  []api.Entry{}
+
 		for _, requires := range p.Format.Requires.Entries {
 			if strings.HasPrefix(requires.Name, "glibc-langpack") {
-				requires.Name="glibc-langpack-en"
+				r.glibcLangpack = true
 			}
-			newRequires=append(newRequires, requires)
 		}
-		r.packages[i].Format.Requires.Entries = newRequires
 		for _, provides := range p.Format.Provides.Entries {
 			r.provides[provides.Name] = append(r.provides[provides.Name], &r.packages[i])
 		}
@@ -57,15 +58,15 @@ func (r *RepoQuery) Load() error {
 }
 
 func (r *RepoQuery) Resolve(packages []string) (involved []*api.Package, err error) {
-	fmt.Println(len(r.packages))
+	if r.glibcLangpack {
+		r.implicitRequires = append(r.implicitRequires, fmt.Sprintf("glibc-langpack-%s", r.lang))
+	}
+	packages = append(packages, r.implicitRequires...)
 	var wants []*api.Package
 	discovered := map[string]*api.Package{}
 	for _, req := range packages {
 		for _, p := range r.packages {
 			if p.Name == req {
-				if p.Arch == "i686" {
-					continue
-				}
 				wants = append(wants, &p)
 				discovered[p.Name] = &p
 				break
@@ -101,7 +102,7 @@ func (r *RepoQuery) Resolve(packages []string) (involved []*api.Package, err err
 	fmt.Println(strings.Join(current, ","))
 	testrepo := &api.Repository{}
 	for _, pkg := range involved {
-		testrepo.Packages=append(testrepo.Packages, *pkg)
+		testrepo.Packages = append(testrepo.Packages, *pkg)
 	}
 	data, _ := xml.MarshalIndent(testrepo, "", "  ")
 	ioutil.WriteFile("test.xml", data, 0666)
@@ -125,11 +126,24 @@ func (r *RepoQuery) requires(p *api.Package) (wants []*api.Package) {
 	return wants
 }
 
-func NewRepoQuerier(repoFiles []string, lang string) *RepoQuery {
+func NewRepoQuerier(repoFiles []string, lang string, fedoraRelease string, arch string) *RepoQuery {
 	return &RepoQuery{
-		packages:      nil,
-		lang:      lang,
-		repoFiles: repoFiles,
-		provides:  map[string][]*api.Package{},
+		packages:         nil,
+		lang:             lang,
+		implicitRequires: []string{fedoraRelease},
+		repoFiles:        repoFiles,
+		provides:         map[string][]*api.Package{},
+		architectures:    []string{"noarch", arch},
 	}
+}
+
+func skip(arch string, arches []string) bool {
+	skip := true
+	for _, a := range arches {
+		if a == arch {
+			skip = false
+			break
+		}
+	}
+	return skip
 }

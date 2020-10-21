@@ -9,9 +9,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var in []string
-var lang string
-var nobest bool
+type resolveOpts struct {
+	in            []string
+	lang          string
+	nobest        bool
+	arch          string
+	fedoraRelease string
+}
+
+var resolveopts = resolveOpts{}
 
 func NewResolveCmd() *cobra.Command {
 
@@ -21,7 +27,7 @@ func NewResolveCmd() *cobra.Command {
 		Long:  `resolves dependencies of the given packages with the assumption of a SCRATCH container as install target`,
 		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, required []string) error {
-			repo := repoquery.NewRepoQuerier(in, lang)
+			repo := repoquery.NewRepoQuerier(resolveopts.in, resolveopts.lang, resolveopts.fedoraRelease, resolveopts.arch)
 			logrus.Info("Loading packages.")
 			if err := repo.Load(); err != nil {
 				return err
@@ -31,7 +37,7 @@ func NewResolveCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			solver := sat.NewResolver(nobest)
+			solver := sat.NewResolver(resolveopts.nobest)
 			logrus.Info("Loading involved packages into the resolver.")
 			err = solver.LoadInvolvedPackages(involved)
 			if err != nil {
@@ -54,8 +60,10 @@ func NewResolveCmd() *cobra.Command {
 		},
 	}
 
-	resolveCmd.PersistentFlags().StringArrayVarP(&in, "input", "i", []string{"primary.xml"}, "primary.xml of the repository")
-	resolveCmd.PersistentFlags().StringVarP(&lang, "lang", "l", "en", "language to use for locale decisions (like glibc-lang)")
-	resolveCmd.PersistentFlags().BoolVarP(&nobest, "nobest", "n", false, "allow picking versions which are not the newest")
+	resolveCmd.PersistentFlags().StringArrayVarP(&resolveopts.in, "input", "i", []string{"primary.xml"}, "primary.xml of the repository")
+	resolveCmd.PersistentFlags().StringVarP(&resolveopts.fedoraRelease, "fedora-release", "f", "fedora-release-container", "fedora base system to choose from (e.g. fedora-release-server, fedora-release-container, ...)")
+	resolveCmd.PersistentFlags().StringVarP(&resolveopts.lang, "lang", "l", "en", "language to use for locale decisions (like glibc-lang)")
+	resolveCmd.PersistentFlags().StringVarP(&getopts.arch, "arch", "a", "x86_64", "target fedora architecture")
+	resolveCmd.PersistentFlags().BoolVarP(&resolveopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
 	return resolveCmd
 }
