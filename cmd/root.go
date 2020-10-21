@@ -8,8 +8,8 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "gorepoquery",
-	Short: "gorepoquery is a tool which can query RPM repos and determine package dependencies",
+	Use:   "bazeldnf",
+	Short: "bazeldnf is a tool which can query RPM repos and determine package dependencies",
 	Long: `The tool allows resolving package dependencies mainly for the purpose to create custom-built SCRATCH containers consisting of RPMs, trimmed down to the absolute necessary`,
 	Run: func(cmd *cobra.Command, args []string) {
 	},
@@ -18,9 +18,9 @@ var rootCmd = &cobra.Command{
 func Execute() {
 	rootCmd.AddCommand(NewGetCmd())
 	rootCmd.AddCommand(NewResolveCmd())
+	rootCmd.AddCommand(NewRPMCmd())
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 }
-
