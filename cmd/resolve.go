@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/rmohr/bazel-dnf/pkg/repoquery"
+	"github.com/rmohr/bazel-dnf/pkg/reducer"
 	"github.com/rmohr/bazel-dnf/pkg/sat"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -27,7 +27,7 @@ func NewResolveCmd() *cobra.Command {
 		Long:  `resolves dependencies of the given packages with the assumption of a SCRATCH container as install target`,
 		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, required []string) error {
-			repo := repoquery.NewRepoQuerier(resolveopts.in, resolveopts.lang, resolveopts.fedoraRelease, resolveopts.arch)
+			repo := reducer.NewRepoReducer(resolveopts.in, resolveopts.lang, resolveopts.fedoraRelease, resolveopts.arch)
 			logrus.Info("Loading packages.")
 			if err := repo.Load(); err != nil {
 				return err

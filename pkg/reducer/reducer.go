@@ -1,4 +1,4 @@
-package repoquery
+package reducer
 
 import (
 	"encoding/xml"
@@ -11,7 +11,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type RepoQuery struct {
+type RepoReducer struct {
 	packages         []api.Package
 	lang             string
 	repoFiles        []string
@@ -21,7 +21,7 @@ type RepoQuery struct {
 	architectures    []string
 }
 
-func (r *RepoQuery) Load() error {
+func (r *RepoReducer) Load() error {
 	for _, repo := range r.repoFiles {
 		repoFile := &api.Repository{}
 		f, err := os.Open(repo)
@@ -57,7 +57,7 @@ func (r *RepoQuery) Load() error {
 	return nil
 }
 
-func (r *RepoQuery) Resolve(packages []string) (involved []*api.Package, err error) {
+func (r *RepoReducer) Resolve(packages []string) (involved []*api.Package, err error) {
 	packages = append(packages, r.implicitRequires...)
 	var wants []*api.Package
 	discovered := map[string]*api.Package{}
@@ -106,7 +106,7 @@ func (r *RepoQuery) Resolve(packages []string) (involved []*api.Package, err err
 	return involved, nil
 }
 
-func (r *RepoQuery) requires(p *api.Package) (wants []*api.Package) {
+func (r *RepoReducer) requires(p *api.Package) (wants []*api.Package) {
 	for _, requires := range p.Format.Requires.Entries {
 		if val, exists := r.provides[requires.Name]; exists {
 
@@ -123,8 +123,8 @@ func (r *RepoQuery) requires(p *api.Package) (wants []*api.Package) {
 	return wants
 }
 
-func NewRepoQuerier(repoFiles []string, lang string, fedoraRelease string, arch string) *RepoQuery {
-	return &RepoQuery{
+func NewRepoReducer(repoFiles []string, lang string, fedoraRelease string, arch string) *RepoReducer {
+	return &RepoReducer{
 		packages:         nil,
 		lang:             lang,
 		implicitRequires: []string{fedoraRelease},
