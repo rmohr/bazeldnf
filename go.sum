@@ -99,8 +99,6 @@ github.com/rmohr/go-rpmutils v0.1.2-0.20201019160740-3eae840fd906 h1:quW4NTPPZuQ
 github.com/rmohr/go-rpmutils v0.1.2-0.20201019160740-3eae840fd906/go.mod h1:euhXULoBpvAxqrBHEyJS4Tsu3hHxUmQWNymxoJbzgUY=
 github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6SoW27p1b0cqNHllgS5HIMJraePCO15w5zCzIWYg=
 github.com/russross/blackfriday/v2 v2.0.1/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
-github.com/sassoftware/go-rpmutils v0.1.1 h1:ZHMXpGoMHL/cpQJ1byyhEBW73TDtpNq4inYa9M4FxyY=
-github.com/sassoftware/go-rpmutils v0.1.1/go.mod h1:euhXULoBpvAxqrBHEyJS4Tsu3hHxUmQWNymxoJbzgUY=
 github.com/shurcooL/sanitized_anchor_name v1.0.0/go.mod h1:1NzhyTcUVG4SuEtjjoZeVRXNmyL/1OwPU0+IJeTBvfc=
 github.com/sirupsen/logrus v1.2.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
 github.com/sirupsen/logrus v1.6.0 h1:UBcNElsrwanuuMsnGSlYmtmgbb23qDR5dG+6X6Oo89I=

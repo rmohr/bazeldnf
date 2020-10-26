@@ -19,7 +19,6 @@ type RepoQuery struct {
 	implicitRequires []string
 	arch             string
 	architectures    []string
-	glibcLangpack    bool
 }
 
 func (r *RepoQuery) Load() error {
@@ -38,15 +37,16 @@ func (r *RepoQuery) Load() error {
 	}
 
 	for i, p := range r.packages {
-		if skip(p.Arch, r.architectures) {
+		canBeInterpreted := true
+		for _, requires := range p.Format.Requires.Entries {
+			if strings.HasPrefix(requires.Name, "(") {
+				canBeInterpreted = false
+			}
+		}
+		if skip(p.Arch, r.architectures) || !canBeInterpreted {
 			continue
 		}
 
-		for _, requires := range p.Format.Requires.Entries {
-			if strings.HasPrefix(requires.Name, "glibc-langpack") {
-				r.glibcLangpack = true
-			}
-		}
 		for _, provides := range p.Format.Provides.Entries {
 			r.provides[provides.Name] = append(r.provides[provides.Name], &r.packages[i])
 		}
@@ -58,9 +58,6 @@ func (r *RepoQuery) Load() error {
 }
 
 func (r *RepoQuery) Resolve(packages []string) (involved []*api.Package, err error) {
-	if r.glibcLangpack {
-		r.implicitRequires = append(r.implicitRequires, fmt.Sprintf("glibc-langpack-%s", r.lang))
-	}
 	packages = append(packages, r.implicitRequires...)
 	var wants []*api.Package
 	discovered := map[string]*api.Package{}

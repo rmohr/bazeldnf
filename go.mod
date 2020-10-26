@@ -10,6 +10,4 @@ require (
 	github.com/spf13/cobra v1.0.0
 )
 
-replace (
-	github.com/sassoftware/go-rpmutils v0.1.1 => github.com/rmohr/go-rpmutils v0.1.2-0.20201019160740-3eae840fd906
-)
+replace github.com/sassoftware/go-rpmutils v0.1.1 => github.com/rmohr/go-rpmutils v0.1.2-0.20201019160740-3eae840fd906

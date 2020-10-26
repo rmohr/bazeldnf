@@ -62,8 +62,7 @@ func NewResolveCmd() *cobra.Command {
 
 	resolveCmd.PersistentFlags().StringArrayVarP(&resolveopts.in, "input", "i", []string{"primary.xml"}, "primary.xml of the repository")
 	resolveCmd.PersistentFlags().StringVarP(&resolveopts.fedoraRelease, "fedora-release", "f", "fedora-release-container", "fedora base system to choose from (e.g. fedora-release-server, fedora-release-container, ...)")
-	resolveCmd.PersistentFlags().StringVarP(&resolveopts.lang, "lang", "l", "en", "language to use for locale decisions (like glibc-lang)")
-	resolveCmd.PersistentFlags().StringVarP(&getopts.arch, "arch", "a", "x86_64", "target fedora architecture")
+	resolveCmd.PersistentFlags().StringVarP(&resolveopts.arch, "arch", "a", "x86_64", "target fedora architecture")
 	resolveCmd.PersistentFlags().BoolVarP(&resolveopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
 	return resolveCmd
 }
