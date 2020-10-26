@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/rmohr/bazel-dnf/pkg/reducer"
-	"github.com/rmohr/bazel-dnf/pkg/sat"
+	"github.com/rmohr/bazeldnf/pkg/reducer"
+	"github.com/rmohr/bazeldnf/pkg/sat"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )

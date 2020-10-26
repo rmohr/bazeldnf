@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/rmohr/bazel-dnf/pkg/rpm"
+	"github.com/rmohr/bazeldnf/pkg/rpm"
 	"github.com/spf13/cobra"
 )
 

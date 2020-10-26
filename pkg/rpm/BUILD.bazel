@@ -1,0 +1,23 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "rpm",
+    srcs = [
+        "rpm.go",
+        "tar.go",
+    ],
+    importpath = "github.com/rmohr/bazeldnf/pkg/rpm",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/api",
+        "@com_github_sassoftware_go_rpmutils//:go-rpmutils",
+        "@com_github_sassoftware_go_rpmutils//cpio",
+    ],
+)
+
+go_test(
+    name = "rpm_test",
+    srcs = ["rpm_test.go"],
+    embed = [":rpm"],
+    deps = ["//pkg/api"],
+)

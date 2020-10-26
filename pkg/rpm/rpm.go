@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/rmohr/bazel-dnf/pkg/api"
+	"github.com/rmohr/bazeldnf/pkg/api"
 )
 
 func Compare(a api.Version, b api.Version) int {

@@ -7,12 +7,12 @@ import (
 	"testing"
 
 	. "github.com/onsi/gomega"
-	"github.com/rmohr/bazel-dnf/pkg/api"
+	"github.com/rmohr/bazeldnf/pkg/api"
 )
 
 func TestRecursive(t *testing.T) {
 	g := NewGomegaWithT(t)
-	f, err := os.Open("../../testdata/perl-pathtools-fc32.xml")
+	f, err := os.Open("testdata/perl-pathtools-fc32.xml")
 	g.Expect(err).ToNot(HaveOccurred())
 	defer f.Close()
 	repo := &api.Repository{}
@@ -71,7 +71,7 @@ func Test(t *testing.T) {
 				"filesystem-0:3.14-2.fc32",
 				"fedora-repos-0:32-6",
 			},
-			repofile: "../../testdata/bash-fc32.xml",
+			repofile: "testdata/bash-fc32.xml",
 		},
 		{
 			name: "should resolve fedora-release-container",
@@ -85,7 +85,7 @@ func Test(t *testing.T) {
 				"fedora-release-common-0:32-3",
 			},
 			nobest:   false,
-			repofile: "../../testdata/fedora-release-container.xml",
+			repofile: "testdata/fedora-release-container.xml",
 		},
 		{
 			name: "should resolve libvirt-daemon-driver-storage-zfs",
@@ -280,7 +280,7 @@ func Test(t *testing.T) {
 				"systemd-rpm-macros-0:245.8-2.fc32",
 			},
 			nobest:   false,
-			repofile: "../../testdata/libvirt-daemon-driver-storage-zfs-fc32.xml",
+			repofile: "testdata/libvirt-daemon-driver-storage-zfs-fc32.xml",
 		},
 		{
 			name: "should resolve perl-PathTools",
@@ -326,7 +326,7 @@ func Test(t *testing.T) {
 				"gdbm-libs-1:1.18.1-3.fc32",
 			},
 			nobest:   false,
-			repofile: "../../testdata/perl-pathtools-fc32.xml",
+			repofile: "testdata/perl-pathtools-fc32.xml",
 		},
 		{
 			name: "should resolve libvirt-devel",
@@ -459,7 +459,7 @@ func Test(t *testing.T) {
 				"sed-0:4.5-5.fc32",
 			},
 			nobest:   false,
-			repofile: "../../testdata/libvirt-devel-fc32.xml",
+			repofile: "testdata/libvirt-devel-fc32.xml",
 		},
 		{name: "should resolve pkgconf-pkg-config",
 			requires: []string{
@@ -488,7 +488,7 @@ func Test(t *testing.T) {
 				"basesystem-0:11-9.fc32",
 			},
 			nobest:   false,
-			repofile: "../../testdata/pkgconf-pkg-config-fc32.xml",
+			repofile: "testdata/pkgconf-pkg-config-fc32.xml",
 		},
 		{name: "should resolve libvirt-daemon",
 			requires: []string{
@@ -628,7 +628,7 @@ func Test(t *testing.T) {
 				"pcre-0:8.44-1.fc32",
 				"cracklib-0:2.9.6-22.fc32",
 			},
-			repofile: "../../testdata/libvirt-daemon-fc32.xml",
+			repofile: "testdata/libvirt-daemon-fc32.xml",
 		},
 	}
 
@@ -730,7 +730,6 @@ func TestNewResolver(t *testing.T) {
 			install:  []string{"testa-0:1"},
 			exclude:  []string{},
 			solvable: true,
-			focus:    true,
 		},
 		// TODO: Add test cases.
 	}

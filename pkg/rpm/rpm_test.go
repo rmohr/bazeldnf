@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/rmohr/bazel-dnf/pkg/api"
+	"github.com/rmohr/bazeldnf/pkg/api"
 )
 
 func TestTokenizer_NextToken(t *testing.T) {

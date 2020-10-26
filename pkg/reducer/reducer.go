@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/rmohr/bazel-dnf/pkg/api"
+	"github.com/rmohr/bazeldnf/pkg/api"
 	"github.com/sirupsen/logrus"
 )
 

@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/crillab/gophersat/explain"
-	"github.com/rmohr/bazel-dnf/pkg/api"
-	"github.com/rmohr/bazel-dnf/pkg/rpm"
+	"github.com/rmohr/bazeldnf/pkg/api"
+	"github.com/rmohr/bazeldnf/pkg/rpm"
 	"github.com/sirupsen/logrus"
 
 	"github.com/crillab/gophersat/bf"

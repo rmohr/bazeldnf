@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "reducer",
+    srcs = [
+        "doc.go",
+        "reducer.go",
+    ],
+    importpath = "github.com/rmohr/bazeldnf/pkg/reducer",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/api",
+        "@com_github_sirupsen_logrus//:logrus",
+    ],
+)

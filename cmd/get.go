@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/rmohr/bazel-dnf/pkg/repo"
+	"github.com/rmohr/bazeldnf/pkg/repo"
 	"github.com/spf13/cobra"
 )
 

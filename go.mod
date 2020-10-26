@@ -1,4 +1,4 @@
-module github.com/rmohr/bazel-dnf
+module github.com/rmohr/bazeldnf
 
 go 1.14
 

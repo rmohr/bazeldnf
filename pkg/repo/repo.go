@@ -11,7 +11,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/rmohr/bazel-dnf/pkg/api"
+	"github.com/rmohr/bazeldnf/pkg/api"
 	log "github.com/sirupsen/logrus"
 )
 
