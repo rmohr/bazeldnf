@@ -1,0 +1,13 @@
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+go_repository(
+    name = "co_honnef_go_tools",
+    importpath = "honnef.co/go/tools",
+    sum = "h1:XJP7lxbSxWLOMNdBE4B/STaqVy6L73o0knwj2vIlxnw=",
+    version = "v0.0.0-20190102054323-c2f93a96b099",
+)
+
+rpm(
+    name = "test.rpm",
+    urls = ["http://something.rpm"],
+)

@@ -1,0 +1,24 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "bazel",
+    srcs = ["bazel.go"],
+    importpath = "github.com/rmohr/bazeldnf/pkg/bazel",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/api",
+        "@com_github_bazelbuild_buildtools//build:go_default_library",
+        "@com_github_bazelbuild_buildtools//edit:go_default_library",
+    ],
+)
+
+go_test(
+    name = "bazel_test",
+    srcs = ["bazel_test.go"],
+    data = glob(["testdata/**"]),
+    embed = [":bazel"],
+    deps = [
+        "//pkg/api",
+        "@com_github_onsi_gomega//:gomega",
+    ],
+)

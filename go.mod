@@ -3,6 +3,7 @@ module github.com/rmohr/bazeldnf
 go 1.14
 
 require (
+	github.com/bazelbuild/buildtools v0.0.0-20201023142455-8a8e1e724705
 	github.com/crillab/gophersat v1.3.1
 	github.com/onsi/gomega v1.10.3
 	github.com/sassoftware/go-rpmutils v0.1.1
