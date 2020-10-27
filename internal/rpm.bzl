@@ -38,9 +38,9 @@ def _rpm_impl(ctx):
     return update_attrs(ctx.attr, _rpm_attrs.keys(), {"sha256": download_info.sha256})
 
 _rpm_attrs = {
-        "urls": attr.string_list(),
-        "strip_prefix": attr.string(),
-        "sha256": attr.string(),
+    "urls": attr.string_list(),
+    "strip_prefix": attr.string(),
+    "sha256": attr.string(),
 }
 
 rpm = repository_rule(

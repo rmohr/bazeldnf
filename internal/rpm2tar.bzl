@@ -15,7 +15,7 @@
 def _rpm2tar_impl(ctx):
     args = ["rpm2tar", "-o", ctx.outputs.out.path]
     for rpm in ctx.files.rpms:
-        args += ["-i", rpm.path ]
+        args += ["-i", rpm.path]
     ctx.actions.run(
         inputs = ctx.files.rpms,
         outputs = [ctx.outputs.out],
@@ -30,9 +30,9 @@ _rpm2tar_attrs = {
         executable = True,
         cfg = "exec",
         allow_files = True,
-        default = Label("//cmd:cmd")
+        default = Label("//cmd:cmd"),
     ),
-    "out": attr.output(mandatory= True),
+    "out": attr.output(mandatory = True),
 }
 
 _rpm2tar = rule(
@@ -41,7 +41,7 @@ _rpm2tar = rule(
 )
 
 def rpm2tar(**kwargs):
-    _rpm2tar (
+    _rpm2tar(
         out = kwargs["name"] + ".tar",
         **kwargs
     )
