@@ -40,7 +40,7 @@ _rpm2tar = rule(
     attrs = _rpm2tar_attrs,
 )
 
-def rpm2tar(**kwargs):
+def rpmtree(**kwargs):
     _rpm2tar(
         out = kwargs["name"] + ".tar",
         **kwargs

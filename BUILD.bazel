@@ -10,9 +10,9 @@ buildifier(
 )
 
 load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
-load("//internal:rpm2tar.bzl", "rpm2tar")
+load("//internal:rpmtree.bzl", "rpmtree")
 
-rpm2tar(
+rpmtree(
     name = "something",
     rpms = [
         "@libvirt-libs-6.1.0-2.fc32.x86_64.rpm//rpm",
