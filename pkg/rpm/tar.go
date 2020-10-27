@@ -9,7 +9,7 @@ import (
 	"github.com/sassoftware/go-rpmutils/cpio"
 )
 
-func RPMToTar(rpmReader io.Reader, tarWriter *tar.Writer) (error) {
+func RPMToTar(rpmReader io.Reader, tarWriter *tar.Writer) error {
 	rpm, err := rpmutils.ReadRpm(rpmReader)
 	if err != nil {
 		return fmt.Errorf("failed to read rpm: %s", err)

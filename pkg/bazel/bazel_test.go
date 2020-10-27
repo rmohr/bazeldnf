@@ -9,22 +9,21 @@ import (
 	"github.com/rmohr/bazeldnf/pkg/api"
 )
 
-
 func TestPruneRPMs(t *testing.T) {
 	tests := []struct {
-		name string
-		orig string
+		name     string
+		orig     string
 		expected string
-		pkgs []*api.Package
+		pkgs     []*api.Package
 	}{
 		{
-			name: "should remove rpm entries",
-			orig: "testdata/WORKSPACE",
+			name:     "should remove rpm entries",
+			orig:     "testdata/WORKSPACE",
 			expected: "testdata/WORKSPACE.norpm",
 		},
 		{
-			name: "should replace rpm entries",
-			orig: "testdata/WORKSPACE",
+			name:     "should replace rpm entries",
+			orig:     "testdata/WORKSPACE",
 			expected: "testdata/WORKSPACE.pkgs",
 			pkgs: []*api.Package{
 				newPkg("a", "1.2.3"),
@@ -54,7 +53,6 @@ func TestPruneRPMs(t *testing.T) {
 		})
 	}
 }
-
 
 func newPkg(name string, version string) *api.Package {
 	pkg := &api.Package{}

@@ -33,7 +33,7 @@ func WriteWorkspace(dryRun bool, workspace *build.File, path string) error {
 	return ioutil.WriteFile(path, build.Format(workspace), 0666)
 }
 
-func PruneRPMs(workspace *build.File) () {
+func PruneRPMs(workspace *build.File) {
 	workspace.DelRules("rpm", "")
 }
 

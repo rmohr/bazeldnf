@@ -120,7 +120,7 @@ func (r RepoResolverImpl) resolvePrimary(repomd *api.Repomd, mirror *url.URL) (r
 	return reader, nil
 }
 
-func (r RepoResolverImpl) Resolve(out string) (error) {
+func (r RepoResolverImpl) Resolve(out string) error {
 	location, err := r.resolveMirror()
 	if err != nil {
 		return err

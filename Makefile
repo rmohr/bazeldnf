@@ -12,4 +12,7 @@ test: gazelle
 buildifier:
 	bazelisk run //:buildifier
 
-.PHONY: gazelle test deps-update buildifier
+gofmt:
+	gofmt -w pkg/.. cmd/..
+
+.PHONY: gazelle test deps-update buildifier gofmt

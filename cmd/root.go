@@ -10,7 +10,7 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "bazeldnf",
 	Short: "bazeldnf is a tool which can query RPM repos and determine package dependencies",
-	Long: `The tool allows resolving package dependencies mainly for the purpose to create custom-built SCRATCH containers consisting of RPMs, trimmed down to the absolute necessary`,
+	Long:  `The tool allows resolving package dependencies mainly for the purpose to create custom-built SCRATCH containers consisting of RPMs, trimmed down to the absolute necessary`,
 	Run: func(cmd *cobra.Command, args []string) {
 	},
 }
