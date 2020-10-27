@@ -1,4 +1,19 @@
 load("@bazel_gazelle//:def.bzl", "gazelle")
+load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
 
 # gazelle:prefix github.com/rmohr/bazeldnf
 gazelle(name = "gazelle")
+
+load("//internal:rpm2tar.bzl", "rpm2tar")
+
+rpm2tar(
+    name = "something",
+    rpms = [
+        "@libvirt-libs-6.1.0-2.fc32.x86_64.rpm//rpm",
+        "@libvirt-devel-6.1.0-2.fc32.x86_64.rpm//rpm",
+    ],
+)
+pkg_tar(
+    name = "whatever",
+    deps = [":something"],
+)

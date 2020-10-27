@@ -1,6 +1,7 @@
 package main
 
 import (
+	"archive/tar"
 	"fmt"
 	"os"
 
@@ -9,7 +10,7 @@ import (
 )
 
 var output string
-var input string
+var input []string
 
 func NewRPMCmd() *cobra.Command {
 	tarCmd := &cobra.Command{
@@ -18,23 +19,36 @@ func NewRPMCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			rpmStream := os.Stdin
 			tarStream := os.Stdout
-			if input != "-" {
-				rpmStream, err = os.Open(input)
-				if err != nil {
-					return fmt.Errorf("could not open rpm: %v", err)
-				}
-			}
-			if output != "-" {
+			if output != "" {
 				tarStream, err = os.Create(output)
 				if err != nil {
 					return fmt.Errorf("could not create tar: %v", err)
 				}
 			}
-			return rpm.RPMToTar(rpmStream, tarStream)
+			tarWriter := tar.NewWriter(tarStream)
+			defer tarWriter.Close()
+			if len(input) != 0 {
+				for _, i := range input {
+					rpmStream, err = os.Open(i)
+					if err != nil {
+						return fmt.Errorf("could not open rpm at %s: %v", i, err)
+					}
+					err = rpm.RPMToTar(rpmStream, tarWriter)
+					if err != nil {
+						return fmt.Errorf("could not convert rpm at %s: %v", i, err)
+					}
+				}
+			} else {
+				err := rpm.RPMToTar(rpmStream, tarWriter)
+				if err != nil {
+					return fmt.Errorf("could not convert rpm : %v", err)
+				}
+			}
+			return nil
 		},
 	}
 
-	tarCmd.PersistentFlags().StringVarP(&output, "output", "o", "-", "location of the resulting tar file (defaults to stdout)")
-	tarCmd.PersistentFlags().StringVarP(&input, "input", "i", "-", "location from where to read the rpm file (defaults to stdin)")
+	tarCmd.PersistentFlags().StringVarP(&output, "output", "o", "", "location of the resulting tar file (defaults to stdout)")
+	tarCmd.PersistentFlags().StringArrayVarP(&input, "input", "i", []string{}, "location from where to read the rpm file (defaults to stdin)")
 	return tarCmd
 }

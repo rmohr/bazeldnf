@@ -105,6 +105,10 @@ github.com/rmohr/go-rpmutils v0.1.2-0.20201027133903-4f997d006bc1 h1:JyKYMszhq8z
 github.com/rmohr/go-rpmutils v0.1.2-0.20201027133903-4f997d006bc1/go.mod h1:+IkA78IVx67OWHxozgXevwH3PECuQI13uwsEV80ar/U=
 github.com/rmohr/go-rpmutils v0.1.2-0.20201027142146-942eda8ee676 h1:i8IoWinRqvIBCVxLKZ6EBIvkPpwgcf0plft3xJ6aIME=
 github.com/rmohr/go-rpmutils v0.1.2-0.20201027142146-942eda8ee676/go.mod h1:+IkA78IVx67OWHxozgXevwH3PECuQI13uwsEV80ar/U=
+github.com/rmohr/go-rpmutils v0.1.2-0.20201027144033-dc435d9bbbb2 h1:DeYKTba0RBIiuToJYfRGXvC8dO1JnTq7K0/xph7HnUc=
+github.com/rmohr/go-rpmutils v0.1.2-0.20201027144033-dc435d9bbbb2/go.mod h1:+IkA78IVx67OWHxozgXevwH3PECuQI13uwsEV80ar/U=
+github.com/rmohr/go-rpmutils v0.1.2-0.20201027145229-ce5101763ca7 h1:Y1oFlejaBMqZnZSK/C9HU383LkAbN8+fbK1mHcKxfBA=
+github.com/rmohr/go-rpmutils v0.1.2-0.20201027145229-ce5101763ca7/go.mod h1:+IkA78IVx67OWHxozgXevwH3PECuQI13uwsEV80ar/U=
 github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6SoW27p1b0cqNHllgS5HIMJraePCO15w5zCzIWYg=
 github.com/russross/blackfriday/v2 v2.0.1/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQDYRxCVz55jmeOWTM=
 github.com/shurcooL/sanitized_anchor_name v1.0.0/go.mod h1:1NzhyTcUVG4SuEtjjoZeVRXNmyL/1OwPU0+IJeTBvfc=

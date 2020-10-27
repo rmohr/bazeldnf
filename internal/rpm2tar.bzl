@@ -13,9 +13,11 @@
 # limitations under the License.
 
 def _rpm2tar_impl(ctx):
-    args = ["rpm2tar", "-o", ctx.outputs.out.path, "-i", ctx.files.rpm[0].path ]
+    args = ["rpm2tar", "-o", ctx.outputs.out.path]
+    for rpm in ctx.files.rpms:
+        args += ["-i", rpm.path ]
     ctx.actions.run(
-        inputs = ctx.files.rpm,
+        inputs = ctx.files.rpms,
         outputs = [ctx.outputs.out],
         arguments = args,
         progress_message = "Converting %s to tar" % ctx.label.name,
@@ -23,7 +25,7 @@ def _rpm2tar_impl(ctx):
     )
 
 _rpm2tar_attrs = {
-    "rpm": attr.label(allow_files = True),
+    "rpms": attr.label_list(allow_files = True),
     "_bazeldnf": attr.label(
         executable = True,
         cfg = "exec",

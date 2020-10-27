@@ -487,8 +487,8 @@ go_repository(
     name = "com_github_sassoftware_go_rpmutils",
     importpath = "github.com/sassoftware/go-rpmutils",
     replace = "github.com/rmohr/go-rpmutils",
-    sum = "h1:quW4NTPPZuQ3c2Z8lFa2t6ptGapkZ1bTLD1AtvBbtQI=",
-    version = "v0.1.2-0.20201019160740-3eae840fd906",
+    sum = "h1:Y1oFlejaBMqZnZSK/C9HU383LkAbN8+fbK1mHcKxfBA=",
+    version = "v0.1.2-0.20201027145229-ce5101763ca7",
 )
 
 go_repository(
@@ -785,8 +785,35 @@ go_repository(
     version = "v1.10.0",
 )
 
+go_repository(
+    name = "com_github_klauspost_compress",
+    importpath = "github.com/klauspost/compress",
+    sum = "h1:bPb7nMRdOZYDrpPMTA3EInUQrdgoBinqUuSwlGdKDdE=",
+    version = "v1.11.1",
+)
+
 go_rules_dependencies()
 
 go_register_toolchains()
 
 gazelle_dependencies()
+
+load("//internal:rpm.bzl", "rpm")
+
+rpm(
+    name = "libvirt-libs-6.1.0-2.fc32.x86_64.rpm",
+    sha256 = "3a0a3d88c6cb90008fbe49fe05e7025056fb9fa3a887c4a78f79e63f8745c845",
+    urls = [
+        "https://download-ib01.fedoraproject.org/pub/fedora/linux/releases/32/Everything/x86_64/os/Packages/l/libvirt-libs-6.1.0-2.fc32.x86_64.rpm",
+        "https://storage.googleapis.com/builddeps/3a0a3d88c6cb90008fbe49fe05e7025056fb9fa3a887c4a78f79e63f8745c845",
+    ],
+)
+
+rpm(
+    name = "libvirt-devel-6.1.0-2.fc32.x86_64.rpm",
+    sha256 = "2ebb715341b57a74759aff415e0ff53df528c49abaa7ba5b794b4047461fa8d6",
+    urls = [
+        "https://download-ib01.fedoraproject.org/pub/fedora/linux/releases/32/Everything/x86_64/os/Packages/l/libvirt-devel-6.1.0-2.fc32.x86_64.rpm",
+        "https://storage.googleapis.com/builddeps/2ebb715341b57a74759aff415e0ff53df528c49abaa7ba5b794b4047461fa8d6",
+    ],
+)
