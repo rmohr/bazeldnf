@@ -13,7 +13,7 @@ func RPMToTar(rpmReader io.Reader, tarWriter io.Writer) (error) {
 	if err != nil {
 		return fmt.Errorf("failed to read rpm: %s", err)
 	}
-	payloadReader, err := rpm.PayloadReader()
+	payloadReader, err := rpm.RawUncompressedRPMPayloadReader()
 	if err != nil {
 		return fmt.Errorf("failed to open the payload reader: %s", err)
 	}

@@ -25,7 +25,7 @@ func NewRPMCmd() *cobra.Command {
 				}
 			}
 			if output != "-" {
-				tarStream, err = os.Open(output)
+				tarStream, err = os.Create(output)
 				if err != nil {
 					return fmt.Errorf("could not create tar: %v", err)
 				}
