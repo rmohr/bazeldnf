@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "bazeldnf.go",
         "get.go",
+        "reduce.go",
         "resolve.go",
         "root.go",
         "rpm2tar.go",
@@ -12,6 +13,7 @@ go_library(
     importpath = "github.com/rmohr/bazeldnf/cmd",
     visibility = ["//visibility:private"],
     deps = [
+        "//pkg/api",
         "//pkg/reducer",
         "//pkg/repo",
         "//pkg/rpm",

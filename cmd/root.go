@@ -18,6 +18,7 @@ var rootCmd = &cobra.Command{
 func Execute() {
 	rootCmd.AddCommand(NewGetCmd())
 	rootCmd.AddCommand(NewResolveCmd())
+	rootCmd.AddCommand(NewReduceCmd())
 	rootCmd.AddCommand(NewRPMCmd())
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)

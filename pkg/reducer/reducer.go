@@ -3,7 +3,6 @@ package reducer
 import (
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -96,13 +95,6 @@ func (r *RepoReducer) Resolve(packages []string) (involved []*api.Package, err e
 		involved = append(involved, r.provides[k]...)
 		current = append(current, k)
 	}
-	fmt.Println(strings.Join(current, ","))
-	testrepo := &api.Repository{}
-	for _, pkg := range involved {
-		testrepo.Packages = append(testrepo.Packages, *pkg)
-	}
-	data, _ := xml.MarshalIndent(testrepo, "", "  ")
-	ioutil.WriteFile("test.xml", data, 0666)
 	return involved, nil
 }
 
