@@ -17,7 +17,14 @@ go_library(
 
 go_test(
     name = "rpm_test",
-    srcs = ["rpm_test.go"],
+    srcs = [
+        "rpm_test.go",
+        "tar_test.go",
+    ],
+    data = ["@libvirt-libs-6.1.0-2.fc32.x86_64.rpm//rpm"],
     embed = [":rpm"],
-    deps = ["//pkg/api"],
+    deps = [
+        "//pkg/api",
+        "@com_github_onsi_gomega//:gomega",
+    ],
 )

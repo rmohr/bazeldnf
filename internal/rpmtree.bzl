@@ -13,16 +13,41 @@
 # limitations under the License.
 
 def _rpm2tar_impl(ctx):
-    args = ["rpm2tar", "-o", ctx.outputs.out.path]
+    rpms = []
     for rpm in ctx.files.rpms:
-        args += ["-i", rpm.path]
+        rpms += ["-i", rpm.path]
+
+    out = ctx.outputs.out
+    args = ["rpm2tar", "-o", out.path] + rpms
     ctx.actions.run(
         inputs = ctx.files.rpms,
-        outputs = [ctx.outputs.out],
+        outputs = [out],
         arguments = args,
         progress_message = "Converting %s to tar" % ctx.label.name,
         executable = ctx.executable._bazeldnf,
     )
+
+    out = ctx.outputs.hdrs
+    args = ["rpm2tar", "-o", out.path] + rpms
+    ctx.actions.run(
+        inputs = ctx.files.rpms,
+        outputs = [out],
+        arguments = args,
+        progress_message = "Converting %s to tar" % ctx.label.name,
+        executable = ctx.executable._bazeldnf,
+    )
+
+    out = ctx.outputs.libs
+    args = ["rpm2tar", "-o", out.path] + rpms
+    ctx.actions.run(
+        inputs = ctx.files.rpms,
+        outputs = [out],
+        arguments = args,
+        progress_message = "Converting %s to tar" % ctx.label.name,
+        executable = ctx.executable._bazeldnf,
+    )
+
+    return [DefaultInfo(files = depset([ctx.outputs.out]))]
 
 _rpm2tar_attrs = {
     "rpms": attr.label_list(allow_files = True),
@@ -33,6 +58,8 @@ _rpm2tar_attrs = {
         default = Label("//cmd:cmd"),
     ),
     "out": attr.output(mandatory = True),
+    "libs": attr.output(mandatory = True),
+    "hdrs": attr.output(mandatory = True),
 }
 
 _rpm2tar = rule(
@@ -43,5 +70,7 @@ _rpm2tar = rule(
 def rpmtree(**kwargs):
     _rpm2tar(
         out = kwargs["name"] + ".tar",
+        libs = kwargs["name"] + "/libs.tar",
+        hdrs = kwargs["name"] + "/hdrs.tar",
         **kwargs
     )

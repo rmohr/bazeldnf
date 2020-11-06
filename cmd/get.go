@@ -25,7 +25,7 @@ func NewGetCmd() *cobra.Command {
 	}
 
 	getCmd.PersistentFlags().StringVarP(&getopts.arch, "arch", "a", "x86_64", "target fedora architecture")
-	getCmd.PersistentFlags().StringVarP(&getopts.version, "version", "v", "", "target fedora version")
+	getCmd.PersistentFlags().StringVar(&getopts.version, "fc", "", "target fedora version")
 	getCmd.PersistentFlags().StringVarP(&getopts.out, "output", "o", "primary.xml", "where to write the repository information")
 	getCmd.MarkFlagRequired("arch")
 	getCmd.MarkFlagRequired("version")
