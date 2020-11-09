@@ -4,6 +4,7 @@ go_library(
     name = "cmd_lib",
     srcs = [
         "bazeldnf.go",
+        "fetch.go",
         "init.go",
         "reduce.go",
         "resolve.go",
@@ -14,12 +15,14 @@ go_library(
     visibility = ["//visibility:private"],
     deps = [
         "//pkg/api",
+        "//pkg/api/bazeldnf",
         "//pkg/reducer",
         "//pkg/repo",
         "//pkg/rpm",
         "//pkg/sat",
         "@com_github_sirupsen_logrus//:logrus",
         "@com_github_spf13_cobra//:cobra",
+        "@io_k8s_sigs_yaml//:yaml",
     ],
 )
 

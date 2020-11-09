@@ -13,9 +13,9 @@ type GetOpts struct {
 
 var getopts = GetOpts{}
 
-func NewGetCmd() *cobra.Command {
+func NewInitCmd() *cobra.Command {
 
-	getCmd := &cobra.Command{
+	initCmd := &cobra.Command{
 		Use:   "init",
 		Short: "Create basic repo.yaml files for fedora releases",
 		Long:  `Create proper repo information with release- and update repos for fedora releases`,
@@ -24,12 +24,12 @@ func NewGetCmd() *cobra.Command {
 		},
 	}
 
-	getCmd.Flags().StringVarP(&getopts.arch, "arch", "a", "x86_64", "target fedora architecture")
-	getCmd.Flags().StringVarP(&getopts.fc, "fc", "", "", "target fedora core release")
-	getCmd.Flags().StringVarP(&getopts.out, "output", "o", "repo.yaml", "where to write the repository information")
-	err := getCmd.MarkFlagRequired("fc")
+	initCmd.Flags().StringVarP(&getopts.arch, "arch", "a", "x86_64", "target fedora architecture")
+	initCmd.Flags().StringVarP(&getopts.fc, "fc", "", "", "target fedora core release")
+	initCmd.Flags().StringVarP(&getopts.out, "output", "o", "repo.yaml", "where to write the repository information")
+	err := initCmd.MarkFlagRequired("fc")
 	if err != nil {
 		panic(err)
 	}
-	return getCmd
+	return initCmd
 }

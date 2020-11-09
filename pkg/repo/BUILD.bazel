@@ -1,8 +1,10 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "repo",
     srcs = [
+        "cache.go",
+        "fetch.go",
         "init.go",
         "repo.go",
     ],
@@ -14,4 +16,11 @@ go_library(
         "@com_github_sirupsen_logrus//:logrus",
         "@io_k8s_sigs_yaml//:yaml",
     ],
+)
+
+go_test(
+    name = "repo_test",
+    srcs = ["repo_test.go"],
+    data = glob(["testdata/**"]),
+    embed = [":repo"],
 )

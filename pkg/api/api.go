@@ -18,6 +18,14 @@ type File struct {
 	Resources struct {
 		URLs []URL `xml:"url"`
 	} `xml:"resources"`
+	Timestamp    string `xml:"timestamp"`
+	Size         string `xml:"size"`
+	Verification struct {
+		Hash []struct {
+			Hash string `xml:",chardata"`
+			Type string `xml:"type,attr"`
+		} `xml:"hash"`
+	} `xml:"verification"`
 }
 
 type Metalink struct {
@@ -25,6 +33,17 @@ type Metalink struct {
 	Files   struct {
 		File []File ` xml:"file"`
 	} `xml:"files"`
+}
+
+func (m *Metalink) Repomod() (*File) {
+	var repomod *File
+	for _, sec := range m.Files.File {
+		if sec.Name == "repomd.xml" {
+			repomod = &sec
+			break
+		}
+	}
+	return repomod
 }
 
 type Data struct {

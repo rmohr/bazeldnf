@@ -1,2 +1,4 @@
 /bazel-*
 /.idea
+repo.yaml
+.bazeldnf

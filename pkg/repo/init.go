@@ -50,8 +50,9 @@ func (r *RepoInit) Init() error {
 }
 
 func NewRemoteInit(os string, arch string, repoFile string) *RepoInit {
+	updateOS := os
 	if !strings.HasPrefix("f", os) {
-		os = "f" + os
+		updateOS = "f" + os
 	}
 
 	return &RepoInit{
@@ -59,6 +60,6 @@ func NewRemoteInit(os string, arch string, repoFile string) *RepoInit {
 		Arch:               arch,
 		RepoFile:           repoFile,
 		PrimaryMetaLinkURL: fmt.Sprintf("https://mirrors.fedoraproject.org/metalink?repo=fedora-%s&arch=%s", os, arch),
-		UpdateMetaLinkURL:  fmt.Sprintf("https://mirrors.fedoraproject.org/metalink?repo=updates-released-%s&arch=%s", os, arch),
+		UpdateMetaLinkURL:  fmt.Sprintf("https://mirrors.fedoraproject.org/metalink?repo=updates-released-%s&arch=%s", updateOS, arch),
 	}
 }

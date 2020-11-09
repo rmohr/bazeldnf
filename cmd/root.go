@@ -16,7 +16,8 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
-	rootCmd.AddCommand(NewGetCmd())
+	rootCmd.AddCommand(NewFetchCmd())
+	rootCmd.AddCommand(NewInitCmd())
 	rootCmd.AddCommand(NewResolveCmd())
 	rootCmd.AddCommand(NewReduceCmd())
 	rootCmd.AddCommand(NewRPMCmd())
