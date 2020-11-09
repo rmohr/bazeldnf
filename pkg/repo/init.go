@@ -50,16 +50,25 @@ func (r *RepoInit) Init() error {
 }
 
 func NewRemoteInit(os string, arch string, repoFile string) *RepoInit {
-	updateOS := os
-	if !strings.HasPrefix("f", os) {
-		updateOS = "f" + os
-	}
-
+	os = strings.TrimPrefix(os, "f")
 	return &RepoInit{
 		OS:                 os,
 		Arch:               arch,
 		RepoFile:           repoFile,
 		PrimaryMetaLinkURL: fmt.Sprintf("https://mirrors.fedoraproject.org/metalink?repo=fedora-%s&arch=%s", os, arch),
-		UpdateMetaLinkURL:  fmt.Sprintf("https://mirrors.fedoraproject.org/metalink?repo=updates-released-%s&arch=%s", updateOS, arch),
+		UpdateMetaLinkURL:  fmt.Sprintf("https://mirrors.fedoraproject.org/metalink?repo=updates-released-f%s&arch=%s", os, arch),
 	}
+}
+
+func LoadRepoFile(file string) (*bazeldnf.Repositories, error) {
+	repofile, err := ioutil.ReadFile(file)
+	if err != nil {
+		return nil, err
+	}
+	repos := &bazeldnf.Repositories{}
+	err = yaml.Unmarshal(repofile, repos)
+	if err != nil {
+		return nil, err
+	}
+	return repos, err
 }

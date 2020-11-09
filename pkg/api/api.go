@@ -35,7 +35,7 @@ type Metalink struct {
 	} `xml:"files"`
 }
 
-func (m *Metalink) Repomod() (*File) {
+func (m *Metalink) Repomod() *File {
 	var repomod *File
 	for _, sec := range m.Files.File {
 		if sec.Name == "repomd.xml" {
@@ -79,6 +79,17 @@ type Repomd struct {
 	Rpm      string   `xml:"rpm,attr"`
 	Revision string   `xml:"revision"`
 	Data     []Data   `xml:"data"`
+}
+
+func (r *Repomd) Primary() *Data {
+	var primary *Data
+	for _, data := range r.Data {
+		if data.Type == "primary" {
+			primary = &data
+			break
+		}
+	}
+	return primary
 }
 
 type Entry struct {

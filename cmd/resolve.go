@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 
+	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 	"github.com/rmohr/bazeldnf/pkg/reducer"
+	"github.com/rmohr/bazeldnf/pkg/repo"
 	"github.com/rmohr/bazeldnf/pkg/sat"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -15,6 +17,7 @@ type resolveOpts struct {
 	nobest        bool
 	arch          string
 	fedoraRelease string
+	repofile      string
 }
 
 var resolveopts = resolveOpts{}
@@ -27,7 +30,15 @@ func NewResolveCmd() *cobra.Command {
 		Long:  `resolves dependencies of the given packages with the assumption of a SCRATCH container as install target`,
 		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, required []string) error {
-			repo := reducer.NewRepoReducer(resolveopts.in, resolveopts.lang, resolveopts.fedoraRelease, resolveopts.arch)
+			repos := &bazeldnf.Repositories{}
+			if len(resolveopts.in) == 0 {
+				var err error
+				repos, err = repo.LoadRepoFile(reduceopts.repofile)
+				if err != nil {
+					return err
+				}
+			}
+			repo := reducer.NewRepoReducer(repos, resolveopts.in, resolveopts.lang, resolveopts.fedoraRelease, resolveopts.arch, ".bazeldnf")
 			logrus.Info("Loading packages.")
 			if err := repo.Load(); err != nil {
 				return err
@@ -60,9 +71,10 @@ func NewResolveCmd() *cobra.Command {
 		},
 	}
 
-	resolveCmd.PersistentFlags().StringArrayVarP(&resolveopts.in, "input", "i", []string{"primary.xml"}, "primary.xml of the repository")
+	resolveCmd.PersistentFlags().StringArrayVarP(&resolveopts.in, "input", "i", nil, "primary.xml of the repository")
 	resolveCmd.PersistentFlags().StringVarP(&resolveopts.fedoraRelease, "fedora-release", "f", "fedora-release-container", "fedora base system to choose from (e.g. fedora-release-server, fedora-release-container, ...)")
 	resolveCmd.PersistentFlags().StringVarP(&resolveopts.arch, "arch", "a", "x86_64", "target fedora architecture")
 	resolveCmd.PersistentFlags().BoolVarP(&resolveopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
+	resolveCmd.PersistentFlags().StringVarP(&resolveopts.repofile, "repofile", "r", "repo.yaml", "repository information file. Will be used by default if no explicit inputs are provided.")
 	return resolveCmd
 }

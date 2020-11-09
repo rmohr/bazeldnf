@@ -22,7 +22,6 @@ go_library(
         "//pkg/sat",
         "@com_github_sirupsen_logrus//:logrus",
         "@com_github_spf13_cobra//:cobra",
-        "@io_k8s_sigs_yaml//:yaml",
     ],
 )
 

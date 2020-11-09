@@ -1,12 +1,14 @@
 package repo
 
 import (
+	"compress/gzip"
 	"encoding/xml"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 
+	"github.com/rmohr/bazeldnf/pkg/api"
 	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 )
 
@@ -51,4 +53,42 @@ func (r *CacheHelper) UnmarshalFromRepoDir(repo *bazeldnf.Repository, name strin
 	}
 	defer reader.Close()
 	return xml.NewDecoder(reader).Decode(obj)
+}
+
+func (r *CacheHelper) CurrentPrimary(repo *bazeldnf.Repository) (*api.Repository, error) {
+	repomd := &api.Repomd{}
+	if err := r.UnmarshalFromRepoDir(repo, "repomd.xml", repomd); err != nil {
+		return nil, err
+	}
+	primary := repomd.Primary()
+	primaryName := filepath.Base(primary.Location.Href)
+	file, err := r.OpenFromRepoDir(repo, primaryName)
+	if err != nil {
+		return nil, err
+	}
+
+	defer file.Close()
+	reader, err := gzip.NewReader(file)
+	if err != nil {
+		return nil, err
+	}
+	defer reader.Close()
+
+	repository := &api.Repository{}
+	err = xml.NewDecoder(reader).Decode(repository)
+	if err != nil {
+		return nil, err
+	}
+	return repository, nil
+}
+
+func (r *CacheHelper) CurrentPrimaries(repos *bazeldnf.Repositories) (primaries []*api.Repository, err error) {
+	for _, repo := range repos.Repositories {
+		primary, err := r.CurrentPrimary(&repo)
+		if err != nil {
+			return nil, err
+		}
+		primaries = append(primaries, primary)
+	}
+	return primaries, err
 }

@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	"github.com/rmohr/bazeldnf/pkg/api"
+	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
+	"github.com/rmohr/bazeldnf/pkg/repo"
 	"github.com/sirupsen/logrus"
 )
 
@@ -18,12 +20,14 @@ type RepoReducer struct {
 	implicitRequires []string
 	arch             string
 	architectures    []string
+	repos            *bazeldnf.Repositories
+	cacheHelper      *repo.CacheHelper
 }
 
 func (r *RepoReducer) Load() error {
-	for _, repo := range r.repoFiles {
+	for _, rpmrepo := range r.repoFiles {
 		repoFile := &api.Repository{}
-		f, err := os.Open(repo)
+		f, err := os.Open(rpmrepo)
 		if err != nil {
 			return err
 		}
@@ -33,6 +37,13 @@ func (r *RepoReducer) Load() error {
 			return err
 		}
 		r.packages = append(r.packages, repoFile.Packages...)
+	}
+	repos, err := r.cacheHelper.CurrentPrimaries(r.repos)
+	if err != nil {
+		return err
+	}
+	for _, rpmrepo := range repos {
+		r.packages = append(r.packages, rpmrepo.Packages...)
 	}
 
 	for i, p := range r.packages {
@@ -115,7 +126,7 @@ func (r *RepoReducer) requires(p *api.Package) (wants []*api.Package) {
 	return wants
 }
 
-func NewRepoReducer(repoFiles []string, lang string, fedoraRelease string, arch string) *RepoReducer {
+func NewRepoReducer(repos *bazeldnf.Repositories, repoFiles []string, lang string, fedoraRelease string, arch string, cachDir string) *RepoReducer {
 	return &RepoReducer{
 		packages:         nil,
 		lang:             lang,
@@ -123,6 +134,8 @@ func NewRepoReducer(repoFiles []string, lang string, fedoraRelease string, arch 
 		repoFiles:        repoFiles,
 		provides:         map[string][]*api.Package{},
 		architectures:    []string{"noarch", arch},
+		repos:            repos,
+		cacheHelper:      &repo.CacheHelper{CacheDir: cachDir},
 	}
 }
 

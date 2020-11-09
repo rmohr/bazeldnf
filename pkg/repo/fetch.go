@@ -2,6 +2,7 @@ package repo
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 	"path"
 	"path/filepath"
@@ -111,13 +112,7 @@ func (r *RepoFetcherImpl) resolveRepomd(repo *bazeldnf.Repository, file *api.Fil
 }
 
 func (r *RepoFetcherImpl) fetchPrimary(repo *bazeldnf.Repository, repomd *api.Repomd, mirror *url.URL) (err error) {
-	var primary *api.Data
-	for _, data := range repomd.Data {
-		if data.Type == "primary" {
-			primary = &data
-			break
-		}
-	}
+	primary := repomd.Primary()
 	if primary == nil {
 		return fmt.Errorf("No 'primary' file referenced in repomd")
 	}
@@ -143,4 +138,14 @@ func (r *RepoFetcherImpl) fetchPrimary(repo *bazeldnf.Repository, repomd *api.Re
 		return fmt.Errorf("Failed to write primary.xml from %s to file: %v", primaryURL, err)
 	}
 	return nil
+}
+
+type Getter interface {
+	Get(url string) (resp *http.Response, err error)
+}
+
+type getterImpl struct{}
+
+func (*getterImpl) Get(url string) (resp *http.Response, err error) {
+	return http.Get(url)
 }

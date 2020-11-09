@@ -6,7 +6,6 @@ go_library(
         "cache.go",
         "fetch.go",
         "init.go",
-        "repo.go",
     ],
     importpath = "github.com/rmohr/bazeldnf/pkg/repo",
     visibility = ["//visibility:public"],
