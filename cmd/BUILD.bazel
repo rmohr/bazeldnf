@@ -4,7 +4,7 @@ go_library(
     name = "cmd_lib",
     srcs = [
         "bazeldnf.go",
-        "get.go",
+        "init.go",
         "reduce.go",
         "resolve.go",
         "root.go",

@@ -9,6 +9,7 @@ require (
 	github.com/sassoftware/go-rpmutils v0.1.1
 	github.com/sirupsen/logrus v1.6.0
 	github.com/spf13/cobra v1.0.0
+	sigs.k8s.io/yaml v1.2.0
 )
 
 replace github.com/sassoftware/go-rpmutils v0.1.1 => github.com/rmohr/go-rpmutils v0.1.2-0.20201027145229-ce5101763ca7

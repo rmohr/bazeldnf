@@ -5,6 +5,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -12,7 +13,9 @@ import (
 	"strings"
 
 	"github.com/rmohr/bazeldnf/pkg/api"
+	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 	log "github.com/sirupsen/logrus"
+	"sigs.k8s.io/yaml"
 )
 
 type RepoResolver interface {
@@ -20,14 +23,16 @@ type RepoResolver interface {
 }
 
 type RepoResolverImpl struct {
-	OS          string
-	Arch        string
-	MetaLinkURL string
+	OS                 string
+	Arch               string
+	PrimaryMetaLinkURL string
+	UpdateMetaLinkURL  string
+	RepoFile           string
 }
 
 func (r RepoResolverImpl) resolveMirror() (*api.File, error) {
-	log.Infof("Resolving mirror from %s", r.MetaLinkURL)
-	resp, err := http.Get(r.MetaLinkURL)
+	log.Infof("Resolving mirror from %s", r.PrimaryMetaLinkURL)
+	resp, err := http.Get(r.PrimaryMetaLinkURL)
 	if err != nil {
 		return nil, err
 	}
@@ -148,10 +153,36 @@ func (r RepoResolverImpl) Resolve(out string) error {
 	return nil
 }
 
-func NewRemoteRepoResolver(os string, arch string) RepoResolver {
+func (r RepoResolverImpl) Init() error {
+	repos := &bazeldnf.Repositories{
+		Repositories: []bazeldnf.Repository{
+			{
+				Disabled: false,
+				Metalink: r.PrimaryMetaLinkURL,
+				Baseurl:  "",
+				Arch:     r.Arch,
+			},
+			{
+				Disabled: false,
+				Metalink: r.UpdateMetaLinkURL,
+				Baseurl:  "",
+				Arch:     r.Arch,
+			},
+		},
+	}
+	data, err := yaml.Marshal(repos)
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(r.RepoFile, data, 0660)
+}
+
+func NewRemoteRepoResolver(os string, arch string, repoFile string) RepoResolver {
 	return &RepoResolverImpl{
-		OS:          os,
-		Arch:        arch,
-		MetaLinkURL: fmt.Sprintf("https://mirrors.fedoraproject.org/metalink?repo=fedora-%s&arch=%s", os, arch),
+		OS:                 os,
+		Arch:               arch,
+		RepoFile:           repoFile,
+		PrimaryMetaLinkURL: fmt.Sprintf("https://mirrors.fedoraproject.org/metalink?repo=fedora-%s&arch=%s", os, arch),
+		UpdateMetaLinkURL:  fmt.Sprintf("https://mirrors.fedoraproject.org/metalink?repo=updates-released-%s&arch=%s", os, arch),
 	}
 }

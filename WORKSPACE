@@ -792,6 +792,13 @@ go_repository(
     version = "v1.11.1",
 )
 
+go_repository(
+    name = "io_k8s_sigs_yaml",
+    importpath = "sigs.k8s.io/yaml",
+    sum = "h1:kr/MCeFWJWTwyaHoR9c8EjH9OumOmoF9YGiZd7lFm/Q=",
+    version = "v1.2.0",
+)
+
 go_rules_dependencies()
 
 go_register_toolchains()
