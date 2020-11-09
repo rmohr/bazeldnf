@@ -1,13 +1,14 @@
-#bazeldnf
+# bazeldnf
 
-Bazel library which allows dealing with the whole RPM dependency lifecycle solely with pure go rules and a static go binary.
+Bazel library which allows dealing with the whole RPM dependency lifecycle
+solely with pure go rules and a static go binary.
 
 ## Bazel rules
 
 ### rpm rule
 
-The `rpm` rule represents a pure RPM dependency. This dependency is not processed in any way.
- They can be added to your `WORKSPACE` file like this:
+The `rpm` rule represents a pure RPM dependency. This dependency is not
+processed in any way.  They can be added to your `WORKSPACE` file like this:
 
 ```python
 rpm(
@@ -22,8 +23,8 @@ rpm(
 
 ### rpmtree
 
-`rpmtree` Takes a list of `rpm` dependencies and merges them into a single `tar` package.
-`rpmtree` rules can be added like this to your `BUILD` files:
+`rpmtree` Takes a list of `rpm` dependencies and merges them into a single
+`tar` package.  `rpmtree` rules can be added like this to your `BUILD` files:
 
 ```python
 rpmtree(
@@ -37,7 +38,8 @@ rpmtree(
 )
 ```
 
-Since `rpmarchive` is just a tar archive, it can be put into a container immediately:
+Since `rpmarchive` is just a tar archive, it can be put into a container
+immediately:
 
 ```python
 container_layer(
@@ -64,18 +66,21 @@ cc_library(
 )
 ```
 
-The `include_dir` attribute for `rpmtree` tells the target to include headers in that directory in `<target>/hdrs.tar`.
-The same for the `lib_dir` attribute on `rpmtree` for libarires. It can be accessed via `<target>/libs.tar`.
-These two tar files have in addition `include_dir` and `lib_dir` prefixes stripped from the resulting archive,
-which should make it unnecessary to use the strip options on `cc_library`.
+The `include_dir` attribute for `rpmtree` tells the target to include headers
+in that directory in `<target>/hdrs.tar`.  The same for the `lib_dir` attribute
+on `rpmtree` for libarires. It can be accessed via `<target>/libs.tar`.  These
+two tar files have in addition `include_dir` and `lib_dir` prefixes stripped
+from the resulting archive, which should make it unnecessary to use the strip
+options on `cc_library`.
 
 ## Dependency resolution
 
-One key part of managing RPM dependencies and RPM repository updates via bazel is the ability to
-resolve RPM dependencies from repos without external tools like `dnf` or `yum` and write the resolved
-dependencies to your `WORKSPACE`.
+One key part of managing RPM dependencies and RPM repository updates via bazel
+is the ability to resolve RPM dependencies from repos without external tools
+like `dnf` or `yum` and write the resolved dependencies to your `WORKSPACE`.
 
-Here an example on how to add libvirt and bash to your WORKSPACE and BUILD files.
+Here an example on how to add libvirt and bash to your WORKSPACE and BUILD
+files.
 
 First write the `repo.yaml` file which contains some basic rpm repos to query:
 
@@ -83,8 +88,8 @@ First write the `repo.yaml` file which contains some basic rpm repos to query:
 bazeldnf init --fc 32 # write a repo.yaml file containing the usual release and update repos for fc32
 ```
 
-Then write a `rpmtree` rule called `libvirttree` to your BUILD file and all corresponding RPM dependencies into your WORKSPACE
-for libvirt:
+Then write a `rpmtree` rule called `libvirttree` to your BUILD file and all
+corresponding RPM dependencies into your WORKSPACE for libvirt:
 ```bash
 bazeldnf resolve --workspace /my/WORKSPACE --buildfile /my/BUILD.bazel --rpmtree libvirttree libvirt
 ```
@@ -100,3 +105,22 @@ Finally prune all unreferenced old RPM files:
 ```bash
 bazeldnf prune --workspace /my/WORKSPACE
 ```
+
+### Dependency resolution limitations
+
+##### Missing features
+
+ * Weighting packages (like prefer `libcurl-minimal` over `libcurl` if one of
+   their resources is requested)
+ * Resolving `requires` entries which contain boolean logic like `(gcc if something)`
+ * If `--nobest` is supplied, newer packages don't get a higher weight
+
+##### Deliberately not supported
+
+The goal is to build minimal containers with RPMs based on scratch containers.
+Therefore the following RPM repository hints will be ignored:
+
+ * `recommends`
+ * `supplements`
+ * `suggests`
+ * `enhances`
