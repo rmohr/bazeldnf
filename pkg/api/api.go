@@ -5,6 +5,11 @@ import (
 	"fmt"
 )
 
+const (
+	PrimaryFileType   = "primary"
+	FilelistsFileType = "filelists"
+)
+
 type URL struct {
 	Text       string `xml:",chardata"`
 	Protocol   string `xml:"protocol,attr"`
@@ -81,10 +86,21 @@ type Repomd struct {
 	Data     []Data   `xml:"data"`
 }
 
-func (r *Repomd) Primary() *Data {
+func (r *Repomd) File(fileType string) *Data {
 	var primary *Data
 	for _, data := range r.Data {
-		if data.Type == "primary" {
+		if data.Type == fileType {
+			primary = &data
+			break
+		}
+	}
+	return primary
+}
+
+func (r *Repomd) Filelists() *Data {
+	var primary *Data
+	for _, data := range r.Data {
+		if data.Type == "filelists" {
 			primary = &data
 			break
 		}
@@ -210,4 +226,36 @@ type Repository struct {
 	Rpm          string    `xml:"rpm,attr"`
 	PackageCount string    `xml:"packages,attr"`
 	Packages     []Package `xml:"package"`
+}
+
+type Filelists struct {
+	XMLName  xml.Name `xml:"filelists"`
+	Text     string   `xml:",chardata"`
+	Xmlns    string   `xml:"xmlns,attr"`
+	Packages string   `xml:"packages,attr"`
+	Package  []struct {
+		Text    string `xml:",chardata"`
+		Pkgid   string `xml:"pkgid,attr"`
+		Name    string `xml:"name,attr"`
+		Arch    string `xml:"arch,attr"`
+		Version struct {
+			Text  string `xml:",chardata"`
+			Epoch string `xml:"epoch,attr"`
+			Ver   string `xml:"ver,attr"`
+			Rel   string `xml:"rel,attr"`
+		} `xml:"version"`
+		File []struct {
+			Text string `xml:",chardata"`
+			Type string `xml:"type,attr"`
+		} `xml:"file"`
+	} `xml:"package"`
+}
+
+type FileListPackage struct {
+	Text    string `xml:",chardata"`
+	Pkgid   string `xml:"pkgid,attr"`
+	Name    string `xml:"name,attr"`
+	Arch    string `xml:"arch,attr"`
+	Version Version `xml:"version"`
+	File []ProvidedFile `xml:"file"`
 }

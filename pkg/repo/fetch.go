@@ -33,9 +33,13 @@ func (r *RepoFetcherImpl) Fetch() error {
 		if err != nil {
 			return fmt.Errorf("failed to fetch repomd.xml for %s: %v", repo.Name, err)
 		}
-		err = r.fetchPrimary(&repo, repomd, mirror)
+		err = r.fetchFile(api.PrimaryFileType, &repo, repomd, mirror)
 		if err != nil {
 			return fmt.Errorf("failed to fetch primary.xml for %s: %v", repo.Name, err)
+		}
+		err = r.fetchFile(api.FilelistsFileType, &repo, repomd, mirror)
+		if err != nil {
+			return fmt.Errorf("failed to fetch filelists.xml for %s: %v", repo.Name, err)
 		}
 	}
 	return nil
@@ -111,31 +115,31 @@ func (r *RepoFetcherImpl) resolveRepomd(repo *bazeldnf.Repository, file *api.Fil
 	return repomd, mirror, nil
 }
 
-func (r *RepoFetcherImpl) fetchPrimary(repo *bazeldnf.Repository, repomd *api.Repomd, mirror *url.URL) (err error) {
-	primary := repomd.Primary()
-	if primary == nil {
-		return fmt.Errorf("No 'primary' file referenced in repomd")
+func (r *RepoFetcherImpl) fetchFile(fileType string, repo *bazeldnf.Repository, repomd *api.Repomd, mirror *url.URL) (err error) {
+	file := repomd.File(fileType)
+	if file == nil {
+		return fmt.Errorf("No 'file' file referenced in repomd")
 	}
-	if primary.Location.Href == "" {
-		return fmt.Errorf("The 'primary' file has no href associated")
+	if file.Location.Href == "" {
+		return fmt.Errorf("The 'file' file has no href associated")
 	}
 
-	primaryURL := primary.Location.Href
-	primaryName := filepath.Base(primary.Location.Href)
-	if !path.IsAbs(primary.Location.Href) {
+	fileURL := file.Location.Href
+	fileName := filepath.Base(file.Location.Href)
+	if !path.IsAbs(file.Location.Href) {
 		mirrorCopy := *mirror
-		mirrorCopy.Path = path.Join(mirror.Path, primary.Location.Href)
-		primaryURL = mirrorCopy.String()
+		mirrorCopy.Path = path.Join(mirror.Path, file.Location.Href)
+		fileURL = mirrorCopy.String()
 	}
-	log.Infof("Loading primary repository file from %s", primaryURL)
-	resp, err := r.Getter.Get(primaryURL)
+	log.Infof("Loading %s file from %s", fileType, fileURL)
+	resp, err := r.Getter.Get(fileURL)
 	if err != nil {
-		return fmt.Errorf("Failed to load promary repository file from %s: %v", primaryURL, err)
+		return fmt.Errorf("Failed to load promary repository file from %s: %v", fileURL, err)
 	}
 	defer resp.Body.Close()
-	err = r.CacheHelper.WriteToRepoDir(repo, resp.Body, primaryName)
+	err = r.CacheHelper.WriteToRepoDir(repo, resp.Body, fileName)
 	if err != nil {
-		return fmt.Errorf("Failed to write primary.xml from %s to file: %v", primaryURL, err)
+		return fmt.Errorf("Failed to write file.xml from %s to file: %v", fileURL, err)
 	}
 	return nil
 }

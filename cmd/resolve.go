@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/rmohr/bazeldnf/pkg/api"
 	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 	"github.com/rmohr/bazeldnf/pkg/reducer"
 	"github.com/rmohr/bazeldnf/pkg/repo"
@@ -38,6 +39,7 @@ func NewResolveCmd() *cobra.Command {
 					return err
 				}
 			}
+			helper := repo.CacheHelper{CacheDir: ".bazeldnf"}
 			repo := reducer.NewRepoReducer(repos, resolveopts.in, resolveopts.lang, resolveopts.fedoraRelease, resolveopts.arch, ".bazeldnf")
 			logrus.Info("Loading packages.")
 			if err := repo.Load(); err != nil {
@@ -67,6 +69,15 @@ func NewResolveCmd() *cobra.Command {
 			fmt.Println(install)
 			fmt.Println(len(install))
 			logrus.Info("Done.")
+			remaining := install
+			for _, r := range repos.Repositories {
+				found :=[]*api.FileListPackage{}
+				found, remaining, err = helper.CurrentFilelistsForPackages(&r, remaining)
+				if err != nil {
+					return err
+				}
+				fmt.Println("found: %v", found)
+			}
 			return nil
 		},
 	}

@@ -7,9 +7,11 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"sort"
 
 	"github.com/rmohr/bazeldnf/pkg/api"
 	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
+	"github.com/rmohr/bazeldnf/pkg/rpm"
 )
 
 type CacheHelper struct {
@@ -60,7 +62,7 @@ func (r *CacheHelper) CurrentPrimary(repo *bazeldnf.Repository) (*api.Repository
 	if err := r.UnmarshalFromRepoDir(repo, "repomd.xml", repomd); err != nil {
 		return nil, err
 	}
-	primary := repomd.Primary()
+	primary := repomd.File(api.PrimaryFileType)
 	primaryName := filepath.Base(primary.Location.Href)
 	file, err := r.OpenFromRepoDir(repo, primaryName)
 	if err != nil {
@@ -80,6 +82,77 @@ func (r *CacheHelper) CurrentPrimary(repo *bazeldnf.Repository) (*api.Repository
 		return nil, err
 	}
 	return repository, nil
+}
+
+func (r *CacheHelper) CurrentFilelistsForPackages(repo *bazeldnf.Repository, packages []*api.Package) (filelistpkgs []*api.FileListPackage, remaining []*api.Package, err error) {
+	repomd := &api.Repomd{}
+	if err := r.UnmarshalFromRepoDir(repo, "repomd.xml", repomd); err != nil {
+		return nil, nil, err
+	}
+	filelists := repomd.File(api.FilelistsFileType)
+	filelistsName := filepath.Base(filelists.Location.Href)
+	file, err := r.OpenFromRepoDir(repo, filelistsName)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	defer file.Close()
+	reader, err := gzip.NewReader(file)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer reader.Close()
+
+	d := xml.NewDecoder(reader)
+	pkgIndex := 0
+
+	sort.SliceStable(packages, func(i, j int) bool {
+		if packages[i].Name == packages[j].Name {
+			return rpm.Compare(packages[i].Version, packages[j].Version) < 0
+		}
+		return packages[i].Name < packages[j].Name
+	})
+
+	for {
+		if len(packages) == pkgIndex {
+			break
+		}
+		currPkg := packages[pkgIndex]
+		tok, err := d.Token()
+		if tok == nil || err == io.EOF {
+			break
+		} else if err != nil {
+			return nil, nil, fmt.Errorf("Error decoding token: %s", err)
+		}
+
+		switch ty := tok.(type) {
+		case xml.StartElement:
+			if ty.Name.Local == "package" {
+				name := ""
+				for _, attr := range ty.Attr {
+					if attr.Name.Local == "name" {
+						name = attr.Value
+					}
+				}
+				if currPkg.Name == name {
+					pkg := &api.FileListPackage{}
+					if err = d.DecodeElement(pkg, &ty); err != nil {
+						return nil, nil, fmt.Errorf("Error decoding item: %s", err)
+					}
+					if rpm.Compare(currPkg.Version, pkg.Version) == 0 {
+						pkgIndex++
+						filelistpkgs = append(filelistpkgs, pkg)
+					}
+				} else if name > currPkg.Name {
+					remaining = append(remaining, currPkg)
+					pkgIndex++
+				}
+			}
+		default:
+		}
+	}
+
+	return filelistpkgs, remaining, nil
 }
 
 func (r *CacheHelper) CurrentPrimaries(repos *bazeldnf.Repositories) (primaries []*api.Repository, err error) {

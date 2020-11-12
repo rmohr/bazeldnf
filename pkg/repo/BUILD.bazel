@@ -12,6 +12,7 @@ go_library(
     deps = [
         "//pkg/api",
         "//pkg/api/bazeldnf",
+        "//pkg/rpm",
         "@com_github_sirupsen_logrus//:logrus",
         "@io_k8s_sigs_yaml//:yaml",
     ],
@@ -22,4 +23,5 @@ go_test(
     srcs = ["repo_test.go"],
     data = glob(["testdata/**"]),
     embed = [":repo"],
+    deps = ["//pkg/api"],
 )
