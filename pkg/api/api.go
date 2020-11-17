@@ -3,6 +3,8 @@ package api
 import (
 	"encoding/xml"
 	"fmt"
+
+	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 )
 
 const (
@@ -161,16 +163,23 @@ func (v *Version) String() string {
 	return version
 }
 
+type Checksum struct {
+	Text  string `xml:",chardata"`
+	Type  string `xml:"type,attr"`
+	Pkgid string `xml:"pkgid,attr"`
+}
+
+type Location struct {
+	Text string `xml:",chardata"`
+	Href string `xml:"href,attr"`
+}
+
 type Package struct {
 	Type     string  `xml:"type,attr"`
 	Name     string  `xml:"name"`
 	Arch     string  `xml:"arch"`
 	Version  Version `xml:"version"`
-	Checksum struct {
-		Text  string `xml:",chardata"`
-		Type  string `xml:"type,attr"`
-		Pkgid string `xml:"pkgid,attr"`
-	} `xml:"checksum"`
+	Checksum Checksum `xml:"checksum"`
 	Summary     string `xml:"summary"`
 	Description string `xml:"description"`
 	Packager    string `xml:"packager"`
@@ -186,10 +195,7 @@ type Package struct {
 		Installed string `xml:"installed,attr"`
 		Archive   string `xml:"archive,attr"`
 	} `xml:"size"`
-	Location struct {
-		Text string `xml:",chardata"`
-		Href string `xml:"href,attr"`
-	} `xml:"location"`
+	Location Location `xml:"location"`
 	Format struct {
 		Text        string `xml:",chardata"`
 		License     string `xml:"license"`
@@ -212,6 +218,7 @@ type Package struct {
 		Enhances    Dependencies   `xml:"enhances"`
 		Supplements Dependencies   `xml:"supplements"`
 	} `xml:"format"`
+	Repository *bazeldnf.Repository `xml:"-"`
 }
 
 func (p *Package) String() string {

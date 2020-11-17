@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 
 	"github.com/rmohr/bazeldnf/pkg/api"
 	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
@@ -16,6 +17,14 @@ import (
 
 type CacheHelper struct {
 	CacheDir string
+}
+
+func (r *CacheHelper) LoadMetaLink(repo *bazeldnf.Repository) (*api.Metalink, error) {
+	metalink := &api.Metalink{}
+	if err := r.UnmarshalFromRepoDir(repo, "metalink", metalink); err != nil {
+		return nil, err
+	}
+	return metalink, nil
 }
 
 func (r *CacheHelper) WriteToRepoDir(repo *bazeldnf.Repository, body io.Reader, name string) error {
@@ -80,6 +89,30 @@ func (r *CacheHelper) CurrentPrimary(repo *bazeldnf.Repository) (*api.Repository
 	err = xml.NewDecoder(reader).Decode(repository)
 	if err != nil {
 		return nil, err
+	}
+
+	if len(repo.Mirrors) == 0 && repo.Metalink != "" {
+		metalink, err := r.LoadMetaLink(repo)
+		if err == nil {
+			urls := []string{}
+			for _, url := range metalink.Repomod().Resources.URLs {
+				if url.Type == "https" {
+					urls = append(urls, strings.TrimSuffix(url.Text, "repodata/repomd.xml"))
+				}
+				if len(urls) == 4 {
+					break
+				}
+			}
+			repo.Mirrors = urls
+		} else if !os.IsNotExist(err) {
+			return nil, err
+		}
+	} else if len(repo.Mirrors) == 0 && repo.Baseurl != "" {
+		repo.Mirrors = []string{repo.Baseurl}
+	}
+
+	for i, _ := range repository.Packages {
+		repository.Packages[i].Repository = repo
 	}
 	return repository, nil
 }

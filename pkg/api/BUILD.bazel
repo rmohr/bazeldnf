@@ -5,4 +5,5 @@ go_library(
     srcs = ["api.go"],
     importpath = "github.com/rmohr/bazeldnf/pkg/api",
     visibility = ["//visibility:public"],
+    deps = ["//pkg/api/bazeldnf"],
 )

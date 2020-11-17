@@ -19,6 +19,7 @@ go_test(
     embed = [":bazel"],
     deps = [
         "//pkg/api",
+        "//pkg/api/bazeldnf",
         "@com_github_onsi_gomega//:gomega",
     ],
 )

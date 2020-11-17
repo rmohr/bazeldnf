@@ -63,8 +63,8 @@ func (r *RepoFetcherImpl) resolveMetaLink(repo *bazeldnf.Repository) (*api.Metal
 		return nil, err
 	}
 
-	metalink := &api.Metalink{}
-	if err := r.CacheHelper.UnmarshalFromRepoDir(repo, "metalink", metalink); err != nil {
+	metalink, err := r.CacheHelper.LoadMetaLink(repo)
+	if err != nil {
 		return nil, err
 	}
 

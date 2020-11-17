@@ -7,8 +7,37 @@ go_repository(
     version = "v0.0.0-20190102054323-c2f93a96b099",
 )
 
-rpm(name = "a-0:1.2.3")
+rpm(
+    name = "a-0:1.2.3",
+    sha256 = "1234",
+    urls = [
+        "a/something/a",
+        "b/something/a",
+        "c/something/a",
+    ],
+)
 
-rpm(name = "a-0:2.3.4")
+rpm(
+    name = "a-0:2.3.4",
+    sha256 = "1234",
+    urls = [
+        "e/something/a",
+        "f/something/a",
+        "g/something/a",
+    ],
+)
 
-rpm(name = "b-0:2.3.4")
+rpm(
+    name = "b-0:2.3.4",
+    sha256 = "1234",
+    urls = [
+        "a/something/b",
+        "b/something/b",
+        "c/something/b",
+    ],
+)
+
+rpm(
+    name = "test.rpm",
+    urls = ["http://something.rpm"],
+)
