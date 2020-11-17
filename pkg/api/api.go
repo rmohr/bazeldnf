@@ -162,7 +162,6 @@ func (v *Version) String() string {
 }
 
 type Package struct {
-	Text     string  `xml:",chardata"`
 	Type     string  `xml:"type,attr"`
 	Name     string  `xml:"name"`
 	Arch     string  `xml:"arch"`

@@ -304,11 +304,18 @@ func (r *Resolver) resolveNewest(pkgName string) (*Var, error) {
 
 func compareRequires(entryVer api.Version, flag string, provides []*Var) (accepts []*Var, err error) {
 	for _, dep := range provides {
+
+		// Requirement "EQ 2.14" matches 2.14-5.fc33
+		depVer := *dep.ResourceVersion
+		if entryVer.Rel == "" {
+			depVer.Rel = ""
+		}
+
 		works := false
-		if dep.ResourceVersion.Epoch == "" && dep.ResourceVersion.Ver == "" && dep.ResourceVersion.Rel == "" {
+		if depVer.Epoch == "" && depVer.Ver == "" && depVer.Rel == "" {
 			works = true
 		} else {
-			cmp := rpm.Compare(*dep.ResourceVersion, entryVer)
+			cmp := rpm.Compare(depVer, entryVer)
 			switch flag {
 			case "EQ":
 				if cmp == 0 {

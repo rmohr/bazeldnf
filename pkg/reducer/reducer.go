@@ -47,13 +47,14 @@ func (r *RepoReducer) Load() error {
 	}
 
 	for i, p := range r.packages {
-		canBeInterpreted := true
-		for _, requires := range p.Format.Requires.Entries {
-			if strings.HasPrefix(requires.Name, "(") {
-				canBeInterpreted = false
+		requires := []api.Entry{}
+		for _, requirement := range p.Format.Requires.Entries {
+			if !strings.HasPrefix(requirement.Name, "(") {
+				requires = append(requires, requirement)
 			}
 		}
-		if skip(p.Arch, r.architectures) || !canBeInterpreted {
+		r.packages[i].Format.Requires.Entries= requires
+		if skip(p.Arch, r.architectures) {
 			continue
 		}
 
@@ -72,11 +73,10 @@ func (r *RepoReducer) Resolve(packages []string) (involved []*api.Package, err e
 	var wants []*api.Package
 	discovered := map[string]*api.Package{}
 	for _, req := range packages {
-		for _, p := range r.packages {
+		for i, p := range r.packages {
 			if p.Name == req {
-				wants = append(wants, &p)
-				discovered[p.Name] = &p
-				break
+				wants = append(wants, &r.packages[i])
+				discovered[p.String()] = &r.packages[i]
 			}
 		}
 	}
@@ -91,8 +91,8 @@ func (r *RepoReducer) Resolve(packages []string) (involved []*api.Package, err e
 		}
 		for _, p := range current {
 			for _, newFound := range r.requires(discovered[p]) {
-				if _, exists := discovered[newFound.Name]; !exists {
-					discovered[newFound.Name] = newFound
+				if _, exists := discovered[newFound.String()]; !exists {
+					discovered[newFound.String()] = newFound
 				}
 			}
 		}
@@ -101,10 +101,8 @@ func (r *RepoReducer) Resolve(packages []string) (involved []*api.Package, err e
 		}
 	}
 
-	current := []string{}
-	for k := range discovered {
-		involved = append(involved, r.provides[k]...)
-		current = append(current, k)
+	for _, pkg := range discovered {
+		involved = append(involved, pkg)
 	}
 	return involved, nil
 }
