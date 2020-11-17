@@ -1,0 +1,12 @@
+rpmtree(
+    name = "mytree",
+    files = [
+        "a",
+        "b",
+    ],
+    rpms = [
+        "@a//rpm",
+        "@a//rpm",
+        "@b//rpm",
+    ],
+)
