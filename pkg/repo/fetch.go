@@ -23,13 +23,18 @@ type RepoFetcherImpl struct {
 	CacheHelper *CacheHelper
 }
 
-func (r *RepoFetcherImpl) Fetch() error {
+func (r *RepoFetcherImpl) Fetch() (err error) {
 	for _, repo := range r.Repos {
-		metalink, err := r.resolveMetaLink(&repo)
-		if err != nil {
-			return fmt.Errorf("failed to resolve metalink for %s: %v", repo.Name, err)
+		var repomdURLs = []string{}
+		if repo.Metalink != "" {
+			_, repomdURLs, err = r.resolveMetaLink(&repo)
+			if err != nil {
+				return fmt.Errorf("failed to resolve metalink for %s: %v", repo.Name, err)
+			}
+		} else if repo.Baseurl != "" {
+			repomdURLs = append(repomdURLs, strings.TrimSuffix(repo.Baseurl, "/")+"/repodata/repomd.xml")
 		}
-		repomd, mirror, err := r.resolveRepomd(&repo, metalink.Repomod())
+		repomd, mirror, err := r.resolveRepomd(&repo, repomdURLs)
 		if err != nil {
 			return fmt.Errorf("failed to fetch repomd.xml for %s: %v", repo.Name, err)
 		}
@@ -53,57 +58,66 @@ func NewRemoteRepoFetcher(repos []bazeldnf.Repository, cacheDir string) RepoFetc
 	}
 }
 
-func (r *RepoFetcherImpl) resolveMetaLink(repo *bazeldnf.Repository) (*api.Metalink, error) {
+func (r *RepoFetcherImpl) resolveMetaLink(repo *bazeldnf.Repository) (*api.Metalink, []string, error) {
 	resp, err := r.Getter.Get(repo.Metalink)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	defer resp.Body.Close()
 	if err := r.CacheHelper.WriteToRepoDir(repo, resp.Body, "metalink"); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	metalink, err := r.CacheHelper.LoadMetaLink(repo)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	repomod := metalink.Repomod()
 
 	if repomod == nil {
-		return nil, fmt.Errorf("Metalink file contains no reference to repod.xml")
+		return nil, nil, fmt.Errorf("Metalink file contains no reference to repod.xml")
 	}
 
-	return metalink, nil
-}
-
-func (r *RepoFetcherImpl) resolveRepomd(repo *bazeldnf.Repository, file *api.File) (repomd *api.Repomd, mirror *url.URL, err error) {
-	for _, u := range file.Resources.URLs {
+	urls := []string{}
+	for _, u := range repomod.Resources.URLs {
 		if u.Protocol != "https" {
 			continue
 		}
-		log.Infof("Resolving repomd.xml from %s", u.Text)
-		resp, err := r.Getter.Get(u.Text)
+		urls = append(urls, u.Text)
+	}
+
+	if len(urls) == 0 {
+		return metalink, nil, fmt.Errorf("Metalink contains no https url to a rpomd.xml file")
+	}
+
+	return metalink, urls, nil
+}
+
+func (r *RepoFetcherImpl) resolveRepomd(repo *bazeldnf.Repository, repomdURLs []string) (repomd *api.Repomd, mirror *url.URL, err error) {
+	for _, u := range repomdURLs {
+		log.Infof("Resolving repomd.xml from %s", u)
+		resp, err := r.Getter.Get(u)
 		if err != nil {
-			log.Errorf("Failed to resolve repomd.xml from %s: %v", u.Text, err)
+			log.Errorf("Failed to resolve repomd.xml from %s: %v", u, err)
 			continue
 		}
 		defer resp.Body.Close()
 		err = r.CacheHelper.WriteToRepoDir(repo, resp.Body, "repomd.xml")
 		if err != nil {
-			log.Errorf("Failed to save repomd.xml from %s: %v", u.Text, err)
+			log.Errorf("Failed to save repomd.xml from %s: %v", u, err)
 			continue
 		}
 		file := &api.Repomd{}
 		err = r.CacheHelper.UnmarshalFromRepoDir(repo, "repomd.xml", file)
 		if err != nil {
-			log.Errorf("Failed to decode repomd.xml from %s: %v", u.Text, err)
+			log.Errorf("Failed to decode repomd.xml from %s: %v", u, err)
 			continue
 		}
 		repomd = file
-		mirror, err = url.Parse(u.Text)
+		mirror, err = url.Parse(u)
 		if err != nil {
-			log.Fatalf("Invalid URL for repomd.xml from %s, this should be impossible: %v", u.Text, err)
+			log.Fatalf("Invalid URL for repomd.xml from %s, this should be impossible: %v", u, err)
 		}
 		break
 	}
