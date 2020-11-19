@@ -3,8 +3,8 @@ package bazel
 import (
 	"fmt"
 	"io/ioutil"
-	"path"
 	"sort"
+	"strings"
 
 	"github.com/bazelbuild/buildtools/build"
 	"github.com/bazelbuild/buildtools/edit"
@@ -55,7 +55,7 @@ func WriteWorkspace(dryRun bool, workspace *build.File, path string) error {
 	return ioutil.WriteFile(path, build.Format(workspace), 0666)
 }
 
-func AddRPMS(workspace *build.File, pkgs []*api.Package) {
+func AddRPMs(workspace *build.File, pkgs []*api.Package) {
 
 	rpms := map[string]*rpmRule{}
 
@@ -64,13 +64,14 @@ func AddRPMS(workspace *build.File, pkgs []*api.Package) {
 	}
 
 	for _, pkg := range pkgs {
-		rule := rpms[pkg.String()]
+		pkgName := strings.ReplaceAll(pkg.String(), ":", "_")
+		rule := rpms[pkgName]
 		if rule == nil {
 			call := &build.CallExpr{X: &build.Ident{Name: "rpm"}}
 			rule = &rpmRule{&build.Rule{call, ""}}
-			rpms[pkg.String()] = rule
+			rpms[pkgName] = rule
 		}
-		rule.SetName(pkg.String())
+		rule.SetName(pkgName)
 		rule.SetSHA256(pkg.Checksum.Text)
 		urls := rule.URLs()
 		if len(urls) == 0 {
@@ -99,10 +100,12 @@ func AddTree(name string, buildfile *build.File, pkgs []*api.Package, files []st
 	for _, rule := range buildfile.Rules("rpmtree") {
 		rpmtrees[rule.Name()] = &rpmTree{rule}
 	}
+	buildfile.DelRules("rpmtree", "")
 
 	rpms := []string{}
 	for _, pkg := range pkgs {
-		rpms = append(rpms, "@"+pkg.Name+"//rpm")
+		pkgName := strings.ReplaceAll(pkg.String(), ":", "_")
+		rpms = append(rpms, "@"+pkgName+"//rpm")
 	}
 
 	sort.SliceStable(files, func(i, j int) bool {
@@ -128,9 +131,24 @@ func AddTree(name string, buildfile *build.File, pkgs []*api.Package, files []st
 		return rules[i].Name() < rules[j].Name()
 	})
 
-
 	for _, rule := range rules {
 		buildfile.Stmt = edit.InsertAtEnd(buildfile.Stmt, rule.Call)
+	}
+}
+
+func PruneRPMs(buildfile *build.File, workspace *build.File) {
+	referenced := map[string]struct{}{}
+	for _, pkg := range buildfile.Rules("rpmtree") {
+		tree := &rpmTree{pkg}
+		for _, rpm := range tree.RPMs() {
+			referenced[rpm] = struct{}{}
+		}
+	}
+	rpms := workspace.Rules("rpm")
+	for _, rpm := range rpms {
+		if _, exists := referenced["@" + rpm.Name() + "//rpm"]; !exists {
+			workspace.DelRules("rpm", rpm.Name())
+		}
 	}
 }
 
@@ -154,7 +172,8 @@ func (r *rpmRule) URLs() []string {
 func (r *rpmRule) SetURLs(urls []string, href string) {
 	urlsAttr := []build.Expr{}
 	for _, url := range urls {
-		urlsAttr = append(urlsAttr, &build.StringExpr{Value: path.Join(url, href)})
+		u := strings.TrimSuffix(url, "/") + "/" + strings.TrimSuffix(href, "/")
+		urlsAttr = append(urlsAttr, &build.StringExpr{Value: u})
 	}
 	r.Rule.SetAttr("urls", &build.ListExpr{List: urlsAttr})
 }

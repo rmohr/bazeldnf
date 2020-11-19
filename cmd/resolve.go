@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"path/filepath"
+	"strings"
 
 	"github.com/rmohr/bazeldnf/pkg/api"
 	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
@@ -13,12 +15,12 @@ import (
 )
 
 type resolveOpts struct {
-	in            []string
-	lang          string
-	nobest        bool
-	arch          string
-	fedoraRelease string
-	repofile      string
+	in               []string
+	lang             string
+	nobest           bool
+	arch             string
+	fedoraBaseSystem string
+	repofile         string
 }
 
 var resolveopts = resolveOpts{}
@@ -40,7 +42,7 @@ func NewResolveCmd() *cobra.Command {
 				}
 			}
 			helper := repo.CacheHelper{CacheDir: ".bazeldnf"}
-			repo := reducer.NewRepoReducer(repos, resolveopts.in, resolveopts.lang, resolveopts.fedoraRelease, resolveopts.arch, ".bazeldnf")
+			repo := reducer.NewRepoReducer(repos, resolveopts.in, resolveopts.lang, resolveopts.fedoraBaseSystem, resolveopts.arch, ".bazeldnf")
 			logrus.Info("Loading packages.")
 			if err := repo.Load(); err != nil {
 				return err
@@ -70,20 +72,35 @@ func NewResolveCmd() *cobra.Command {
 			fmt.Println(len(install))
 			logrus.Info("Done.")
 			remaining := install
+			hdrs := map[string]string{}
+			libs := map[string]string{}
 			for _, r := range repos.Repositories {
-				found :=[]*api.FileListPackage{}
+				found := []*api.FileListPackage{}
 				found, remaining, err = helper.CurrentFilelistsForPackages(&r, remaining)
 				if err != nil {
 					return err
 				}
-				fmt.Println("found: %v", found)
+				for _, pkg := range found {
+					for _, file := range pkg.File {
+						if file.Type != "dir" {
+							if strings.HasPrefix(file.Text, "/usr/include") {
+								hdrs[file.Text] = filepath.Dir(file.Text)
+							}
+							if strings.HasPrefix(file.Text, "/usr/lib64") {
+								libs[file.Text] = filepath.Dir(file.Text)
+							}
+						}
+					}
+				}
 			}
+			fmt.Println(hdrs)
+			fmt.Println(libs)
 			return nil
 		},
 	}
 
 	resolveCmd.PersistentFlags().StringArrayVarP(&resolveopts.in, "input", "i", nil, "primary.xml of the repository")
-	resolveCmd.PersistentFlags().StringVarP(&resolveopts.fedoraRelease, "fedora-release", "f", "fedora-release-container", "fedora base system to choose from (e.g. fedora-release-server, fedora-release-container, ...)")
+	resolveCmd.PersistentFlags().StringVarP(&resolveopts.fedoraBaseSystem, "fedora-base-system", "f", "fedora-release-container", "fedora base system to choose from (e.g. fedora-release-server, fedora-release-container, ...)")
 	resolveCmd.PersistentFlags().StringVarP(&resolveopts.arch, "arch", "a", "x86_64", "target fedora architecture")
 	resolveCmd.PersistentFlags().BoolVarP(&resolveopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
 	resolveCmd.PersistentFlags().StringVarP(&resolveopts.repofile, "repofile", "r", "repo.yaml", "repository information file. Will be used by default if no explicit inputs are provided.")

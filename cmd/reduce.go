@@ -14,13 +14,13 @@ import (
 )
 
 type reduceOpts struct {
-	in            []string
-	repofile      string
-	out           string
-	lang          string
-	nobest        bool
-	arch          string
-	fedoraRelease string
+	in               []string
+	repofile         string
+	out              string
+	lang             string
+	nobest           bool
+	arch             string
+	fedoraBaseSystem string
 }
 
 var reduceopts = reduceOpts{}
@@ -43,7 +43,7 @@ which allow reducing huge rpm repos to a smaller problem set for debugging, remo
 					return err
 				}
 			}
-			repo := reducer.NewRepoReducer(repos, reduceopts.in, reduceopts.lang, reduceopts.fedoraRelease, reduceopts.arch, ".bazeldnf")
+			repo := reducer.NewRepoReducer(repos, reduceopts.in, reduceopts.lang, reduceopts.fedoraBaseSystem, reduceopts.arch, ".bazeldnf")
 			logrus.Info("Loading packages.")
 			if err := repo.Load(); err != nil {
 				return err
@@ -72,7 +72,7 @@ which allow reducing huge rpm repos to a smaller problem set for debugging, remo
 
 	reduceCmd.PersistentFlags().StringArrayVarP(&reduceopts.in, "input", "i", nil, "primary.xml of the repository")
 	reduceCmd.PersistentFlags().StringVarP(&reduceopts.out, "output", "o", "debug.xml", "where to write the repository file")
-	reduceCmd.PersistentFlags().StringVarP(&reduceopts.fedoraRelease, "fedora-release", "f", "fedora-release-container", "fedora base system to choose from (e.g. fedora-release-server, fedora-release-container, ...)")
+	reduceCmd.PersistentFlags().StringVarP(&reduceopts.fedoraBaseSystem, "fedora-base-system", "f", "fedora-release-container", "fedora base system to choose from (e.g. fedora-release-server, fedora-release-container, ...)")
 	reduceCmd.PersistentFlags().StringVarP(&reduceopts.arch, "arch", "a", "x86_64", "target fedora architecture")
 	reduceCmd.PersistentFlags().BoolVarP(&reduceopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
 	reduceCmd.PersistentFlags().StringVarP(&reduceopts.repofile, "repofile", "r", "repo.yaml", "repository information file. Will be used by default if no explicit inputs are provided.")

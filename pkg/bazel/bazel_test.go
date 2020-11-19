@@ -37,7 +37,7 @@ func TestWorkspaceWithRPMs(t *testing.T) {
 			defer os.Remove(tmpFile.Name())
 			file, err := LoadWorkspace(tt.orig)
 			g.Expect(err).ToNot(HaveOccurred())
-			AddRPMS(file, tt.pkgs)
+			AddRPMs(file, tt.pkgs)
 			err = WriteWorkspace(false, file, tmpFile.Name())
 			g.Expect(err).ToNot(HaveOccurred())
 
