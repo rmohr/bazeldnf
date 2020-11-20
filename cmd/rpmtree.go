@@ -50,7 +50,7 @@ func NewrpmtreeCmd() *cobra.Command {
 				return err
 			}
 			logrus.Info("Adding required packages to the rpmtreer.")
-			err = solver.ConstructRequirements(required)
+			err = solver.ConstructRequirements(append(required, rpmtreeopts.fedoraBaseSystem))
 			if err != nil {
 				return err
 			}

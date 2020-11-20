@@ -107,6 +107,9 @@ func AddTree(name string, buildfile *build.File, pkgs []*api.Package, files []st
 		pkgName := sanitize(pkg.String())
 		rpms = append(rpms, "@"+pkgName+"//rpm")
 	}
+	sort.SliceStable(rpms, func(i, j int) bool {
+		return rpms[i] < rpms[j]
+	})
 
 	sort.SliceStable(files, func(i, j int) bool {
 		return files[i] < files[j]
