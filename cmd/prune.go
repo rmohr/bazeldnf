@@ -7,8 +7,8 @@ import (
 )
 
 type pruneOpts struct {
-	workspace        string
-	buildfile        string
+	workspace string
+	buildfile string
 }
 
 var pruneopts = pruneOpts{}

@@ -5,10 +5,10 @@ type Repositories struct {
 }
 
 type Repository struct {
-	Name string `json:"name"`
-	Disabled bool `json:"disabled,omitempty"`
-	Metalink string `json:"metalink,omitempty"`
-	Baseurl string `json:"baseurl,omitempty"`
-	Arch string `json:"arch"`
-	Mirrors []string `json:"mirrors,omitempty"`
+	Name     string   `json:"name"`
+	Disabled bool     `json:"disabled,omitempty"`
+	Metalink string   `json:"metalink,omitempty"`
+	Baseurl  string   `json:"baseurl,omitempty"`
+	Arch     string   `json:"arch"`
+	Mirrors  []string `json:"mirrors,omitempty"`
 }

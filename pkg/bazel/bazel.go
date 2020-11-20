@@ -64,7 +64,7 @@ func AddRPMs(workspace *build.File, pkgs []*api.Package) {
 	}
 
 	for _, pkg := range pkgs {
-		pkgName := strings.ReplaceAll(pkg.String(), ":", "_")
+		pkgName := sanitize(pkg.String())
 		rule := rpms[pkgName]
 		if rule == nil {
 			call := &build.CallExpr{X: &build.Ident{Name: "rpm"}}
@@ -104,7 +104,7 @@ func AddTree(name string, buildfile *build.File, pkgs []*api.Package, files []st
 
 	rpms := []string{}
 	for _, pkg := range pkgs {
-		pkgName := strings.ReplaceAll(pkg.String(), ":", "_")
+		pkgName := sanitize(pkg.String())
 		rpms = append(rpms, "@"+pkgName+"//rpm")
 	}
 
@@ -146,7 +146,7 @@ func PruneRPMs(buildfile *build.File, workspace *build.File) {
 	}
 	rpms := workspace.Rules("rpm")
 	for _, rpm := range rpms {
-		if _, exists := referenced["@" + rpm.Name() + "//rpm"]; !exists {
+		if _, exists := referenced["@"+rpm.Name()+"//rpm"]; !exists {
 			workspace.DelRules("rpm", rpm.Name())
 		}
 	}
@@ -221,4 +221,10 @@ func (r *rpmTree) SetFiles(files []string) {
 		filesAttr = append(filesAttr, &build.StringExpr{Value: file})
 	}
 	r.Rule.SetAttr("files", &build.ListExpr{List: filesAttr})
+}
+
+func sanitize(name string) string {
+	name = strings.ReplaceAll(name, ":", "__")
+	name = strings.ReplaceAll(name, "+", "__plus__")
+	return name
 }

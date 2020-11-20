@@ -8,7 +8,7 @@ go_repository(
 )
 
 rpm(
-    name = "a-0_1.2.3",
+    name = "a-0__1.2.3",
     sha256 = "1234",
     urls = [
         "a/something/a",
@@ -18,7 +18,7 @@ rpm(
 )
 
 rpm(
-    name = "a-0_2.3.4",
+    name = "a-0__2.3.4",
     sha256 = "1234",
     urls = [
         "e/something/a",
@@ -28,7 +28,7 @@ rpm(
 )
 
 rpm(
-    name = "b-0_2.3.4",
+    name = "b-0__2.3.4",
     sha256 = "1234",
     urls = [
         "a/something/b",

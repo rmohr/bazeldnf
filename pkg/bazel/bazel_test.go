@@ -102,7 +102,7 @@ func newPkg(name string, version string, repository *bazeldnf.Repository) *api.P
 
 func repo(name string, urls []string) *bazeldnf.Repository {
 	return &bazeldnf.Repository{
-		Name: name,
+		Name:    name,
 		Mirrors: urls,
 	}
 }

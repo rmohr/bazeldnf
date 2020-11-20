@@ -53,7 +53,7 @@ func (r *RepoReducer) Load() error {
 				requires = append(requires, requirement)
 			}
 		}
-		r.packages[i].Format.Requires.Entries= requires
+		r.packages[i].Format.Requires.Entries = requires
 		if skip(p.Arch, r.architectures) {
 			continue
 		}

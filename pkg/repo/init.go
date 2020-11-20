@@ -27,14 +27,14 @@ func (r *RepoInit) Init() error {
 	repos := &bazeldnf.Repositories{
 		Repositories: []bazeldnf.Repository{
 			{
-				Name: fmt.Sprintf("%s-%s-primary-repo", r.OS, r.Arch),
+				Name:     fmt.Sprintf("%s-%s-primary-repo", r.OS, r.Arch),
 				Disabled: false,
 				Metalink: r.PrimaryMetaLinkURL,
 				Baseurl:  "",
 				Arch:     r.Arch,
 			},
 			{
-				Name: fmt.Sprintf("%s-%s-update-repo", r.OS, r.Arch),
+				Name:     fmt.Sprintf("%s-%s-update-repo", r.OS, r.Arch),
 				Disabled: false,
 				Metalink: r.UpdateMetaLinkURL,
 				Baseurl:  "",

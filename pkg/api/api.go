@@ -175,15 +175,15 @@ type Location struct {
 }
 
 type Package struct {
-	Type     string  `xml:"type,attr"`
-	Name     string  `xml:"name"`
-	Arch     string  `xml:"arch"`
-	Version  Version `xml:"version"`
-	Checksum Checksum `xml:"checksum"`
-	Summary     string `xml:"summary"`
-	Description string `xml:"description"`
-	Packager    string `xml:"packager"`
-	URL         string `xml:"url"`
+	Type        string   `xml:"type,attr"`
+	Name        string   `xml:"name"`
+	Arch        string   `xml:"arch"`
+	Version     Version  `xml:"version"`
+	Checksum    Checksum `xml:"checksum"`
+	Summary     string   `xml:"summary"`
+	Description string   `xml:"description"`
+	Packager    string   `xml:"packager"`
+	URL         string   `xml:"url"`
 	Time        struct {
 		Text  string `xml:",chardata"`
 		File  string `xml:"file,attr"`
@@ -196,7 +196,7 @@ type Package struct {
 		Archive   string `xml:"archive,attr"`
 	} `xml:"size"`
 	Location Location `xml:"location"`
-	Format struct {
+	Format   struct {
 		Text        string `xml:",chardata"`
 		License     string `xml:"license"`
 		Vendor      string `xml:"vendor"`
@@ -258,10 +258,10 @@ type Filelists struct {
 }
 
 type FileListPackage struct {
-	Text    string `xml:",chardata"`
-	Pkgid   string `xml:"pkgid,attr"`
-	Name    string `xml:"name,attr"`
-	Arch    string `xml:"arch,attr"`
-	Version Version `xml:"version"`
-	File []ProvidedFile `xml:"file"`
+	Text    string         `xml:",chardata"`
+	Pkgid   string         `xml:"pkgid,attr"`
+	Name    string         `xml:"name,attr"`
+	Arch    string         `xml:"arch,attr"`
+	Version Version        `xml:"version"`
+	File    []ProvidedFile `xml:"file"`
 }

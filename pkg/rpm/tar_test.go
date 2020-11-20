@@ -19,7 +19,7 @@ func TestRPMToTar(t *testing.T) {
 		excludedHeaders []*tar.Header
 		wantErr         bool
 		prefix          string
-		stripPrefix bool
+		stripPrefix     bool
 	}{
 		{
 			name:    "should convert a RPM to tar and keep all entries",
@@ -30,7 +30,7 @@ func TestRPMToTar(t *testing.T) {
 				{Name: "./etc/libvirt/libvirt.conf", Size: 547, Mode: 33188},
 				{Name: "./usr/lib64/libvirt.so.0", Size: 19, Mode: 41471},
 			},
-			prefix: "",
+			prefix:      "",
 			stripPrefix: false,
 		},
 		{
@@ -44,7 +44,7 @@ func TestRPMToTar(t *testing.T) {
 				{Name: "./etc/libvirt/libvirt-admin.conf", Size: 450, Mode: 33188},
 				{Name: "./etc/libvirt/libvirt.conf", Size: 547, Mode: 33188},
 			},
-			prefix: "./usr/lib64",
+			prefix:      "./usr/lib64",
 			stripPrefix: false,
 		},
 		{
@@ -61,7 +61,7 @@ func TestRPMToTar(t *testing.T) {
 				{Name: "./libvirt.conf", Size: 547, Mode: 33188},
 				{Name: "./usr/lib64/libvirt.so.0", Size: 19, Mode: 41471},
 			},
-			prefix: "./usr/lib64",
+			prefix:      "./usr/lib64",
 			stripPrefix: true,
 		},
 	}
@@ -108,8 +108,8 @@ func TestRPMToTar(t *testing.T) {
 				discoveredHeaders = append(discoveredHeaders, &tar.Header{
 					Name: header.Name,
 					Size: header.Size,
-					Uid: header.Uid,
-					Gid: header.Gid,
+					Uid:  header.Uid,
+					Gid:  header.Gid,
 					Mode: header.Mode,
 				})
 			}
