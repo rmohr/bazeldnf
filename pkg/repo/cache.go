@@ -150,7 +150,6 @@ func (r *CacheHelper) CurrentFilelistsForPackages(repo *bazeldnf.Repository, pac
 		if len(packages) == pkgIndex {
 			break
 		}
-		currPkg := packages[pkgIndex]
 		tok, err := d.Token()
 		if tok == nil || err == io.EOF {
 			break
@@ -167,18 +166,28 @@ func (r *CacheHelper) CurrentFilelistsForPackages(repo *bazeldnf.Repository, pac
 						name = attr.Value
 					}
 				}
-				if currPkg.Name == name {
-					pkg := &api.FileListPackage{}
-					if err = d.DecodeElement(pkg, &ty); err != nil {
-						return nil, nil, fmt.Errorf("Error decoding item: %s", err)
-					}
-					if rpm.Compare(currPkg.Version, pkg.Version) == 0 {
+
+				var pkg *api.FileListPackage
+				for pkgIndex < len(packages) {
+					currPkg := packages[pkgIndex]
+					if name < currPkg.Name {
+						break
+					} else if currPkg.Name == name {
+						if pkg == nil {
+							pkg = &api.FileListPackage{}
+							if err = d.DecodeElement(pkg, &ty); err != nil {
+								return nil, nil, fmt.Errorf("Error decoding item: %s", err)
+							}
+						}
+						if currPkg.String() == pkg.String() {
+							pkgIndex++
+							filelistpkgs = append(filelistpkgs, pkg)
+						}
+						break
+					} else if name > currPkg.Name {
+						remaining = append(remaining, currPkg)
 						pkgIndex++
-						filelistpkgs = append(filelistpkgs, pkg)
 					}
-				} else if name > currPkg.Name {
-					remaining = append(remaining, currPkg)
-					pkgIndex++
 				}
 			}
 		default:

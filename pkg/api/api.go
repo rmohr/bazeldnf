@@ -265,3 +265,7 @@ type FileListPackage struct {
 	Version Version        `xml:"version"`
 	File    []ProvidedFile `xml:"file"`
 }
+
+func (p *FileListPackage) String() string {
+	return p.Name + "-" + p.Version.String()
+}

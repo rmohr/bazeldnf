@@ -76,7 +76,7 @@ func TestBuildfileWithRPMs(t *testing.T) {
 			defer os.Remove(tmpFile.Name())
 			file, err := LoadBuild(tt.orig)
 			g.Expect(err).ToNot(HaveOccurred())
-			AddTree("mytree", file, tt.pkgs, []string{"a", "b"})
+			AddTree("mytree", file, tt.pkgs, []string{"a/x", "b/r", "b/z", "a/g"})
 			err = WriteBuild(false, file, tmpFile.Name())
 			g.Expect(err).ToNot(HaveOccurred())
 

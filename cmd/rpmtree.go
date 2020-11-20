@@ -1,6 +1,9 @@
 package main
 
 import (
+	"strings"
+
+	"github.com/rmohr/bazeldnf/pkg/api"
 	"github.com/rmohr/bazeldnf/pkg/bazel"
 	"github.com/rmohr/bazeldnf/pkg/reducer"
 	"github.com/rmohr/bazeldnf/pkg/repo"
@@ -33,13 +36,13 @@ func NewrpmtreeCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			repo := reducer.NewRepoReducer(repos, nil, rpmtreeopts.lang, rpmtreeopts.fedoraBaseSystem, rpmtreeopts.arch, ".bazeldnf")
+			repoReducer := reducer.NewRepoReducer(repos, nil, rpmtreeopts.lang, rpmtreeopts.fedoraBaseSystem, rpmtreeopts.arch, ".bazeldnf")
 			logrus.Info("Loading packages.")
-			if err := repo.Load(); err != nil {
+			if err := repoReducer.Load(); err != nil {
 				return err
 			}
 			logrus.Info("Initial reduction of involved packages.")
-			involved, err := repo.Resolve(required)
+			involved, err := repoReducer.Resolve(required)
 			if err != nil {
 				return err
 			}
@@ -68,8 +71,31 @@ func NewrpmtreeCmd() *cobra.Command {
 				return err
 			}
 			bazel.AddRPMs(workspace, install)
-			bazel.AddTree(rpmtreeopts.name, build, install, nil)
+			files := []string{}
+			helper := repo.CacheHelper{CacheDir: ".bazeldnf"}
+
+			logrus.Info("Calculating header and library files.")
+			remaining := install
+			for i, _ := range repos.Repositories {
+				var found []*api.FileListPackage
+				found, remaining, err = helper.CurrentFilelistsForPackages(&repos.Repositories[i], remaining)
+				if err != nil {
+					return err
+				}
+				for _, pkg := range found {
+					for _, file := range pkg.File {
+						if file.Type != "dir" {
+							if strings.HasPrefix(file.Text, "/usr/include") ||
+								strings.HasPrefix(file.Text, "/usr/lib64") {
+								files = append(files, file.Text)
+							}
+						}
+					}
+				}
+			}
+			bazel.AddTree(rpmtreeopts.name, build, install, files)
 			bazel.PruneRPMs(build, workspace)
+			logrus.Info("Writing bazel files.")
 			err = bazel.WriteWorkspace(false, workspace, rpmtreeopts.workspace)
 			if err != nil {
 				return err
@@ -79,6 +105,7 @@ func NewrpmtreeCmd() *cobra.Command {
 				return err
 			}
 			logrus.Info("Done.")
+
 			return nil
 		},
 	}

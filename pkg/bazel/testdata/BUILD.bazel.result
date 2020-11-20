@@ -1,9 +1,15 @@
 rpmtree(
     name = "mytree",
-    files = [
-        "a",
-        "b",
-    ],
+    files = {
+        "a": [
+            "g",
+            "x",
+        ],
+        "b": [
+            "r",
+            "z",
+        ],
+    },
     rpms = [
         "@a-0__1.2.3//rpm",
         "@a-0__2.3.4//rpm",

@@ -3,6 +3,7 @@ package bazel
 import (
 	"fmt"
 	"io/ioutil"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -115,6 +116,19 @@ func AddTree(name string, buildfile *build.File, pkgs []*api.Package, files []st
 		return files[i] < files[j]
 	})
 
+	fileMap := map[string][]string{}
+	for _, file := range files {
+		fileMap[filepath.Dir(file)] = append(fileMap[filepath.Dir(file)], filepath.Base(file))
+	}
+
+	dirs := []string{}
+	for dir, _ := range fileMap {
+		dirs = append(dirs, dir)
+	}
+	sort.SliceStable(dirs, func(i, j int) bool {
+		return dirs[i] < dirs[j]
+	})
+
 	rule := rpmtrees[name]
 	if rule == nil {
 		call := &build.CallExpr{X: &build.Ident{Name: "rpmtree"}}
@@ -123,7 +137,7 @@ func AddTree(name string, buildfile *build.File, pkgs []*api.Package, files []st
 	}
 	rule.SetName(name)
 	rule.SetRPMs(rpms)
-	rule.SetFiles(files)
+	rule.SetFiles(dirs, fileMap)
 
 	rules := []*rpmTree{}
 	for _, rule := range rpmtrees {
@@ -218,12 +232,16 @@ func (r *rpmTree) SetRPMs(rpms []string) {
 	r.Rule.SetAttr("rpms", &build.ListExpr{List: rpmsAttr})
 }
 
-func (r *rpmTree) SetFiles(files []string) {
-	filesAttr := []build.Expr{}
-	for _, file := range files {
-		filesAttr = append(filesAttr, &build.StringExpr{Value: file})
+func (r *rpmTree) SetFiles(dirs []string, fileMap map[string][]string) {
+	filesMapExpr := &build.DictExpr{}
+	for _, dir := range dirs {
+		filesListExpr := &build.ListExpr{}
+		for _, file := range fileMap[dir] {
+			filesListExpr.List = append(filesListExpr.List, &build.StringExpr{Value: file})
+		}
+		filesMapExpr.List = append(filesMapExpr.List, &build.KeyValueExpr{Key: &build.StringExpr{Value: dir}, Value: filesListExpr})
 	}
-	r.Rule.SetAttr("files", &build.ListExpr{List: filesAttr})
+	r.Rule.SetAttr("files", filesMapExpr)
 }
 
 func sanitize(name string) string {
