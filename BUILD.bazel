@@ -11,6 +11,11 @@ buildifier(
 
 load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
 load("//:deps.bzl", "rpmtree")
+load("//:def.bzl", "bazeldnf")
+
+bazeldnf(
+    name = "bazeldnf",
+)
 
 rpmtree(
     name = "something",
