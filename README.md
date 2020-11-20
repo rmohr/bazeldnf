@@ -11,6 +11,8 @@ The `rpm` rule represents a pure RPM dependency. This dependency is not
 processed in any way.  They can be added to your `WORKSPACE` file like this:
 
 ```python
+load("@bazeldnf//:deps.bzl", "rpm")
+
 rpm(
     name = "libvirt-devel-6.1.0-2.fc32.x86_64.rpm",
     sha256 = "2ebb715341b57a74759aff415e0ff53df528c49abaa7ba5b794b4047461fa8d6",
@@ -27,6 +29,8 @@ rpm(
 `tar` package.  `rpmtree` rules can be added like this to your `BUILD` files:
 
 ```python
+load("@bazeldnf//:deps.bzl", "rpmtree")
+
 rpmtree(
     name = "rpmarchive",
     rpms = [
@@ -46,6 +50,45 @@ container_layer(
         ":rpmarchive",
     ],
 )
+```
+
+### Running bazeldnf with bazel
+
+The bazeldnf repository needs to be added  to your `WORKSPACE`:
+
+```python
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "bazeldnf",
+    sha256 = "74f977ab8f13e466168ff0c80322bcb665db9f79d1bc497c742f9512737b91ea",
+    strip_prefix = "bazeldnf-0.0.1",
+    urls = [
+        "https://github.com/rmohr/bazeldnf/archive/v0.0.1.tar.gz",
+    ],
+)
+
+load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
+load("@bazeldnf//:deps.bzl", "bazeldnf_dependencies")
+
+go_rules_dependencies()
+
+go_register_toolchains()
+
+bazeldnf_dependencies()
+```
+
+Define the `bazeldnf` executable rule in your `BUILD.bazel` file:
+```python
+load("@bazeldnf//:def.bzl", "bazeldnf")
+
+bazeldnf(name = "bazeldnf")
+```
+
+After adding this code, you can run bazeldnf with Bazel:
+
+```bash
+bazel run //:bazeldnf -- --help
 ```
 
 ## Libraries and Headers
