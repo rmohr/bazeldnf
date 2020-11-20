@@ -6,6 +6,7 @@ go_library(
         "bazeldnf.go",
         "fetch.go",
         "init.go",
+        "prune.go",
         "reduce.go",
         "resolve.go",
         "root.go",

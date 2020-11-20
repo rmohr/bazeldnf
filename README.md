@@ -33,8 +33,6 @@ rpmtree(
         "@libvirt-libs-6.1.0-2.fc32.x86_64.rpm//rpm",
         "@libvirt-devel-6.1.0-2.fc32.x86_64.rpm//rpm",
     ],
-    include_dir = "/usr/include",
-    lib_dir = "/usr/lib64",
 )
 ```
 
@@ -52,17 +50,20 @@ container_layer(
 
 ## Libraries and Headers
 
+**Not yet implemented!**
+
 `rpmtree` can also be used to satisvy C and C++ dependencies like this:
 
 ```python
 cc_library(
     name = "rpmlibs",
     srcs = [
-        ":rpmarchive/libs.tar",
+        ":rpmarchive/usr/lib64",
     ],
     hdrs = [
-        ":rpmarchive/hdrs.tar",
+        ":rpmarchive/usr/include/libvirt",
     ],
+    prefix= "libvirt",
 )
 ```
 
@@ -91,19 +92,19 @@ bazeldnf init --fc 32 # write a repo.yaml file containing the usual release and 
 Then write a `rpmtree` rule called `libvirttree` to your BUILD file and all
 corresponding RPM dependencies into your WORKSPACE for libvirt:
 ```bash
-bazeldnf resolve --workspace /my/WORKSPACE --buildfile /my/BUILD.bazel --rpmtree libvirttree libvirt
+bazeldnf rpmtree --workspace /my/WORKSPACE --buildfile /my/BUILD.bazel --name libvirttree libvirt
 ```
 
 Do the same for bash with a `bashrpmtree` target:
 
 ```bash
-bazeldnf resolve --workspace /my/WORKSPACE --buildfile /my/BUILD.bazel --rpmtree bashtree bash
+bazeldnf rpmtree --workspace /my/WORKSPACE --buildfile /my/BUILD.bazel --name bashtree bash
 ```
 
 Finally prune all unreferenced old RPM files:
 
 ```bash
-bazeldnf prune --workspace /my/WORKSPACE
+bazeldnf prune --workspace /my/WORKSPACE --buildfile /my/BUILD.bazel
 ```
 
 ### Dependency resolution limitations

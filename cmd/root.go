@@ -22,6 +22,7 @@ func Execute() {
 	rootCmd.AddCommand(NewResolveCmd())
 	rootCmd.AddCommand(NewReduceCmd())
 	rootCmd.AddCommand(NewRPMCmd())
+	rootCmd.AddCommand(NewpruneCmd())
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)

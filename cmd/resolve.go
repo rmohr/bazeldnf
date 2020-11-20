@@ -2,10 +2,7 @@ package main
 
 import (
 	"fmt"
-	"path/filepath"
-	"strings"
 
-	"github.com/rmohr/bazeldnf/pkg/api"
 	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 	"github.com/rmohr/bazeldnf/pkg/reducer"
 	"github.com/rmohr/bazeldnf/pkg/repo"
@@ -41,7 +38,6 @@ func NewResolveCmd() *cobra.Command {
 					return err
 				}
 			}
-			helper := repo.CacheHelper{CacheDir: ".bazeldnf"}
 			repo := reducer.NewRepoReducer(repos, resolveopts.in, resolveopts.lang, resolveopts.fedoraBaseSystem, resolveopts.arch, ".bazeldnf")
 			logrus.Info("Loading packages.")
 			if err := repo.Load(); err != nil {
@@ -71,30 +67,6 @@ func NewResolveCmd() *cobra.Command {
 			fmt.Println(install)
 			fmt.Println(len(install))
 			logrus.Info("Done.")
-			remaining := install
-			hdrs := map[string]string{}
-			libs := map[string]string{}
-			for _, r := range repos.Repositories {
-				found := []*api.FileListPackage{}
-				found, remaining, err = helper.CurrentFilelistsForPackages(&r, remaining)
-				if err != nil {
-					return err
-				}
-				for _, pkg := range found {
-					for _, file := range pkg.File {
-						if file.Type != "dir" {
-							if strings.HasPrefix(file.Text, "/usr/include") {
-								hdrs[file.Text] = filepath.Dir(file.Text)
-							}
-							if strings.HasPrefix(file.Text, "/usr/lib64") {
-								libs[file.Text] = filepath.Dir(file.Text)
-							}
-						}
-					}
-				}
-			}
-			fmt.Println(hdrs)
-			fmt.Println(libs)
 			return nil
 		},
 	}

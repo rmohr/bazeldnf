@@ -26,8 +26,7 @@ func NewrpmtreeCmd() *cobra.Command {
 
 	rpmtreeCmd := &cobra.Command{
 		Use:   "rpmtree",
-		Short: "rpmtrees depencencies of the given packages",
-		Long:  `rpmtrees dependencies of the given packages with the assumption of a SCRATCH container as install target`,
+		Short: "Writes a rpmtree rule and its rpmdependencies to bazel files",
 		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, required []string) error {
 			repos, err := repo.LoadRepoFile(reduceopts.repofile)
