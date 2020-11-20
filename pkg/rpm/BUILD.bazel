@@ -10,8 +10,8 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/api",
-        "@com_github_sassoftware_go_rpmutils//:go-rpmutils",
-        "@com_github_sassoftware_go_rpmutils//cpio",
+        "@com_github_sassoftware_go_rpmutils//:go_default_library",
+        "@com_github_sassoftware_go_rpmutils//cpio:go_default_library",
     ],
 )
 
@@ -25,6 +25,6 @@ go_test(
     embed = [":rpm"],
     deps = [
         "//pkg/api",
-        "@com_github_onsi_gomega//:gomega",
+        "@com_github_onsi_gomega//:go_default_library",
     ],
 )
