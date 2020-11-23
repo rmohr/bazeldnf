@@ -117,7 +117,7 @@ func (r *CacheHelper) CurrentPrimary(repo *bazeldnf.Repository) (*api.Repository
 	return repository, nil
 }
 
-func (r *CacheHelper) CurrentFilelistsForPackages(repo *bazeldnf.Repository, packages []*api.Package) (filelistpkgs []*api.FileListPackage, remaining []*api.Package, err error) {
+func (r *CacheHelper) CurrentFilelistsForPackages(repo *bazeldnf.Repository, arches []string, packages []*api.Package) (filelistpkgs []*api.FileListPackage, remaining []*api.Package, err error) {
 	repomd := &api.Repomd{}
 	if err := r.UnmarshalFromRepoDir(repo, "repomd.xml", repomd); err != nil {
 		return nil, nil, err
@@ -161,10 +161,23 @@ func (r *CacheHelper) CurrentFilelistsForPackages(repo *bazeldnf.Repository, pac
 		case xml.StartElement:
 			if ty.Name.Local == "package" {
 				name := ""
+				arch := ""
 				for _, attr := range ty.Attr {
 					if attr.Name.Local == "name" {
 						name = attr.Value
+					} else if attr.Name.Local == "arch" {
+						arch = attr.Value
 					}
+				}
+
+				validArch := false
+				for _, a := range arches {
+					if arch == a {
+						validArch = true
+					}
+				}
+				if !validArch {
+					continue
 				}
 
 				var pkg *api.FileListPackage

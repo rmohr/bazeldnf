@@ -14,14 +14,14 @@ func Test(t *testing.T) {
 		return
 	}
 	helper := CacheHelper{CacheDir: ".bazeldnf"}
-	a, b, err := helper.CurrentFilelistsForPackages(&repos.Repositories[0], []*api.Package{
-		{Name: "blub", Version: api.Version{Epoch: "1"}},
-		{Name: "blub", Version: api.Version{Epoch: "3"}},
-		{Name: "blub", Version: api.Version{Epoch: "2"}},
-		{Name: "a", Version: api.Version{Epoch: "2"}},
-		{Name: "z", Version: api.Version{Epoch: "2"}},
-		{Name: "b", Version: api.Version{Epoch: "2"}},
-		{Name: "d", Version: api.Version{Epoch: "2"}},
+	a, b, err := helper.CurrentFilelistsForPackages(&repos.Repositories[0], []string{"myarch"}, []*api.Package{
+		{Name: "blub", Arch: "myarch", Version: api.Version{Epoch: "1"}},
+		{Name: "blub", Arch: "myarch", Version: api.Version{Epoch: "3"}},
+		{Name: "blub", Arch: "myarch", Version: api.Version{Epoch: "2"}},
+		{Name: "a", Arch: "myarch", Version: api.Version{Epoch: "2"}},
+		{Name: "z", Arch: "myarch", Version: api.Version{Epoch: "2"}},
+		{Name: "b", Arch: "myarch", Version: api.Version{Epoch: "2"}},
+		{Name: "d", Arch: "myarch", Version: api.Version{Epoch: "2"}},
 	})
 	fmt.Println(a)
 	fmt.Println(b)

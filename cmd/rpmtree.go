@@ -79,16 +79,16 @@ func NewrpmtreeCmd() *cobra.Command {
 			remaining := install
 			for i, _ := range repos.Repositories {
 				var found []*api.FileListPackage
-				found, remaining, err = helper.CurrentFilelistsForPackages(&repos.Repositories[i], remaining)
+				found, remaining, err = helper.CurrentFilelistsForPackages(&repos.Repositories[i], []string{rpmtreeopts.arch, "noarch"}, remaining)
 				if err != nil {
 					return err
 				}
 				for _, pkg := range found {
 					for _, file := range pkg.File {
 						if file.Type != "dir" {
-							if strings.HasPrefix(file.Text, "/usr/include") ||
-								strings.HasPrefix(file.Text, "/usr/lib64") ||
-								strings.HasPrefix(file.Text, "/lib64") {
+							if strings.HasPrefix(file.Text, "/usr/include/") ||
+								strings.HasPrefix(file.Text, "/usr/lib64/") ||
+								strings.HasPrefix(file.Text, "/lib64/") {
 								files = append(files, file.Text)
 							}
 						}
