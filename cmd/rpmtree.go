@@ -21,6 +21,7 @@ type rpmtreeOpts struct {
 	workspace        string
 	buildfile        string
 	name             string
+	public           bool
 }
 
 var rpmtreeopts = rpmtreeOpts{}
@@ -94,7 +95,7 @@ func NewrpmtreeCmd() *cobra.Command {
 					}
 				}
 			}
-			bazel.AddTree(rpmtreeopts.name, build, install, files)
+			bazel.AddTree(rpmtreeopts.name, build, install, files, rpmtreeopts.public)
 			bazel.PruneRPMs(build, workspace)
 			logrus.Info("Writing bazel files.")
 			err = bazel.WriteWorkspace(false, workspace, rpmtreeopts.workspace)
@@ -114,6 +115,7 @@ func NewrpmtreeCmd() *cobra.Command {
 	rpmtreeCmd.PersistentFlags().StringVarP(&rpmtreeopts.fedoraBaseSystem, "fedora-base-system", "f", "fedora-release-container", "fedora base system to choose from (e.g. fedora-release-server, fedora-release-container, ...)")
 	rpmtreeCmd.PersistentFlags().StringVarP(&rpmtreeopts.arch, "arch", "a", "x86_64", "target fedora architecture")
 	rpmtreeCmd.PersistentFlags().BoolVarP(&rpmtreeopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
+	rpmtreeCmd.PersistentFlags().BoolVarP(&rpmtreeopts.public, "public", "p", true, "if the rpmtree rule should be public")
 	rpmtreeCmd.PersistentFlags().StringVarP(&rpmtreeopts.repofile, "repofile", "r", "repo.yaml", "repository information file. Will be used by default if no explicit inputs are provided.")
 	rpmtreeCmd.PersistentFlags().StringVarP(&rpmtreeopts.workspace, "workspace", "w", "WORKSPACE", "Bazel workspace file")
 	rpmtreeCmd.PersistentFlags().StringVarP(&rpmtreeopts.buildfile, "buildfile", "b", "rpm/BUILD.bazel", "Build file for RPMs")

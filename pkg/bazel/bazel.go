@@ -95,7 +95,7 @@ func AddRPMs(workspace *build.File, pkgs []*api.Package) {
 	}
 }
 
-func AddTree(name string, buildfile *build.File, pkgs []*api.Package, files []string) {
+func AddTree(name string, buildfile *build.File, pkgs []*api.Package, files []string, public bool) {
 	rpmtrees := map[string]*rpmTree{}
 
 	for _, rule := range buildfile.Rules("rpmtree") {
@@ -138,6 +138,9 @@ func AddTree(name string, buildfile *build.File, pkgs []*api.Package, files []st
 	rule.SetName(name)
 	rule.SetRPMs(rpms)
 	rule.SetFiles(dirs, fileMap)
+	if public {
+		rule.SetAttr("visibility", &build.StringExpr{Value: `["//visibility:public"]`})
+	}
 
 	rules := []*rpmTree{}
 	for _, rule := range rpmtrees {
