@@ -19,6 +19,12 @@ bazeldnf(
 
 rpmtree(
     name = "something",
+    files = {
+        "/usr/lib64": [
+            "libvirt.so.0",
+            "libvirt.so.0.6001.0",
+        ],
+    },
     rpms = [
         "@libvirt-libs-6.1.0-2.fc32.x86_64.rpm//rpm",
         "@libvirt-devel-6.1.0-2.fc32.x86_64.rpm//rpm",
@@ -28,4 +34,9 @@ rpmtree(
 pkg_tar(
     name = "whatever",
     deps = [":something"],
+)
+
+cc_library(
+    name = "bar",
+    srcs = [":something/usr/lib64"],
 )

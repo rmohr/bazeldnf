@@ -4,6 +4,8 @@ import (
 	"archive/tar"
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/sassoftware/go-rpmutils"
@@ -22,27 +24,59 @@ func RPMToTar(rpmReader io.Reader, tarWriter *tar.Writer) error {
 	return cpio.Tar(payloadReader, tarWriter)
 }
 
-func PrefixFilter(prefix string, stripPrefix bool, reader *tar.Reader, writer *tar.Writer) error {
+func PrefixFilter(prefix string, reader *tar.Reader, files []string) error {
+	prefix = strings.TrimPrefix(prefix, ".")
+
+	fileMap := map[string]string{}
+	for _, file := range files {
+		fileMap[filepath.Base(file)] = file
+	}
 	for {
 		entry, err := reader.Next()
 		if err == io.EOF {
-			return nil
+			break
 		}
-		if !strings.HasPrefix(entry.Name, prefix) {
+		if len(fileMap) == 0 {
+			break
+		}
+		name := strings.TrimPrefix(entry.Name, ".")
+		if !strings.HasPrefix(name, prefix) {
 			continue
 		}
-		if stripPrefix {
-			relative := strings.HasPrefix(entry.Name, "./")
-			entry.Name = strings.TrimPrefix(entry.Name, prefix)
-			if relative {
-				entry.Name = "." + entry.Name
+		basename := filepath.Base(name)
+		if _, exists := fileMap[basename]; !exists {
+			continue
+		}
+		if entry.Typeflag == tar.TypeReg {
+			err := func() error {
+				writer, err := os.Create(fileMap[basename])
+				if err != nil {
+					return err
+				}
+				defer writer.Close()
+				if _, err := io.Copy(writer, reader); err != nil {
+					return err
+				}
+				return nil
+			}()
+			if err != nil {
+				return err
 			}
-		}
-		if err := writer.WriteHeader(entry); err != nil {
-			return err
-		}
-		if _, err := io.Copy(writer, reader); err != nil {
-			return err
+			delete(fileMap, basename)
+		} else if entry.Typeflag == tar.TypeSymlink {
+			linkname := strings.TrimPrefix(entry.Linkname, ".")
+			err = os.Symlink(linkname, fileMap[basename])
+			if err != nil {
+				return err
+			}
+			delete(fileMap, basename)
+		} else {
+			return fmt.Errorf("can't extract %s, only symlinks and files can be specified", fileMap[basename])
 		}
 	}
+
+	if len(fileMap) > 0 {
+		return fmt.Errorf("some files could not be found: %v", fileMap)
+	}
+	return nil
 }

@@ -11,8 +11,6 @@ import (
 
 var output string
 var input []string
-var filePrefix string
-var stripFilePrefix bool
 
 func NewRPMCmd() *cobra.Command {
 	tarCmd := &cobra.Command{
@@ -52,7 +50,5 @@ func NewRPMCmd() *cobra.Command {
 
 	tarCmd.PersistentFlags().StringVarP(&output, "output", "o", "", "location of the resulting tar file (defaults to stdout)")
 	tarCmd.PersistentFlags().StringArrayVarP(&input, "input", "i", []string{}, "location from where to read the rpm file (defaults to stdin)")
-	tarCmd.PersistentFlags().StringVar(&filePrefix, "file-prefix", "", "only keep files with this directory prefix")
-	tarCmd.PersistentFlags().BoolVar(&stripFilePrefix, "strip-prefix", false, "move files matching file_prefix to the root directory, effectively stripping the file_prefix")
 	return tarCmd
 }

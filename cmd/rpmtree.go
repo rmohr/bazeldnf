@@ -86,7 +86,8 @@ func NewrpmtreeCmd() *cobra.Command {
 					for _, file := range pkg.File {
 						if file.Type != "dir" {
 							if strings.HasPrefix(file.Text, "/usr/include") ||
-								strings.HasPrefix(file.Text, "/usr/lib64") {
+								strings.HasPrefix(file.Text, "/usr/lib64") ||
+								strings.HasPrefix(file.Text, "/lib64") {
 								files = append(files, file.Text)
 							}
 						}

@@ -12,6 +12,7 @@ go_library(
         "root.go",
         "rpm2tar.go",
         "rpmtree.go",
+        "tar2files.go",
     ],
     importpath = "github.com/rmohr/bazeldnf/cmd",
     visibility = ["//visibility:private"],
