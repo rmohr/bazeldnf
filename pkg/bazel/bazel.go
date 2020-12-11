@@ -139,7 +139,7 @@ func AddTree(name string, buildfile *build.File, pkgs []*api.Package, files []st
 	rule.SetRPMs(rpms)
 	rule.SetFiles(dirs, fileMap)
 	if public {
-		rule.SetAttr("visibility", &build.StringExpr{Value: `["//visibility:public"]`})
+		rule.SetAttr("visibility", &build.ListExpr{List: []build.Expr{&build.StringExpr{Value: "//visibility:public"}}})
 	}
 
 	rules := []*rpmTree{}
