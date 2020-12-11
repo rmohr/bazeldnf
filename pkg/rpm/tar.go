@@ -80,3 +80,69 @@ func PrefixFilter(prefix string, reader *tar.Reader, files []string) error {
 	}
 	return nil
 }
+
+func Untar(tmpRoot string, tarFile string) error {
+
+	for _, t := range []byte{tar.TypeDir, tar.TypeSymlink, tar.TypeReg} {
+
+		reader, err := os.Open(tarFile)
+		if err != nil {
+			return err
+		}
+		defer reader.Close()
+		tarReader := tar.NewReader(reader)
+
+		for {
+			entry, err := tarReader.Next()
+			if err == io.EOF {
+				reader.Close()
+				break
+			} else if err != nil {
+				return err
+			}
+
+			if strings.HasSuffix(entry.Name, "lib64") {
+				fmt.Println(entry.Name)
+			}
+			if entry.Typeflag != t {
+				continue
+			}
+
+			target := filepath.Join(tmpRoot, entry.Name)
+			_, err = filepath.Rel(tmpRoot, target)
+			if err != nil {
+				return err
+			}
+			switch entry.Typeflag {
+			case tar.TypeDir:
+				err := os.MkdirAll(target, os.ModePerm)
+				if err != nil {
+					return err
+				}
+			case tar.TypeReg:
+				err := func() error {
+					writer, err := os.Create(target)
+					if err != nil {
+						return err
+					}
+					if _, err := io.Copy(writer, tarReader); err != nil {
+						return err
+					}
+					return nil
+				}()
+				if err != nil {
+					return err
+				}
+			case tar.TypeSymlink:
+				linkname := strings.TrimPrefix(entry.Linkname, ".")
+				err = os.Symlink(linkname, target)
+				if err != nil {
+					return err
+				}
+			default:
+				return fmt.Errorf("file type %v not supported right now", entry.Typeflag)
+			}
+		}
+	}
+	return nil
+}
