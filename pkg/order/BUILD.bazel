@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "order",
+    srcs = ["order.go"],
+    importpath = "github.com/rmohr/bazeldnf/pkg/order",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "order_test",
+    srcs = ["order_test.go"],
+    embed = [":order"],
+    deps = ["@com_github_onsi_gomega//:go_default_library"],
+)
