@@ -24,6 +24,7 @@ func Execute() {
 	rootCmd.AddCommand(NewRPMCmd())
 	rootCmd.AddCommand(NewpruneCmd())
 	rootCmd.AddCommand(NewTar2FilesCmd())
+	rootCmd.AddCommand(NewlddCmd())
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)

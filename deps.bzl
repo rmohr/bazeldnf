@@ -1,5 +1,6 @@
 load(
     "@bazel_gazelle//:deps.bzl",
+    "go_repository",
     _go_repository = "go_repository",
 )
 load(
@@ -583,6 +584,14 @@ def bazeldnf_dependencies():
         sum = "h1:LnC5Kc/wtumK+WB441p7ynQJzVuNRJiqddSIE3IlSEQ=",
         version = "v0.0.0-20190109142713-0ad062ec5ee5",
     )
+    _maybe(
+        _go_repository,
+        name = "com_github_u_root_u_root",
+        importpath = "github.com/u-root/u-root",
+        sum = "h1:u+KSS04pSxJGI5E7WE4Bs9+Zd75QjFv+REkjy/aoAc8=",
+        version = "v7.0.0+incompatible",
+    )
+
     _maybe(
         _go_repository,
         name = "com_github_ugorji_go",
