@@ -5,6 +5,7 @@ go_library(
     srcs = [
         "bazeldnf.go",
         "fetch.go",
+        "filter.go",
         "init.go",
         "ldd.go",
         "prune.go",
@@ -21,6 +22,7 @@ go_library(
         "//pkg/api",
         "//pkg/api/bazeldnf",
         "//pkg/bazel",
+        "//pkg/order",
         "//pkg/reducer",
         "//pkg/repo",
         "//pkg/rpm",

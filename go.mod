@@ -13,4 +13,4 @@ require (
 	sigs.k8s.io/yaml v1.2.0
 )
 
-replace github.com/sassoftware/go-rpmutils v0.1.1 => github.com/rmohr/go-rpmutils v0.1.2-0.20201027145229-ce5101763ca7
+replace github.com/sassoftware/go-rpmutils v0.1.1 => github.com/rmohr/go-rpmutils v0.1.2-0.20201215123907-5acf7436c00d

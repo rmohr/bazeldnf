@@ -80,7 +80,6 @@ _tar2files = rule(
 )
 
 def rpmtree(**kwargs):
-    files = kwargs["files"]
     kwargs.pop("files", None)
     basename = kwargs["name"]
     kwargs.pop("name", None)
@@ -90,7 +89,12 @@ def rpmtree(**kwargs):
         out = tarname,
         **kwargs
     )
-    kwargs.pop("rpms", None)
+
+def tar2files(**kwargs):
+    files = kwargs["files"]
+    kwargs.pop("files", None)
+    basename = kwargs["name"]
+    kwargs.pop("name", None)
     if files:
         for k, v in files.items():
             name = basename + k
@@ -100,7 +104,6 @@ def rpmtree(**kwargs):
             _tar2files(
                 name = name,
                 prefix = k,
-                tar = tarname,
                 out = files,
                 **kwargs
             )

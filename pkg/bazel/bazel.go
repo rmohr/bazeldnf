@@ -95,22 +95,18 @@ func AddRPMs(workspace *build.File, pkgs []*api.Package) {
 	}
 }
 
-func AddTree(name string, buildfile *build.File, pkgs []*api.Package, files []string, public bool) {
-	rpmtrees := map[string]*rpmTree{}
-
-	for _, rule := range buildfile.Rules("rpmtree") {
-		rpmtrees[rule.Name()] = &rpmTree{rule}
+func AddTar2Files(name string, rpmtree string, buildfile *build.File, files []string, public bool) {
+	tar2files := map[string]*tar2Files{}
+	for _, rule := range buildfile.Rules("tar2files") {
+		tar2files[rule.Name()] = &tar2Files{rule}
 	}
-	buildfile.DelRules("rpmtree", "")
-
-	rpms := []string{}
-	for _, pkg := range pkgs {
-		pkgName := sanitize(pkg.String())
-		rpms = append(rpms, "@"+pkgName+"//rpm")
+	buildfile.DelRules("tar2files", "")
+	rule := tar2files[name]
+	if rule == nil {
+		call := &build.CallExpr{X: &build.Ident{Name: "tar2files"}}
+		rule = &tar2Files{&build.Rule{call, ""}}
+		tar2files[name] = rule
 	}
-	sort.SliceStable(rpms, func(i, j int) bool {
-		return rpms[i] < rpms[j]
-	})
 
 	sort.SliceStable(files, func(i, j int) bool {
 		return files[i] < files[j]
@@ -128,6 +124,46 @@ func AddTree(name string, buildfile *build.File, pkgs []*api.Package, files []st
 	sort.SliceStable(dirs, func(i, j int) bool {
 		return dirs[i] < dirs[j]
 	})
+	rule.SetFiles(dirs, fileMap)
+	rule.SetName(name)
+	if rpmtree != "" {
+		rule.SetTar(rpmtree)
+	}
+
+	if public {
+		rule.SetAttr("visibility", &build.ListExpr{List: []build.Expr{&build.StringExpr{Value: "//visibility:public"}}})
+	}
+
+	rules := []*tar2Files{}
+	for _, rule := range tar2files {
+		rules = append(rules, rule)
+	}
+
+	sort.SliceStable(rules, func(i, j int) bool {
+		return rules[i].Name() < rules[j].Name()
+	})
+
+	for _, rule := range rules {
+		buildfile.Stmt = edit.InsertAtEnd(buildfile.Stmt, rule.Call)
+	}
+}
+
+func AddTree(name string, buildfile *build.File, pkgs []*api.Package, public bool) {
+	rpmtrees := map[string]*rpmTree{}
+
+	for _, rule := range buildfile.Rules("rpmtree") {
+		rpmtrees[rule.Name()] = &rpmTree{rule}
+	}
+	buildfile.DelRules("rpmtree", "")
+
+	rpms := []string{}
+	for _, pkg := range pkgs {
+		pkgName := sanitize(pkg.String())
+		rpms = append(rpms, "@"+pkgName+"//rpm")
+	}
+	sort.SliceStable(rpms, func(i, j int) bool {
+		return rpms[i] < rpms[j]
+	})
 
 	rule := rpmtrees[name]
 	if rule == nil {
@@ -137,7 +173,6 @@ func AddTree(name string, buildfile *build.File, pkgs []*api.Package, files []st
 	}
 	rule.SetName(name)
 	rule.SetRPMs(rpms)
-	rule.SetFiles(dirs, fileMap)
 	if public {
 		rule.SetAttr("visibility", &build.ListExpr{List: []build.Expr{&build.StringExpr{Value: "//visibility:public"}}})
 	}
@@ -210,8 +245,20 @@ type rpmTree struct {
 	*build.Rule
 }
 
+type tar2Files struct {
+	*build.Rule
+}
+
 func (r *rpmTree) SetName(name string) {
 	r.Rule.SetAttr("name", &build.StringExpr{Value: name})
+}
+
+func (r *tar2Files) SetName(name string) {
+	r.Rule.SetAttr("name", &build.StringExpr{Value: name})
+}
+
+func (r *tar2Files) SetTar(name string) {
+	r.Rule.SetAttr("tar", &build.StringExpr{Value: name})
 }
 
 func (r *rpmTree) RPMs() []string {
@@ -235,7 +282,7 @@ func (r *rpmTree) SetRPMs(rpms []string) {
 	r.Rule.SetAttr("rpms", &build.ListExpr{List: rpmsAttr})
 }
 
-func (r *rpmTree) SetFiles(dirs []string, fileMap map[string][]string) {
+func (r *tar2Files) SetFiles(dirs []string, fileMap map[string][]string) {
 	filesMapExpr := &build.DictExpr{}
 	for _, dir := range dirs {
 		filesListExpr := &build.ListExpr{}

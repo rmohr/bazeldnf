@@ -5,6 +5,10 @@ go_library(
     srcs = ["order.go"],
     importpath = "github.com/rmohr/bazeldnf/pkg/order",
     visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/rpm",
+        "@com_github_sassoftware_go_rpmutils//cpio:go_default_library",
+    ],
 )
 
 go_test(

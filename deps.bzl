@@ -1,6 +1,5 @@
 load(
     "@bazel_gazelle//:deps.bzl",
-    "go_repository",
     _go_repository = "go_repository",
 )
 load(
@@ -11,9 +10,14 @@ load(
     "@bazeldnf//internal:rpmtree.bzl",
     _rpmtree = "rpmtree",
 )
+load(
+    "@bazeldnf//internal:rpmtree.bzl",
+    _tar2files = "tar2files",
+)
 
 rpm = _rpm
 rpmtree = _rpmtree
+tar2files = _tar2files
 
 def bazeldnf_dependencies():
     _maybe(
@@ -490,9 +494,10 @@ def bazeldnf_dependencies():
         name = "com_github_sassoftware_go_rpmutils",
         importpath = "github.com/sassoftware/go-rpmutils",
         replace = "github.com/rmohr/go-rpmutils",
-        sum = "h1:Y1oFlejaBMqZnZSK/C9HU383LkAbN8+fbK1mHcKxfBA=",
-        version = "v0.1.2-0.20201027145229-ce5101763ca7",
+        sum = "h1:IPm+rJWi7P9mkoFQjloDEGThxlM71dzDrC2DZSjgnL8=",
+        version = "v0.1.2-0.20201215123907-5acf7436c00d",
     )
+
     _maybe(
         _go_repository,
         name = "com_github_shurcool_sanitized_anchor_name",

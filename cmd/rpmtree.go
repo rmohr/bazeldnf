@@ -1,9 +1,6 @@
 package main
 
 import (
-	"strings"
-
-	"github.com/rmohr/bazeldnf/pkg/api"
 	"github.com/rmohr/bazeldnf/pkg/bazel"
 	"github.com/rmohr/bazeldnf/pkg/reducer"
 	"github.com/rmohr/bazeldnf/pkg/repo"
@@ -72,30 +69,7 @@ func NewrpmtreeCmd() *cobra.Command {
 				return err
 			}
 			bazel.AddRPMs(workspace, install)
-			files := []string{}
-			helper := repo.CacheHelper{CacheDir: ".bazeldnf"}
-
-			logrus.Info("Calculating header and library files.")
-			remaining := install
-			for i, _ := range repos.Repositories {
-				var found []*api.FileListPackage
-				found, remaining, err = helper.CurrentFilelistsForPackages(&repos.Repositories[i], []string{rpmtreeopts.arch, "noarch"}, remaining)
-				if err != nil {
-					return err
-				}
-				for _, pkg := range found {
-					for _, file := range pkg.File {
-						if file.Type != "dir" {
-							if strings.HasPrefix(file.Text, "/usr/include/") ||
-								strings.HasPrefix(file.Text, "/usr/lib64/") ||
-								strings.HasPrefix(file.Text, "/lib64/") {
-								files = append(files, file.Text)
-							}
-						}
-					}
-				}
-			}
-			bazel.AddTree(rpmtreeopts.name, build, install, files, rpmtreeopts.public)
+			bazel.AddTree(rpmtreeopts.name, build, install, rpmtreeopts.public)
 			bazel.PruneRPMs(build, workspace)
 			logrus.Info("Writing bazel files.")
 			err = bazel.WriteWorkspace(false, workspace, rpmtreeopts.workspace)

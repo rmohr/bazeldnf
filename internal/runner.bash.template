@@ -3,6 +3,7 @@
 set -euo pipefail
 
 BAZELDNF_SHORT_PATH=@@BAZELDNF_SHORT_PATH@@
+ARGS=@@ARGS@@
 bazeldnf_short_path=$(readlink "$BAZELDNF_SHORT_PATH")
 
 if [ -z "${BUILD_WORKSPACE_DIRECTORY-}" ]; then
@@ -12,4 +13,4 @@ fi
 
 cd ${BUILD_WORKSPACE_DIRECTORY}
 
-"$bazeldnf_short_path" "$@"
+"$bazeldnf_short_path" "${ARGS[@]}" "$@"
