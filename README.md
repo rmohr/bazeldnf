@@ -93,29 +93,89 @@ bazel run //:bazeldnf -- --help
 
 ## Libraries and Headers
 
-**Not yet implemented!**
+One important use-case is to expose headers and libraries inside the RPMs to build targets in bazel.
+If we would just blindly expose all libraries to build targets, bazel would try to link any one of them to our binary.
+This would obviously not work. Therefore we need a mediator
+between `cc_library` and `rpmtree`. This mediator is the `tar2files` target. This target allows extracting
+a subset of libraries and headers and providing them to `cc_library` targets.
 
-`rpmtree` can also be used to satisvy C and C++ dependencies like this:
+An example:
+
+```python
+load("@bazeldnf//:deps.bzl", "rpm", "rpmtree", "tar2files")
+
+tar2files(
+    name = "libvirt-libs",
+    files = {
+        "/usr/include/libvirt": [
+            "libvirt-admin.h",
+            "libvirt-common.h",
+            "libvirt-domain-checkpoint.h",
+            "libvirt-domain-snapshot.h",
+            "libvirt-domain.h",
+            "libvirt-event.h",
+        ],
+        "/usr/lib64": [
+            "libacl.so.1",
+            "libacl.so.1.1.2253",
+            "libattr.so.1",
+        ],
+    },
+    tar = ":libvirt-devel",
+    visibility = ["//visibility:public"],
+)
+```
+
+`tar` can take any input which is a tar archive. Conveniently this is what `rpmtree` creates as the default target.
+So any `rpmtree` can be used here.
+The `files` section contains then files per folder which one wants to expose to `cc_library`:
 
 ```python
 cc_library(
     name = "rpmlibs",
     srcs = [
-        ":rpmarchive/usr/lib64",
+        ":libvirt-libs/usr/lib64",
     ],
     hdrs = [
-        ":rpmarchive/usr/include/libvirt",
+        ":libvirt-libs/usr/include/libvirt",
     ],
+    strip_include_prefix="/libvirt-libs/",
     prefix= "libvirt",
 )
 ```
 
-The `include_dir` attribute for `rpmtree` tells the target to include headers
-in that directory in `<target>/hdrs.tar`.  The same for the `lib_dir` attribute
-on `rpmtree` for libarires. It can be accessed via `<target>/libs.tar`.  These
-two tar files have in addition `include_dir` and `lib_dir` prefixes stripped
-from the resulting archive, which should make it unnecessary to use the strip
-options on `cc_library`.
+At this point source code linking to these libraries can be compiled, but unit tests would only work if we would manually
+list any transitive library. This would be tedious and error prone. However bazeldnf can introspect for you shared libraries
+and create `tar2files` rules for you, based on a provided set of libraries.
+
+First define a target like this:
+
+```python
+load("@bazeldnf//:deps.bzl", "rpm", "rpmtree", "tar2files")
+load("@bazeldnf//:def.bzl", "bazeldnf")
+
+bazeldnf(
+    name = "ldd",
+    command = "ldd",
+    libs = [
+        "/usr/lib64/libvirt-lxc.so.0",
+        "/usr/lib64/libvirt-qemu.so.0",
+        "/usr/lib64/libvirt.so.0",
+    ],
+    rpmtree = ":libvirt-devel",
+    rulename = "libvirt-libs",
+)
+```
+
+`rulename` containes the `tar2files` target name, `rpmtree` references a given `rpmtree` and `libs` contains
+libraries which one wants to link. When now executing the target like this:
+
+```bash
+bazel run //:ldd
+```
+
+the `tar2files` target will be updated with all transitive library dependencies for  the specified libraries.
+In addition, all header directories are updated too for convenience.
 
 ## Dependency resolution
 
