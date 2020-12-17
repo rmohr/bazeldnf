@@ -18,6 +18,7 @@ type rpmtreeOpts struct {
 	workspace        string
 	buildfile        string
 	name             string
+	public           bool
 }
 
 var rpmtreeopts = rpmtreeOpts{}
@@ -33,13 +34,13 @@ func NewrpmtreeCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			repo := reducer.NewRepoReducer(repos, nil, rpmtreeopts.lang, rpmtreeopts.fedoraBaseSystem, rpmtreeopts.arch, ".bazeldnf")
+			repoReducer := reducer.NewRepoReducer(repos, nil, rpmtreeopts.lang, rpmtreeopts.fedoraBaseSystem, rpmtreeopts.arch, ".bazeldnf")
 			logrus.Info("Loading packages.")
-			if err := repo.Load(); err != nil {
+			if err := repoReducer.Load(); err != nil {
 				return err
 			}
 			logrus.Info("Initial reduction of involved packages.")
-			involved, err := repo.Resolve(required)
+			involved, err := repoReducer.Resolve(required)
 			if err != nil {
 				return err
 			}
@@ -68,8 +69,9 @@ func NewrpmtreeCmd() *cobra.Command {
 				return err
 			}
 			bazel.AddRPMs(workspace, install)
-			bazel.AddTree(rpmtreeopts.name, build, install, nil)
+			bazel.AddTree(rpmtreeopts.name, build, install, rpmtreeopts.public)
 			bazel.PruneRPMs(build, workspace)
+			logrus.Info("Writing bazel files.")
 			err = bazel.WriteWorkspace(false, workspace, rpmtreeopts.workspace)
 			if err != nil {
 				return err
@@ -79,6 +81,7 @@ func NewrpmtreeCmd() *cobra.Command {
 				return err
 			}
 			logrus.Info("Done.")
+
 			return nil
 		},
 	}
@@ -86,6 +89,7 @@ func NewrpmtreeCmd() *cobra.Command {
 	rpmtreeCmd.PersistentFlags().StringVarP(&rpmtreeopts.fedoraBaseSystem, "fedora-base-system", "f", "fedora-release-container", "fedora base system to choose from (e.g. fedora-release-server, fedora-release-container, ...)")
 	rpmtreeCmd.PersistentFlags().StringVarP(&rpmtreeopts.arch, "arch", "a", "x86_64", "target fedora architecture")
 	rpmtreeCmd.PersistentFlags().BoolVarP(&rpmtreeopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
+	rpmtreeCmd.PersistentFlags().BoolVarP(&rpmtreeopts.public, "public", "p", true, "if the rpmtree rule should be public")
 	rpmtreeCmd.PersistentFlags().StringVarP(&rpmtreeopts.repofile, "repofile", "r", "repo.yaml", "repository information file. Will be used by default if no explicit inputs are provided.")
 	rpmtreeCmd.PersistentFlags().StringVarP(&rpmtreeopts.workspace, "workspace", "w", "WORKSPACE", "Bazel workspace file")
 	rpmtreeCmd.PersistentFlags().StringVarP(&rpmtreeopts.buildfile, "buildfile", "b", "rpm/BUILD.bazel", "Build file for RPMs")

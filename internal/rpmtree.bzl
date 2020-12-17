@@ -27,27 +27,24 @@ def _rpm2tar_impl(ctx):
         executable = ctx.executable._bazeldnf,
     )
 
-    out = ctx.outputs.hdrs
-    args = ["rpm2tar", "-o", out.path] + rpms
-    ctx.actions.run(
-        inputs = ctx.files.rpms,
-        outputs = [out],
-        arguments = args,
-        progress_message = "Converting %s to tar" % ctx.label.name,
-        executable = ctx.executable._bazeldnf,
-    )
-
-    out = ctx.outputs.libs
-    args = ["rpm2tar", "-o", out.path] + rpms
-    ctx.actions.run(
-        inputs = ctx.files.rpms,
-        outputs = [out],
-        arguments = args,
-        progress_message = "Converting %s to tar" % ctx.label.name,
-        executable = ctx.executable._bazeldnf,
-    )
-
     return [DefaultInfo(files = depset([ctx.outputs.out]))]
+
+def _tar2files_impl(ctx):
+    out = ctx.outputs.out
+    files = []
+    for out in ctx.outputs.out:
+        files += [out.path]
+
+    args = ["tar2files", "--file-prefix", ctx.attr.prefix, "-i", ctx.files.tar[0].path] + files
+    ctx.actions.run(
+        inputs = ctx.files.tar,
+        outputs = ctx.outputs.out,
+        arguments = args,
+        progress_message = "Extracting files",
+        executable = ctx.executable._bazeldnf,
+    )
+
+    return [DefaultInfo(files = depset(ctx.outputs.out))]
 
 _rpm2tar_attrs = {
     "rpms": attr.label_list(allow_files = True),
@@ -58,8 +55,18 @@ _rpm2tar_attrs = {
         default = Label("//cmd:cmd"),
     ),
     "out": attr.output(mandatory = True),
-    "libs": attr.output(mandatory = True),
-    "hdrs": attr.output(mandatory = True),
+}
+
+_tar2files_attrs = {
+    "tar": attr.label(allow_single_file = True),
+    "_bazeldnf": attr.label(
+        executable = True,
+        cfg = "exec",
+        allow_files = True,
+        default = Label("//cmd:cmd"),
+    ),
+    "prefix": attr.string(),
+    "out": attr.output_list(mandatory = True),
 }
 
 _rpm2tar = rule(
@@ -67,10 +74,36 @@ _rpm2tar = rule(
     attrs = _rpm2tar_attrs,
 )
 
+_tar2files = rule(
+    implementation = _tar2files_impl,
+    attrs = _tar2files_attrs,
+)
+
 def rpmtree(**kwargs):
+    kwargs.pop("files", None)
+    basename = kwargs["name"]
+    kwargs.pop("name", None)
+    tarname = basename + ".tar"
     _rpm2tar(
-        out = kwargs["name"] + ".tar",
-        libs = kwargs["name"] + "/libs.tar",
-        hdrs = kwargs["name"] + "/hdrs.tar",
+        name = basename,
+        out = tarname,
         **kwargs
     )
+
+def tar2files(**kwargs):
+    files = kwargs["files"]
+    kwargs.pop("files", None)
+    basename = kwargs["name"]
+    kwargs.pop("name", None)
+    if files:
+        for k, v in files.items():
+            name = basename + k
+            files = []
+            for file in v:
+                files = files + [basename + "/" + file]
+            _tar2files(
+                name = name,
+                prefix = k,
+                out = files,
+                **kwargs
+            )

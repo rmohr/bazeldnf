@@ -10,9 +10,14 @@ load(
     "@bazeldnf//internal:rpmtree.bzl",
     _rpmtree = "rpmtree",
 )
+load(
+    "@bazeldnf//internal:rpmtree.bzl",
+    _tar2files = "tar2files",
+)
 
 rpm = _rpm
 rpmtree = _rpmtree
+tar2files = _tar2files
 
 def bazeldnf_dependencies():
     _maybe(
@@ -489,9 +494,10 @@ def bazeldnf_dependencies():
         name = "com_github_sassoftware_go_rpmutils",
         importpath = "github.com/sassoftware/go-rpmutils",
         replace = "github.com/rmohr/go-rpmutils",
-        sum = "h1:Y1oFlejaBMqZnZSK/C9HU383LkAbN8+fbK1mHcKxfBA=",
-        version = "v0.1.2-0.20201027145229-ce5101763ca7",
+        sum = "h1:IPm+rJWi7P9mkoFQjloDEGThxlM71dzDrC2DZSjgnL8=",
+        version = "v0.1.2-0.20201215123907-5acf7436c00d",
     )
+
     _maybe(
         _go_repository,
         name = "com_github_shurcool_sanitized_anchor_name",
@@ -583,6 +589,14 @@ def bazeldnf_dependencies():
         sum = "h1:LnC5Kc/wtumK+WB441p7ynQJzVuNRJiqddSIE3IlSEQ=",
         version = "v0.0.0-20190109142713-0ad062ec5ee5",
     )
+    _maybe(
+        _go_repository,
+        name = "com_github_u_root_u_root",
+        importpath = "github.com/u-root/u-root",
+        sum = "h1:u+KSS04pSxJGI5E7WE4Bs9+Zd75QjFv+REkjy/aoAc8=",
+        version = "v7.0.0+incompatible",
+    )
+
     _maybe(
         _go_repository,
         name = "com_github_ugorji_go",

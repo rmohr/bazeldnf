@@ -117,7 +117,7 @@ func (r *CacheHelper) CurrentPrimary(repo *bazeldnf.Repository) (*api.Repository
 	return repository, nil
 }
 
-func (r *CacheHelper) CurrentFilelistsForPackages(repo *bazeldnf.Repository, packages []*api.Package) (filelistpkgs []*api.FileListPackage, remaining []*api.Package, err error) {
+func (r *CacheHelper) CurrentFilelistsForPackages(repo *bazeldnf.Repository, arches []string, packages []*api.Package) (filelistpkgs []*api.FileListPackage, remaining []*api.Package, err error) {
 	repomd := &api.Repomd{}
 	if err := r.UnmarshalFromRepoDir(repo, "repomd.xml", repomd); err != nil {
 		return nil, nil, err
@@ -150,7 +150,6 @@ func (r *CacheHelper) CurrentFilelistsForPackages(repo *bazeldnf.Repository, pac
 		if len(packages) == pkgIndex {
 			break
 		}
-		currPkg := packages[pkgIndex]
 		tok, err := d.Token()
 		if tok == nil || err == io.EOF {
 			break
@@ -162,23 +161,46 @@ func (r *CacheHelper) CurrentFilelistsForPackages(repo *bazeldnf.Repository, pac
 		case xml.StartElement:
 			if ty.Name.Local == "package" {
 				name := ""
+				arch := ""
 				for _, attr := range ty.Attr {
 					if attr.Name.Local == "name" {
 						name = attr.Value
+					} else if attr.Name.Local == "arch" {
+						arch = attr.Value
 					}
 				}
-				if currPkg.Name == name {
-					pkg := &api.FileListPackage{}
-					if err = d.DecodeElement(pkg, &ty); err != nil {
-						return nil, nil, fmt.Errorf("Error decoding item: %s", err)
+
+				validArch := false
+				for _, a := range arches {
+					if arch == a {
+						validArch = true
 					}
-					if rpm.Compare(currPkg.Version, pkg.Version) == 0 {
+				}
+				if !validArch {
+					continue
+				}
+
+				var pkg *api.FileListPackage
+				for pkgIndex < len(packages) {
+					currPkg := packages[pkgIndex]
+					if name < currPkg.Name {
+						break
+					} else if currPkg.Name == name {
+						if pkg == nil {
+							pkg = &api.FileListPackage{}
+							if err = d.DecodeElement(pkg, &ty); err != nil {
+								return nil, nil, fmt.Errorf("Error decoding item: %s", err)
+							}
+						}
+						if currPkg.String() == pkg.String() {
+							pkgIndex++
+							filelistpkgs = append(filelistpkgs, pkg)
+						}
+						break
+					} else if name > currPkg.Name {
+						remaining = append(remaining, currPkg)
 						pkgIndex++
-						filelistpkgs = append(filelistpkgs, pkg)
 					}
-				} else if name > currPkg.Name {
-					remaining = append(remaining, currPkg)
-					pkgIndex++
 				}
 			}
 		default:

@@ -3,6 +3,7 @@ package bazel
 import (
 	"fmt"
 	"io/ioutil"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -94,7 +95,60 @@ func AddRPMs(workspace *build.File, pkgs []*api.Package) {
 	}
 }
 
-func AddTree(name string, buildfile *build.File, pkgs []*api.Package, files []string) {
+func AddTar2Files(name string, rpmtree string, buildfile *build.File, files []string, public bool) {
+	tar2files := map[string]*tar2Files{}
+	for _, rule := range buildfile.Rules("tar2files") {
+		tar2files[rule.Name()] = &tar2Files{rule}
+	}
+	buildfile.DelRules("tar2files", "")
+	rule := tar2files[name]
+	if rule == nil {
+		call := &build.CallExpr{X: &build.Ident{Name: "tar2files"}}
+		rule = &tar2Files{&build.Rule{call, ""}}
+		tar2files[name] = rule
+	}
+
+	sort.SliceStable(files, func(i, j int) bool {
+		return files[i] < files[j]
+	})
+
+	fileMap := map[string][]string{}
+	for _, file := range files {
+		fileMap[filepath.Dir(file)] = append(fileMap[filepath.Dir(file)], filepath.Base(file))
+	}
+
+	dirs := []string{}
+	for dir, _ := range fileMap {
+		dirs = append(dirs, dir)
+	}
+	sort.SliceStable(dirs, func(i, j int) bool {
+		return dirs[i] < dirs[j]
+	})
+	rule.SetFiles(dirs, fileMap)
+	rule.SetName(name)
+	if rpmtree != "" {
+		rule.SetTar(rpmtree)
+	}
+
+	if public {
+		rule.SetAttr("visibility", &build.ListExpr{List: []build.Expr{&build.StringExpr{Value: "//visibility:public"}}})
+	}
+
+	rules := []*tar2Files{}
+	for _, rule := range tar2files {
+		rules = append(rules, rule)
+	}
+
+	sort.SliceStable(rules, func(i, j int) bool {
+		return rules[i].Name() < rules[j].Name()
+	})
+
+	for _, rule := range rules {
+		buildfile.Stmt = edit.InsertAtEnd(buildfile.Stmt, rule.Call)
+	}
+}
+
+func AddTree(name string, buildfile *build.File, pkgs []*api.Package, public bool) {
 	rpmtrees := map[string]*rpmTree{}
 
 	for _, rule := range buildfile.Rules("rpmtree") {
@@ -111,10 +165,6 @@ func AddTree(name string, buildfile *build.File, pkgs []*api.Package, files []st
 		return rpms[i] < rpms[j]
 	})
 
-	sort.SliceStable(files, func(i, j int) bool {
-		return files[i] < files[j]
-	})
-
 	rule := rpmtrees[name]
 	if rule == nil {
 		call := &build.CallExpr{X: &build.Ident{Name: "rpmtree"}}
@@ -123,7 +173,9 @@ func AddTree(name string, buildfile *build.File, pkgs []*api.Package, files []st
 	}
 	rule.SetName(name)
 	rule.SetRPMs(rpms)
-	rule.SetFiles(files)
+	if public {
+		rule.SetAttr("visibility", &build.ListExpr{List: []build.Expr{&build.StringExpr{Value: "//visibility:public"}}})
+	}
 
 	rules := []*rpmTree{}
 	for _, rule := range rpmtrees {
@@ -193,8 +245,20 @@ type rpmTree struct {
 	*build.Rule
 }
 
+type tar2Files struct {
+	*build.Rule
+}
+
 func (r *rpmTree) SetName(name string) {
 	r.Rule.SetAttr("name", &build.StringExpr{Value: name})
+}
+
+func (r *tar2Files) SetName(name string) {
+	r.Rule.SetAttr("name", &build.StringExpr{Value: name})
+}
+
+func (r *tar2Files) SetTar(name string) {
+	r.Rule.SetAttr("tar", &build.StringExpr{Value: name})
 }
 
 func (r *rpmTree) RPMs() []string {
@@ -218,12 +282,16 @@ func (r *rpmTree) SetRPMs(rpms []string) {
 	r.Rule.SetAttr("rpms", &build.ListExpr{List: rpmsAttr})
 }
 
-func (r *rpmTree) SetFiles(files []string) {
-	filesAttr := []build.Expr{}
-	for _, file := range files {
-		filesAttr = append(filesAttr, &build.StringExpr{Value: file})
+func (r *tar2Files) SetFiles(dirs []string, fileMap map[string][]string) {
+	filesMapExpr := &build.DictExpr{}
+	for _, dir := range dirs {
+		filesListExpr := &build.ListExpr{}
+		for _, file := range fileMap[dir] {
+			filesListExpr.List = append(filesListExpr.List, &build.StringExpr{Value: file})
+		}
+		filesMapExpr.List = append(filesMapExpr.List, &build.KeyValueExpr{Key: &build.StringExpr{Value: dir}, Value: filesListExpr})
 	}
-	r.Rule.SetAttr("files", &build.ListExpr{List: filesAttr})
+	r.Rule.SetAttr("files", filesMapExpr)
 }
 
 func sanitize(name string) string {
