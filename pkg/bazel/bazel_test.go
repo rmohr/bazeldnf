@@ -37,7 +37,7 @@ func TestWorkspaceWithRPMs(t *testing.T) {
 			defer os.Remove(tmpFile.Name())
 			file, err := LoadWorkspace(tt.orig)
 			g.Expect(err).ToNot(HaveOccurred())
-			AddRPMs(file, tt.pkgs)
+			AddRPMs(file, tt.pkgs, "myarch")
 			err = WriteWorkspace(false, file, tmpFile.Name())
 			g.Expect(err).ToNot(HaveOccurred())
 
@@ -76,7 +76,7 @@ func TestBuildfileWithRPMs(t *testing.T) {
 			defer os.Remove(tmpFile.Name())
 			file, err := LoadBuild(tt.orig)
 			g.Expect(err).ToNot(HaveOccurred())
-			AddTree("mytree", file, tt.pkgs, false)
+			AddTree("mytree", file, tt.pkgs, "myarch", false)
 			err = WriteBuild(false, file, tmpFile.Name())
 			g.Expect(err).ToNot(HaveOccurred())
 

@@ -56,7 +56,7 @@ func WriteWorkspace(dryRun bool, workspace *build.File, path string) error {
 	return ioutil.WriteFile(path, build.Format(workspace), 0666)
 }
 
-func AddRPMs(workspace *build.File, pkgs []*api.Package) {
+func AddRPMs(workspace *build.File, pkgs []*api.Package, arch string) {
 
 	rpms := map[string]*rpmRule{}
 
@@ -65,7 +65,7 @@ func AddRPMs(workspace *build.File, pkgs []*api.Package) {
 	}
 
 	for _, pkg := range pkgs {
-		pkgName := sanitize(pkg.String())
+		pkgName := sanitize(pkg.String() + "." + arch)
 		rule := rpms[pkgName]
 		if rule == nil {
 			call := &build.CallExpr{X: &build.Ident{Name: "rpm"}}
@@ -148,7 +148,7 @@ func AddTar2Files(name string, rpmtree string, buildfile *build.File, files []st
 	}
 }
 
-func AddTree(name string, buildfile *build.File, pkgs []*api.Package, public bool) {
+func AddTree(name string, buildfile *build.File, pkgs []*api.Package, arch string, public bool) {
 	rpmtrees := map[string]*rpmTree{}
 
 	for _, rule := range buildfile.Rules("rpmtree") {
@@ -158,7 +158,7 @@ func AddTree(name string, buildfile *build.File, pkgs []*api.Package, public boo
 
 	rpms := []string{}
 	for _, pkg := range pkgs {
-		pkgName := sanitize(pkg.String())
+		pkgName := sanitize(pkg.String() + "." + arch)
 		rpms = append(rpms, "@"+pkgName+"//rpm")
 	}
 	sort.SliceStable(rpms, func(i, j int) bool {

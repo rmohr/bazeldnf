@@ -1,8 +1,8 @@
 rpmtree(
     name = "mytree",
     rpms = [
-        "@a-0__1.2.3//rpm",
-        "@a-0__2.3.4//rpm",
-        "@b-0__2.3.4//rpm",
+        "@a-0__1.2.3.myarch//rpm",
+        "@a-0__2.3.4.myarch//rpm",
+        "@b-0__2.3.4.myarch//rpm",
     ],
 )

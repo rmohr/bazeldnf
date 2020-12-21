@@ -68,8 +68,8 @@ func NewrpmtreeCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			bazel.AddRPMs(workspace, install)
-			bazel.AddTree(rpmtreeopts.name, build, install, rpmtreeopts.public)
+			bazel.AddRPMs(workspace, install, rpmtreeopts.arch)
+			bazel.AddTree(rpmtreeopts.name, build, install, rpmtreeopts.arch, rpmtreeopts.public)
 			bazel.PruneRPMs(build, workspace)
 			logrus.Info("Writing bazel files.")
 			err = bazel.WriteWorkspace(false, workspace, rpmtreeopts.workspace)
