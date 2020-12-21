@@ -18,7 +18,16 @@ def _rpm2tar_impl(ctx):
         rpms += ["-i", rpm.path]
 
     out = ctx.outputs.out
-    args = ["rpm2tar", "-o", out.path] + rpms
+    args = ["rpm2tar", "-o", out.path]
+
+    if ctx.attr.symlinks:
+        symlinks = []
+        for k, v in ctx.attr.symlinks.items():
+            symlinks += [k + "=" + v]
+        args += ["-s", ",".join(symlinks)]
+
+    args += rpms
+
     ctx.actions.run(
         inputs = ctx.files.rpms,
         outputs = [out],
@@ -54,6 +63,7 @@ _rpm2tar_attrs = {
         allow_files = True,
         default = Label("//cmd:cmd"),
     ),
+    "symlinks": attr.string_dict(),
     "out": attr.output(mandatory = True),
 }
 

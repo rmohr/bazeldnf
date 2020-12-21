@@ -12,6 +12,7 @@ import (
 
 var output string
 var input []string
+var symlinks map[string]string
 
 func NewRPMCmd() *cobra.Command {
 	tarCmd := &cobra.Command{
@@ -32,6 +33,18 @@ func NewRPMCmd() *cobra.Command {
 				directoryTree, err := order.TreeFromRPMs(input)
 				if err != nil {
 					return err
+				}
+				fmt.Println(symlinks)
+				for k, v := range symlinks {
+					directoryTree.Add(
+						[]tar.Header{
+							{
+								Typeflag: tar.TypeSymlink,
+								Name:     k,
+								Linkname: v,
+							},
+						},
+					)
 				}
 				for _, header := range directoryTree.Traverse() {
 					err := tarWriter.WriteHeader(&header)
@@ -63,5 +76,6 @@ func NewRPMCmd() *cobra.Command {
 
 	tarCmd.PersistentFlags().StringVarP(&output, "output", "o", "", "location of the resulting tar file (defaults to stdout)")
 	tarCmd.PersistentFlags().StringArrayVarP(&input, "input", "i", []string{}, "location from where to read the rpm file (defaults to stdin)")
+	tarCmd.Flags().StringToStringVarP(&symlinks, "symlinks", "s", map[string]string{}, "symlinks to add. Relative or absolute.")
 	return tarCmd
 }
