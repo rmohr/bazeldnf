@@ -40,7 +40,7 @@ func NewrpmtreeCmd() *cobra.Command {
 				return err
 			}
 			logrus.Info("Initial reduction of involved packages.")
-			involved, err := repoReducer.Resolve(required)
+			matched, involved, err := repoReducer.Resolve(required)
 			if err != nil {
 				return err
 			}
@@ -51,7 +51,7 @@ func NewrpmtreeCmd() *cobra.Command {
 				return err
 			}
 			logrus.Info("Adding required packages to the rpmtreer.")
-			err = solver.ConstructRequirements(append(required, rpmtreeopts.fedoraBaseSystem))
+			err = solver.ConstructRequirements(matched)
 			if err != nil {
 				return err
 			}

@@ -68,20 +68,36 @@ func (r *RepoReducer) Load() error {
 	return nil
 }
 
-func (r *RepoReducer) Resolve(packages []string) (involved []*api.Package, err error) {
+func (r *RepoReducer) Resolve(packages []string) (matched []string, involved []*api.Package, err error) {
 	packages = append(packages, r.implicitRequires...)
-	var wants []*api.Package
 	discovered := map[string]*api.Package{}
 	for _, req := range packages {
+		found := false
+		name := ""
+		var candidates []*api.Package
 		for i, p := range r.packages {
-			if p.Name == req {
-				wants = append(wants, &r.packages[i])
-				discovered[p.String()] = &r.packages[i]
+			if strings.HasPrefix(p.String(), req) {
+				if strings.HasPrefix(req, p.Name) {
+					if !found || len(p.Name) < len(name) {
+						candidates = []*api.Package{&r.packages[i]}
+						name = p.Name
+						found = true
+					} else if p.Name == name {
+						candidates = append(candidates, &r.packages[i])
+					}
+				}
 			}
 		}
-	}
-	if len(wants) == 0 {
-		return nil, fmt.Errorf("Package %s does not exist", packages[0])
+		if !found {
+			return nil, nil, fmt.Errorf("Package %s does not exist", req)
+		}
+		for i, p := range candidates {
+			discovered[p.String()] = candidates[i]
+		}
+
+		if len(candidates) > 0 {
+			matched = append(matched, candidates[0].Name)
+		}
 	}
 
 	for {
@@ -101,10 +117,10 @@ func (r *RepoReducer) Resolve(packages []string) (involved []*api.Package, err e
 		}
 	}
 
-	for _, pkg := range discovered {
-		involved = append(involved, pkg)
+	for i, _ := range discovered {
+		involved = append(involved, discovered[i])
 	}
-	return involved, nil
+	return matched, involved, nil
 }
 
 func (r *RepoReducer) requires(p *api.Package) (wants []*api.Package) {

@@ -44,7 +44,7 @@ func NewResolveCmd() *cobra.Command {
 				return err
 			}
 			logrus.Info("Initial reduction of involved packages.")
-			involved, err := repo.Resolve(required)
+			matched, involved, err := repo.Resolve(required)
 			if err != nil {
 				return err
 			}
@@ -55,7 +55,7 @@ func NewResolveCmd() *cobra.Command {
 				return err
 			}
 			logrus.Info("Adding required packages to the resolver.")
-			err = solver.ConstructRequirements(append(required, resolveopts.fedoraBaseSystem))
+			err = solver.ConstructRequirements(matched)
 			if err != nil {
 				return err
 			}
