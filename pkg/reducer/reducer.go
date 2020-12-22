@@ -38,7 +38,7 @@ func (r *RepoReducer) Load() error {
 		}
 		r.packages = append(r.packages, repoFile.Packages...)
 	}
-	repos, err := r.cacheHelper.CurrentPrimaries(r.repos)
+	repos, err := r.cacheHelper.CurrentPrimaries(r.repos, r.arch)
 	if err != nil {
 		return err
 	}
@@ -148,6 +148,7 @@ func NewRepoReducer(repos *bazeldnf.Repositories, repoFiles []string, lang strin
 		repoFiles:        repoFiles,
 		provides:         map[string][]*api.Package{},
 		architectures:    []string{"noarch", arch},
+		arch:             arch,
 		repos:            repos,
 		cacheHelper:      &repo.CacheHelper{CacheDir: cachDir},
 	}

@@ -210,8 +210,11 @@ func (r *CacheHelper) CurrentFilelistsForPackages(repo *bazeldnf.Repository, arc
 	return filelistpkgs, remaining, nil
 }
 
-func (r *CacheHelper) CurrentPrimaries(repos *bazeldnf.Repositories) (primaries []*api.Repository, err error) {
-	for i, _ := range repos.Repositories {
+func (r *CacheHelper) CurrentPrimaries(repos *bazeldnf.Repositories, arch string) (primaries []*api.Repository, err error) {
+	for i, repo := range repos.Repositories {
+		if repo.Arch != arch {
+			continue
+		}
 		primary, err := r.CurrentPrimary(&repos.Repositories[i])
 		if err != nil {
 			return nil, err
