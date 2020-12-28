@@ -35,6 +35,15 @@ type File struct {
 	} `xml:"verification"`
 }
 
+func (f *File) SHA256() (string, error) {
+	for _, h := range f.Verification.Hash {
+		if h.Type == "sha256" {
+			return h.Hash, nil
+		}
+	}
+	return "", fmt.Errorf("no sha256 found")
+}
+
 type Metalink struct {
 	XMLName xml.Name `xml:"metalink"`
 	Files   struct {
@@ -77,6 +86,13 @@ type Data struct {
 		Type string `xml:"type,attr"`
 	} `xml:"header-checksum"`
 	HeaderSize string `xml:"header-size"`
+}
+
+func (d *Data) SHA256() (string, error) {
+	if d.Checksum.Type == "sha256" {
+		return d.Checksum.Text, nil
+	}
+	return "", fmt.Errorf("no sha256 found")
 }
 
 type Repomd struct {

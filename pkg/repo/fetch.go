@@ -1,7 +1,11 @@
 package repo
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
+	"hash"
+	"io"
 	"net/http"
 	"net/url"
 	"path"
@@ -25,16 +29,22 @@ type RepoFetcherImpl struct {
 
 func (r *RepoFetcherImpl) Fetch() (err error) {
 	for _, repo := range r.Repos {
+		sha256sum := ""
 		var repomdURLs = []string{}
 		if repo.Metalink != "" {
-			_, repomdURLs, err = r.resolveMetaLink(&repo)
+			var metalink *api.Metalink
+			metalink, repomdURLs, err = r.resolveMetaLink(&repo)
 			if err != nil {
 				return fmt.Errorf("failed to resolve metalink for %s: %v", repo.Name, err)
+			}
+			sha256sum, err = metalink.Repomod().SHA256()
+			if err != nil {
+				return fmt.Errorf("failed to get sha256sum of repomd file: %v", err)
 			}
 		} else if repo.Baseurl != "" {
 			repomdURLs = append(repomdURLs, strings.TrimSuffix(repo.Baseurl, "/")+"/repodata/repomd.xml")
 		}
-		repomd, mirror, err := r.resolveRepomd(&repo, repomdURLs)
+		repomd, mirror, err := r.resolveRepomd(&repo, repomdURLs, sha256sum)
 		if err != nil {
 			return fmt.Errorf("failed to fetch repomd.xml for %s: %v", repo.Name, err)
 		}
@@ -94,8 +104,9 @@ func (r *RepoFetcherImpl) resolveMetaLink(repo *bazeldnf.Repository) (*api.Metal
 	return metalink, urls, nil
 }
 
-func (r *RepoFetcherImpl) resolveRepomd(repo *bazeldnf.Repository, repomdURLs []string) (repomd *api.Repomd, mirror *url.URL, err error) {
+func (r *RepoFetcherImpl) resolveRepomd(repo *bazeldnf.Repository, repomdURLs []string, sha256sum string) (repomd *api.Repomd, mirror *url.URL, err error) {
 	for _, u := range repomdURLs {
+		sha := sha256.New()
 		log.Infof("Resolving repomd.xml from %s", u)
 		resp, err := r.Getter.Get(u)
 		if err != nil {
@@ -103,11 +114,16 @@ func (r *RepoFetcherImpl) resolveRepomd(repo *bazeldnf.Repository, repomdURLs []
 			continue
 		}
 		defer resp.Body.Close()
-		err = r.CacheHelper.WriteToRepoDir(repo, resp.Body, "repomd.xml")
+		body := io.TeeReader(resp.Body, sha)
+		err = r.CacheHelper.WriteToRepoDir(repo, body, "repomd.xml")
 		if err != nil {
 			log.Errorf("Failed to save repomd.xml from %s: %v", u, err)
 			continue
 		}
+		if sha256sum != "" && toHex(sha) != sha256sum {
+			return nil, nil, fmt.Errorf("Expected sha256 sum %s, but got %s", sha256sum, toHex(sha))
+		}
+
 		file := &api.Repomd{}
 		err = r.CacheHelper.UnmarshalFromRepoDir(repo, "repomd.xml", file)
 		if err != nil {
@@ -150,10 +166,19 @@ func (r *RepoFetcherImpl) fetchFile(fileType string, repo *bazeldnf.Repository, 
 	if err != nil {
 		return fmt.Errorf("Failed to load promary repository file from %s: %v", fileURL, err)
 	}
+	sha := sha256.New()
 	defer resp.Body.Close()
-	err = r.CacheHelper.WriteToRepoDir(repo, resp.Body, fileName)
+	body := io.TeeReader(resp.Body, sha)
+	err = r.CacheHelper.WriteToRepoDir(repo, body, fileName)
 	if err != nil {
 		return fmt.Errorf("Failed to write file.xml from %s to file: %v", fileURL, err)
+	}
+	sha256sum, err := file.SHA256()
+	if err != nil {
+		return fmt.Errorf("failed to get sha256sum of file: %v", err)
+	}
+	if sha256sum != toHex(sha) {
+		return fmt.Errorf("Expected sha256 sum %s, but got %s", sha256sum, toHex(sha))
 	}
 	return nil
 }
@@ -166,4 +191,8 @@ type getterImpl struct{}
 
 func (*getterImpl) Get(url string) (resp *http.Response, err error) {
 	return http.Get(url)
+}
+
+func toHex(hasher hash.Hash) string {
+	return hex.EncodeToString(hasher.Sum(nil))
 }
