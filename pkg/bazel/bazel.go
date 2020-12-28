@@ -56,12 +56,19 @@ func WriteWorkspace(dryRun bool, workspace *build.File, path string) error {
 	return ioutil.WriteFile(path, build.Format(workspace), 0666)
 }
 
+func GetRPMs(workspace *build.File) (rpms []*RPMRule) {
+	for _, rule := range workspace.Rules("rpm") {
+		rpms = append(rpms, &RPMRule{rule})
+	}
+	return
+}
+
 func AddRPMs(workspace *build.File, pkgs []*api.Package, arch string) {
 
-	rpms := map[string]*rpmRule{}
+	rpms := map[string]*RPMRule{}
 
 	for _, rule := range workspace.Rules("rpm") {
-		rpms[rule.Name()] = &rpmRule{rule}
+		rpms[rule.Name()] = &RPMRule{rule}
 	}
 
 	for _, pkg := range pkgs {
@@ -69,7 +76,7 @@ func AddRPMs(workspace *build.File, pkgs []*api.Package, arch string) {
 		rule := rpms[pkgName]
 		if rule == nil {
 			call := &build.CallExpr{X: &build.Ident{Name: "rpm"}}
-			rule = &rpmRule{&build.Rule{call, ""}}
+			rule = &RPMRule{&build.Rule{call, ""}}
 			rpms[pkgName] = rule
 		}
 		rule.SetName(pkgName)
@@ -80,7 +87,7 @@ func AddRPMs(workspace *build.File, pkgs []*api.Package, arch string) {
 		}
 	}
 
-	rules := []*rpmRule{}
+	rules := []*RPMRule{}
 	for _, rule := range rpms {
 		rules = append(rules, rule)
 	}
@@ -207,11 +214,11 @@ func PruneRPMs(buildfile *build.File, workspace *build.File) {
 	}
 }
 
-type rpmRule struct {
+type RPMRule struct {
 	*build.Rule
 }
 
-func (r *rpmRule) URLs() []string {
+func (r *RPMRule) URLs() []string {
 	if urlsAttr := r.Rule.Attr("urls"); urlsAttr != nil {
 		if len(urlsAttr.(*build.ListExpr).List) > 0 {
 			urls := []string{}
@@ -224,7 +231,7 @@ func (r *rpmRule) URLs() []string {
 	return nil
 }
 
-func (r *rpmRule) SetURLs(urls []string, href string) {
+func (r *RPMRule) SetURLs(urls []string, href string) {
 	urlsAttr := []build.Expr{}
 	for _, url := range urls {
 		u := strings.TrimSuffix(url, "/") + "/" + strings.TrimSuffix(href, "/")
@@ -233,12 +240,16 @@ func (r *rpmRule) SetURLs(urls []string, href string) {
 	r.Rule.SetAttr("urls", &build.ListExpr{List: urlsAttr})
 }
 
-func (r *rpmRule) SetName(name string) {
+func (r *RPMRule) SetName(name string) {
 	r.Rule.SetAttr("name", &build.StringExpr{Value: name})
 }
 
-func (r *rpmRule) SetSHA256(sha256 string) {
+func (r *RPMRule) SetSHA256(sha256 string) {
 	r.Rule.SetAttr("sha256", &build.StringExpr{Value: sha256})
+}
+
+func (r *RPMRule) SHA256() string {
+	return r.Rule.AttrString("sha256")
 }
 
 type rpmTree struct {

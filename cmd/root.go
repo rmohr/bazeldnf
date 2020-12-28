@@ -25,6 +25,7 @@ func Execute() {
 	rootCmd.AddCommand(NewpruneCmd())
 	rootCmd.AddCommand(NewTar2FilesCmd())
 	rootCmd.AddCommand(NewlddCmd())
+	rootCmd.AddCommand(NewVerifyCmd())
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
