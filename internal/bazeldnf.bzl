@@ -10,7 +10,6 @@ def _bazeldnf_impl(ctx):
     if ctx.attr.rpmtree:
         args += ["--rpmtree", ctx.attr.rpmtree]
     if ctx.file.tar:
-        print(ctx.file.tar)
         args += ["-i", ctx.file.tar.path]
     for lib in ctx.attr.libs:
         args += [lib]
