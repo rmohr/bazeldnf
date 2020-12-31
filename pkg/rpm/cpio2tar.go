@@ -25,8 +25,17 @@ import (
 	"github.com/sassoftware/go-rpmutils/cpio"
 )
 
+const (
+	capabilities_header = "SCHILY.xattr.security.capability"
+)
+
+var cap_empty_bitmask = []byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+var supported_capabilities = map[string][]byte{
+	"cap_net_bind_service": {1, 0, 0, 2, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+}
+
 // Extract the contents of a cpio stream from and writes it as a tar file into the provided writer
-func Tar(rs io.Reader, tarfile *tar.Writer, noSymlinksAndDirs bool) error {
+func Tar(rs io.Reader, tarfile *tar.Writer, noSymlinksAndDirs bool, capabilities map[string][]string) error {
 	hardLinks := map[int][]*tar.Header{}
 	inodes := map[int]string{}
 
@@ -42,15 +51,33 @@ func Tar(rs io.Reader, tarfile *tar.Writer, noSymlinksAndDirs bool) error {
 			break
 		}
 
+		pax := map[string]string{}
+		if caps, exists := capabilities[entry.Header.Filename()]; exists {
+			for _, cap := range caps {
+				if _, supported := supported_capabilities[cap]; !supported {
+					return fmt.Errorf("Requested capability '%s' for file '%s' is not supported", cap, entry.Header.Filename())
+				}
+				if _, exists := pax[capabilities_header]; !exists {
+					pax[capabilities_header] = string(cap_empty_bitmask)
+				}
+				val := []byte(pax[capabilities_header])
+				for i, b := range supported_capabilities[cap] {
+					val[i] = val[i] | b
+				}
+				pax[capabilities_header] = string(val)
+			}
+		}
+
 		tarHeader := &tar.Header{
-			Name:     entry.Header.Filename(),
-			Size:     entry.Header.Filesize64(),
-			Mode:     int64(entry.Header.Mode()),
-			Uid:      entry.Header.Uid(),
-			Gid:      entry.Header.Gid(),
-			ModTime:  time.Unix(int64(entry.Header.Mtime()), 0),
-			Devmajor: int64(entry.Header.Devmajor()),
-			Devminor: int64(entry.Header.Devminor()),
+			Name:       entry.Header.Filename(),
+			Size:       entry.Header.Filesize64(),
+			Mode:       int64(entry.Header.Mode()),
+			Uid:        entry.Header.Uid(),
+			Gid:        entry.Header.Gid(),
+			ModTime:    time.Unix(int64(entry.Header.Mtime()), 0),
+			Devmajor:   int64(entry.Header.Devmajor()),
+			Devminor:   int64(entry.Header.Devminor()),
+			PAXRecords: pax,
 		}
 
 		var payload io.Reader

@@ -26,6 +26,12 @@ def _rpm2tar_impl(ctx):
             symlinks += [k + "=" + v]
         args += ["-s", ",".join(symlinks)]
 
+    if ctx.attr.capabilities:
+        capabilities = []
+        for k, v in ctx.attr.capabilities.items():
+            capabilities += [k + "=" + ":".join(v)]
+        args += ["-c", ",".join(capabilities)]
+
     args += rpms
 
     ctx.actions.run(
@@ -64,6 +70,7 @@ _rpm2tar_attrs = {
         default = Label("//cmd:cmd"),
     ),
     "symlinks": attr.string_dict(),
+    "capabilities": attr.string_list_dict(),
     "out": attr.output(mandatory = True),
 }
 

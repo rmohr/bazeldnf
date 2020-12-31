@@ -52,6 +52,29 @@ container_layer(
 )
 ```
 
+rpmtrees allow injecting relative symlinks (`pkg_tar` can only inject absolute
+symlinks) and xattrs `capabilities`.  The following example adds a relative
+link and gives one binary the `cap_net_bind_service` capability to connect to
+privileged ports:
+
+```yaml
+rpmtree(
+    name = "rpmarchive",
+    rpms = [
+        "@libvirt-libs-6.1.0-2.fc32.x86_64.rpm//rpm",
+        "@libvirt-devel-6.1.0-2.fc32.x86_64.rpm//rpm",
+    ],
+    symlinks = {
+        "/var/run": "../run",
+    },
+    capabilities = {
+        "/usr/libexec/qemu-kvm": [
+            "cap_net_bind_service",
+        ],
+    },
+)
+```
+
 ### Running bazeldnf with bazel
 
 The bazeldnf repository needs to be added  to your `WORKSPACE`:

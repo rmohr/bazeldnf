@@ -14,7 +14,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func RPMToTar(rpmReader io.Reader, tarWriter *tar.Writer, noSymlinksAndDirs bool) error {
+func RPMToTar(rpmReader io.Reader, tarWriter *tar.Writer, noSymlinksAndDirs bool, capabilities map[string][]string) error {
 	rpm, err := rpmutils.ReadRpm(rpmReader)
 	if err != nil {
 		return fmt.Errorf("failed to read rpm: %s", err)
@@ -23,7 +23,7 @@ func RPMToTar(rpmReader io.Reader, tarWriter *tar.Writer, noSymlinksAndDirs bool
 	if err != nil {
 		return fmt.Errorf("failed to open the payload reader: %s", err)
 	}
-	return Tar(payloadReader, tarWriter, noSymlinksAndDirs)
+	return Tar(payloadReader, tarWriter, noSymlinksAndDirs, capabilities)
 }
 
 func RPMToCPIO(rpmReader io.Reader) (*cpio.CpioStream, error) {
