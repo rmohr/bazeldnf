@@ -77,26 +77,37 @@ func verify(rpm *bazel.RPMRule, keyring openpgp.EntityList) (err error) {
 		keyring = openpgp.EntityList{}
 	}
 
+	log.Infof("Verifying %s", rpm.Name())
 	for _, url := range rpm.URLs() {
-		log.Infof("Verifying %s", rpm.Name())
 		sha := sha256.New()
 		resp, err := http.Get(url)
 		if err != nil {
-			log.Infof("Faild to download %s, continuing with next url: %v ", rpm.Name(), err)
+			log.Warningf("Failed to download %s: %v", rpm.Name(), err)
+			continue
+		}
+		if resp.StatusCode < 200 || resp.StatusCode > 299 {
+			log.Warningf("Failed to download %s: %v ", rpm.Name(), fmt.Errorf("status : %v", resp.StatusCode))
 			continue
 		}
 		defer resp.Body.Close()
 		body := io.TeeReader(resp.Body, sha)
-		_, _, err = rpmutils.Verify(body, keyring)
-		if err != nil {
-			return err
-		}
+		_, _, verifyErr := rpmutils.Verify(body, keyring)
+		var shaErr error
 		if rpm.SHA256() != toHex(sha) {
-			return fmt.Errorf("Expected sha256 sum %s, but got %s", rpm.SHA256(), toHex(sha))
+			shaErr = fmt.Errorf("expected sha256 sum %s, but got %s", rpm.SHA256(), toHex(sha))
 		}
-		break
+
+		if verifyErr != nil && shaErr != nil {
+			log.Warningf("Failed to verify %s: %v: %v", rpm.Name(), verifyErr, shaErr)
+			continue
+		} else if verifyErr != nil {
+			return fmt.Errorf("the artifact has the right shasum but is not a RPM: %v", verifyErr)
+		} else if shaErr != nil {
+			return fmt.Errorf("the artifact is a RPM but not the right one: %v", shaErr)
+		}
+		return nil
 	}
-	return nil
+	return fmt.Errorf("Could not verify %s", rpm.Name())
 }
 
 func toHex(hasher hash.Hash) string {
