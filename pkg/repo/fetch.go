@@ -52,10 +52,12 @@ func (r *RepoFetcherImpl) Fetch() (err error) {
 		if err != nil {
 			return fmt.Errorf("failed to fetch primary.xml for %s: %v", repo.Name, err)
 		}
-		err = r.fetchFile(api.FilelistsFileType, &repo, repomd, mirror)
-		if err != nil {
-			return fmt.Errorf("failed to fetch filelists.xml for %s: %v", repo.Name, err)
-		}
+		/* not used right now, save some bandwidth
+			err = r.fetchFile(api.FilelistsFileType, &repo, repomd, mirror)
+			if err != nil {
+				return fmt.Errorf("failed to fetch filelists.xml for %s: %v", repo.Name, err)
+			}
+		*/
 	}
 	return nil
 }
@@ -74,6 +76,9 @@ func (r *RepoFetcherImpl) resolveMetaLink(repo *bazeldnf.Repository) (*api.Metal
 		return nil, nil, err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		return nil, nil, fmt.Errorf("Failed to download %s: %v ", repo.Metalink, fmt.Errorf("status : %v", resp.StatusCode))
+	}
 	if err := r.CacheHelper.WriteToRepoDir(repo, resp.Body, "metalink"); err != nil {
 		return nil, nil, err
 	}
@@ -114,6 +119,10 @@ func (r *RepoFetcherImpl) resolveRepomd(repo *bazeldnf.Repository, repomdURLs []
 			continue
 		}
 		defer resp.Body.Close()
+		if resp.StatusCode < 200 || resp.StatusCode > 299 {
+			log.Warningf("Failed to download %s: %v ", u, fmt.Errorf("status : %v", resp.StatusCode))
+			continue
+		}
 		body := io.TeeReader(resp.Body, sha)
 		err = r.CacheHelper.WriteToRepoDir(repo, body, "repomd.xml")
 		if err != nil {
@@ -121,7 +130,8 @@ func (r *RepoFetcherImpl) resolveRepomd(repo *bazeldnf.Repository, repomdURLs []
 			continue
 		}
 		if sha256sum != "" && toHex(sha) != sha256sum {
-			return nil, nil, fmt.Errorf("Expected sha256 sum %s, but got %s", sha256sum, toHex(sha))
+			log.Warningf("Expected sha256 sum %s, but got %s", sha256sum, toHex(sha))
+			continue
 		}
 
 		file := &api.Repomd{}
@@ -168,6 +178,9 @@ func (r *RepoFetcherImpl) fetchFile(fileType string, repo *bazeldnf.Repository, 
 	}
 	sha := sha256.New()
 	defer resp.Body.Close()
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		return fmt.Errorf("Failed to download %s: %v ", fileURL, fmt.Errorf("status : %v", resp.StatusCode))
+	}
 	body := io.TeeReader(resp.Body, sha)
 	err = r.CacheHelper.WriteToRepoDir(repo, body, fileName)
 	if err != nil {
