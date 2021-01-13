@@ -591,14 +591,6 @@ def bazeldnf_dependencies():
     )
     _maybe(
         _go_repository,
-        name = "com_github_u_root_u_root",
-        importpath = "github.com/u-root/u-root",
-        sum = "h1:u+KSS04pSxJGI5E7WE4Bs9+Zd75QjFv+REkjy/aoAc8=",
-        version = "v7.0.0+incompatible",
-    )
-
-    _maybe(
-        _go_repository,
         name = "com_github_ugorji_go",
         importpath = "github.com/ugorji/go",
         sum = "h1:j4s+tAvLfL3bZyefP2SEWmhBzmuIlH/eqNuPdFPgngw=",

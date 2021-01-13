@@ -8,10 +8,10 @@ import (
 	"strings"
 
 	"github.com/rmohr/bazeldnf/pkg/bazel"
+	"github.com/rmohr/bazeldnf/pkg/ldd"
 	"github.com/rmohr/bazeldnf/pkg/rpm"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	"github.com/u-root/u-root/pkg/ldd"
 )
 
 type lddOpts struct {
@@ -46,19 +46,18 @@ func NewlddCmd() *cobra.Command {
 				objects[i] = filepath.Join(tmpRoot, objects[i])
 			}
 
-			err = os.Setenv("LD_LIBRARY_PATH", filepath.Join(tmpRoot, "/usr/lib64"))
-			if err != nil {
-				return err
-			}
-
 			files := []string{}
-			dependencies, err := ldd.Ldd(objects)
+			dependencies, err := ldd.Resolve(objects, filepath.Join(tmpRoot, "/usr/lib64"))
 			if err != nil {
 				return err
 			}
 			for _, dep := range dependencies {
-				if strings.HasPrefix(dep.FullName, tmpRoot) {
-					files = append(files, strings.TrimPrefix(dep.FullName, tmpRoot))
+				if strings.HasPrefix(dep, tmpRoot) {
+					if strings.HasPrefix(filepath.Base(dep), "ld-") {
+						// don't link against ld itself
+						continue
+					}
+					files = append(files, strings.TrimPrefix(dep, tmpRoot))
 				}
 			}
 			err = filepath.Walk(filepath.Join(tmpRoot, "/usr/include"),

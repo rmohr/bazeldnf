@@ -1,0 +1,8 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "ldd",
+    srcs = ["ldd.go"],
+    importpath = "github.com/rmohr/bazeldnf/pkg/ldd",
+    visibility = ["//visibility:public"],
+)

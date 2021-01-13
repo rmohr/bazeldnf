@@ -9,7 +9,6 @@ require (
 	github.com/sassoftware/go-rpmutils v0.1.1
 	github.com/sirupsen/logrus v1.6.0
 	github.com/spf13/cobra v1.0.0
-	github.com/u-root/u-root v7.0.0+incompatible
 	sigs.k8s.io/yaml v1.2.0
 )
 
