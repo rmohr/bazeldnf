@@ -36,14 +36,24 @@ func (r *RepoReducer) Load() error {
 		if err != nil {
 			return err
 		}
-		r.packages = append(r.packages, repoFile.Packages...)
+		for i, p := range repoFile.Packages {
+			if skip(p.Arch, r.architectures) {
+				continue
+			}
+			r.packages = append(r.packages, repoFile.Packages[i])
+		}
 	}
 	repos, err := r.cacheHelper.CurrentPrimaries(r.repos, r.arch)
 	if err != nil {
 		return err
 	}
 	for _, rpmrepo := range repos {
-		r.packages = append(r.packages, rpmrepo.Packages...)
+		for i, p := range rpmrepo.Packages {
+			if skip(p.Arch, r.architectures) {
+				continue
+			}
+			r.packages = append(r.packages, rpmrepo.Packages[i])
+		}
 	}
 
 	for i, p := range r.packages {
@@ -54,9 +64,6 @@ func (r *RepoReducer) Load() error {
 			}
 		}
 		r.packages[i].Format.Requires.Entries = requires
-		if skip(p.Arch, r.architectures) {
-			continue
-		}
 
 		for _, provides := range p.Format.Provides.Entries {
 			r.provides[provides.Name] = append(r.provides[provides.Name], &r.packages[i])

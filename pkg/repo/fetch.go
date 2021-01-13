@@ -53,10 +53,10 @@ func (r *RepoFetcherImpl) Fetch() (err error) {
 			return fmt.Errorf("failed to fetch primary.xml for %s: %v", repo.Name, err)
 		}
 		/* not used right now, save some bandwidth
-			err = r.fetchFile(api.FilelistsFileType, &repo, repomd, mirror)
-			if err != nil {
-				return fmt.Errorf("failed to fetch filelists.xml for %s: %v", repo.Name, err)
-			}
+		err = r.fetchFile(api.FilelistsFileType, &repo, repomd, mirror)
+		if err != nil {
+			return fmt.Errorf("failed to fetch filelists.xml for %s: %v", repo.Name, err)
+		}
 		*/
 	}
 	return nil
