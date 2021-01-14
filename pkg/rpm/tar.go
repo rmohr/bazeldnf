@@ -163,8 +163,7 @@ func Untar(tmpRoot string, tarFile string) error {
 			if err != nil {
 				return err
 			}
-			linkname := strings.TrimPrefix(entry.Linkname, ".")
-			err = os.Symlink(linkname, target)
+			err = os.Symlink(entry.Linkname, target)
 			if err != nil {
 				return err
 			}

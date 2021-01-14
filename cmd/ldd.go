@@ -71,10 +71,7 @@ func NewlddCmd() *cobra.Command {
 					return nil
 				})
 			if err != nil {
-				return err
 				log.Println(err)
-			}
-			if err != nil {
 				return err
 			}
 			build, err := bazel.LoadBuild(lddopts.buildfile)
