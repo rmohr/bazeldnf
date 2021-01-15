@@ -45,12 +45,19 @@ func NewRPMCmd() *cobra.Command {
 					return err
 				}
 				for k, v := range symlinks {
+					// If an absolute path is given let's add a `.` in front. This is
+					// not strictly necessary but adds a more correct tar path
+					// which aligns with the usual rpm entries which start with `./`
+					if strings.HasPrefix(k, "/") {
+						k = "." + k
+					}
 					directoryTree.Add(
 						[]tar.Header{
 							{
 								Typeflag: tar.TypeSymlink,
 								Name:     k,
 								Linkname: v,
+								Mode:     0777,
 							},
 						},
 					)
