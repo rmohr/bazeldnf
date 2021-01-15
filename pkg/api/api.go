@@ -33,15 +33,42 @@ type File struct {
 			Type string `xml:"type,attr"`
 		} `xml:"hash"`
 	} `xml:"verification"`
+	Alternates struct {
+		Text      string        `xml:",chardata"`
+		Alternate []Alternative `xml:"alternate"`
+	} `xml:"alternates"`
 }
 
-func (f *File) SHA256() (string, error) {
+type Alternative struct {
+	Text         string `xml:",chardata"`
+	Timestamp    string `xml:"timestamp"`
+	Size         string `xml:"size"`
+	Verification struct {
+		Text string `xml:",chardata"`
+		Hash []struct {
+			Hash string `xml:",chardata"`
+			Type string `xml:"type,attr"`
+		} `xml:"hash"`
+	} `xml:"verification"`
+}
+
+func (f *File) SHA256() (sums []string, err error) {
 	for _, h := range f.Verification.Hash {
 		if h.Type == "sha256" {
-			return h.Hash, nil
+			sums = append(sums, h.Hash)
 		}
 	}
-	return "", fmt.Errorf("no sha256 found")
+	for _, a := range f.Alternates.Alternate {
+		for _, h := range a.Verification.Hash {
+			if h.Type == "sha256" {
+				sums = append(sums, h.Hash)
+			}
+		}
+	}
+	if len(sums) == 0 {
+		return nil, fmt.Errorf("no sha256 found")
+	}
+	return
 }
 
 type Metalink struct {

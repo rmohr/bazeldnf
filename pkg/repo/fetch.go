@@ -29,7 +29,7 @@ type RepoFetcherImpl struct {
 
 func (r *RepoFetcherImpl) Fetch() (err error) {
 	for _, repo := range r.Repos {
-		sha256sum := ""
+		sha256sum := []string{}
 		var repomdURLs = []string{}
 		if repo.Metalink != "" {
 			var metalink *api.Metalink
@@ -109,7 +109,7 @@ func (r *RepoFetcherImpl) resolveMetaLink(repo *bazeldnf.Repository) (*api.Metal
 	return metalink, urls, nil
 }
 
-func (r *RepoFetcherImpl) resolveRepomd(repo *bazeldnf.Repository, repomdURLs []string, sha256sum string) (repomd *api.Repomd, mirror *url.URL, err error) {
+func (r *RepoFetcherImpl) resolveRepomd(repo *bazeldnf.Repository, repomdURLs []string, sha256sums []string) (repomd *api.Repomd, mirror *url.URL, err error) {
 	for _, u := range repomdURLs {
 		sha := sha256.New()
 		log.Infof("Resolving repomd.xml from %s", u)
@@ -129,9 +129,21 @@ func (r *RepoFetcherImpl) resolveRepomd(repo *bazeldnf.Repository, repomdURLs []
 			log.Errorf("Failed to save repomd.xml from %s: %v", u, err)
 			continue
 		}
-		if sha256sum != "" && toHex(sha) != sha256sum {
-			log.Warningf("Expected sha256 sum %s, but got %s", sha256sum, toHex(sha))
-			continue
+		if len(sha256sums) > 0 {
+			matched := false
+			for _, sum := range sha256sums {
+				if toHex(sha) != sum {
+					log.Warnf("Expected repomd.xml sha256 sum %s, but got %s", sum, toHex(sha))
+				} else {
+					log.Infof("Matched repmod.xml with sha256 sum %s", toHex(sha))
+					matched = true
+					break
+				}
+			}
+			if !matched {
+				log.Warningf("Mirror has no expected repomd.xml version: %v", u)
+				continue
+			}
 		}
 
 		file := &api.Repomd{}
