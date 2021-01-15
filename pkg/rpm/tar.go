@@ -163,8 +163,18 @@ func Untar(tmpRoot string, tarFile string) error {
 			if err != nil {
 				return err
 			}
-			err = os.Symlink(entry.Linkname, target)
-			if err != nil {
+			linkname := entry.Linkname
+			var abs string
+			if strings.HasPrefix(linkname, "/") {
+				linkname = filepath.Join(tmpRoot, linkname)
+				abs = linkname
+			} else {
+				abs = filepath.Join(filepath.Dir(target), linkname)
+			}
+			if _, err := filepath.Rel(tmpRoot, abs); err != nil {
+				return err
+			}
+			if err = os.Symlink(linkname, target); err != nil {
 				return err
 			}
 		default:
