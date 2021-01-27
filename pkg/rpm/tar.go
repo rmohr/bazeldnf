@@ -4,6 +4,7 @@ import (
 	"archive/tar"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -207,8 +208,8 @@ func CPIOToTarHeader(entry *cpio.CpioEntry) (*tar.Header, error) {
 		tarHeader.Typeflag = tar.TypeFifo
 	case cpio.S_ISLNK:
 		tarHeader.Typeflag = tar.TypeSymlink
-		buf := make([]byte, entry.Header.Filesize())
-		if _, err := entry.Payload.Read(buf); err != nil {
+		buf, err := ioutil.ReadAll(entry.Payload)
+		if err != nil {
 			return nil, err
 		}
 		tarHeader.Linkname = string(buf)

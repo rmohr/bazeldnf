@@ -20,6 +20,7 @@ import (
 	"archive/tar"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"time"
 
 	"github.com/sassoftware/go-rpmutils/cpio"
@@ -98,8 +99,8 @@ func Tar(rs io.Reader, tarfile *tar.Writer, noSymlinksAndDirs bool, capabilities
 				continue
 			}
 			tarHeader.Typeflag = tar.TypeSymlink
-			buf := make([]byte, entry.Header.Filesize())
-			if _, err := entry.Payload.Read(buf); err != nil {
+			buf, err := ioutil.ReadAll(entry.Payload)
+			if err != nil {
 				return err
 			}
 			tarHeader.Linkname = string(buf)
