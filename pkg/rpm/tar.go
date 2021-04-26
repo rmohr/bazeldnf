@@ -208,6 +208,7 @@ func CPIOToTarHeader(entry *cpio.CpioEntry) (*tar.Header, error) {
 		tarHeader.Typeflag = tar.TypeFifo
 	case cpio.S_ISLNK:
 		tarHeader.Typeflag = tar.TypeSymlink
+		tarHeader.Size = 0
 		buf, err := ioutil.ReadAll(entry.Payload)
 		if err != nil {
 			return nil, err
@@ -218,6 +219,7 @@ func CPIOToTarHeader(entry *cpio.CpioEntry) (*tar.Header, error) {
 			tarHeader.Typeflag = tar.TypeLink
 		}
 		tarHeader.Typeflag = tar.TypeReg
+		tarHeader.Size = 0
 	default:
 		return nil, fmt.Errorf("unknown file mode 0%o for %s",
 			entry.Header.Mode(), entry.Header.Filename())

@@ -28,7 +28,7 @@ func TestRPMToTar(t *testing.T) {
 			expectedHeaders: []*tar.Header{
 				{Name: "./etc/libvirt/libvirt-admin.conf", Size: 450, Mode: 33188},
 				{Name: "./etc/libvirt/libvirt.conf", Size: 547, Mode: 33188},
-				{Name: "./usr/lib64/libvirt.so.0", Size: 19, Mode: 41471},
+				{Name: "./usr/lib64/libvirt.so.0", Size: 0, Mode: 41471},
 			},
 			prefix:      "",
 			stripPrefix: false,

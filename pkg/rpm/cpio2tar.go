@@ -99,6 +99,7 @@ func Tar(rs io.Reader, tarfile *tar.Writer, noSymlinksAndDirs bool, capabilities
 				continue
 			}
 			tarHeader.Typeflag = tar.TypeSymlink
+			tarHeader.Size = 0
 			buf, err := ioutil.ReadAll(entry.Payload)
 			if err != nil {
 				return err
@@ -107,6 +108,7 @@ func Tar(rs io.Reader, tarfile *tar.Writer, noSymlinksAndDirs bool, capabilities
 		case cpio.S_ISREG:
 			if entry.Header.Nlink() > 1 && entry.Header.Filesize() == 0 {
 				tarHeader.Typeflag = tar.TypeLink
+				tarHeader.Size = 0
 				hardLinks[entry.Header.Ino()] = append(hardLinks[entry.Header.Ino()], tarHeader)
 				continue
 			}
