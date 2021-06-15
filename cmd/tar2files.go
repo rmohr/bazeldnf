@@ -42,7 +42,7 @@ func NewTar2FilesCmd() *cobra.Command {
 		},
 	}
 
-	tar2filesCmd.PersistentFlags().StringVarP(&tar2filesopts.tarFile, "input", "i", "", "location from where to read the tar file (defaults to stdin)")
-	tar2filesCmd.PersistentFlags().StringVar(&tar2filesopts.filePrefix, "file-prefix", "", "only keep files with this directory prefix")
+	tar2filesCmd.Flags().StringVarP(&tar2filesopts.tarFile, "input", "i", "", "location from where to read the tar file (defaults to stdin)")
+	tar2filesCmd.Flags().StringVar(&tar2filesopts.filePrefix, "file-prefix", "", "only keep files with this directory prefix")
 	return tar2filesCmd
 }

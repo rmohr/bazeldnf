@@ -92,8 +92,8 @@ func NewLddCmd() *cobra.Command {
 	}
 
 	lddCmd.Flags().StringVarP(&lddopts.tar, "input", "i", "", "Tar file with all dependencies")
-	lddCmd.PersistentFlags().StringVarP(&lddopts.workspace, "workspace", "w", "WORKSPACE", "Bazel workspace file")
-	lddCmd.PersistentFlags().StringVarP(&lddopts.buildfile, "buildfile", "b", "rpm/BUILD.bazel", "Build file for RPMs")
+	lddCmd.Flags().StringVarP(&lddopts.workspace, "workspace", "w", "WORKSPACE", "Bazel workspace file")
+	lddCmd.Flags().StringVarP(&lddopts.buildfile, "buildfile", "b", "rpm/BUILD.bazel", "Build file for RPMs")
 	lddCmd.Flags().BoolVarP(&lddopts.public, "public", "p", true, "if the tar2files rule should be public")
 	lddCmd.Flags().StringVarP(&lddopts.name, "name", "n", "", "tar2files rule name")
 	lddCmd.Flags().StringVarP(&lddopts.rpmtree, "rpmtree", "r", "", "rpmtree rule name")

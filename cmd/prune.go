@@ -41,8 +41,8 @@ func NewPruneCmd() *cobra.Command {
 		},
 	}
 
-	pruneCmd.PersistentFlags().StringVarP(&pruneopts.workspace, "workspace", "w", "WORKSPACE", "Bazel workspace file")
-	pruneCmd.PersistentFlags().StringVarP(&pruneopts.buildfile, "buildfile", "b", "rpm/BUILD.bazel", "Build file for RPMs")
+	pruneCmd.Flags().StringVarP(&pruneopts.workspace, "workspace", "w", "WORKSPACE", "Bazel workspace file")
+	pruneCmd.Flags().StringVarP(&pruneopts.buildfile, "buildfile", "b", "rpm/BUILD.bazel", "Build file for RPMs")
 	pruneCmd.MarkFlagRequired("name")
 	return pruneCmd
 }
