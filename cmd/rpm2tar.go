@@ -11,10 +11,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var output string
-var input []string
-var symlinks map[string]string
-var capabilities map[string]string
+type rpm2tarOpts struct {
+	output       string
+	input        []string
+	symlinks     map[string]string
+	capabilities map[string]string
+}
+
+var rpm2taropts = rpm2tarOpts{}
 
 func NewRPMCmd() *cobra.Command {
 	tarCmd := &cobra.Command{
@@ -23,14 +27,14 @@ func NewRPMCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			rpmStream := os.Stdin
 			tarStream := os.Stdout
-			if output != "" {
-				tarStream, err = os.Create(output)
+			if rpm2taropts.output != "" {
+				tarStream, err = os.Create(rpm2taropts.output)
 				if err != nil {
 					return fmt.Errorf("could not create tar: %v", err)
 				}
 			}
 			cap := map[string][]string{}
-			for file, caps := range capabilities {
+			for file, caps := range rpm2taropts.capabilities {
 				split := strings.Split(caps, ":")
 				if len(split) > 0 {
 					cap["./"+strings.TrimPrefix(file, "/")] = split
@@ -39,12 +43,12 @@ func NewRPMCmd() *cobra.Command {
 
 			tarWriter := tar.NewWriter(tarStream)
 			defer tarWriter.Close()
-			if len(input) != 0 {
-				directoryTree, err := order.TreeFromRPMs(input)
+			if len(rpm2taropts.input) != 0 {
+				directoryTree, err := order.TreeFromRPMs(rpm2taropts.input)
 				if err != nil {
 					return err
 				}
-				for k, v := range symlinks {
+				for k, v := range rpm2taropts.symlinks {
 					// If an absolute path is given let's add a `.` in front. This is
 					// not strictly necessary but adds a more correct tar path
 					// which aligns with the usual rpm entries which start with `./`
@@ -69,7 +73,7 @@ func NewRPMCmd() *cobra.Command {
 					}
 				}
 
-				for _, i := range input {
+				for _, i := range rpm2taropts.input {
 					rpmStream, err = os.Open(i)
 					if err != nil {
 						return fmt.Errorf("could not open rpm at %s: %v", i, err)
@@ -90,9 +94,9 @@ func NewRPMCmd() *cobra.Command {
 		},
 	}
 
-	tarCmd.PersistentFlags().StringVarP(&output, "output", "o", "", "location of the resulting tar file (defaults to stdout)")
-	tarCmd.PersistentFlags().StringArrayVarP(&input, "input", "i", []string{}, "location from where to read the rpm file (defaults to stdin)")
-	tarCmd.Flags().StringToStringVarP(&symlinks, "symlinks", "s", map[string]string{}, "symlinks to add. Relative or absolute.")
-	tarCmd.Flags().StringToStringVarP(&capabilities, "capabilties", "c", map[string]string{}, "capabilities of files (-c=/bin/ls=cap_net_bind_service)")
+	tarCmd.PersistentFlags().StringVarP(&rpm2taropts.output, "output", "o", "", "location of the resulting tar file (defaults to stdout)")
+	tarCmd.PersistentFlags().StringArrayVarP(&rpm2taropts.input, "input", "i", []string{}, "location from where to read the rpm file (defaults to stdin)")
+	tarCmd.Flags().StringToStringVarP(&rpm2taropts.symlinks, "symlinks", "s", map[string]string{}, "symlinks to add. Relative or absolute.")
+	tarCmd.Flags().StringToStringVarP(&rpm2taropts.capabilities, "capabilties", "c", map[string]string{}, "capabilities of files (-c=/bin/ls=cap_net_bind_service)")
 	return tarCmd
 }
