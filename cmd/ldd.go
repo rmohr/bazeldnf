@@ -25,7 +25,7 @@ type lddOpts struct {
 
 var lddopts = lddOpts{}
 
-func NewlddCmd() *cobra.Command {
+func NewLddCmd() *cobra.Command {
 
 	lddCmd := &cobra.Command{
 		Use:   "ldd",

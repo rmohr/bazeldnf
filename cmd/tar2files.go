@@ -17,7 +17,7 @@ type tar2filesOpts struct {
 var tar2filesopts = tar2filesOpts{}
 
 func NewTar2FilesCmd() *cobra.Command {
-	tarCmd := &cobra.Command{
+	tar2filesCmd := &cobra.Command{
 		Use:   "tar2files",
 		Short: "extract certain files in a given directory from a tar archive",
 		Args:  cobra.MinimumNArgs(1),
@@ -42,7 +42,7 @@ func NewTar2FilesCmd() *cobra.Command {
 		},
 	}
 
-	tarCmd.PersistentFlags().StringVarP(&tar2filesopts.tarFile, "input", "i", "", "location from where to read the tar file (defaults to stdin)")
-	tarCmd.PersistentFlags().StringVar(&tar2filesopts.filePrefix, "file-prefix", "", "only keep files with this directory prefix")
-	return tarCmd
+	tar2filesCmd.PersistentFlags().StringVarP(&tar2filesopts.tarFile, "input", "i", "", "location from where to read the tar file (defaults to stdin)")
+	tar2filesCmd.PersistentFlags().StringVar(&tar2filesopts.filePrefix, "file-prefix", "", "only keep files with this directory prefix")
+	return tar2filesCmd
 }

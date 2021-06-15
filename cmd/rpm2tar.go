@@ -20,8 +20,8 @@ type rpm2tarOpts struct {
 
 var rpm2taropts = rpm2tarOpts{}
 
-func NewRPMCmd() *cobra.Command {
-	tarCmd := &cobra.Command{
+func NewRpm2TarCmd() *cobra.Command {
+	rpm2tarCmd := &cobra.Command{
 		Use:   "rpm2tar",
 		Short: "convert a rpm to a tar archive",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
@@ -94,9 +94,9 @@ func NewRPMCmd() *cobra.Command {
 		},
 	}
 
-	tarCmd.PersistentFlags().StringVarP(&rpm2taropts.output, "output", "o", "", "location of the resulting tar file (defaults to stdout)")
-	tarCmd.PersistentFlags().StringArrayVarP(&rpm2taropts.input, "input", "i", []string{}, "location from where to read the rpm file (defaults to stdin)")
-	tarCmd.Flags().StringToStringVarP(&rpm2taropts.symlinks, "symlinks", "s", map[string]string{}, "symlinks to add. Relative or absolute.")
-	tarCmd.Flags().StringToStringVarP(&rpm2taropts.capabilities, "capabilties", "c", map[string]string{}, "capabilities of files (-c=/bin/ls=cap_net_bind_service)")
-	return tarCmd
+	rpm2tarCmd.PersistentFlags().StringVarP(&rpm2taropts.output, "output", "o", "", "location of the resulting tar file (defaults to stdout)")
+	rpm2tarCmd.PersistentFlags().StringArrayVarP(&rpm2taropts.input, "input", "i", []string{}, "location from where to read the rpm file (defaults to stdin)")
+	rpm2tarCmd.Flags().StringToStringVarP(&rpm2taropts.symlinks, "symlinks", "s", map[string]string{}, "symlinks to add. Relative or absolute.")
+	rpm2tarCmd.Flags().StringToStringVarP(&rpm2taropts.capabilities, "capabilties", "c", map[string]string{}, "capabilities of files (-c=/bin/ls=cap_net_bind_service)")
+	return rpm2tarCmd
 }

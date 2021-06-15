@@ -13,7 +13,7 @@ type pruneOpts struct {
 
 var pruneopts = pruneOpts{}
 
-func NewpruneCmd() *cobra.Command {
+func NewPruneCmd() *cobra.Command {
 
 	pruneCmd := &cobra.Command{
 		Use:   "prune",

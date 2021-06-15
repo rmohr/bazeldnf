@@ -23,7 +23,7 @@ type rpmtreeOpts struct {
 
 var rpmtreeopts = rpmtreeOpts{}
 
-func NewrpmtreeCmd() *cobra.Command {
+func NewRpmTreeCmd() *cobra.Command {
 
 	rpmtreeCmd := &cobra.Command{
 		Use:   "rpmtree",
