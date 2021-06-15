@@ -30,7 +30,7 @@ func NewrpmtreeCmd() *cobra.Command {
 		Short: "Writes a rpmtree rule and its rpmdependencies to bazel files",
 		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, required []string) error {
-			repos, err := repo.LoadRepoFile(reduceopts.repofile)
+			repos, err := repo.LoadRepoFile(rpmtreeopts.repofile)
 			if err != nil {
 				return err
 			}

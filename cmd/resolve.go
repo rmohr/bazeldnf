@@ -33,7 +33,7 @@ func NewResolveCmd() *cobra.Command {
 			repos := &bazeldnf.Repositories{}
 			if len(resolveopts.in) == 0 {
 				var err error
-				repos, err = repo.LoadRepoFile(reduceopts.repofile)
+				repos, err = repo.LoadRepoFile(resolveopts.repofile)
 				if err != nil {
 					return err
 				}
