@@ -31,11 +31,11 @@ func LoadWorkspace(path string) (*build.File, error) {
 func LoadBuild(path string) (*build.File, error) {
 	buildfileData, err := ioutil.ReadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse WORSPACE orig: %v", err)
+		return nil, fmt.Errorf("failed to parse BUILD.bazel orig: %v", err)
 	}
 	buildfile, err := build.ParseBuild(path, buildfileData)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse WORSPACE orig: %v", err)
+		return nil, fmt.Errorf("failed to parse BUILD.bazel orig: %v", err)
 	}
 	return buildfile, nil
 }
