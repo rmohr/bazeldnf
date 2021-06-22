@@ -90,9 +90,8 @@ func TestTar2Files(t *testing.T) {
 		prefix        string
 	}{
 		{
-			name: "should extract a symlink from a tar archive",
-			rpm:  "/home/rmohr/bazeldnf/bazel-bin/pkg/rpm/rpm_test_/rpm_test.runfiles/libvirt-libs-6.1.0-2.fc32.x86_64.rpm/rpm/downloaded",
-			//rpm:     filepath.Join(os.Getenv("TEST_SRCDIR"), "libvirt-libs-6.1.0-2.fc32.x86_64.rpm/rpm/downloaded"),
+			name:    "should extract a symlink from a tar archive",
+			rpm:     filepath.Join(os.Getenv("TEST_SRCDIR"), "libvirt-libs-6.1.0-2.fc32.x86_64.rpm/rpm/downloaded"),
 			wantErr: false,
 			expectedFiles: []*fileInfo{
 				{Name: "libvirt.so.0", Size: 19},
@@ -100,9 +99,8 @@ func TestTar2Files(t *testing.T) {
 			prefix: "./usr/lib64",
 		},
 		{
-			name: "should extract multiple files from a tar archive",
-			rpm:  "/home/rmohr/bazeldnf/bazel-bin/pkg/rpm/rpm_test_/rpm_test.runfiles/libvirt-libs-6.1.0-2.fc32.x86_64.rpm/rpm/downloaded",
-			//rpm:     filepath.Join(os.Getenv("TEST_SRCDIR"), "libvirt-libs-6.1.0-2.fc32.x86_64.rpm/rpm/downloaded"),
+			name:    "should extract multiple files from a tar archive",
+			rpm:     filepath.Join(os.Getenv("TEST_SRCDIR"), "libvirt-libs-6.1.0-2.fc32.x86_64.rpm/rpm/downloaded"),
 			wantErr: false,
 			expectedFiles: []*fileInfo{
 				{Name: "libvirt-admin.conf", Size: 450},
