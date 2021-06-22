@@ -33,7 +33,7 @@ func NewResolveCmd() *cobra.Command {
 			repos := &bazeldnf.Repositories{}
 			if len(resolveopts.in) == 0 {
 				var err error
-				repos, err = repo.LoadRepoFile(reduceopts.repofile)
+				repos, err = repo.LoadRepoFile(resolveopts.repofile)
 				if err != nil {
 					return err
 				}
@@ -71,10 +71,10 @@ func NewResolveCmd() *cobra.Command {
 		},
 	}
 
-	resolveCmd.PersistentFlags().StringArrayVarP(&resolveopts.in, "input", "i", nil, "primary.xml of the repository")
-	resolveCmd.PersistentFlags().StringVarP(&resolveopts.fedoraBaseSystem, "fedora-base-system", "f", "fedora-release-container", "fedora base system to choose from (e.g. fedora-release-server, fedora-release-container, ...)")
-	resolveCmd.PersistentFlags().StringVarP(&resolveopts.arch, "arch", "a", "x86_64", "target fedora architecture")
-	resolveCmd.PersistentFlags().BoolVarP(&resolveopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
-	resolveCmd.PersistentFlags().StringVarP(&resolveopts.repofile, "repofile", "r", "repo.yaml", "repository information file. Will be used by default if no explicit inputs are provided.")
+	resolveCmd.Flags().StringArrayVarP(&resolveopts.in, "input", "i", nil, "primary.xml of the repository")
+	resolveCmd.Flags().StringVarP(&resolveopts.fedoraBaseSystem, "fedora-base-system", "f", "fedora-release-container", "fedora base system to choose from (e.g. fedora-release-server, fedora-release-container, ...)")
+	resolveCmd.Flags().StringVarP(&resolveopts.arch, "arch", "a", "x86_64", "target fedora architecture")
+	resolveCmd.Flags().BoolVarP(&resolveopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
+	resolveCmd.Flags().StringVarP(&resolveopts.repofile, "repofile", "r", "repo.yaml", "repository information file. Will be used by default if no explicit inputs are provided.")
 	return resolveCmd
 }

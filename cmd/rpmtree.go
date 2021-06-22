@@ -23,14 +23,14 @@ type rpmtreeOpts struct {
 
 var rpmtreeopts = rpmtreeOpts{}
 
-func NewrpmtreeCmd() *cobra.Command {
+func NewRpmTreeCmd() *cobra.Command {
 
 	rpmtreeCmd := &cobra.Command{
 		Use:   "rpmtree",
 		Short: "Writes a rpmtree rule and its rpmdependencies to bazel files",
 		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, required []string) error {
-			repos, err := repo.LoadRepoFile(reduceopts.repofile)
+			repos, err := repo.LoadRepoFile(rpmtreeopts.repofile)
 			if err != nil {
 				return err
 			}
@@ -86,13 +86,13 @@ func NewrpmtreeCmd() *cobra.Command {
 		},
 	}
 
-	rpmtreeCmd.PersistentFlags().StringVarP(&rpmtreeopts.fedoraBaseSystem, "fedora-base-system", "f", "fedora-release-container", "fedora base system to choose from (e.g. fedora-release-server, fedora-release-container, ...)")
-	rpmtreeCmd.PersistentFlags().StringVarP(&rpmtreeopts.arch, "arch", "a", "x86_64", "target fedora architecture")
-	rpmtreeCmd.PersistentFlags().BoolVarP(&rpmtreeopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
-	rpmtreeCmd.PersistentFlags().BoolVarP(&rpmtreeopts.public, "public", "p", true, "if the rpmtree rule should be public")
-	rpmtreeCmd.PersistentFlags().StringVarP(&rpmtreeopts.repofile, "repofile", "r", "repo.yaml", "repository information file. Will be used by default if no explicit inputs are provided.")
-	rpmtreeCmd.PersistentFlags().StringVarP(&rpmtreeopts.workspace, "workspace", "w", "WORKSPACE", "Bazel workspace file")
-	rpmtreeCmd.PersistentFlags().StringVarP(&rpmtreeopts.buildfile, "buildfile", "b", "rpm/BUILD.bazel", "Build file for RPMs")
+	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.fedoraBaseSystem, "fedora-base-system", "f", "fedora-release-container", "fedora base system to choose from (e.g. fedora-release-server, fedora-release-container, ...)")
+	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.arch, "arch", "a", "x86_64", "target fedora architecture")
+	rpmtreeCmd.Flags().BoolVarP(&rpmtreeopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
+	rpmtreeCmd.Flags().BoolVarP(&rpmtreeopts.public, "public", "p", true, "if the rpmtree rule should be public")
+	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.repofile, "repofile", "r", "repo.yaml", "repository information file. Will be used by default if no explicit inputs are provided.")
+	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.workspace, "workspace", "w", "WORKSPACE", "Bazel workspace file")
+	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.buildfile, "buildfile", "b", "rpm/BUILD.bazel", "Build file for RPMs")
 	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.name, "name", "", "", "rpmtree rule name")
 	rpmtreeCmd.MarkFlagRequired("name")
 	return rpmtreeCmd

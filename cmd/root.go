@@ -18,13 +18,13 @@ var rootCmd = &cobra.Command{
 func Execute() {
 	rootCmd.AddCommand(NewFetchCmd())
 	rootCmd.AddCommand(NewInitCmd())
-	rootCmd.AddCommand(NewrpmtreeCmd())
+	rootCmd.AddCommand(NewRpmTreeCmd())
 	rootCmd.AddCommand(NewResolveCmd())
 	rootCmd.AddCommand(NewReduceCmd())
-	rootCmd.AddCommand(NewRPMCmd())
-	rootCmd.AddCommand(NewpruneCmd())
+	rootCmd.AddCommand(NewRpm2TarCmd())
+	rootCmd.AddCommand(NewPruneCmd())
 	rootCmd.AddCommand(NewTar2FilesCmd())
-	rootCmd.AddCommand(NewlddCmd())
+	rootCmd.AddCommand(NewLddCmd())
 	rootCmd.AddCommand(NewVerifyCmd())
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)

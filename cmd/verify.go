@@ -67,7 +67,7 @@ func NewVerifyCmd() *cobra.Command {
 	}
 
 	verifyCmd.Flags().StringVarP(&verifyopts.repoFile, "repofile", "r", "repo.yaml", "repository file")
-	verifyCmd.PersistentFlags().StringVarP(&verifyopts.workspace, "workspace", "w", "WORKSPACE", "Bazel workspace file")
+	verifyCmd.Flags().StringVarP(&verifyopts.workspace, "workspace", "w", "WORKSPACE", "Bazel workspace file")
 	return verifyCmd
 }
 

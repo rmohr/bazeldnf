@@ -20,11 +20,12 @@ type lddOpts struct {
 	name      string
 	rpmtree   string
 	tar       string
+	public    bool
 }
 
 var lddopts = lddOpts{}
 
-func NewlddCmd() *cobra.Command {
+func NewLddCmd() *cobra.Command {
 
 	lddCmd := &cobra.Command{
 		Use:   "ldd",
@@ -78,8 +79,8 @@ func NewlddCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			bazel.AddTar2Files(lddopts.name, lddopts.rpmtree, build, filterFiles(files), rpmtreeopts.public)
-			err = bazel.WriteBuild(false, build, rpmtreeopts.buildfile)
+			bazel.AddTar2Files(lddopts.name, lddopts.rpmtree, build, filterFiles(files), lddopts.public)
+			err = bazel.WriteBuild(false, build, lddopts.buildfile)
 			if err != nil {
 				return err
 			}
@@ -91,8 +92,9 @@ func NewlddCmd() *cobra.Command {
 	}
 
 	lddCmd.Flags().StringVarP(&lddopts.tar, "input", "i", "", "Tar file with all dependencies")
-	lddCmd.PersistentFlags().StringVarP(&lddopts.workspace, "workspace", "w", "WORKSPACE", "Bazel workspace file")
-	lddCmd.PersistentFlags().StringVarP(&lddopts.buildfile, "buildfile", "b", "rpm/BUILD.bazel", "Build file for RPMs")
+	lddCmd.Flags().StringVarP(&lddopts.workspace, "workspace", "w", "WORKSPACE", "Bazel workspace file")
+	lddCmd.Flags().StringVarP(&lddopts.buildfile, "buildfile", "b", "rpm/BUILD.bazel", "Build file for RPMs")
+	lddCmd.Flags().BoolVarP(&lddopts.public, "public", "p", true, "if the tar2files rule should be public")
 	lddCmd.Flags().StringVarP(&lddopts.name, "name", "n", "", "tar2files rule name")
 	lddCmd.Flags().StringVarP(&lddopts.rpmtree, "rpmtree", "r", "", "rpmtree rule name")
 	lddCmd.MarkFlagRequired("name")

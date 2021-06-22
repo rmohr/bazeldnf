@@ -5,13 +5,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type GetOpts struct {
+type InitOpts struct {
 	arch string
 	fc   string
 	out  string
 }
 
-var getopts = GetOpts{}
+var initopts = InitOpts{}
 
 func NewInitCmd() *cobra.Command {
 
@@ -20,13 +20,13 @@ func NewInitCmd() *cobra.Command {
 		Short: "Create basic repo.yaml files for fedora releases",
 		Long:  `Create proper repo information with release- and update repos for fedora releases`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return repo.NewRemoteInit(getopts.fc, getopts.arch, getopts.out).Init()
+			return repo.NewRemoteInit(initopts.fc, initopts.arch, initopts.out).Init()
 		},
 	}
 
-	initCmd.Flags().StringVarP(&getopts.arch, "arch", "a", "x86_64", "target fedora architecture")
-	initCmd.Flags().StringVarP(&getopts.fc, "fc", "", "", "target fedora core release")
-	initCmd.Flags().StringVarP(&getopts.out, "output", "o", "repo.yaml", "where to write the repository information")
+	initCmd.Flags().StringVarP(&initopts.arch, "arch", "a", "x86_64", "target fedora architecture")
+	initCmd.Flags().StringVarP(&initopts.fc, "fc", "", "", "target fedora core release")
+	initCmd.Flags().StringVarP(&initopts.out, "output", "o", "repo.yaml", "where to write the repository information")
 	err := initCmd.MarkFlagRequired("fc")
 	if err != nil {
 		panic(err)
