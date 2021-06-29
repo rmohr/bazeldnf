@@ -105,7 +105,14 @@ func (r *Resolver) LoadInvolvedPackages(packages []*api.Package) error {
 		deduplicated[pkg.String()] = packages[i]
 	}
 	packages = nil
+	// FIXME: This is not a propoer modules support for python. We should properly resolve `alternative(python)` and
+	// not have to add such a hack.
 	for k, _ := range deduplicated {
+		if deduplicated[k].Name == "platform-python" {
+			deduplicated[k].Format.Provides.Entries = append(deduplicated[k].Format.Provides.Entries, api.Entry{
+				Name: "/usr/libexec/platform-python",
+			})
+		}
 		packages = append(packages, deduplicated[k])
 	}
 
