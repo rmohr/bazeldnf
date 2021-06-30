@@ -10,7 +10,7 @@ buildifier(
 )
 
 load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
-load("//:deps.bzl", "rpmtree")
+load("//:deps.bzl", "rpmtree", "tar2files")
 load("//:def.bzl", "bazeldnf")
 
 bazeldnf(
@@ -19,16 +19,22 @@ bazeldnf(
 
 rpmtree(
     name = "something",
+    rpms = [
+        "@libvirt-libs-6.1.0-2.fc32.x86_64.rpm//rpm",
+        "@libvirt-devel-6.1.0-2.fc32.x86_64.rpm//rpm",
+    ],
+)
+
+tar2files(
+    name = "something_libs",
     files = {
         "/usr/lib64": [
             "libvirt.so.0",
             "libvirt.so.0.6001.0",
         ],
     },
-    rpms = [
-        "@libvirt-libs-6.1.0-2.fc32.x86_64.rpm//rpm",
-        "@libvirt-devel-6.1.0-2.fc32.x86_64.rpm//rpm",
-    ],
+    tar = ":something",
+    visibility = ["//visibility:public"],
 )
 
 pkg_tar(
@@ -38,5 +44,5 @@ pkg_tar(
 
 cc_library(
     name = "bar",
-    srcs = [":something/usr/lib64"],
+    srcs = ["//:something_libs/usr/lib64"],
 )
