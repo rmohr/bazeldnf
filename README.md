@@ -233,6 +233,13 @@ Finally prune all unreferenced old RPM files:
 bazeldnf prune --workspace /my/WORKSPACE --buildfile /my/BUILD.bazel
 ```
 
+By default `bazeldnf rpmtree` will try to find a solution which only contains
+the newest packages of all involved repositories. The only exception are pinned
+versions themselves. If pinned version require other outdated packages,
+the `--nobest` option can be supplied. With this option all packages are
+considered. Newest packages will have the higest weight but it may not always be
+able to choose them and older packages may be pulled in instead.
+
 ### Dependency resolution limitations
 
 ##### Missing features
@@ -240,7 +247,6 @@ bazeldnf prune --workspace /my/WORKSPACE --buildfile /my/BUILD.bazel
  * Weighting packages (like prefer `libcurl-minimal` over `libcurl` if one of
    their resources is requested)
  * Resolving `requires` entries which contain boolean logic like `(gcc if something)`
- * If `--nobest` is supplied, newer packages don't get a higher weight
 
 ##### Deliberately not supported
 
