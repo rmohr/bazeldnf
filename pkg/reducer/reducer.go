@@ -78,6 +78,7 @@ func (r *RepoReducer) Load() error {
 func (r *RepoReducer) Resolve(packages []string) (matched []string, involved []*api.Package, err error) {
 	packages = append(packages, r.implicitRequires...)
 	discovered := map[string]*api.Package{}
+	pinned := map[string]*api.Package{}
 	for _, req := range packages {
 		found := false
 		name := ""
@@ -107,6 +108,10 @@ func (r *RepoReducer) Resolve(packages []string) (matched []string, involved []*
 		}
 	}
 
+	for _, v := range discovered {
+		pinned[v.Name] = v
+	}
+
 	for {
 		current := []string{}
 		for k := range discovered {
@@ -115,7 +120,11 @@ func (r *RepoReducer) Resolve(packages []string) (matched []string, involved []*
 		for _, p := range current {
 			for _, newFound := range r.requires(discovered[p]) {
 				if _, exists := discovered[newFound.String()]; !exists {
-					discovered[newFound.String()] = newFound
+					if _, exists := pinned[newFound.Name]; !exists {
+						discovered[newFound.String()] = newFound
+					} else {
+						logrus.Debugf("excluding %s because of pinned dependency %s", newFound.String(), pinned[newFound.Name].String())
+					}
 				}
 			}
 		}

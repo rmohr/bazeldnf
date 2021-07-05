@@ -1,17 +1,20 @@
 package sat
 
 import (
+	"bufio"
 	"fmt"
 	"io"
+	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
+	"github.com/crillab/gophersat/bf"
 	"github.com/crillab/gophersat/explain"
+	"github.com/crillab/gophersat/maxsat"
 	"github.com/rmohr/bazeldnf/pkg/api"
 	"github.com/rmohr/bazeldnf/pkg/rpm"
 	"github.com/sirupsen/logrus"
-
-	"github.com/crillab/gophersat/bf"
 )
 
 type VarType string
@@ -38,6 +41,17 @@ type Var struct {
 	ResourceVersion *api.Version
 }
 
+func (v Var) String() string {
+	return fmt.Sprintf("%s(%s)", v.Package.String(), v.Context.Provides)
+}
+
+func VarsString(vars []*Var) (desc []string) {
+	for _, v := range vars {
+		desc = append(desc, v.String())
+	}
+	return
+}
+
 func toBFVars(vars []*Var) (bfvars []bf.Formula) {
 	for _, v := range vars {
 		bfvars = append(bfvars, bf.Var(v.satVarName))
@@ -49,6 +63,9 @@ type Resolver struct {
 	varsCount int
 	// provides allows accessing variables which can resolve unversioned requirement to build proper clauses
 	provides map[string][]*Var
+	// packages contains a map which contains all pkg vars which can be looked up by package name
+	// useful for creating soft clauses
+	packages map[string][]*Var
 	// pkgProvides allows accessing all variables which get pulled in if a specific package get's pulled in
 	pkgProvides map[VarContext][]*Var
 	// vars contain as key an exact identifier for a provided resource and the actual SAT variable as value
@@ -65,6 +82,7 @@ func NewResolver(nobest bool) *Resolver {
 	return &Resolver{
 		varsCount:    0,
 		provides:     map[string][]*Var{},
+		packages:     map[string][]*Var{},
 		vars:         map[string]*Var{},
 		pkgProvides:  map[VarContext][]*Var{},
 		nobest:       nobest,
@@ -74,10 +92,30 @@ func NewResolver(nobest bool) *Resolver {
 
 func (r *Resolver) ticket() string {
 	r.varsCount++
-	return strconv.Itoa(r.varsCount)
+	return "x" + strconv.Itoa(r.varsCount)
 }
 
 func (r *Resolver) LoadInvolvedPackages(packages []*api.Package) error {
+	// Deduplicate entries
+	deduplicated := map[string]*api.Package{}
+	for i, pkg := range packages {
+		if _, exists := deduplicated[pkg.String()]; exists {
+			logrus.Infof("Removing duplicate of  %v.", pkg.String())
+		}
+		deduplicated[pkg.String()] = packages[i]
+	}
+	packages = nil
+	// FIXME: This is not a propoer modules support for python. We should properly resolve `alternative(python)` and
+	// not have to add such a hack.
+	for k, _ := range deduplicated {
+		if deduplicated[k].Name == "platform-python" {
+			deduplicated[k].Format.Provides.Entries = append(deduplicated[k].Format.Provides.Entries, api.Entry{
+				Name: "/usr/libexec/platform-python",
+			})
+		}
+		packages = append(packages, deduplicated[k])
+	}
+
 	// Create an index to pick the best candidates
 	for _, pkg := range packages {
 		if r.bestPackages[pkg.Name] == nil {
@@ -96,12 +134,20 @@ func (r *Resolver) LoadInvolvedPackages(packages []*api.Package) error {
 	// Generate variables
 	for _, pkg := range packages {
 		pkgVar, resourceVars := r.explodePackageToVars(pkg)
+		r.packages[pkg.Name] = append(r.packages[pkg.Name], pkgVar)
 		r.pkgProvides[pkgVar.Context] = resourceVars
 		for _, v := range resourceVars {
 			r.provides[v.Context.Provides] = append(r.provides[v.Context.Provides], v)
 			r.vars[v.satVarName] = v
 		}
 	}
+
+	for x, _ := range r.packages {
+		sort.SliceStable(r.packages[x], func(i, j int) bool {
+			return rpm.Compare(r.packages[x][i].Package.Version, r.packages[x][j].Package.Version) < 0
+		})
+	}
+
 	logrus.Infof("Loaded %v packages.", len(r.pkgProvides))
 	// Generate imply rules
 	for _, resourceVars := range r.pkgProvides {
@@ -141,14 +187,95 @@ func (res *Resolver) Resolve() (install []*api.Package, excluded []*api.Package,
 	if len(res.unresolvable) > 0 {
 		return nil, nil, fmt.Errorf("Can't satisfy %+v", res.unresolvable)
 	}
-	vars := bf.Solve(bf.And(res.ands...))
 
-	if len(vars) > 0 {
-		logrus.Info("Solution found.")
+	satReader, satWriter := io.Pipe()
+	pwMaxSatReader, pwMaxSatWriter := io.Pipe()
+	rex := regexp.MustCompile("c (x[0-9]+)=([0-9]+)")
+
+	satErrChan := make(chan error, 1)
+	pwMaxSatErrChan := make(chan error, 1)
+	varsChan := make(chan ConversionVars, 1)
+	go func() {
+		defer close(satErrChan)
+		defer satWriter.Close()
+		satErrChan <- bf.Dimacs(bf.And(res.ands...), satWriter)
+	}()
+
+	go func() {
+		defer close(pwMaxSatErrChan)
+		defer pwMaxSatWriter.Close()
+		vars := ConversionVars{
+			satToPkg: map[string]string{},
+			pkgToSat: map[string]string{},
+		}
+		defer func() { varsChan <- vars }()
+		scanner := bufio.NewScanner(satReader)
+		for scanner.Scan() {
+			line := scanner.Text()
+			if strings.HasPrefix(line, "c") {
+				match := rex.FindStringSubmatch(line)
+				if len(match) == 3 {
+					pkgVar := match[1]
+					satVar := match[2]
+					vars.satToPkg[satVar] = pkgVar
+					vars.pkgToSat[pkgVar] = satVar
+					if _, err := fmt.Fprintf(pwMaxSatWriter, "c %s -> %s\n", res.vars[pkgVar].Package.String(), res.vars[pkgVar].Context.Provides); err != nil {
+						pwMaxSatErrChan <- err
+						return
+					}
+				}
+			} else if strings.HasPrefix(line, "p") {
+				line = strings.Replace(line, "p cnf", "p wcnf", 1) + " 2000"
+			} else {
+				line = "2000 " + line
+			}
+			if _, err := fmt.Fprintln(pwMaxSatWriter, line); err != nil {
+				pwMaxSatErrChan <- err
+				return
+			}
+		}
+		// write soft rules. We don't want to install any package
+		for _, pkgs := range res.packages {
+			weight := 1901
+			fmt.Fprintf(pwMaxSatWriter, "c prefer %s\n", pkgs[len(pkgs)-1].Package.String())
+			if len(pkgs) > 1 {
+				for _, pkg := range pkgs[0 : len(pkgs)-1] {
+					pkgVar := pkg.satVarName
+					satVar := vars.pkgToSat[pkgVar]
+					fmt.Fprintf(pwMaxSatWriter, "c not %s,%s,%s\n", pkg.Package.String(), pkgVar, satVar)
+					fmt.Fprintf(pwMaxSatWriter, "%d -%s 0\n", weight, satVar)
+
+					if weight > 0 {
+						weight -= 100
+					}
+				}
+			}
+		}
+	}()
+
+	logrus.Info("Loading the Partial weighted MAXSAT problem.")
+	s, err := maxsat.ParseWCNF(pwMaxSatReader)
+	if err != nil {
+		return nil, nil, err
+	}
+	if err := <-satErrChan; err != nil {
+		return nil, nil, err
+	}
+	if err := <-pwMaxSatErrChan; err != nil {
+		return nil, nil, err
+	}
+	satVars := <-varsChan
+
+	logrus.Info("Solving the Partial weighted MAXSAT problem.")
+	solution := s.Optimal(nil, nil)
+
+	if solution.Status.String() == "SAT" {
+		logrus.Infof("Solution with weight %v found.", solution.Weight)
 		installMap := map[VarContext]*api.Package{}
 		excludedMap := map[VarContext]*api.Package{}
-		for k, v := range vars {
-			resVar := res.vars[k]
+		for k, v := range solution.Model {
+			// Offset of `1`. The model index starts with 0, but the variable sequence starts with 1, since 0 is not allowed
+			resVar := res.vars[satVars.satToPkg[strconv.Itoa(k+1)]]
 			if resVar != nil && resVar.varType == VarTypePackage {
 				if v {
 					installMap[resVar.Context] = resVar.Package
@@ -156,7 +283,6 @@ func (res *Resolver) Resolve() (install []*api.Package, excluded []*api.Package,
 					excludedMap[resVar.Context] = resVar.Package
 				}
 			}
-			//fmt.Printf("%s:%s:%v\n", k, res.vars[k].Context.Provides, v)
 		}
 		for _, v := range installMap {
 			if rpm.Compare(res.bestPackages[v.Name].Version, v.Version) != 0 {
@@ -380,4 +506,9 @@ func (r *Resolver) explodeSingleRequires(entry api.Entry, provides []*Var) (acce
 	}
 
 	return accepts, nil
+}
+
+type ConversionVars struct {
+	satToPkg map[string]string
+	pkgToSat map[string]string
 }
