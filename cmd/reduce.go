@@ -37,14 +37,10 @@ which allow reducing huge rpm repos to a smaller problem set for debugging, remo
 		RunE: func(cmd *cobra.Command, required []string) error {
 			repos := &bazeldnf.Repositories{}
 			if len(reduceopts.in) == 0 {
-				for i, _ := range reduceopts.repofiles {
-					var err error
-					var tmp *bazeldnf.Repositories
-					tmp, err = repo.LoadRepoFile(reduceopts.repofiles[i])
-					if err != nil {
-						return err
-					}
-					repos.Repositories = append(repos.Repositories, tmp.Repositories...)
+				var err error
+				repos, err = repo.LoadRepoFiles(reduceopts.repofiles)
+				if err != nil {
+					return err
 				}
 			}
 			repo := reducer.NewRepoReducer(repos, reduceopts.in, reduceopts.lang, reduceopts.fedoraBaseSystem, reduceopts.arch, ".bazeldnf")

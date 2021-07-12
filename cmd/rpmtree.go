@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 	"github.com/rmohr/bazeldnf/pkg/bazel"
 	"github.com/rmohr/bazeldnf/pkg/reducer"
 	"github.com/rmohr/bazeldnf/pkg/repo"
@@ -31,13 +30,9 @@ func NewRpmTreeCmd() *cobra.Command {
 		Short: "Writes a rpmtree rule and its rpmdependencies to bazel files",
 		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, required []string) error {
-			repos := &bazeldnf.Repositories{}
-			for i, _ := range fetchopts.repofiles {
-				tmp, err := repo.LoadRepoFile(rpmtreeopts.repofiles[i])
-				if err != nil {
-					return err
-				}
-				repos.Repositories = append(repos.Repositories, tmp.Repositories...)
+			repos, err := repo.LoadRepoFiles(rpmtreeopts.repofiles)
+			if err != nil {
+				return err
 			}
 			repoReducer := reducer.NewRepoReducer(repos, nil, rpmtreeopts.lang, rpmtreeopts.fedoraBaseSystem, rpmtreeopts.arch, ".bazeldnf")
 			logrus.Info("Loading packages.")

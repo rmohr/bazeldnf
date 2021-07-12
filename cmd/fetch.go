@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 	"github.com/rmohr/bazeldnf/pkg/repo"
 	"github.com/spf13/cobra"
 )
@@ -19,13 +18,9 @@ func NewFetchCmd() *cobra.Command {
 		Short: "Update repo metadata",
 		Long:  `Update repo metadata`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			repos := &bazeldnf.Repositories{}
-			for i, _ := range fetchopts.repofiles {
-				tmp, err := repo.LoadRepoFile(fetchopts.repofiles[i])
-				if err != nil {
-					return err
-				}
-				repos.Repositories = append(repos.Repositories, tmp.Repositories...)
+			repos, err := repo.LoadRepoFiles(fetchopts.repofiles)
+			if err != nil {
+				return err
 			}
 			return repo.NewRemoteRepoFetcher(repos.Repositories, ".bazeldnf").Fetch()
 		},

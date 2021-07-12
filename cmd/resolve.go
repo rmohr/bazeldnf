@@ -32,14 +32,10 @@ func NewResolveCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, required []string) error {
 			repos := &bazeldnf.Repositories{}
 			if len(resolveopts.in) == 0 {
-				for i, _ := range fetchopts.repofiles {
-					var err error
-					var tmp *bazeldnf.Repositories
-					tmp, err = repo.LoadRepoFile(resolveopts.repofiles[i])
-					if err != nil {
-						return err
-					}
-					repos.Repositories = append(repos.Repositories, tmp.Repositories...)
+				var err error
+				repos, err = repo.LoadRepoFiles(resolveopts.repofiles)
+				if err != nil {
+					return err
 				}
 			}
 			repo := reducer.NewRepoReducer(repos, resolveopts.in, resolveopts.lang, resolveopts.fedoraBaseSystem, resolveopts.arch, ".bazeldnf")

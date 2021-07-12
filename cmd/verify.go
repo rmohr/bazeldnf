@@ -8,7 +8,6 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 	"github.com/rmohr/bazeldnf/pkg/bazel"
 	"github.com/rmohr/bazeldnf/pkg/repo"
 	"github.com/sassoftware/go-rpmutils"
@@ -31,13 +30,9 @@ func NewVerifyCmd() *cobra.Command {
 		Short: "verify RPMs against gpg keys defined in repo.yaml",
 		Long:  `verify RPMs against gpg keys defined in repo.yaml`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			repos := &bazeldnf.Repositories{}
-			for i, _ := range verifyopts.repofiles {
-				tmp, err := repo.LoadRepoFile(verifyopts.repofiles[i])
-				if err != nil {
-					return err
-				}
-				repos.Repositories = append(repos.Repositories, tmp.Repositories...)
+			repos, err := repo.LoadRepoFiles(verifyopts.repofiles)
+			if err != nil {
+				return err
 			}
 			keyring := openpgp.EntityList{}
 			for _, repo := range repos.Repositories {
