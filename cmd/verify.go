@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 	"github.com/rmohr/bazeldnf/pkg/bazel"
 	"github.com/rmohr/bazeldnf/pkg/repo"
 	"github.com/sassoftware/go-rpmutils"
@@ -17,7 +18,7 @@ import (
 )
 
 type VerifyOpts struct {
-	repoFile  string
+	repofiles []string
 	workspace string
 }
 
@@ -30,9 +31,13 @@ func NewVerifyCmd() *cobra.Command {
 		Short: "verify RPMs against gpg keys defined in repo.yaml",
 		Long:  `verify RPMs against gpg keys defined in repo.yaml`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			repos, err := repo.LoadRepoFile(verifyopts.repoFile)
-			if err != nil {
-				return err
+			repos := &bazeldnf.Repositories{}
+			for i, _ := range verifyopts.repofiles {
+				tmp, err := repo.LoadRepoFile(verifyopts.repofiles[i])
+				if err != nil {
+					return err
+				}
+				repos.Repositories = append(repos.Repositories, tmp.Repositories...)
 			}
 			keyring := openpgp.EntityList{}
 			for _, repo := range repos.Repositories {
@@ -66,7 +71,7 @@ func NewVerifyCmd() *cobra.Command {
 		},
 	}
 
-	verifyCmd.Flags().StringVarP(&verifyopts.repoFile, "repofile", "r", "repo.yaml", "repository file")
+	verifyCmd.Flags().StringArrayVarP(&verifyopts.repofiles, "repofile", "r", []string{"repo.yaml"}, "repository information file (can be specified multiple times)")
 	verifyCmd.Flags().StringVarP(&verifyopts.workspace, "workspace", "w", "WORKSPACE", "Bazel workspace file")
 	return verifyCmd
 }

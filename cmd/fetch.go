@@ -1,12 +1,13 @@
 package main
 
 import (
+	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 	"github.com/rmohr/bazeldnf/pkg/repo"
 	"github.com/spf13/cobra"
 )
 
 type FetchOpts struct {
-	repofile string
+	repofiles []string
 }
 
 var fetchopts = &FetchOpts{}
@@ -18,14 +19,18 @@ func NewFetchCmd() *cobra.Command {
 		Short: "Update repo metadata",
 		Long:  `Update repo metadata`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			repos, err := repo.LoadRepoFile(fetchopts.repofile)
-			if err != nil {
-				return err
+			repos := &bazeldnf.Repositories{}
+			for i, _ := range fetchopts.repofiles {
+				tmp, err := repo.LoadRepoFile(fetchopts.repofiles[i])
+				if err != nil {
+					return err
+				}
+				repos.Repositories = append(repos.Repositories, tmp.Repositories...)
 			}
 			return repo.NewRemoteRepoFetcher(repos.Repositories, ".bazeldnf").Fetch()
 		},
 	}
 
-	fetchCmd.Flags().StringVarP(&fetchopts.repofile, "repofile", "r", "repo.yaml", "repository information file")
+	fetchCmd.Flags().StringArrayVarP(&fetchopts.repofiles, "repofile", "r", []string{"repo.yaml"}, "repository information file. Can be specified multiple times")
 	return fetchCmd
 }

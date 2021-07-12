@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 	"github.com/rmohr/bazeldnf/pkg/bazel"
 	"github.com/rmohr/bazeldnf/pkg/reducer"
 	"github.com/rmohr/bazeldnf/pkg/repo"
@@ -14,7 +15,7 @@ type rpmtreeOpts struct {
 	nobest           bool
 	arch             string
 	fedoraBaseSystem string
-	repofile         string
+	repofiles        []string
 	workspace        string
 	buildfile        string
 	name             string
@@ -30,9 +31,13 @@ func NewRpmTreeCmd() *cobra.Command {
 		Short: "Writes a rpmtree rule and its rpmdependencies to bazel files",
 		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, required []string) error {
-			repos, err := repo.LoadRepoFile(rpmtreeopts.repofile)
-			if err != nil {
-				return err
+			repos := &bazeldnf.Repositories{}
+			for i, _ := range fetchopts.repofiles {
+				tmp, err := repo.LoadRepoFile(rpmtreeopts.repofiles[i])
+				if err != nil {
+					return err
+				}
+				repos.Repositories = append(repos.Repositories, tmp.Repositories...)
 			}
 			repoReducer := reducer.NewRepoReducer(repos, nil, rpmtreeopts.lang, rpmtreeopts.fedoraBaseSystem, rpmtreeopts.arch, ".bazeldnf")
 			logrus.Info("Loading packages.")
@@ -90,7 +95,7 @@ func NewRpmTreeCmd() *cobra.Command {
 	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.arch, "arch", "a", "x86_64", "target fedora architecture")
 	rpmtreeCmd.Flags().BoolVarP(&rpmtreeopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
 	rpmtreeCmd.Flags().BoolVarP(&rpmtreeopts.public, "public", "p", true, "if the rpmtree rule should be public")
-	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.repofile, "repofile", "r", "repo.yaml", "repository information file. Will be used by default if no explicit inputs are provided.")
+	rpmtreeCmd.Flags().StringArrayVarP(&rpmtreeopts.repofiles, "repofile", "r", []string{"repo.yaml"}, "repository information file. Can be specified multiple times. Will be used by default if no explicit inputs are provided.")
 	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.workspace, "workspace", "w", "WORKSPACE", "Bazel workspace file")
 	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.buildfile, "buildfile", "b", "rpm/BUILD.bazel", "Build file for RPMs")
 	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.name, "name", "", "", "rpmtree rule name")
