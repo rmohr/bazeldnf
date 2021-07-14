@@ -75,8 +75,14 @@ type Resolver struct {
 	bestPackages map[string]*api.Package
 
 	ands         []bf.Formula
-	unresolvable []api.Entry
+	unresolvable []unresolvable
 	nobest       bool
+}
+
+type unresolvable struct {
+	Package     *api.Package
+	Requirement api.Entry
+	Candidates  []*Var
 }
 
 func NewResolver(nobest bool) *Resolver {
@@ -371,7 +377,12 @@ func (r *Resolver) explodePackageRequires(pkgVar *Var) bf.Formula {
 	for _, req := range pkgVar.Package.Format.Requires.Entries {
 		satisfies, err := r.explodeSingleRequires(req, r.provides[req.Name])
 		if err != nil {
-			r.unresolvable = append(r.unresolvable, req)
+			logrus.Warnf("Package %s requires %s, but only got %+v", pkgVar.Package, req, r.provides[req.Name])
+			r.unresolvable = append(r.unresolvable, unresolvable{
+				Package:     pkgVar.Package,
+				Requirement: req,
+				Candidates:  r.provides[req.Name],
+			})
 			continue
 		}
 		uniqueVars := []string{}
