@@ -136,9 +136,24 @@ func (r *RepoReducer) Resolve(packages []string) (matched []string, involved []*
 		}
 	}
 
-	for i, _ := range discovered {
+	required := map[string]struct{}{}
+	for i, pkg := range discovered {
+		for _, req := range pkg.Format.Requires.Entries {
+			required[req.Name] = struct{}{}
+		}
 		involved = append(involved, discovered[i])
 	}
+	// remove all provides which are not required in the reduced set
+	for i, pkg := range involved {
+		provides := []api.Entry{}
+		for j, prov := range pkg.Format.Provides.Entries {
+			if _, exists := required[prov.Name]; exists || prov.Name == pkg.Name {
+				provides = append(provides, pkg.Format.Provides.Entries[j])
+			}
+		}
+		involved[i].Format.Provides.Entries = provides
+	}
+
 	return matched, involved, nil
 }
 
