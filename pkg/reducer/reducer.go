@@ -55,6 +55,9 @@ func (r *RepoReducer) Load() error {
 			r.packages = append(r.packages, rpmrepo.Packages[i])
 		}
 	}
+	for i, _ := range r.packages {
+		FixPackages(&r.packages[i])
+	}
 
 	for i, p := range r.packages {
 		requires := []api.Entry{}
@@ -179,4 +182,22 @@ func skip(arch string, arches []string) bool {
 		}
 	}
 	return skip
+}
+
+// FixPackages contains hacks which should probably not have to exist
+func FixPackages(p *api.Package) {
+	// FIXME: This is not a proper modules support for python. We should properly resolve `alternative(python)` and
+	// not have to add such a hack. On the other hand this seems to have been reverted in fedora and only exists in centos stream.
+	if p.Name == "platform-python" {
+		p.Format.Provides.Entries = append(p.Format.Provides.Entries, api.Entry{
+			Name: "/usr/libexec/platform-python",
+		})
+		var requires []api.Entry
+		for _, entry := range p.Format.Requires.Entries {
+			if entry.Name != "/usr/libexec/platform-python" {
+				requires = append(requires, entry)
+			}
+		}
+		p.Format.Requires.Entries = requires
+	}
 }
