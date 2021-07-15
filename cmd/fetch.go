@@ -6,7 +6,7 @@ import (
 )
 
 type FetchOpts struct {
-	repofile string
+	repofiles []string
 }
 
 var fetchopts = &FetchOpts{}
@@ -18,7 +18,7 @@ func NewFetchCmd() *cobra.Command {
 		Short: "Update repo metadata",
 		Long:  `Update repo metadata`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			repos, err := repo.LoadRepoFile(fetchopts.repofile)
+			repos, err := repo.LoadRepoFiles(fetchopts.repofiles)
 			if err != nil {
 				return err
 			}
@@ -26,6 +26,6 @@ func NewFetchCmd() *cobra.Command {
 		},
 	}
 
-	fetchCmd.Flags().StringVarP(&fetchopts.repofile, "repofile", "r", "repo.yaml", "repository information file")
+	fetchCmd.Flags().StringArrayVarP(&fetchopts.repofiles, "repofile", "r", []string{"repo.yaml"}, "repository information file. Can be specified multiple times")
 	return fetchCmd
 }

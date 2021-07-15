@@ -17,7 +17,7 @@ type resolveOpts struct {
 	nobest           bool
 	arch             string
 	fedoraBaseSystem string
-	repofile         string
+	repofiles        []string
 }
 
 var resolveopts = resolveOpts{}
@@ -33,7 +33,7 @@ func NewResolveCmd() *cobra.Command {
 			repos := &bazeldnf.Repositories{}
 			if len(resolveopts.in) == 0 {
 				var err error
-				repos, err = repo.LoadRepoFile(resolveopts.repofile)
+				repos, err = repo.LoadRepoFiles(resolveopts.repofiles)
 				if err != nil {
 					return err
 				}
@@ -75,6 +75,6 @@ func NewResolveCmd() *cobra.Command {
 	resolveCmd.Flags().StringVarP(&resolveopts.fedoraBaseSystem, "fedora-base-system", "f", "fedora-release-container", "fedora base system to choose from (e.g. fedora-release-server, fedora-release-container, ...)")
 	resolveCmd.Flags().StringVarP(&resolveopts.arch, "arch", "a", "x86_64", "target fedora architecture")
 	resolveCmd.Flags().BoolVarP(&resolveopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
-	resolveCmd.Flags().StringVarP(&resolveopts.repofile, "repofile", "r", "repo.yaml", "repository information file. Will be used by default if no explicit inputs are provided.")
+	resolveCmd.Flags().StringArrayVarP(&resolveopts.repofiles, "repofile", "r", []string{"repo.yaml"}, "repository information file. Can be specified multiple times. Will be used by default if no explicit inputs are provided.")
 	return resolveCmd
 }

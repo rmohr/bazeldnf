@@ -72,3 +72,15 @@ func LoadRepoFile(file string) (*bazeldnf.Repositories, error) {
 	}
 	return repos, err
 }
+
+func LoadRepoFiles(files []string) (*bazeldnf.Repositories, error) {
+	repos := &bazeldnf.Repositories{}
+	for i, _ := range files {
+		tmp, err := LoadRepoFile(files[i])
+		if err != nil {
+			return nil, err
+		}
+		repos.Repositories = append(repos.Repositories, tmp.Repositories...)
+	}
+	return repos, nil
+}

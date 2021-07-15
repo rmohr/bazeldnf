@@ -14,7 +14,7 @@ type rpmtreeOpts struct {
 	nobest           bool
 	arch             string
 	fedoraBaseSystem string
-	repofile         string
+	repofiles        []string
 	workspace        string
 	buildfile        string
 	name             string
@@ -30,7 +30,7 @@ func NewRpmTreeCmd() *cobra.Command {
 		Short: "Writes a rpmtree rule and its rpmdependencies to bazel files",
 		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, required []string) error {
-			repos, err := repo.LoadRepoFile(rpmtreeopts.repofile)
+			repos, err := repo.LoadRepoFiles(rpmtreeopts.repofiles)
 			if err != nil {
 				return err
 			}
@@ -90,7 +90,7 @@ func NewRpmTreeCmd() *cobra.Command {
 	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.arch, "arch", "a", "x86_64", "target fedora architecture")
 	rpmtreeCmd.Flags().BoolVarP(&rpmtreeopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
 	rpmtreeCmd.Flags().BoolVarP(&rpmtreeopts.public, "public", "p", true, "if the rpmtree rule should be public")
-	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.repofile, "repofile", "r", "repo.yaml", "repository information file. Will be used by default if no explicit inputs are provided.")
+	rpmtreeCmd.Flags().StringArrayVarP(&rpmtreeopts.repofiles, "repofile", "r", []string{"repo.yaml"}, "repository information file. Can be specified multiple times. Will be used by default if no explicit inputs are provided.")
 	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.workspace, "workspace", "w", "WORKSPACE", "Bazel workspace file")
 	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.buildfile, "buildfile", "b", "rpm/BUILD.bazel", "Build file for RPMs")
 	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.name, "name", "", "", "rpmtree rule name")

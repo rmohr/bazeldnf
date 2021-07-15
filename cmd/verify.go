@@ -17,7 +17,7 @@ import (
 )
 
 type VerifyOpts struct {
-	repoFile  string
+	repofiles []string
 	workspace string
 }
 
@@ -30,7 +30,7 @@ func NewVerifyCmd() *cobra.Command {
 		Short: "verify RPMs against gpg keys defined in repo.yaml",
 		Long:  `verify RPMs against gpg keys defined in repo.yaml`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			repos, err := repo.LoadRepoFile(verifyopts.repoFile)
+			repos, err := repo.LoadRepoFiles(verifyopts.repofiles)
 			if err != nil {
 				return err
 			}
@@ -66,7 +66,7 @@ func NewVerifyCmd() *cobra.Command {
 		},
 	}
 
-	verifyCmd.Flags().StringVarP(&verifyopts.repoFile, "repofile", "r", "repo.yaml", "repository file")
+	verifyCmd.Flags().StringArrayVarP(&verifyopts.repofiles, "repofile", "r", []string{"repo.yaml"}, "repository information file (can be specified multiple times)")
 	verifyCmd.Flags().StringVarP(&verifyopts.workspace, "workspace", "w", "WORKSPACE", "Bazel workspace file")
 	return verifyCmd
 }

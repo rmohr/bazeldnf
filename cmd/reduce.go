@@ -15,7 +15,7 @@ import (
 
 type reduceOpts struct {
 	in               []string
-	repofile         string
+	repofiles        []string
 	out              string
 	lang             string
 	nobest           bool
@@ -38,7 +38,7 @@ which allow reducing huge rpm repos to a smaller problem set for debugging, remo
 			repos := &bazeldnf.Repositories{}
 			if len(reduceopts.in) == 0 {
 				var err error
-				repos, err = repo.LoadRepoFile(reduceopts.repofile)
+				repos, err = repo.LoadRepoFiles(reduceopts.repofiles)
 				if err != nil {
 					return err
 				}
@@ -75,6 +75,6 @@ which allow reducing huge rpm repos to a smaller problem set for debugging, remo
 	reduceCmd.Flags().StringVarP(&reduceopts.fedoraBaseSystem, "fedora-base-system", "f", "fedora-release-container", "fedora base system to choose from (e.g. fedora-release-server, fedora-release-container, ...)")
 	reduceCmd.Flags().StringVarP(&reduceopts.arch, "arch", "a", "x86_64", "target fedora architecture")
 	reduceCmd.Flags().BoolVarP(&reduceopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
-	reduceCmd.Flags().StringVarP(&reduceopts.repofile, "repofile", "r", "repo.yaml", "repository information file. Will be used by default if no explicit inputs are provided.")
+	reduceCmd.Flags().StringArrayVarP(&reduceopts.repofiles, "repofile", "r", []string{"repo.yaml"}, "repository information file. Can be specified multiple times. Will be used by default if no explicit inputs are provided.")
 	return reduceCmd
 }
