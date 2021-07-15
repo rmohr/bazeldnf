@@ -185,10 +185,6 @@ func (r *Resolver) ConstructRequirements(packages []string) error {
 func (res *Resolver) Resolve() (install []*api.Package, excluded []*api.Package, err error) {
 	logrus.WithField("bf", bf.And(res.ands...)).Debug("Formula to solve")
 
-	if len(res.unresolvable) > 0 {
-		return nil, nil, fmt.Errorf("Can't satisfy %+v", res.unresolvable)
-	}
-
 	satReader, satWriter := io.Pipe()
 	pwMaxSatReader, pwMaxSatWriter := io.Pipe()
 	rex := regexp.MustCompile("c (x[0-9]+)=([0-9]+)")
@@ -383,7 +379,7 @@ func (r *Resolver) explodePackageRequires(pkgVar *Var) bf.Formula {
 				Requirement: req,
 				Candidates:  r.provides[req.Name],
 			})
-			continue
+			return bf.Not(bfunique)
 		}
 		uniqueVars := []string{}
 		for _, s := range satisfies {
