@@ -7,6 +7,7 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/api",
+        "//pkg/reducer",
         "//pkg/rpm",
         "@com_github_crillab_gophersat//bf:go_default_library",
         "@com_github_crillab_gophersat//explain:go_default_library",

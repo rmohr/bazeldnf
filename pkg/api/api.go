@@ -175,7 +175,6 @@ func (e Entry) String() string {
 }
 
 type Dependencies struct {
-	Text    string  `xml:",chardata"`
 	Entries []Entry `xml:"entry"`
 }
 
@@ -240,7 +239,6 @@ type Package struct {
 	} `xml:"size"`
 	Location Location `xml:"location"`
 	Format   struct {
-		Text        string `xml:",chardata"`
 		License     string `xml:"license"`
 		Vendor      string `xml:"vendor"`
 		Group       string `xml:"group"`

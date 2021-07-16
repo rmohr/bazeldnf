@@ -55,6 +55,9 @@ func (r *RepoReducer) Load() error {
 			r.packages = append(r.packages, rpmrepo.Packages[i])
 		}
 	}
+	for i, _ := range r.packages {
+		FixPackages(&r.packages[i])
+	}
 
 	for i, p := range r.packages {
 		requires := []api.Entry{}
@@ -133,9 +136,24 @@ func (r *RepoReducer) Resolve(packages []string) (matched []string, involved []*
 		}
 	}
 
-	for i, _ := range discovered {
+	required := map[string]struct{}{}
+	for i, pkg := range discovered {
+		for _, req := range pkg.Format.Requires.Entries {
+			required[req.Name] = struct{}{}
+		}
 		involved = append(involved, discovered[i])
 	}
+	// remove all provides which are not required in the reduced set
+	for i, pkg := range involved {
+		provides := []api.Entry{}
+		for j, prov := range pkg.Format.Provides.Entries {
+			if _, exists := required[prov.Name]; exists || prov.Name == pkg.Name {
+				provides = append(provides, pkg.Format.Provides.Entries[j])
+			}
+		}
+		involved[i].Format.Provides.Entries = provides
+	}
+
 	return matched, involved, nil
 }
 
@@ -179,4 +197,22 @@ func skip(arch string, arches []string) bool {
 		}
 	}
 	return skip
+}
+
+// FixPackages contains hacks which should probably not have to exist
+func FixPackages(p *api.Package) {
+	// FIXME: This is not a proper modules support for python. We should properly resolve `alternative(python)` and
+	// not have to add such a hack. On the other hand this seems to have been reverted in fedora and only exists in centos stream.
+	if p.Name == "platform-python" {
+		p.Format.Provides.Entries = append(p.Format.Provides.Entries, api.Entry{
+			Name: "/usr/libexec/platform-python",
+		})
+		var requires []api.Entry
+		for _, entry := range p.Format.Requires.Entries {
+			if entry.Name != "/usr/libexec/platform-python" {
+				requires = append(requires, entry)
+			}
+		}
+		p.Format.Requires.Entries = requires
+	}
 }

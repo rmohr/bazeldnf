@@ -13,6 +13,7 @@ import (
 	"github.com/crillab/gophersat/explain"
 	"github.com/crillab/gophersat/maxsat"
 	"github.com/rmohr/bazeldnf/pkg/api"
+	"github.com/rmohr/bazeldnf/pkg/reducer"
 	"github.com/rmohr/bazeldnf/pkg/rpm"
 	"github.com/sirupsen/logrus"
 )
@@ -74,8 +75,14 @@ type Resolver struct {
 	bestPackages map[string]*api.Package
 
 	ands         []bf.Formula
-	unresolvable []api.Entry
+	unresolvable []unresolvable
 	nobest       bool
+}
+
+type unresolvable struct {
+	Package     *api.Package
+	Requirement api.Entry
+	Candidates  []*Var
 }
 
 func NewResolver(nobest bool) *Resolver {
@@ -105,14 +112,8 @@ func (r *Resolver) LoadInvolvedPackages(packages []*api.Package) error {
 		deduplicated[pkg.String()] = packages[i]
 	}
 	packages = nil
-	// FIXME: This is not a propoer modules support for python. We should properly resolve `alternative(python)` and
-	// not have to add such a hack.
 	for k, _ := range deduplicated {
-		if deduplicated[k].Name == "platform-python" {
-			deduplicated[k].Format.Provides.Entries = append(deduplicated[k].Format.Provides.Entries, api.Entry{
-				Name: "/usr/libexec/platform-python",
-			})
-		}
+		reducer.FixPackages(deduplicated[k])
 		packages = append(packages, deduplicated[k])
 	}
 
@@ -183,10 +184,6 @@ func (r *Resolver) ConstructRequirements(packages []string) error {
 
 func (res *Resolver) Resolve() (install []*api.Package, excluded []*api.Package, err error) {
 	logrus.WithField("bf", bf.And(res.ands...)).Debug("Formula to solve")
-
-	if len(res.unresolvable) > 0 {
-		return nil, nil, fmt.Errorf("Can't satisfy %+v", res.unresolvable)
-	}
 
 	satReader, satWriter := io.Pipe()
 	pwMaxSatReader, pwMaxSatWriter := io.Pipe()
@@ -376,8 +373,13 @@ func (r *Resolver) explodePackageRequires(pkgVar *Var) bf.Formula {
 	for _, req := range pkgVar.Package.Format.Requires.Entries {
 		satisfies, err := r.explodeSingleRequires(req, r.provides[req.Name])
 		if err != nil {
-			r.unresolvable = append(r.unresolvable, req)
-			continue
+			logrus.Warnf("Package %s requires %s, but only got %+v", pkgVar.Package, req, r.provides[req.Name])
+			r.unresolvable = append(r.unresolvable, unresolvable{
+				Package:     pkgVar.Package,
+				Requirement: req,
+				Candidates:  r.provides[req.Name],
+			})
+			return bf.Not(bfunique)
 		}
 		uniqueVars := []string{}
 		for _, s := range satisfies {
