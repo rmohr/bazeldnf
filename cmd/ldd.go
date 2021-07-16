@@ -54,10 +54,6 @@ func NewLddCmd() *cobra.Command {
 			}
 			for _, dep := range dependencies {
 				if strings.HasPrefix(dep, tmpRoot) {
-					if strings.HasPrefix(filepath.Base(dep), "ld-") {
-						// don't link against ld itself
-						continue
-					}
 					files = append(files, strings.TrimPrefix(dep, tmpRoot))
 				}
 			}
