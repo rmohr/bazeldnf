@@ -19,6 +19,7 @@ type rpmtreeOpts struct {
 	buildfile        string
 	name             string
 	public           bool
+	forceIgnoreRegex []string
 }
 
 var rpmtreeopts = rpmtreeOpts{}
@@ -46,7 +47,7 @@ func NewRpmTreeCmd() *cobra.Command {
 			}
 			solver := sat.NewResolver(rpmtreeopts.nobest)
 			logrus.Info("Loading involved packages into the rpmtreer.")
-			err = solver.LoadInvolvedPackages(involved)
+			err = solver.LoadInvolvedPackages(involved, rpmtreeopts.forceIgnoreRegex)
 			if err != nil {
 				return err
 			}
@@ -56,7 +57,7 @@ func NewRpmTreeCmd() *cobra.Command {
 				return err
 			}
 			logrus.Info("Solving.")
-			install, _, err := solver.Resolve()
+			install, _, _, err := solver.Resolve()
 			if err != nil {
 				return err
 			}
@@ -94,6 +95,7 @@ func NewRpmTreeCmd() *cobra.Command {
 	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.workspace, "workspace", "w", "WORKSPACE", "Bazel workspace file")
 	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.buildfile, "buildfile", "b", "rpm/BUILD.bazel", "Build file for RPMs")
 	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.name, "name", "", "", "rpmtree rule name")
+	rpmtreeCmd.Flags().StringArrayVar(&rpmtreeopts.forceIgnoreRegex, "force-ignore-with-dependencies", []string{}, "Packages matching these regex patterns will not be installed. Allows force-removing unwanted dependencies. Be careful, this can lead to hidden missing dependencies.")
 	rpmtreeCmd.MarkFlagRequired("name")
 	return rpmtreeCmd
 }
