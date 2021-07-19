@@ -74,9 +74,10 @@ type Resolver struct {
 
 	bestPackages map[string]*api.Package
 
-	ands         []bf.Formula
-	unresolvable []unresolvable
-	nobest       bool
+	ands                        []bf.Formula
+	unresolvable                []unresolvable
+	forceIgnoreWithDependencies map[string]*api.Package
+	nobest                      bool
 }
 
 type unresolvable struct {
@@ -87,13 +88,14 @@ type unresolvable struct {
 
 func NewResolver(nobest bool) *Resolver {
 	return &Resolver{
-		varsCount:    0,
-		provides:     map[string][]*Var{},
-		packages:     map[string][]*Var{},
-		vars:         map[string]*Var{},
-		pkgProvides:  map[VarContext][]*Var{},
-		nobest:       nobest,
-		bestPackages: map[string]*api.Package{},
+		varsCount:                   0,
+		provides:                    map[string][]*Var{},
+		packages:                    map[string][]*Var{},
+		vars:                        map[string]*Var{},
+		pkgProvides:                 map[VarContext][]*Var{},
+		nobest:                      nobest,
+		bestPackages:                map[string]*api.Package{},
+		forceIgnoreWithDependencies: map[string]*api.Package{},
 	}
 }
 
@@ -102,14 +104,30 @@ func (r *Resolver) ticket() string {
 	return "x" + strconv.Itoa(r.varsCount)
 }
 
-func (r *Resolver) LoadInvolvedPackages(packages []*api.Package) error {
-	// Deduplicate entries
+//LoadInvolvedPackages takes a list of all involved packages to install, as well as a list of regular
+// expressions which denoe packages which should be taken into account for solving the problem, but they
+// should then be ignored together with their requirements in the provided list of installed packages.
+func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, ignoreRegex []string) error {
+	// Deduplicate and detect excludes
 	deduplicated := map[string]*api.Package{}
 	for i, pkg := range packages {
 		if _, exists := deduplicated[pkg.String()]; exists {
 			logrus.Infof("Removing duplicate of  %v.", pkg.String())
 		}
-		deduplicated[pkg.String()] = packages[i]
+		fullName := pkg.String()
+		if _, exists := deduplicated[fullName]; !exists {
+			for _, rex := range ignoreRegex {
+				if match, err := regexp.MatchString(rex, fullName); err != nil {
+					return fmt.Errorf("failed to match package with regex '%v': %v", rex, err)
+				} else if match {
+					packages[i].Format.Requires.Entries = nil
+					logrus.Warnf("Package %v is forcefully ignored by regex '%v'.", pkg.String(), rex)
+					r.forceIgnoreWithDependencies[pkg.String()] = packages[i]
+					break
+				}
+			}
+			deduplicated[pkg.String()] = packages[i]
+		}
 	}
 	packages = nil
 	for k, _ := range deduplicated {
@@ -182,7 +200,7 @@ func (r *Resolver) ConstructRequirements(packages []string) error {
 	return nil
 }
 
-func (res *Resolver) Resolve() (install []*api.Package, excluded []*api.Package, err error) {
+func (res *Resolver) Resolve() (install []*api.Package, excluded []*api.Package, forceIgnoredWithDependencies []*api.Package, err error) {
 	logrus.WithField("bf", bf.And(res.ands...)).Debug("Formula to solve")
 
 	satReader, satWriter := io.Pipe()
@@ -253,13 +271,13 @@ func (res *Resolver) Resolve() (install []*api.Package, excluded []*api.Package,
 	logrus.Info("Loading the Partial weighted MAXSAT problem.")
 	s, err := maxsat.ParseWCNF(pwMaxSatReader)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	if err := <-satErrChan; err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	if err := <-pwMaxSatErrChan; err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	satVars := <-varsChan
 
@@ -270,12 +288,17 @@ func (res *Resolver) Resolve() (install []*api.Package, excluded []*api.Package,
 		logrus.Infof("Solution with weight %v found.", solution.Weight)
 		installMap := map[VarContext]*api.Package{}
 		excludedMap := map[VarContext]*api.Package{}
+		forceIgnoreMap := map[VarContext]*api.Package{}
 		for k, v := range solution.Model {
 			// Offset of `1`. The model index starts with 0, but the variable sequence starts with 1, since 0 is not allowed
 			resVar := res.vars[satVars.satToPkg[strconv.Itoa(k+1)]]
 			if resVar != nil && resVar.varType == VarTypePackage {
 				if v {
-					installMap[resVar.Context] = resVar.Package
+					if _, exists := res.forceIgnoreWithDependencies[resVar.Package.String()]; !exists {
+						installMap[resVar.Context] = resVar.Package
+					} else {
+						forceIgnoreMap[resVar.Context] = resVar.Package
+					}
 				} else {
 					excludedMap[resVar.Context] = resVar.Package
 				}
@@ -291,10 +314,13 @@ func (res *Resolver) Resolve() (install []*api.Package, excluded []*api.Package,
 		for _, v := range excludedMap {
 			excluded = append(excluded, v)
 		}
-		return install, excluded, nil
+		for _, v := range forceIgnoreMap {
+			forceIgnoredWithDependencies = append(forceIgnoredWithDependencies, v)
+		}
+		return install, excluded, forceIgnoredWithDependencies, nil
 	}
 	logrus.Info("No solution found.")
-	return nil, nil, fmt.Errorf("no solution found")
+	return nil, nil, nil, fmt.Errorf("no solution found")
 }
 
 func (res *Resolver) MUS() (mus *explain.Problem, err error) {

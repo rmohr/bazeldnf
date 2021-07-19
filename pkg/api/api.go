@@ -233,9 +233,9 @@ type Package struct {
 	} `xml:"time"`
 	Size struct {
 		Text      string `xml:",chardata"`
-		Package   string `xml:"package,attr"`
-		Installed string `xml:"installed,attr"`
-		Archive   string `xml:"archive,attr"`
+		Package   int    `xml:"package,attr"`
+		Installed int    `xml:"installed,attr"`
+		Archive   int    `xml:"archive,attr"`
 	} `xml:"size"`
 	Location Location `xml:"location"`
 	Format   struct {

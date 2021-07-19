@@ -1,0 +1,9 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "template",
+    srcs = ["install.go"],
+    importpath = "github.com/rmohr/bazeldnf/cmd/template",
+    visibility = ["//visibility:public"],
+    deps = ["//pkg/api"],
+)
