@@ -1,6 +1,9 @@
 package main
 
 import (
+	"os"
+
+	"github.com/rmohr/bazeldnf/cmd/template"
 	"github.com/rmohr/bazeldnf/pkg/bazel"
 	"github.com/rmohr/bazeldnf/pkg/reducer"
 	"github.com/rmohr/bazeldnf/pkg/repo"
@@ -57,7 +60,7 @@ func NewRpmTreeCmd() *cobra.Command {
 				return err
 			}
 			logrus.Info("Solving.")
-			install, _, _, err := solver.Resolve()
+			install, _, forceIgnored, err := solver.Resolve()
 			if err != nil {
 				return err
 			}
@@ -81,7 +84,9 @@ func NewRpmTreeCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			logrus.Info("Done.")
+			if err := template.Render(os.Stdout, install, forceIgnored); err != nil {
+				return err
+			}
 
 			return nil
 		},

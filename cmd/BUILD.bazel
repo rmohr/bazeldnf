@@ -20,6 +20,7 @@ go_library(
     importpath = "github.com/rmohr/bazeldnf/cmd",
     visibility = ["//visibility:private"],
     deps = [
+        "//cmd/template",
         "//pkg/api",
         "//pkg/api/bazeldnf",
         "//pkg/bazel",

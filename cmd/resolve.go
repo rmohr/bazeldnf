@@ -1,8 +1,9 @@
 package main
 
 import (
-	"fmt"
+	"os"
 
+	"github.com/rmohr/bazeldnf/cmd/template"
 	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 	"github.com/rmohr/bazeldnf/pkg/reducer"
 	"github.com/rmohr/bazeldnf/pkg/repo"
@@ -65,13 +66,9 @@ func NewResolveCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			fmt.Println("Installing:")
-			fmt.Println(install)
-			fmt.Println(len(install))
-			fmt.Println("Force-ignoring:")
-			fmt.Println(forceIgnored)
-			fmt.Println(len(forceIgnored))
-			logrus.Info("Done.")
+			if err := template.Render(os.Stdout, install, forceIgnored); err != nil {
+				return err
+			}
 			return nil
 		},
 	}
