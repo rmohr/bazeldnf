@@ -174,11 +174,11 @@ func (r *RepoReducer) requires(p *api.Package) (wants []*api.Package) {
 	return wants
 }
 
-func NewRepoReducer(repos *bazeldnf.Repositories, repoFiles []string, lang string, fedoraRelease string, arch string, cachDir string) *RepoReducer {
+func NewRepoReducer(repos *bazeldnf.Repositories, repoFiles []string, lang string, baseSystem string, arch string, cachDir string) *RepoReducer {
 	return &RepoReducer{
 		packages:         nil,
 		lang:             lang,
-		implicitRequires: []string{fedoraRelease},
+		implicitRequires: []string{baseSystem},
 		repoFiles:        repoFiles,
 		provides:         map[string][]*api.Package{},
 		architectures:    []string{"noarch", arch},

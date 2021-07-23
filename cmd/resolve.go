@@ -17,7 +17,7 @@ type resolveOpts struct {
 	lang             string
 	nobest           bool
 	arch             string
-	fedoraBaseSystem string
+	baseSystem       string
 	repofiles        []string
 	forceIgnoreRegex []string
 }
@@ -40,7 +40,7 @@ func NewResolveCmd() *cobra.Command {
 					return err
 				}
 			}
-			repo := reducer.NewRepoReducer(repos, resolveopts.in, resolveopts.lang, resolveopts.fedoraBaseSystem, resolveopts.arch, ".bazeldnf")
+			repo := reducer.NewRepoReducer(repos, resolveopts.in, resolveopts.lang, resolveopts.baseSystem, resolveopts.arch, ".bazeldnf")
 			logrus.Info("Loading packages.")
 			if err := repo.Load(); err != nil {
 				return err
@@ -74,10 +74,14 @@ func NewResolveCmd() *cobra.Command {
 	}
 
 	resolveCmd.Flags().StringArrayVarP(&resolveopts.in, "input", "i", nil, "primary.xml of the repository")
-	resolveCmd.Flags().StringVarP(&resolveopts.fedoraBaseSystem, "fedora-base-system", "f", "fedora-release-container", "fedora base system to choose from (e.g. fedora-release-server, fedora-release-container, ...)")
+	resolveCmd.Flags().StringVar(&resolveopts.baseSystem, "basesystem", "fedora-release-container", "base system to use (e.g. fedora-release-server, centos-stream-release, ...)")
 	resolveCmd.Flags().StringVarP(&resolveopts.arch, "arch", "a", "x86_64", "target fedora architecture")
 	resolveCmd.Flags().BoolVarP(&resolveopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
 	resolveCmd.Flags().StringArrayVarP(&resolveopts.repofiles, "repofile", "r", []string{"repo.yaml"}, "repository information file. Can be specified multiple times. Will be used by default if no explicit inputs are provided.")
 	resolveCmd.Flags().StringArrayVar(&resolveopts.forceIgnoreRegex, "force-ignore-with-dependencies", []string{}, "Packages matching these regex patterns will not be installed. Allows force-removing unwanted dependencies. Be careful, this can lead to hidden missing dependencies.")
+	// deprecated options
+	resolveCmd.Flags().StringVarP(&resolveopts.baseSystem, "fedora-base-system", "f", "fedora-release-container", "base system to use (e.g. fedora-release-server, centos-stream-release, ...)")
+	resolveCmd.Flags().MarkDeprecated("fedora-base-system", "use '--basesystem' instead")
+	resolveCmd.Flags().MarkShorthandDeprecated("f", "use '--basesystem' instead")
 	return resolveCmd
 }
