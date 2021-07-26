@@ -97,6 +97,9 @@ func NewRpm2TarCmd() *cobra.Command {
 	rpm2tarCmd.Flags().StringVarP(&rpm2taropts.output, "output", "o", "", "location of the resulting tar file (defaults to stdout)")
 	rpm2tarCmd.Flags().StringArrayVarP(&rpm2taropts.input, "input", "i", []string{}, "location from where to read the rpm file (defaults to stdin)")
 	rpm2tarCmd.Flags().StringToStringVarP(&rpm2taropts.symlinks, "symlinks", "s", map[string]string{}, "symlinks to add. Relative or absolute.")
-	rpm2tarCmd.Flags().StringToStringVarP(&rpm2taropts.capabilities, "capabilties", "c", map[string]string{}, "capabilities of files (-c=/bin/ls=cap_net_bind_service)")
+	rpm2tarCmd.Flags().StringToStringVarP(&rpm2taropts.capabilities, "capabilities", "c", map[string]string{}, "capabilities of files (-c=/bin/ls=cap_net_bind_service)")
+	// deprecated options
+	rpm2tarCmd.Flags().StringToStringVar(&rpm2taropts.capabilities, "capabilties", map[string]string{}, "capabilities of files (-c=/bin/ls=cap_net_bind_service)")
+	rpm2tarCmd.Flags().MarkDeprecated("capabilties", "use --capabilities instead")
 	return rpm2tarCmd
 }
