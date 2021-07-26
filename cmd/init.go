@@ -25,7 +25,7 @@ func NewInitCmd() *cobra.Command {
 	}
 
 	initCmd.Flags().StringVarP(&initopts.arch, "arch", "a", "x86_64", "target architecture")
-	initCmd.Flags().StringVarP(&initopts.fc, "fc", "", "", "target fedora core release")
+	initCmd.Flags().StringVar(&initopts.fc, "fc", "", "target fedora core release")
 	initCmd.Flags().StringVarP(&initopts.out, "output", "o", "repo.yaml", "where to write the repository information")
 	err := initCmd.MarkFlagRequired("fc")
 	if err != nil {
