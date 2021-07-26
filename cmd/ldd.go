@@ -99,5 +99,8 @@ func NewLddCmd() *cobra.Command {
 	lddCmd.Flags().StringVarP(&lddopts.rpmtree, "rpmtree", "r", "", "rpmtree rule name")
 	lddCmd.MarkFlagRequired("name")
 	lddCmd.MarkFlagRequired("input")
+	// deprecated options
+	lddCmd.Flags().MarkShorthandDeprecated("name", "use --name instead")
+	lddCmd.Flags().MarkShorthandDeprecated("rpmtree", "use --rpmtree instead")
 	return lddCmd
 }
