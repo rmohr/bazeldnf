@@ -16,7 +16,7 @@ type rpmtreeOpts struct {
 	lang             string
 	nobest           bool
 	arch             string
-	fedoraBaseSystem string
+	baseSystem       string
 	repofiles        []string
 	workspace        string
 	buildfile        string
@@ -38,7 +38,7 @@ func NewRpmTreeCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			repoReducer := reducer.NewRepoReducer(repos, nil, rpmtreeopts.lang, rpmtreeopts.fedoraBaseSystem, rpmtreeopts.arch, ".bazeldnf")
+			repoReducer := reducer.NewRepoReducer(repos, nil, rpmtreeopts.lang, rpmtreeopts.baseSystem, rpmtreeopts.arch, ".bazeldnf")
 			logrus.Info("Loading packages.")
 			if err := repoReducer.Load(); err != nil {
 				return err
@@ -92,8 +92,8 @@ func NewRpmTreeCmd() *cobra.Command {
 		},
 	}
 
-	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.fedoraBaseSystem, "fedora-base-system", "f", "fedora-release-container", "fedora base system to choose from (e.g. fedora-release-server, fedora-release-container, ...)")
-	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.arch, "arch", "a", "x86_64", "target fedora architecture")
+	rpmtreeCmd.Flags().StringVar(&rpmtreeopts.baseSystem, "basesystem", "fedora-release-container", "base system to use (e.g. fedora-release-server, centos-stream-release, ...)")
+	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.arch, "arch", "a", "x86_64", "target architecture")
 	rpmtreeCmd.Flags().BoolVarP(&rpmtreeopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
 	rpmtreeCmd.Flags().BoolVarP(&rpmtreeopts.public, "public", "p", true, "if the rpmtree rule should be public")
 	rpmtreeCmd.Flags().StringArrayVarP(&rpmtreeopts.repofiles, "repofile", "r", []string{"repo.yaml"}, "repository information file. Can be specified multiple times. Will be used by default if no explicit inputs are provided.")
@@ -102,5 +102,9 @@ func NewRpmTreeCmd() *cobra.Command {
 	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.name, "name", "", "", "rpmtree rule name")
 	rpmtreeCmd.Flags().StringArrayVar(&rpmtreeopts.forceIgnoreRegex, "force-ignore-with-dependencies", []string{}, "Packages matching these regex patterns will not be installed. Allows force-removing unwanted dependencies. Be careful, this can lead to hidden missing dependencies.")
 	rpmtreeCmd.MarkFlagRequired("name")
+	// deprecated options
+	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.baseSystem, "fedora-base-system", "f", "fedora-release-container", "base system to use (e.g. fedora-release-server, centos-stream-release, ...)")
+	rpmtreeCmd.Flags().MarkDeprecated("fedora-base-system", "use '--basesystem' instead")
+	rpmtreeCmd.Flags().MarkShorthandDeprecated("f", "use '--basesystem' instead")
 	return rpmtreeCmd
 }
