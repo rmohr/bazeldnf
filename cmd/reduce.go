@@ -79,6 +79,6 @@ which allow reducing huge rpm repos to a smaller problem set for debugging, remo
 	// deprecated options
 	reduceCmd.Flags().StringVarP(&reduceopts.baseSystem, "fedora-base-system", "f", "fedora-release-container", "base system to use (e.g. fedora-release-server, centos-stream-release, ...)")
 	reduceCmd.Flags().MarkDeprecated("fedora-base-system", "use '--basesystem' instead")
-	reduceCmd.Flags().MarkShorthandDeprecated("f", "use '--basesystem' instead")
+	reduceCmd.Flags().MarkShorthandDeprecated("fedora-base-system", "use '--basesystem' instead")
 	return reduceCmd
 }

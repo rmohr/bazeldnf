@@ -82,6 +82,6 @@ func NewResolveCmd() *cobra.Command {
 	// deprecated options
 	resolveCmd.Flags().StringVarP(&resolveopts.baseSystem, "fedora-base-system", "f", "fedora-release-container", "base system to use (e.g. fedora-release-server, centos-stream-release, ...)")
 	resolveCmd.Flags().MarkDeprecated("fedora-base-system", "use '--basesystem' instead")
-	resolveCmd.Flags().MarkShorthandDeprecated("f", "use '--basesystem' instead")
+	resolveCmd.Flags().MarkShorthandDeprecated("fedora-base-system", "use '--basesystem' instead")
 	return resolveCmd
 }
