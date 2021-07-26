@@ -104,7 +104,7 @@ func NewRpmTreeCmd() *cobra.Command {
 	rpmtreeCmd.MarkFlagRequired("name")
 	// deprecated options
 	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.baseSystem, "fedora-base-system", "f", "fedora-release-container", "base system to use (e.g. fedora-release-server, centos-stream-release, ...)")
-	rpmtreeCmd.Flags().MarkDeprecated("fedora-base-system", "use '--basesystem' instead")
-	rpmtreeCmd.Flags().MarkShorthandDeprecated("fedora-base-system", "use '--basesystem' instead")
+	rpmtreeCmd.Flags().MarkDeprecated("fedora-base-system", "use --basesystem instead")
+	rpmtreeCmd.Flags().MarkShorthandDeprecated("fedora-base-system", "use --basesystem instead")
 	return rpmtreeCmd
 }
