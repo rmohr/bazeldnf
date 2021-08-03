@@ -1,6 +1,10 @@
 package xattr
 
-import "fmt"
+import (
+	"archive/tar"
+	"fmt"
+	"io"
+)
 
 const (
 	capabilities_header = "SCHILY.xattr.security.capability"
@@ -34,5 +38,36 @@ func SetSELinuxLabel(pax map[string]string, label string) error {
 		return fmt.Errorf("label must not be empty, but got '%s'", label)
 	}
 	pax[selinux_header] = fmt.Sprintf("%s\x00", label)
+	return nil
+}
+
+func Apply(reader *tar.Reader, writer *tar.Writer, capabilties map[string][]string, labels map[string]string) error {
+	for {
+		entry, err := reader.Next()
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			return err
+		}
+
+		if caps, exists := capabilties[entry.Name]; exists {
+			if err := AddCapabilities(entry.PAXRecords, caps); err != nil {
+				return err
+			}
+		}
+		if l, exists := labels[entry.Name]; exists {
+			if err := SetSELinuxLabel(entry.PAXRecords, l); err != nil {
+				return err
+			}
+		}
+
+		entry.Format = tar.FormatPAX
+		if err := writer.WriteHeader(entry); err != nil {
+			return err
+		}
+		if _, err := io.Copy(writer, reader); err != nil {
+			return err
+		}
+	}
 	return nil
 }
