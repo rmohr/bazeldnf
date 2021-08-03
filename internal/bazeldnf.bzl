@@ -43,6 +43,7 @@ _bazeldnf = rule(
             values = [
                 "",
                 "ldd",
+                "sandbox",
             ],
             default = "",
         ),
