@@ -16,6 +16,7 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
+	rootCmd.AddCommand(NewSandboxCmd())
 	rootCmd.AddCommand(NewFetchCmd())
 	rootCmd.AddCommand(NewInitCmd())
 	rootCmd.AddCommand(NewRpmTreeCmd())

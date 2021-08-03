@@ -14,6 +14,7 @@ go_library(
         "root.go",
         "rpm2tar.go",
         "rpmtree.go",
+        "sandbox.go",
         "tar2files.go",
         "verify.go",
     ],
