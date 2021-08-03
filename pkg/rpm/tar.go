@@ -118,6 +118,7 @@ func Untar(tmpRoot string, tarFile string) error {
 	}
 	defer reader.Close()
 	tarReader := tar.NewReader(reader)
+	hardLinks := map[string]string{}
 
 	for {
 		entry, err := tarReader.Next()
@@ -150,9 +151,12 @@ func Untar(tmpRoot string, tarFile string) error {
 				if err != nil {
 					return err
 				}
+				defer writer.Close()
 				if _, err := io.Copy(writer, tarReader); err != nil {
 					return err
 				}
+				writer.Close()
+				os.Chmod(target, os.FileMode(entry.Mode))
 				return nil
 			}()
 			if err != nil {
@@ -165,21 +169,34 @@ func Untar(tmpRoot string, tarFile string) error {
 				return err
 			}
 			linkname := entry.Linkname
-			var abs string
 			if strings.HasPrefix(linkname, "/") {
 				linkname = filepath.Join(tmpRoot, linkname)
-				abs = linkname
-			} else {
-				abs = filepath.Join(filepath.Dir(target), linkname)
+				linkname, err = filepath.Rel(filepath.Dir(target), linkname)
 			}
+			abs := filepath.Join(filepath.Dir(target), linkname)
 			if _, err := filepath.Rel(tmpRoot, abs); err != nil {
 				return err
 			}
 			if err = os.Symlink(linkname, target); err != nil {
 				return err
 			}
+		case tar.TypeLink:
+			dir := filepath.Dir(target)
+			err := os.MkdirAll(dir, os.ModePerm)
+			if err != nil {
+				return err
+			}
+			hardLinks[target] = entry.Linkname
 		default:
 			log.Debugf("Skipping %s with type %v", entry.Name, entry.Typeflag)
+		}
+	}
+
+	for target, source := range hardLinks {
+		source := filepath.Join(tmpRoot, source)
+		if err := os.Link(source, target); err != nil {
+			return fmt.Errorf("failed to create hard link from %s to %s", target, source)
+
 		}
 	}
 	return nil
