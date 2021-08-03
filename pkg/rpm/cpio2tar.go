@@ -28,7 +28,7 @@ import (
 )
 
 // Extract the contents of a cpio stream from and writes it as a tar file into the provided writer
-func Tar(rs io.Reader, tarfile *tar.Writer, noSymlinksAndDirs bool, capabilities map[string][]string) error {
+func Tar(rs io.Reader, tarfile *tar.Writer, noSymlinksAndDirs bool, capabilities map[string][]string, selinuxLabels map[string]string) error {
 	hardLinks := map[int][]*tar.Header{}
 	inodes := map[int]string{}
 
@@ -48,6 +48,11 @@ func Tar(rs io.Reader, tarfile *tar.Writer, noSymlinksAndDirs bool, capabilities
 		if caps, exists := capabilities[entry.Header.Filename()]; exists {
 			if err := xattr.AddCapabilities(pax, caps); err != nil {
 				return fmt.Errorf("failed setting capabilities on %s: %v", entry.Header.Filename(), err)
+			}
+		}
+		if label, exists := selinuxLabels[entry.Header.Filename()]; exists {
+			if err := xattr.SetSELinuxLabel(pax, label); err != nil {
+				return fmt.Errorf("failed setting selinux label on %s: %v", entry.Header.Filename(), err)
 			}
 		}
 

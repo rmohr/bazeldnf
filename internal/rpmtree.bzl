@@ -30,7 +30,13 @@ def _rpm2tar_impl(ctx):
         capabilities = []
         for k, v in ctx.attr.capabilities.items():
             capabilities += [k + "=" + ":".join(v)]
-        args += ["-c", ",".join(capabilities)]
+        args += ["--capabilities", ",".join(capabilities)]
+
+    if ctx.attr.selinux_labels:
+        selinux_labels = []
+        for k, v in ctx.attr.selinux_labels.items():
+            selinux_labels += [k + "=" + v]
+        args += ["--selinux-labels", ",".join(selinux_labels)]
 
     args += rpms
 
@@ -71,6 +77,7 @@ _rpm2tar_attrs = {
     ),
     "symlinks": attr.string_dict(),
     "capabilities": attr.string_list_dict(),
+    "selinux_labels": attr.string_list_dict(),
     "out": attr.output(mandatory = True),
 }
 

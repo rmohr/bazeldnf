@@ -4,6 +4,7 @@ import "fmt"
 
 const (
 	capabilities_header = "SCHILY.xattr.security.capability"
+	selinux_header      = "SCHILY.xattr.security.selinux"
 )
 
 var cap_empty_bitmask = []byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
@@ -25,5 +26,13 @@ func AddCapabilities(pax map[string]string, capabilities []string) error {
 		}
 		pax[capabilities_header] = string(val)
 	}
+	return nil
+}
+
+func SetSELinuxLabel(pax map[string]string, label string) error {
+	if label == "" {
+		return fmt.Errorf("label must not be empty, but got '%s'", label)
+	}
+	pax[selinux_header] = fmt.Sprintf("%s\x00", label)
 	return nil
 }
