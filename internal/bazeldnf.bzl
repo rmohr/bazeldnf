@@ -1,6 +1,7 @@
 load("@bazel_skylib//lib:shell.bzl", "shell")
 
 def _bazeldnf_impl(ctx):
+    transitive_dependencies = []
     out_file = ctx.actions.declare_file(ctx.label.name + ".bash")
     args = []
     if ctx.attr.command:
@@ -11,6 +12,7 @@ def _bazeldnf_impl(ctx):
         args += ["--rpmtree", ctx.attr.rpmtree]
     if ctx.file.tar:
         args += ["-i", ctx.file.tar.path]
+        transitive_dependencies += [ctx.attr.tar.files]
     for lib in ctx.attr.libs:
         args += [lib]
 
@@ -24,7 +26,10 @@ def _bazeldnf_impl(ctx):
         substitutions = substitutions,
         is_executable = True,
     )
-    runfiles = ctx.runfiles(files = [ctx.executable._bazeldnf])
+    runfiles = ctx.runfiles(
+        files = [ctx.executable._bazeldnf],
+        transitive_files = depset([], transitive = transitive_dependencies),
+    )
     return [DefaultInfo(
         files = depset([out_file]),
         runfiles = runfiles,
@@ -38,6 +43,7 @@ _bazeldnf = rule(
             values = [
                 "",
                 "ldd",
+                "sandbox",
             ],
             default = "",
         ),
