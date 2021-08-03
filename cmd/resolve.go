@@ -81,7 +81,8 @@ func NewResolveCmd() *cobra.Command {
 	resolveCmd.Flags().StringArrayVar(&resolveopts.forceIgnoreRegex, "force-ignore-with-dependencies", []string{}, "Packages matching these regex patterns will not be installed. Allows force-removing unwanted dependencies. Be careful, this can lead to hidden missing dependencies.")
 	// deprecated options
 	resolveCmd.Flags().StringVarP(&resolveopts.baseSystem, "fedora-base-system", "f", "fedora-release-container", "base system to use (e.g. fedora-release-server, centos-stream-release, ...)")
-	resolveCmd.Flags().MarkDeprecated("fedora-base-system", "use '--basesystem' instead")
-	resolveCmd.Flags().MarkShorthandDeprecated("f", "use '--basesystem' instead")
+	resolveCmd.Flags().MarkDeprecated("fedora-base-system", "use --basesystem instead")
+	resolveCmd.Flags().MarkShorthandDeprecated("fedora-base-system", "use --basesystem instead")
+	resolveCmd.Flags().MarkShorthandDeprecated("nobest", "use --nobest instead")
 	return resolveCmd
 }
