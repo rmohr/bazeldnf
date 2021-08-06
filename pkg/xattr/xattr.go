@@ -37,7 +37,7 @@ func SetSELinuxLabel(pax map[string]string, label string) error {
 	if label == "" {
 		return fmt.Errorf("label must not be empty, but got '%s'", label)
 	}
-	pax[selinux_header] = fmt.Sprintf("%s\x00", label)
+	pax[selinux_header] = fmt.Sprintf("%s\x00",label)
 	return nil
 }
 
@@ -50,15 +50,8 @@ func Apply(reader *tar.Reader, writer *tar.Writer, capabilties map[string][]stri
 			return err
 		}
 
-		if caps, exists := capabilties[entry.Name]; exists {
-			if err := AddCapabilities(entry.PAXRecords, caps); err != nil {
-				return err
-			}
-		}
-		if l, exists := labels[entry.Name]; exists {
-			if err := SetSELinuxLabel(entry.PAXRecords, l); err != nil {
-				return err
-			}
+		if err := enrichEntry(entry, capabilties, labels); err != nil {
+			return err
 		}
 
 		entry.Format = tar.FormatPAX
@@ -66,6 +59,24 @@ func Apply(reader *tar.Reader, writer *tar.Writer, capabilties map[string][]stri
 			return err
 		}
 		if _, err := io.Copy(writer, reader); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func enrichEntry(entry *tar.Header, capabilties map[string][]string, labels map[string]string) error {
+	if entry.PAXRecords == nil {
+		entry.PAXRecords = map[string]string{}
+	}
+
+	if caps, exists := capabilties[entry.Name]; exists {
+		if err := AddCapabilities(entry.PAXRecords, caps); err != nil {
+			return err
+		}
+	}
+	if l, exists := labels[entry.Name]; exists {
+		if err := SetSELinuxLabel(entry.PAXRecords, l); err != nil {
 			return err
 		}
 	}
