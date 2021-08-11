@@ -23,20 +23,12 @@ import (
 	"io/ioutil"
 	"time"
 
+	"github.com/rmohr/bazeldnf/pkg/xattr"
 	"github.com/sassoftware/go-rpmutils/cpio"
 )
 
-const (
-	capabilities_header = "SCHILY.xattr.security.capability"
-)
-
-var cap_empty_bitmask = []byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-var supported_capabilities = map[string][]byte{
-	"cap_net_bind_service": {1, 0, 0, 2, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-}
-
 // Extract the contents of a cpio stream from and writes it as a tar file into the provided writer
-func Tar(rs io.Reader, tarfile *tar.Writer, noSymlinksAndDirs bool, capabilities map[string][]string) error {
+func Tar(rs io.Reader, tarfile *tar.Writer, noSymlinksAndDirs bool, capabilities map[string][]string, selinuxLabels map[string]string) error {
 	hardLinks := map[int][]*tar.Header{}
 	inodes := map[int]string{}
 
@@ -54,18 +46,13 @@ func Tar(rs io.Reader, tarfile *tar.Writer, noSymlinksAndDirs bool, capabilities
 
 		pax := map[string]string{}
 		if caps, exists := capabilities[entry.Header.Filename()]; exists {
-			for _, cap := range caps {
-				if _, supported := supported_capabilities[cap]; !supported {
-					return fmt.Errorf("Requested capability '%s' for file '%s' is not supported", cap, entry.Header.Filename())
-				}
-				if _, exists := pax[capabilities_header]; !exists {
-					pax[capabilities_header] = string(cap_empty_bitmask)
-				}
-				val := []byte(pax[capabilities_header])
-				for i, b := range supported_capabilities[cap] {
-					val[i] = val[i] | b
-				}
-				pax[capabilities_header] = string(val)
+			if err := xattr.AddCapabilities(pax, caps); err != nil {
+				return fmt.Errorf("failed setting capabilities on %s: %v", entry.Header.Filename(), err)
+			}
+		}
+		if label, exists := selinuxLabels[entry.Header.Filename()]; exists {
+			if err := xattr.SetSELinuxLabel(pax, label); err != nil {
+				return fmt.Errorf("failed setting selinux label on %s: %v", entry.Header.Filename(), err)
 			}
 		}
 

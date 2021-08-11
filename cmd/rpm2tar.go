@@ -12,10 +12,11 @@ import (
 )
 
 type rpm2tarOpts struct {
-	output       string
-	input        []string
-	symlinks     map[string]string
-	capabilities map[string]string
+	output        string
+	input         []string
+	symlinks      map[string]string
+	capabilities  map[string]string
+	selinuxLabels map[string]string
 }
 
 var rpm2taropts = rpm2tarOpts{}
@@ -79,13 +80,13 @@ func NewRpm2TarCmd() *cobra.Command {
 						return fmt.Errorf("could not open rpm at %s: %v", i, err)
 					}
 					defer rpmStream.Close()
-					err = rpm.RPMToTar(rpmStream, tarWriter, true, cap)
+					err = rpm.RPMToTar(rpmStream, tarWriter, true, cap, rpm2taropts.selinuxLabels)
 					if err != nil {
 						return fmt.Errorf("could not convert rpm at %s: %v", i, err)
 					}
 				}
 			} else {
-				err := rpm.RPMToTar(rpmStream, tarWriter, false, cap)
+				err := rpm.RPMToTar(rpmStream, tarWriter, false, cap, rpm2taropts.selinuxLabels)
 				if err != nil {
 					return fmt.Errorf("could not convert rpm : %v", err)
 				}
@@ -98,6 +99,7 @@ func NewRpm2TarCmd() *cobra.Command {
 	rpm2tarCmd.Flags().StringArrayVarP(&rpm2taropts.input, "input", "i", []string{}, "location from where to read the rpm file (defaults to stdin)")
 	rpm2tarCmd.Flags().StringToStringVarP(&rpm2taropts.symlinks, "symlinks", "s", map[string]string{}, "symlinks to add. Relative or absolute.")
 	rpm2tarCmd.Flags().StringToStringVarP(&rpm2taropts.capabilities, "capabilities", "c", map[string]string{}, "capabilities of files (--capabilities=/bin/ls=cap_net_bind_service)")
+	rpm2tarCmd.Flags().StringToStringVar(&rpm2taropts.selinuxLabels, "selinux-labels", map[string]string{}, "selinux labels of files (--selinux-labels=/bin/ls=unconfined_u:object_r:default_t:s0)")
 	// deprecated options
 	rpm2tarCmd.Flags().StringToStringVar(&rpm2taropts.capabilities, "capabilties", map[string]string{}, "capabilities of files (-c=/bin/ls=cap_net_bind_service)")
 	rpm2tarCmd.Flags().MarkDeprecated("capabilties", "use --capabilities instead")

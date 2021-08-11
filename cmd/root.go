@@ -16,6 +16,7 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
+	rootCmd.AddCommand(NewXATTRCmd())
 	rootCmd.AddCommand(NewSandboxCmd())
 	rootCmd.AddCommand(NewFetchCmd())
 	rootCmd.AddCommand(NewInitCmd())

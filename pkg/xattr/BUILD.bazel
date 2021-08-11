@@ -1,0 +1,16 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "xattr",
+    srcs = ["xattr.go"],
+    importpath = "github.com/rmohr/bazeldnf/pkg/xattr",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "xattr_test",
+    srcs = ["xattr_test.go"],
+    data = glob(["testdata/**"]),
+    embed = [":xattr"],
+    deps = ["@com_github_onsi_gomega//:go_default_library"],
+)
