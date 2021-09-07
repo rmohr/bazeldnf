@@ -195,8 +195,7 @@ func Untar(tmpRoot string, tarFile string) error {
 	for target, source := range hardLinks {
 		source := filepath.Join(tmpRoot, source)
 		if err := os.Link(source, target); err != nil {
-			return fmt.Errorf("failed to create hard link from %s to %s", target, source)
-
+			return fmt.Errorf("failed to create hard link from %s to %s: %v", target, source, err)
 		}
 	}
 	return nil
