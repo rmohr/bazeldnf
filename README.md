@@ -244,8 +244,6 @@ able to choose them and older packages may be pulled in instead.
 
 ##### Missing features
 
- * Weighting packages (like prefer `libcurl-minimal` over `libcurl` if one of
-   their resources is requested)
  * Resolving `requires` entries which contain boolean logic like `(gcc if something)`
 
 ##### Deliberately not supported
