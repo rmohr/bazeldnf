@@ -14,7 +14,7 @@ var g *GomegaWithT
 
 func TestSettingSELinuxLabel(t *testing.T) {
 	g = NewGomegaWithT(t)
-	referenceEntry, err := getHeader("blub")
+	referenceEntry, err := getHeader("./selinux")
 	g.Expect(err).ToNot(HaveOccurred())
 
 	generatedEntry := &tar.Header{Name: "blub"}
@@ -42,4 +42,46 @@ func getHeader(name string) (*tar.Header, error) {
 		}
 	}
 	return nil, fmt.Errorf("entry %v does not exist", name)
+}
+
+func Test_Capabilities(t *testing.T) {
+	tests := []struct {
+		name         string
+		entry        string
+		capabilities []string
+	}{
+		{
+			name:         "should set cap_chown",
+			entry:        "./cap_chown",
+			capabilities: []string{"cap_chown"},
+		},
+		{
+			name:         "should set cap_net_bind_service",
+			entry:        "./cap_net_bind_service",
+			capabilities: []string{"cap_net_bind_service"},
+		},
+		{
+			name:         "should set cap_sys_ptrace",
+			entry:        "./cap_sys_ptrace",
+			capabilities: []string{"cap_sys_ptrace"},
+		},
+		{
+			name:         "should set all implemented capabilities",
+			entry:        "./cap_all",
+			capabilities: []string{"cap_chown", "cap_net_bind_service", "cap_sys_ptrace"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g = NewGomegaWithT(t)
+			referenceEntry, err := getHeader(tt.entry)
+			g.Expect(err).ToNot(HaveOccurred())
+
+			generatedEntry := &tar.Header{Name: "blub"}
+
+			g.Expect(enrichEntry(generatedEntry, map[string][]string{"blub": tt.capabilities}, nil)).To(Succeed())
+
+			g.Expect(generatedEntry.PAXRecords[capabilities_header]).To(Equal(referenceEntry.PAXRecords[capabilities_header]))
+		})
+	}
 }
