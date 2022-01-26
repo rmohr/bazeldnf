@@ -13,6 +13,7 @@ const (
 
 var cap_empty_bitmask = []byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 var supported_capabilities = map[string][]byte{
+	"cap_chown":            {1, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	"cap_net_bind_service": {1, 0, 0, 2, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	"cap_sys_ptrace":       {1, 0, 0, 2, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 }
@@ -38,7 +39,7 @@ func SetSELinuxLabel(pax map[string]string, label string) error {
 	if label == "" {
 		return fmt.Errorf("label must not be empty, but got '%s'", label)
 	}
-	pax[selinux_header] = fmt.Sprintf("%s\x00",label)
+	pax[selinux_header] = fmt.Sprintf("%s\x00", label)
 	return nil
 }
 
