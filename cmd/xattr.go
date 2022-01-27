@@ -55,7 +55,7 @@ func NewXATTRCmd() *cobra.Command {
 			}
 			tarWriter := tar.NewWriter(streamOutput)
 			defer tarWriter.Close()
-			return xattr.Apply(tar.NewReader(streamInput), tarWriter , capabilityMap, labelMap)
+			return xattr.Apply(tar.NewReader(streamInput), tarWriter, capabilityMap, labelMap)
 		},
 	}
 
