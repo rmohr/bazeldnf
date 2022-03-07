@@ -13,4 +13,4 @@ fi
 
 cd ${BUILD_WORKSPACE_DIRECTORY}
 
-"$bazeldnf_short_path" "${ARGS[@]}" "$@"
+"$bazeldnf_short_path" "${ARGS[@]+\"${ARGS[@]}\"}" "$@"
