@@ -2,11 +2,12 @@ package ldd
 
 import (
 	"debug/elf"
+	"fmt"
 	"os"
 	"path/filepath"
 )
 
-func Resolve(objects []string, library_path string) (finalFiles []string, err error) {
+func Resolve(objects []string, library_path []string) (finalFiles []string, err error) {
 	discovered := map[string]struct{}{}
 	for _, obj := range objects {
 		if files, err := resolve(obj, library_path); err != nil {
@@ -23,7 +24,7 @@ func Resolve(objects []string, library_path string) (finalFiles []string, err er
 	return
 }
 
-func resolve(library string, library_path string) ([]string, error) {
+func resolve(library string, library_path []string) ([]string, error) {
 
 	next := []string{library}
 	processed := map[string]struct{}{}
@@ -61,7 +62,7 @@ func resolve(library string, library_path string) ([]string, error) {
 	return finalFiles, nil
 }
 
-func ldd(library string, library_path string) (discovered []string, err error) {
+func ldd(library string, library_path []string) (discovered []string, err error) {
 	bin, err := elf.Open(library)
 	if err != nil {
 		return nil, err
@@ -71,16 +72,27 @@ func ldd(library string, library_path string) (discovered []string, err error) {
 		return nil, err
 	}
 	for _, l := range libs {
-		_, err := os.Stat(filepath.Join(library_path, l))
-		if err != nil {
-			return nil, err
+		found := false
+		for _, dir := range library_path {
+			_, err := os.Stat(filepath.Join(dir, l))
+			if err != nil {
+				if os.IsNotExist(err) {
+					continue
+				}
+				return nil, err
+			}
+			discovered = append(discovered, filepath.Join(dir, l))
+			symlinks, err := followSymlinks(filepath.Join(dir, l))
+			if err != nil {
+				return nil, err
+			}
+			discovered = append(discovered, symlinks...)
+			found = true
+			break
 		}
-		discovered = append(discovered, filepath.Join(library_path, l))
-		symlinks, err := followSymlinks(filepath.Join(library_path, l))
-		if err != nil {
-			return nil, err
+		if !found {
+			return nil, fmt.Errorf("%v not found in any of %v", l, library_path)
 		}
-		discovered = append(discovered, symlinks...)
 	}
 	return discovered, nil
 }

@@ -48,7 +48,7 @@ func NewLddCmd() *cobra.Command {
 			}
 
 			files := []string{}
-			dependencies, err := ldd.Resolve(objects, filepath.Join(tmpRoot, "/usr/lib64"))
+			dependencies, err := ldd.Resolve(objects, []string{filepath.Join(tmpRoot, "/usr/lib64"), filepath.Join(tmpRoot, "/usr/lib")})
 			if err != nil {
 				return err
 			}
