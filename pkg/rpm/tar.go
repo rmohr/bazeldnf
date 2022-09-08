@@ -233,9 +233,10 @@ func CPIOToTarHeader(entry *cpio.CpioEntry) (*tar.Header, error) {
 	case cpio.S_ISREG:
 		if entry.Header.Nlink() > 1 && entry.Header.Filesize() == 0 {
 			tarHeader.Typeflag = tar.TypeLink
+			tarHeader.Size = 0
+		} else {
+			tarHeader.Typeflag = tar.TypeReg
 		}
-		tarHeader.Typeflag = tar.TypeReg
-		tarHeader.Size = 0
 	default:
 		return nil, fmt.Errorf("unknown file mode 0%o for %s",
 			entry.Header.Mode(), entry.Header.Filename())
