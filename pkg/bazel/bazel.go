@@ -308,5 +308,7 @@ func (r *tar2Files) SetFiles(dirs []string, fileMap map[string][]string) {
 func sanitize(name string) string {
 	name = strings.ReplaceAll(name, ":", "__")
 	name = strings.ReplaceAll(name, "+", "__plus__")
+	name = strings.ReplaceAll(name, "~", "__tilde__")
+	name = strings.ReplaceAll(name, "^", "__caret__")
 	return name
 }
