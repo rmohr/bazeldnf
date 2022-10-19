@@ -2,6 +2,7 @@ all: gazelle buildifier
 
 deps-update:
 	bazelisk run //:gazelle -- update-repos -from_file=go.mod -to_macro=deps.bzl%bazeldnf_dependencies
+	bazelisk run //:gazelle
 
 gazelle:
 	bazelisk run //:gazelle
