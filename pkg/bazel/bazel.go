@@ -225,6 +225,10 @@ func (r *RPMRule) URLs() []string {
 			for _, expr := range urlsAttr.(*build.ListExpr).List {
 				urls = append(urls, expr.(*build.StringExpr).Value)
 			}
+			// Sort the URLs to keep the output deterministic.
+			sort.SliceStable(urls, func(i, j int) bool {
+				return urls[i] < urls[j]
+			})
 			return urls
 		}
 	}
