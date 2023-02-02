@@ -20,6 +20,6 @@ go_test(
     deps = [
         "//pkg/api",
         "//pkg/api/bazeldnf",
-        "@com_github_onsi_gomega//:gomega",
+        "@com_github_onsi_gomega//:go_default_library",
     ],
 )
