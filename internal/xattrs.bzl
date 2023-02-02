@@ -14,7 +14,7 @@
 
 def _xattrs_impl(ctx):
     out = ctx.outputs.out
-    args = ["xattr", "-i", ctx.files.tar[0].path, "-o", out.path]
+    args = ["xattr", "--input", ctx.files.tar[0].path, "--output", out.path]
 
     if ctx.attr.capabilities:
         capabilities = []
