@@ -24,7 +24,7 @@ def _rpm2tar_impl(ctx):
         symlinks = []
         for k, v in ctx.attr.symlinks.items():
             symlinks += [k + "=" + v]
-        args += ["-s", ",".join(symlinks)]
+        args += ["--symlinks", ",".join(symlinks)]
 
     if ctx.attr.capabilities:
         capabilities = []
