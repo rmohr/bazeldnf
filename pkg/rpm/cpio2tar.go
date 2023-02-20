@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"sort"
 	"time"
 
 	"github.com/rmohr/bazeldnf/pkg/xattr"
@@ -120,7 +121,13 @@ func Tar(rs io.Reader, tarfile *tar.Writer, noSymlinksAndDirs bool, capabilities
 		}
 	}
 	// write hardlinks
-	for node, links := range hardLinks {
+	var sortedNodes []int
+	for node := range hardLinks {
+		sortedNodes = append(sortedNodes, node)
+	}
+	sort.Ints(sortedNodes)
+	for _, node := range sortedNodes {
+		links := hardLinks[node]
 		target := inodes[node]
 		if target == "" {
 			return fmt.Errorf("no target file for inode %v found", node)
