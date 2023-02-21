@@ -111,7 +111,6 @@ func PrefixFilter(prefix string, reader *tar.Reader, files []string) error {
 }
 
 func Untar(tmpRoot string, tarFile string) error {
-
 	reader, err := os.Open(tarFile)
 	if err != nil {
 		return err
@@ -213,7 +212,7 @@ func CPIOToTarHeader(entry *cpio.CpioEntry) (*tar.Header, error) {
 		Devminor: int64(entry.Header.Devminor()),
 	}
 
-	switch entry.Header.Mode() &^ 07777 {
+	switch entry.Header.Mode() &^ 0o7777 {
 	case cpio.S_ISCHR:
 		tarHeader.Typeflag = tar.TypeChar
 	case cpio.S_ISBLK:

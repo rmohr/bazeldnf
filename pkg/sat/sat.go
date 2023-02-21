@@ -104,7 +104,7 @@ func (r *Resolver) ticket() string {
 	return "x" + strconv.Itoa(r.varsCount)
 }
 
-//LoadInvolvedPackages takes a list of all involved packages to install, as well as a list of regular
+// LoadInvolvedPackages takes a list of all involved packages to install, as well as a list of regular
 // expressions which denoe packages which should be taken into account for solving the problem, but they
 // should then be ignored together with their requirements in the provided list of installed packages.
 func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, ignoreRegex []string) error {

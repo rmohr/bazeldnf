@@ -69,7 +69,7 @@ func Tar(rs io.Reader, tarfile *tar.Writer, noSymlinksAndDirs bool, capabilities
 		}
 
 		var payload io.Reader
-		switch entry.Header.Mode() &^ 07777 {
+		switch entry.Header.Mode() &^ 0o7777 {
 		case cpio.S_ISCHR:
 			tarHeader.Typeflag = tar.TypeChar
 		case cpio.S_ISBLK:
