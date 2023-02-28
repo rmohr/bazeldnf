@@ -15,16 +15,16 @@
 def _rpm2tar_impl(ctx):
     rpms = []
     for rpm in ctx.files.rpms:
-        rpms += ["-i", rpm.path]
+        rpms += ["--input", rpm.path]
 
     out = ctx.outputs.out
-    args = ["rpm2tar", "-o", out.path]
+    args = ["rpm2tar", "--output", out.path]
 
     if ctx.attr.symlinks:
         symlinks = []
         for k, v in ctx.attr.symlinks.items():
             symlinks += [k + "=" + v]
-        args += ["-s", ",".join(symlinks)]
+        args += ["--symlinks", ",".join(symlinks)]
 
     if ctx.attr.capabilities:
         capabilities = []
@@ -56,7 +56,7 @@ def _tar2files_impl(ctx):
     for out in ctx.outputs.out:
         files += [out.path]
 
-    args = ["tar2files", "--file-prefix", ctx.attr.prefix, "-i", ctx.files.tar[0].path] + files
+    args = ["tar2files", "--file-prefix", ctx.attr.prefix, "--input", ctx.files.tar[0].path] + files
     ctx.actions.run(
         inputs = ctx.files.tar,
         outputs = ctx.outputs.out,
