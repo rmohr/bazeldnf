@@ -3,6 +3,7 @@ package bazel
 import (
 	"fmt"
 	"io/ioutil"
+	"net/url"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -236,11 +237,15 @@ func (r *RPMRule) URLs() []string {
 	return nil
 }
 
-func (r *RPMRule) SetURLs(urls []string, href string) error {
+func (r *RPMRule) SetURLs(mirrors []string, href string) error {
 	urlsAttr := []build.Expr{}
-	for _, url := range urls {
-		u := strings.TrimSuffix(url, "/") + "/" + strings.TrimSuffix(href, "/")
-		urlsAttr = append(urlsAttr, &build.StringExpr{Value: u})
+	for _, mirror := range mirrors {
+		u, err := url.Parse(mirror)
+		if err != nil {
+			return err
+		}
+		u = u.JoinPath(href)
+		urlsAttr = append(urlsAttr, &build.StringExpr{Value: u.String()})
 	}
 	r.Rule.SetAttr("urls", &build.ListExpr{List: urlsAttr})
 	return nil
