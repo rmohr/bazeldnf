@@ -3,6 +3,7 @@ package bazel
 import (
 	"fmt"
 	"io/ioutil"
+	"net/url"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -63,7 +64,7 @@ func GetRPMs(workspace *build.File) (rpms []*RPMRule) {
 	return
 }
 
-func AddRPMs(workspace *build.File, pkgs []*api.Package, arch string) {
+func AddRPMs(workspace *build.File, pkgs []*api.Package, arch string) error {
 
 	rpms := map[string]*RPMRule{}
 
@@ -83,7 +84,10 @@ func AddRPMs(workspace *build.File, pkgs []*api.Package, arch string) {
 		rule.SetSHA256(pkg.Checksum.Text)
 		urls := rule.URLs()
 		if len(urls) == 0 {
-			rule.SetURLs(pkg.Repository.Mirrors, pkg.Location.Href)
+			err := rule.SetURLs(pkg.Repository.Mirrors, pkg.Location.Href)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
@@ -100,6 +104,8 @@ func AddRPMs(workspace *build.File, pkgs []*api.Package, arch string) {
 	for _, rule := range rules {
 		workspace.Stmt = edit.InsertAtEnd(workspace.Stmt, rule.Call)
 	}
+
+	return nil
 }
 
 func AddTar2Files(name string, rpmtree string, buildfile *build.File, files []string, public bool) {
@@ -231,13 +237,18 @@ func (r *RPMRule) URLs() []string {
 	return nil
 }
 
-func (r *RPMRule) SetURLs(urls []string, href string) {
+func (r *RPMRule) SetURLs(mirrors []string, href string) error {
 	urlsAttr := []build.Expr{}
-	for _, url := range urls {
-		u := strings.TrimSuffix(url, "/") + "/" + strings.TrimSuffix(href, "/")
-		urlsAttr = append(urlsAttr, &build.StringExpr{Value: u})
+	for _, mirror := range mirrors {
+		u, err := url.Parse(mirror)
+		if err != nil {
+			return err
+		}
+		u = u.JoinPath(href)
+		urlsAttr = append(urlsAttr, &build.StringExpr{Value: u.String()})
 	}
 	r.Rule.SetAttr("urls", &build.ListExpr{List: urlsAttr})
+	return nil
 }
 
 func (r *RPMRule) SetName(name string) {
