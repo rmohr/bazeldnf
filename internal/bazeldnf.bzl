@@ -52,7 +52,7 @@ _bazeldnf = rule(
         "libs": attr.string_list(),
         "tar": attr.label(allow_single_file = True),
         "_bazeldnf": attr.label(
-            default = "@bazeldnf//cmd:cmd",
+            default = "@bazeldnf//cmd:prebuilt",
             cfg = "host",
             executable = True,
         ),

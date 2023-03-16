@@ -47,3 +47,12 @@ go_binary(
     pure = "on",
     visibility = ["//visibility:public"],
 )
+
+alias(
+    name = "prebuilt",
+    actual = select({
+        "@platforms://os:linux": "@bazeldnf-0.5.6-linux-amd64//file",
+        "//conditions:default": "cmd",
+    }),
+    visibility = ["//visibility:public"],
+)
