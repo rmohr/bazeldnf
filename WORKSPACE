@@ -76,3 +76,11 @@ rpm(
         "https://storage.googleapis.com/builddeps/2ebb715341b57a74759aff415e0ff53df528c49abaa7ba5b794b4047461fa8d6",
     ],
 )
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
+
+http_file(
+    name = "bazeldnf-0.5.6-linux-amd64",
+    executable = True,
+    urls = [],  # TODO
+)
