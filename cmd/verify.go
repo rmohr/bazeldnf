@@ -19,6 +19,7 @@ import (
 type VerifyOpts struct {
 	repofiles []string
 	workspace string
+	fromMacro string
 }
 
 var verifyopts = VerifyOpts{}
@@ -39,12 +40,12 @@ func NewVerifyCmd() *cobra.Command {
 				if !repo.Disabled && repo.GPGKey != "" {
 					resp, err := http.Get(repo.GPGKey)
 					if err != nil {
-						return fmt.Errorf("could not fetch gpgkey %s: %v", repo.GPGKey, err)
+						return fmt.Errorf("could not fetch gpgkey %s: %w", repo.GPGKey, err)
 					}
 					defer resp.Body.Close()
 					keys, err := openpgp.ReadArmoredKeyRing(resp.Body)
 					if err != nil {
-						return fmt.Errorf("could not load gpgkey %s: %v", repo.GPGKey, err)
+						return fmt.Errorf("could not load gpgkey %s: %w", repo.GPGKey, err)
 					}
 					for _, k := range keys {
 						keyring = append(keyring, k)
@@ -52,14 +53,31 @@ func NewVerifyCmd() *cobra.Command {
 				}
 			}
 
-			workspace, err := bazel.LoadWorkspace(verifyopts.workspace)
-			if err != nil {
-				return fmt.Errorf("failed to open workspace %s: %v", verifyopts.workspace, err)
-			}
-			for _, rpm := range bazel.GetRPMs(workspace) {
-				err := verify(rpm, keyring)
+			if verifyopts.fromMacro == "" {
+				workspace, err := bazel.LoadWorkspace(verifyopts.workspace)
 				if err != nil {
-					return fmt.Errorf("Could not verify %s: %v", rpm.Name(), err)
+					return fmt.Errorf("failed to open workspace %s: %w", verifyopts.workspace, err)
+				}
+				for _, rpm := range bazel.GetWorkspaceRPMs(workspace) {
+					err := verify(rpm, keyring)
+					if err != nil {
+						return fmt.Errorf("Could not verify %s: %w", rpm.Name(), err)
+					}
+				}
+			} else {
+				bzl, defname, err := bazel.ParseToMacro(verifyopts.fromMacro)
+				if err != nil {
+					return fmt.Errorf("failed to parse from_macro expression %q: %w", verifyopts.fromMacro, err)
+				}
+				bzlfile, err := bazel.LoadBzl(bzl)
+				if err != nil {
+					return err
+				}
+				for _, rpm := range bazel.GetBzlfileRPMs(bzlfile, defname) {
+					err := verify(rpm, keyring)
+					if err != nil {
+						return fmt.Errorf("Could not verify %s: %w", rpm.Name(), err)
+					}
 				}
 			}
 			return nil
@@ -68,6 +86,7 @@ func NewVerifyCmd() *cobra.Command {
 
 	verifyCmd.Flags().StringArrayVarP(&verifyopts.repofiles, "repofile", "r", []string{"repo.yaml"}, "repository information file (can be specified multiple times)")
 	verifyCmd.Flags().StringVarP(&verifyopts.workspace, "workspace", "w", "WORKSPACE", "Bazel workspace file")
+	verifyCmd.Flags().StringVarP(&verifyopts.fromMacro, "from_macro", "", "", "Tells bazeldnf to read the RPMs from a macro in the given bzl file instead of the WORKSPACE file.The expected format is: macroFile%defName")
 	return verifyCmd
 }
 
