@@ -37,7 +37,46 @@ func TestWorkspaceWithRPMs(t *testing.T) {
 			defer os.Remove(tmpFile.Name())
 			file, err := LoadWorkspace(tt.orig)
 			g.Expect(err).ToNot(HaveOccurred())
-			AddRPMs(file, tt.pkgs, "myarch")
+			AddWorkspaceRPMs(file, tt.pkgs, "myarch")
+			err = WriteWorkspace(false, file, tmpFile.Name())
+			g.Expect(err).ToNot(HaveOccurred())
+
+			current, err := ioutil.ReadFile(tmpFile.Name())
+			g.Expect(err).ToNot(HaveOccurred())
+			expected, err := ioutil.ReadFile(tt.expected)
+			g.Expect(err).ToNot(HaveOccurred())
+			g.Expect(string(current)).To(Equal(string(expected)))
+		})
+	}
+}
+
+func TestBzlfileWithRPMs(t *testing.T) {
+	tests := []struct {
+		name     string
+		orig     string
+		expected string
+		pkgs     []*api.Package
+	}{
+		{
+			name:     "should replace rpm entries",
+			orig:     "testdata/orig.bzl",
+			expected: "testdata/pkgs.bzl",
+			pkgs: []*api.Package{
+				newPkg("a", "1.2.3", repo("a", []string{"a", "b", "c"})),
+				newPkg("a", "2.3.4", repo("b", []string{"e", "f", "g"})),
+				newPkg("b", "2.3.4", repo("a", []string{"a", "b", "c"})),
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g := NewGomegaWithT(t)
+			tmpFile, err := ioutil.TempFile(os.TempDir(), "tmp.bzl")
+			g.Expect(err).ToNot(HaveOccurred())
+			defer os.Remove(tmpFile.Name())
+			file, err := LoadWorkspace(tt.orig)
+			g.Expect(err).ToNot(HaveOccurred())
+			AddBzlfileRPMs(file, "rpms", tt.pkgs, "myarch")
 			err = WriteWorkspace(false, file, tmpFile.Name())
 			g.Expect(err).ToNot(HaveOccurred())
 

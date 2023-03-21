@@ -41,6 +41,18 @@ func LoadBuild(path string) (*build.File, error) {
 	return buildfile, nil
 }
 
+func LoadBzl(path string) (*build.File, error) {
+	bzlData, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse bzl orig: %v", err)
+	}
+	bzl, err := build.ParseBzl(path, bzlData)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse bzl orig: %v", err)
+	}
+	return bzl, nil
+}
+
 func WriteBuild(dryRun bool, buildfile *build.File, path string) error {
 	if dryRun {
 		fmt.Println(build.FormatString(buildfile))
@@ -57,14 +69,43 @@ func WriteWorkspace(dryRun bool, workspace *build.File, path string) error {
 	return ioutil.WriteFile(path, build.Format(workspace), 0666)
 }
 
-func GetRPMs(workspace *build.File) (rpms []*RPMRule) {
+func WriteBzl(dryRun bool, bzl *build.File, path string) error {
+	if dryRun {
+		fmt.Println(build.FormatString(bzl))
+		return nil
+	}
+	return ioutil.WriteFile(path, build.Format(bzl), 0666)
+}
+
+// ParseToMacro parses a to_macro expression of the form macroFile%defName and returns the bzl file and the def name.
+func ParseToMacro(macro string) (bzlfile, defname string, err error) {
+	parts := strings.Split(macro, "%")
+	if len(parts) != 2 {
+		return "", "", fmt.Errorf("invalid macro expression: %s", macro)
+	}
+	return parts[0], parts[1], nil
+}
+
+func GetWorkspaceRPMs(workspace *build.File) (rpms []*RPMRule) {
 	for _, rule := range workspace.Rules("rpm") {
 		rpms = append(rpms, &RPMRule{rule})
 	}
 	return
 }
 
-func AddRPMs(workspace *build.File, pkgs []*api.Package, arch string) error {
+func GetBzlfileRPMs(bzlfile *build.File, defName string) (rpms []*RPMRule) {
+	defStmt, err := findDefStmt(bzlfile.Stmt, defName)
+	if err != nil {
+		return
+	}
+
+	for _, rule := range defStmtRules(bzlfile, defStmt, "rpm") {
+		rpms = append(rpms, &RPMRule{rule})
+	}
+	return
+}
+
+func AddWorkspaceRPMs(workspace *build.File, pkgs []*api.Package, arch string) error {
 
 	rpms := map[string]*RPMRule{}
 
@@ -104,6 +145,59 @@ func AddRPMs(workspace *build.File, pkgs []*api.Package, arch string) error {
 	for _, rule := range rules {
 		workspace.Stmt = edit.InsertAtEnd(workspace.Stmt, rule.Call)
 	}
+
+	return nil
+}
+
+func AddBzlfileRPMs(bzlfile *build.File, defName string, pkgs []*api.Package, arch string) error {
+	defStmt, err := findDefStmt(bzlfile.Stmt, defName)
+	if err != nil {
+		// statement not found, create it
+		defStmt = &build.DefStmt{
+			Name: defName,
+		}
+	}
+
+	rpms := map[string]*RPMRule{}
+
+	for _, rule := range defStmtRules(bzlfile, defStmt, "rpm") {
+		rpms[rule.Name()] = &RPMRule{rule}
+	}
+
+	for _, pkg := range pkgs {
+		pkgName := sanitize(pkg.String() + "." + arch)
+		rule := rpms[pkgName]
+		if rule == nil {
+			call := &build.CallExpr{X: &build.Ident{Name: "rpm"}, ForceMultiLine: true}
+			rule = &RPMRule{&build.Rule{call, ""}}
+			rpms[pkgName] = rule
+		}
+		rule.SetName(pkgName)
+		rule.SetSHA256(pkg.Checksum.Text)
+		urls := rule.URLs()
+		if len(urls) == 0 {
+			err := rule.SetURLs(pkg.Repository.Mirrors, pkg.Location.Href)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	rules := []*RPMRule{}
+	for _, rule := range rpms {
+		rules = append(rules, rule)
+	}
+
+	sort.SliceStable(rules, func(i, j int) bool {
+		return rules[i].Name() < rules[j].Name()
+	})
+
+	delDefStmt(bzlfile, defStmt)
+	defStmt.Body = nil
+	for _, rule := range rules {
+		defStmt.Body = edit.InsertAtEnd(defStmt.Body, rule.Call)
+	}
+	bzlfile.Stmt = edit.InsertAtEnd(bzlfile.Stmt, defStmt)
 
 	return nil
 }
@@ -204,7 +298,7 @@ func AddTree(name string, buildfile *build.File, pkgs []*api.Package, arch strin
 	}
 }
 
-func PruneRPMs(buildfile *build.File, workspace *build.File) {
+func PruneWorkspaceRPMs(buildfile *build.File, workspace *build.File) {
 	referenced := map[string]struct{}{}
 	for _, pkg := range buildfile.Rules("rpmtree") {
 		tree := &rpmTree{pkg}
@@ -218,6 +312,79 @@ func PruneRPMs(buildfile *build.File, workspace *build.File) {
 			workspace.DelRules("rpm", rpm.Name())
 		}
 	}
+}
+
+func PruneBzlfileRPMs(buildfile *build.File, bzlfile *build.File, defName string) {
+	defStmt, err := findDefStmt(bzlfile.Stmt, defName)
+	if err != nil {
+		return
+	}
+
+	referenced := map[string]struct{}{}
+	for _, pkg := range buildfile.Rules("rpmtree") {
+		tree := &rpmTree{pkg}
+		for _, rpm := range tree.RPMs() {
+			referenced[rpm] = struct{}{}
+		}
+	}
+	rpms := defStmtRules(bzlfile, defStmt, "rpm")
+	var referencedRPMs []*build.Rule
+	for _, rpm := range rpms {
+		if _, exists := referenced["@"+rpm.Name()+"//rpm"]; exists {
+			referencedRPMs = append(referencedRPMs, rpm)
+		}
+	}
+
+	delDefStmt(bzlfile, defStmt)
+	defStmt.Body = nil
+	for _, rpm := range referencedRPMs {
+		defStmt.Body = edit.InsertAtEnd(defStmt.Body, rpm.Call)
+	}
+	bzlfile.Stmt = edit.InsertAtEnd(bzlfile.Stmt, defStmt)
+}
+
+func findDefStmt(stmts []build.Expr, name string) (*build.DefStmt, error) {
+	for _, stmt := range stmts {
+		if def, ok := stmt.(*build.DefStmt); ok {
+			if def.Name == name {
+				return def, nil
+			}
+		}
+	}
+	return nil, fmt.Errorf("could not find def %s", name)
+}
+
+func defStmtRules(buildfile *build.File, def *build.DefStmt, kind string) []*build.Rule {
+	rules := []*build.Rule{}
+	for _, stmt := range def.Body {
+		call, ok := stmt.(*build.CallExpr)
+		if !ok {
+			continue
+		}
+
+		rule := buildfile.Rule(call)
+		if rule == nil {
+			continue
+		}
+
+		if kind != "" && rule.Kind() != kind {
+			continue
+		}
+
+		rules = append(rules, rule)
+	}
+	return rules
+}
+
+func delDefStmt(buildfile *build.File, def *build.DefStmt) {
+	var all []build.Expr
+	for _, stmt := range buildfile.Stmt {
+		if stmt == def {
+			continue
+		}
+		all = append(all, stmt)
+	}
+	buildfile.Stmt = all
 }
 
 type RPMRule struct {
@@ -247,7 +414,7 @@ func (r *RPMRule) SetURLs(mirrors []string, href string) error {
 		u = u.JoinPath(href)
 		urlsAttr = append(urlsAttr, &build.StringExpr{Value: u.String()})
 	}
-	r.Rule.SetAttr("urls", &build.ListExpr{List: urlsAttr})
+	r.Rule.SetAttr("urls", &build.ListExpr{List: urlsAttr, ForceMultiLine: true})
 	return nil
 }
 
