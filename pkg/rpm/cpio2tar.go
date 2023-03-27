@@ -26,10 +26,11 @@ import (
 
 	"github.com/rmohr/bazeldnf/pkg/xattr"
 	"github.com/sassoftware/go-rpmutils/cpio"
+	"github.com/sirupsen/logrus"
 )
 
 // Extract the contents of a cpio stream from and writes it as a tar file into the provided writer
-func Tar(rs io.Reader, tarfile *tar.Writer, noSymlinksAndDirs bool, capabilities map[string][]string, selinuxLabels map[string]string) error {
+func Tar(rs io.Reader, tarfile *tar.Writer, noSymlinksAndDirs bool, capabilities map[string][]string, selinuxLabels map[string]string, createdPaths map[string]struct{}) error {
 	hardLinks := map[int][]*tar.Header{}
 	inodes := map[int]string{}
 
@@ -43,6 +44,14 @@ func Tar(rs io.Reader, tarfile *tar.Writer, noSymlinksAndDirs bool, capabilities
 
 		if entry.Header.Filename() == cpio.TRAILER {
 			break
+		}
+
+		if entry.Header.Filename() != "" {
+			if _, exists := createdPaths[entry.Header.Filename()]; exists {
+				logrus.Debugf("Skipping duplicate tar entry %s\n", entry.Header.Filename())
+				continue
+			}
+			createdPaths[entry.Header.Filename()] = struct{}{}
 		}
 
 		pax := map[string]string{}

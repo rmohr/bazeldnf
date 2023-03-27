@@ -15,7 +15,17 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func RPMToTar(rpmReader io.Reader, tarWriter *tar.Writer, noSymlinksAndDirs bool, capabilities map[string][]string, selinuxLabels map[string]string) error {
+type Collector struct {
+	createdPaths map[string]struct{}
+}
+
+func NewCollector() *Collector {
+	return &Collector{
+		createdPaths: make(map[string]struct{}),
+	}
+}
+
+func (c *Collector) RPMToTar(rpmReader io.Reader, tarWriter *tar.Writer, noSymlinksAndDirs bool, capabilities map[string][]string, selinuxLabels map[string]string) error {
 	rpm, err := rpmutils.ReadRpm(rpmReader)
 	if err != nil {
 		return fmt.Errorf("failed to read rpm: %s", err)
@@ -24,7 +34,7 @@ func RPMToTar(rpmReader io.Reader, tarWriter *tar.Writer, noSymlinksAndDirs bool
 	if err != nil {
 		return fmt.Errorf("failed to open the payload reader: %s", err)
 	}
-	return Tar(payloadReader, tarWriter, noSymlinksAndDirs, capabilities, selinuxLabels)
+	return Tar(payloadReader, tarWriter, noSymlinksAndDirs, capabilities, selinuxLabels, c.createdPaths)
 }
 
 func RPMToCPIO(rpmReader io.Reader) (*cpio.CpioStream, error) {
