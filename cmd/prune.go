@@ -36,7 +36,7 @@ func NewPruneCmd() *cobra.Command {
 					return err
 				}
 			} else {
-				bzl, defname, err := bazel.ParseToMacro(pruneopts.toMacro)
+				bzl, defname, err := bazel.ParseMacro(pruneopts.toMacro)
 				if err != nil {
 					return err
 				}

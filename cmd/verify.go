@@ -65,7 +65,7 @@ func NewVerifyCmd() *cobra.Command {
 					}
 				}
 			} else {
-				bzl, defname, err := bazel.ParseToMacro(verifyopts.fromMacro)
+				bzl, defname, err := bazel.ParseMacro(verifyopts.fromMacro)
 				if err != nil {
 					return fmt.Errorf("failed to parse from-macro expression %q: %w", verifyopts.fromMacro, err)
 				}

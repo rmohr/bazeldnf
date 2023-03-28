@@ -75,7 +75,7 @@ func NewRpmTreeCmd() *cobra.Command {
 			var bzlfile *build.File
 			var bzl, defName string
 			if writeToMacro {
-				bzl, defName, err = bazel.ParseToMacro(rpmtreeopts.toMacro)
+				bzl, defName, err = bazel.ParseMacro(rpmtreeopts.toMacro)
 				if err != nil {
 					return err
 				}
