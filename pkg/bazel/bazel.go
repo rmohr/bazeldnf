@@ -77,7 +77,7 @@ func WriteBzl(dryRun bool, bzl *build.File, path string) error {
 	return ioutil.WriteFile(path, build.Format(bzl), 0666)
 }
 
-// ParseToMacro parses a to_macro expression of the form macroFile%defName and returns the bzl file and the def name.
+// ParseToMacro parses a to-macro expression of the form macroFile%defName and returns the bzl file and the def name.
 func ParseToMacro(macro string) (bzlfile, defname string, err error) {
 	parts := strings.Split(macro, "%")
 	if len(parts) != 2 {

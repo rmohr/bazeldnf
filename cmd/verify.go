@@ -67,7 +67,7 @@ func NewVerifyCmd() *cobra.Command {
 			} else {
 				bzl, defname, err := bazel.ParseToMacro(verifyopts.fromMacro)
 				if err != nil {
-					return fmt.Errorf("failed to parse from_macro expression %q: %w", verifyopts.fromMacro, err)
+					return fmt.Errorf("failed to parse from-macro expression %q: %w", verifyopts.fromMacro, err)
 				}
 				bzlfile, err := bazel.LoadBzl(bzl)
 				if err != nil {
@@ -86,7 +86,7 @@ func NewVerifyCmd() *cobra.Command {
 
 	verifyCmd.Flags().StringArrayVarP(&verifyopts.repofiles, "repofile", "r", []string{"repo.yaml"}, "repository information file (can be specified multiple times)")
 	verifyCmd.Flags().StringVarP(&verifyopts.workspace, "workspace", "w", "WORKSPACE", "Bazel workspace file")
-	verifyCmd.Flags().StringVarP(&verifyopts.fromMacro, "from_macro", "", "", "Tells bazeldnf to read the RPMs from a macro in the given bzl file instead of the WORKSPACE file.The expected format is: macroFile%defName")
+	verifyCmd.Flags().StringVarP(&verifyopts.fromMacro, "from-macro", "", "", "Tells bazeldnf to read the RPMs from a macro in the given bzl file instead of the WORKSPACE file. The expected format is: macroFile%defName")
 	return verifyCmd
 }
 
