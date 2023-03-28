@@ -36,7 +36,7 @@ func NewPruneCmd() *cobra.Command {
 					return err
 				}
 			} else {
-				bzl, defname, err := bazel.ParseToMacro(pruneopts.toMacro)
+				bzl, defname, err := bazel.ParseMacro(pruneopts.toMacro)
 				if err != nil {
 					return err
 				}
@@ -61,7 +61,7 @@ func NewPruneCmd() *cobra.Command {
 	}
 
 	pruneCmd.Flags().StringVarP(&pruneopts.workspace, "workspace", "w", "WORKSPACE", "Bazel workspace file")
-	pruneCmd.Flags().StringVarP(&pruneopts.toMacro, "to_macro", "", "", "Tells bazeldnf to write the RPMs to a macro in the given bzl file instead of the WORKSPACE file.The expected format is: macroFile%defName")
+	pruneCmd.Flags().StringVarP(&pruneopts.toMacro, "to-macro", "", "", "Tells bazeldnf to write the RPMs to a macro in the given bzl file instead of the WORKSPACE file. The expected format is: macroFile%defName")
 	pruneCmd.Flags().StringVarP(&pruneopts.buildfile, "buildfile", "b", "rpm/BUILD.bazel", "Build file for RPMs")
 	return pruneCmd
 }
