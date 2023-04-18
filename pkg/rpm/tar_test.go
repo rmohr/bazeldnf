@@ -48,7 +48,8 @@ func TestRPMToTar(t *testing.T) {
 			g.Expect(err).ToNot(HaveOccurred())
 			defer tarWriter.Close()
 
-			err = RPMToTar(f, tar.NewWriter(tarWriter), false, nil, nil)
+			collector := NewCollector()
+			err = collector.RPMToTar(f, tar.NewWriter(tarWriter), false, nil, nil)
 			g.Expect(err).ToNot(HaveOccurred())
 			tarWriter.Close()
 
@@ -124,8 +125,9 @@ func TestTar2Files(t *testing.T) {
 			defer pipeReader.Close()
 			defer pipeWriter.Close()
 
+			collector := NewCollector()
 			go func() {
-				_ = RPMToTar(f, tar.NewWriter(pipeWriter), false, nil, nil)
+				_ = collector.RPMToTar(f, tar.NewWriter(pipeWriter), false, nil, nil)
 				pipeWriter.Close()
 			}()
 

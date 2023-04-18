@@ -44,6 +44,7 @@ func NewRpm2TarCmd() *cobra.Command {
 
 			tarWriter := tar.NewWriter(tarStream)
 			defer tarWriter.Close()
+			collector := rpm.NewCollector()
 			if len(rpm2taropts.input) != 0 {
 				directoryTree, err := order.TreeFromRPMs(rpm2taropts.input)
 				if err != nil {
@@ -62,7 +63,7 @@ func NewRpm2TarCmd() *cobra.Command {
 								Typeflag: tar.TypeSymlink,
 								Name:     k,
 								Linkname: v,
-								Mode:     0777,
+								Mode:     0o777,
 							},
 						},
 					)
@@ -80,13 +81,13 @@ func NewRpm2TarCmd() *cobra.Command {
 						return fmt.Errorf("could not open rpm at %s: %v", i, err)
 					}
 					defer rpmStream.Close()
-					err = rpm.RPMToTar(rpmStream, tarWriter, true, cap, rpm2taropts.selinuxLabels)
+					err = collector.RPMToTar(rpmStream, tarWriter, true, cap, rpm2taropts.selinuxLabels)
 					if err != nil {
 						return fmt.Errorf("could not convert rpm at %s: %v", i, err)
 					}
 				}
 			} else {
-				err := rpm.RPMToTar(rpmStream, tarWriter, false, cap, rpm2taropts.selinuxLabels)
+				err := collector.RPMToTar(rpmStream, tarWriter, false, cap, rpm2taropts.selinuxLabels)
 				if err != nil {
 					return fmt.Errorf("could not convert rpm : %v", err)
 				}
