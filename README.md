@@ -85,9 +85,9 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "bazeldnf",
-    sha256 = "8dcd8908d444d230192bba6965cfa7477554cc991da86b2b68aae956645c3d5e",
+    sha256 = "e2f474cdb1d44f27c4058a3f5da1a1c51e2c35387186344915aa6bb83910d3f3",
     urls = [
-        "https://github.com/rmohr/bazeldnf/releases/download/v0.5.6-rc1/bazeldnf-v0.5.6-rc1.tar.gz",
+        "https://github.com/rmohr/bazeldnf/releases/download/v0.5.6-rc3/bazeldnf-v0.5.6-rc3.tar.gz",
     ],
 )
 
