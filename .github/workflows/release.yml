@@ -29,7 +29,6 @@ jobs:
           git config --global user.name "CI"
           git config --global user.email "rmohr@users.noreply.github.com"
           hack/prepare-release.sh
-          git tag ${VERSION}
           git push origin ${VERSION}
           git push
         env:
