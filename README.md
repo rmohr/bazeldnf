@@ -79,27 +79,23 @@ rpmtree(
 
 The bazeldnf repository needs to be added  to your `WORKSPACE`:
 
+<!-- install_start -->
 ```python
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "bazeldnf",
-    sha256 = "74f977ab8f13e466168ff0c80322bcb665db9f79d1bc497c742f9512737b91ea",
-    strip_prefix = "bazeldnf-0.0.1",
+    sha256 = "8dcd8908d444d230192bba6965cfa7477554cc991da86b2b68aae956645c3d5e",
     urls = [
-        "https://github.com/rmohr/bazeldnf/archive/v0.0.1.tar.gz",
+        "https://github.com/rmohr/bazeldnf/releases/download/v0.5.6-rc1/bazeldnf-v0.5.6-rc1.tar.gz",
     ],
 )
 
-load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
 load("@bazeldnf//:deps.bzl", "bazeldnf_dependencies")
-
-go_rules_dependencies()
-
-go_register_toolchains()
 
 bazeldnf_dependencies()
 ```
+<!-- install_end -->
 
 Define the `bazeldnf` executable rule in your `BUILD.bazel` file:
 ```python

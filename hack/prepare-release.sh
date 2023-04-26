@@ -73,7 +73,9 @@ git archive --format tar.gz HEAD >./dist/bazeldnf-${VERSION}.tar.gz
 DIGEST=$(sha256sum dist/bazeldnf-${VERSION}.tar.gz | cut -d " " -f 1)
 
 cat <<EOT >>./dist/releasenote.txt
-\`\`\`
+\`\`\`python
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
 http_archive(
     name = "bazeldnf",
     sha256 = "${DIGEST}",
@@ -81,5 +83,14 @@ http_archive(
         "https://github.com/rmohr/bazeldnf/releases/download/${VERSION}/bazeldnf-${VERSION}.tar.gz",
     ],
 )
+
+load("@bazeldnf//:deps.bzl", "bazeldnf_dependencies")
+
+bazeldnf_dependencies()
 \`\`\`
 EOT
+
+lead='^<!-- install_start -->$'
+tail='^<!-- install_end -->$'
+sed -e "/$lead/,/$tail/{ /$lead/{p; r dist/releasenote.txt
+        }; /$tail/p; d }" README.md
