@@ -97,12 +97,12 @@ http_file(
     name = "bazeldnf-darwin-amd64",
     executable = True,
     sha256 = "487703e29bccf8536df438b0888b5d5381d1b362c3001390a0d70ff3113e8c73",
-    urls = ["https://github.com/rmohr/bazeldnf/releases/download/v1.2.3/bazeldnf-v1.2.3-darwin-amd64"],
+    urls = ["https://github.com/rmohr/bazeldnf/releases/download/v0.0.99/bazeldnf-v0.0.99-darwin-amd64"],
 )
 
 http_file(
     name = "bazeldnf-darwin-arm64",
     executable = True,
     sha256 = "261b11758afc7ce03568026691f62a78fe63ba6e87d1fc51771d3715eec44bcd",
-    urls = ["https://github.com/rmohr/bazeldnf/releases/download/v1.2.3/bazeldnf-v1.2.3-darwin-arm64"],
+    urls = ["https://github.com/rmohr/bazeldnf/releases/download/v0.0.99/bazeldnf-v0.0.99-darwin-arm64"],
 )
