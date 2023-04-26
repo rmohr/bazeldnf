@@ -68,6 +68,8 @@ done
 
 git commit -a -m "Bump prebuilt binary references for ${VERSION}"
 
+git tag ${VERSION}
+
 git archive --format tar.gz HEAD >./dist/bazeldnf-${VERSION}.tar.gz
 
 DIGEST=$(sha256sum dist/bazeldnf-${VERSION}.tar.gz | cut -d " " -f 1)
@@ -94,3 +96,5 @@ lead='^<!-- install_start -->$'
 tail='^<!-- install_end -->$'
 sed -e "/$lead/,/$tail/{ /$lead/{p; r dist/releasenote.txt
         }; /$tail/p; d }" README.md
+
+git commit -a -m "Bump install instructions for readme in ${VERSION}"
