@@ -94,7 +94,7 @@ EOT
 
 lead='^<!-- install_start -->$'
 tail='^<!-- install_end -->$'
-sed -e "/$lead/,/$tail/{ /$lead/{p; r dist/releasenote.txt
+sed -i -e "/$lead/,/$tail/{ /$lead/{p; r dist/releasenote.txt
         }; /$tail/p; d }" README.md
 
 git commit -a -m "Bump install instructions for readme in ${VERSION}"
