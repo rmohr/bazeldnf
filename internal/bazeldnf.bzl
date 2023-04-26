@@ -55,6 +55,7 @@ _bazeldnf = rule(
             default = "@bazeldnf//cmd:prebuilt",
             cfg = "host",
             executable = True,
+            allow_files = True,
         ),
         "_runner": attr.label(
             default = "@bazeldnf//internal:runner.bash.template",

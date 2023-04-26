@@ -21,35 +21,58 @@ cp -L bazel-bin/cmd/cmd_/cmd dist/bazeldnf-${VERSION}-darwin-amd64
 bazel build --platforms=@io_bazel_rules_go//go/toolchain:darwin_arm64 //cmd
 cp -L bazel-bin/cmd/cmd_/cmd dist/bazeldnf-${VERSION}-darwin-arm64
 
+cat <<EOT >./deps.bzl
+load(
+    "@bazel_tools//tools/build_defs/repo:http.bzl",
+    "http_file",
+)
+load(
+    "@bazeldnf//internal:rpm.bzl",
+    _rpm = "rpm",
+)
+load(
+    "@bazeldnf//internal:rpmtree.bzl",
+    _rpmtree = "rpmtree",
+)
+load(
+    "@bazeldnf//internal:rpmtree.bzl",
+    _tar2files = "tar2files",
+)
+load(
+    "@bazeldnf//internal:xattrs.bzl",
+    _xattrs = "xattrs",
+)
+
+rpm = _rpm
+rpmtree = _rpmtree
+tar2files = _tar2files
+xattrs = _xattrs
+
+def bazeldnf_dependencies():
+EOT
+
 for os in linux darwin; do
 	for arch in amd64 arm64; do
 
 		DIGEST=$(sha256sum dist/bazeldnf-${VERSION}-${os}-${arch} | cut -d " " -f 1)
-
-		# buildozer returns a non-zero exit code (3) if the commands were a success but did not change the file.
-		# To make the command idempotent, first set the digest to a kind-of-unique number to work around this behaviour.
-		# This way we can assume a zero exit code if no errors occur.
-		cat <<EOF | bazel run -- @com_github_bazelbuild_buildtools//buildozer -f -
-set sha256 "$(date +%s)"|${BASE_DIR}/WORKSPACE:bazeldnf-${os}-${arch}
-EOF
-
-		# set the actual values
-		cat <<EOF | bazel run -- @com_github_bazelbuild_buildtools//buildozer -f -
-set sha256 "${DIGEST}"|${BASE_DIR}/WORKSPACE:bazeldnf-${os}-${arch}
-remove urls |${BASE_DIR}/WORKSPACE:bazeldnf-${os}-${arch}
-add urls "https://github.com/rmohr/bazeldnf/releases/download/${VERSION}/bazeldnf-${VERSION}-${os}-${arch}"|${BASE_DIR}/WORKSPACE:bazeldnf-${os}-${arch}
-EOF
-
+		cat <<EOT >>./deps.bzl
+    http_file(
+        name = "bazeldnf-${os}-${arch}",
+        executable = True,
+        sha256 = "${DIGEST}",
+        urls = ["https://github.com/rmohr/bazeldnf/releases/download/${VERSION}/bazeldnf-${VERSION}-${os}-${arch}"],
+    )
+EOT
 	done
 done
 
 git commit -a -m "Bump prebuilt binary references for ${VERSION}"
 
-git archive --format tar.gz HEAD > ./dist/bazeldnf-${VERSION}.tar.gz
+git archive --format tar.gz HEAD >./dist/bazeldnf-${VERSION}.tar.gz
 
 DIGEST=$(sha256sum dist/bazeldnf-${VERSION}.tar.gz | cut -d " " -f 1)
 
-cat <<EOT >> ./dist/releasenote.txt
+cat <<EOT >>./dist/releasenote.txt
 \`\`\`
 http_archive(
     name = "bazeldnf",
