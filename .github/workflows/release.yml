@@ -1,0 +1,42 @@
+
+name: release
+
+# This workflow can be manually triggered to create a GitHub release and upload release bins.
+#
+# Steps to use:
+# - Create a new Git tag and push
+# - Navigate to https://github.com/rmohr/bazeldnf/actions/workflows/release.yml
+# - Click on "Run workflow"
+# - Select the tag you want to release
+# - Click on green button
+#
+# Requires read-write workflow permissions which can be configured in Actions repo settings.
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Bazeldnf release version (e.g. v1.2.3)'
+        required: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: bazelbuild/setup-bazelisk@v1
+      - run: |
+          git config --global user.name "CI"
+          git config --global user.email "rmohr@users.noreply.github.com"
+          hack/prepare-release.sh
+          git tag ${VERSION}
+          git push origin ${VERSION}
+          git push
+        env:
+          VERSION: ${{ inputs.release_version }}
+      - uses: softprops/action-gh-release@v1
+        with:
+          body_path: dist/releasenote.txt
+          tag_name: ${{ inputs.release_version }}
+          files: |
+            dist/bazeldnf-*
