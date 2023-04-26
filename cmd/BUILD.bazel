@@ -51,7 +51,10 @@ go_binary(
 alias(
     name = "prebuilt",
     actual = select({
-        "@platforms://os:linux": "@bazeldnf-0.5.6-linux-amd64//file",
+        "@io_bazel_rules_go//go/platform:linux_amd64": "@bazeldnf-linux-amd64//file",
+        "@io_bazel_rules_go//go/platform:linux_arm64": "@bazeldnf-linux-arm64//file",
+        "@io_bazel_rules_go//go/platform:darwin_amd64": "@bazeldnf-darwin-amd64//file",
+        "@io_bazel_rules_go//go/platform:darwin_arm64": "@bazeldnf-darwin-arm64//file",
         "//conditions:default": "cmd",
     }),
     visibility = ["//visibility:public"],

@@ -44,7 +44,7 @@ _xattrs_attrs = {
         executable = True,
         cfg = "exec",
         allow_files = True,
-        default = Label("//cmd:cmd"),
+        default = Label("//cmd:prebuilt"),
     ),
     "capabilities": attr.string_list_dict(),
     "selinux_labels": attr.string_dict(),
