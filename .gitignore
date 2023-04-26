@@ -2,3 +2,5 @@
 /.idea
 repo.yaml
 .bazeldnf
+dist
+cmd/cmd
