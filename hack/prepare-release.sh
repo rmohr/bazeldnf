@@ -12,14 +12,36 @@ BASE_DIR="$(
 rm -rf dist
 mkdir -p dist
 
-bazel build --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64 //cmd
-cp -L bazel-bin/cmd/cmd_/cmd dist/bazeldnf-${VERSION}-linux-amd64
-bazel build --platforms=@io_bazel_rules_go//go/toolchain:linux_arm64 //cmd
-cp -L bazel-bin/cmd/cmd_/cmd dist/bazeldnf-${VERSION}-linux-arm64
-bazel build --platforms=@io_bazel_rules_go//go/toolchain:darwin_amd64 //cmd
-cp -L bazel-bin/cmd/cmd_/cmd dist/bazeldnf-${VERSION}-darwin-amd64
-bazel build --platforms=@io_bazel_rules_go//go/toolchain:darwin_arm64 //cmd
-cp -L bazel-bin/cmd/cmd_/cmd dist/bazeldnf-${VERSION}-darwin-arm64
+function build_arch() {
+	os=$1
+	arch=$2
+
+	bazel build --platforms=@io_bazel_rules_go//go/toolchain:${os}_${arch} //cmd
+	cp -L bazel-bin/cmd/cmd_/cmd dist/bazeldnf-${VERSION}-${os}-${arch}
+}
+
+function write_arch() {
+	os=$1
+	arch=$2
+
+	DIGEST=$(sha256sum dist/bazeldnf-${VERSION}-${os}-${arch} | cut -d " " -f 1)
+	cat <<EOT >>./deps.bzl
+    http_file(
+        name = "bazeldnf-${os}-${arch}",
+        executable = True,
+        sha256 = "${DIGEST}",
+        urls = ["https://github.com/rmohr/bazeldnf/releases/download/${VERSION}/bazeldnf-${VERSION}-${os}-${arch}"],
+    )
+EOT
+
+}
+
+build_arch linux amd64
+build_arch linux arm64
+build_arch darwin amd64
+build_arch darwin arm64
+build_arch linux ppc64
+build_arch linux ppc64le
 
 cat <<EOT >./deps.bzl
 load(
@@ -51,20 +73,12 @@ xattrs = _xattrs
 def bazeldnf_dependencies():
 EOT
 
-for os in linux darwin; do
-	for arch in amd64 arm64; do
-
-		DIGEST=$(sha256sum dist/bazeldnf-${VERSION}-${os}-${arch} | cut -d " " -f 1)
-		cat <<EOT >>./deps.bzl
-    http_file(
-        name = "bazeldnf-${os}-${arch}",
-        executable = True,
-        sha256 = "${DIGEST}",
-        urls = ["https://github.com/rmohr/bazeldnf/releases/download/${VERSION}/bazeldnf-${VERSION}-${os}-${arch}"],
-    )
-EOT
-	done
-done
+write_arch linux amd64
+write_arch linux arm64
+write_arch darwin amd64
+write_arch darwin arm64
+write_arch linux ppc64
+write_arch linux ppc64le
 
 git commit -a -m "Bump prebuilt binary references for ${VERSION}"
 

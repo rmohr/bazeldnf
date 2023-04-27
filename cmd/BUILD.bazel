@@ -53,6 +53,8 @@ alias(
     actual = select({
         "@io_bazel_rules_go//go/platform:linux_amd64": "@bazeldnf-linux-amd64//file:downloaded",
         "@io_bazel_rules_go//go/platform:linux_arm64": "@bazeldnf-linux-arm64//file:downloaded",
+        "@io_bazel_rules_go//go/platform:linux_ppc64": "@bazeldnf-linux-ppc64//file:downloaded",
+        "@io_bazel_rules_go//go/platform:linux_ppc64le": "@bazeldnf-linux-ppc64le//file:downloaded",
         "@io_bazel_rules_go//go/platform:darwin_amd64": "@bazeldnf-darwin-amd64//file:downloaded",
         "@io_bazel_rules_go//go/platform:darwin_arm64": "@bazeldnf-darwin-arm64//file:downloaded",
         "//conditions:default": "cmd",
