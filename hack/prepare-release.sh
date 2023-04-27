@@ -106,9 +106,13 @@ bazeldnf_dependencies()
 \`\`\`
 EOT
 
-lead='^<!-- install_start -->$'
-tail='^<!-- install_end -->$'
-sed -i -e "/$lead/,/$tail/{ /$lead/{p; r dist/releasenote.txt
+# Only update the README if we don't build a release candidate
+if [[ "${VERSION}" != *"-rc"* ]]; then
+
+	lead='^<!-- install_start -->$'
+	tail='^<!-- install_end -->$'
+	sed -i -e "/$lead/,/$tail/{ /$lead/{p; r dist/releasenote.txt
         }; /$tail/p; d }" README.md
 
-git commit -a -m "Bump install instructions for readme in ${VERSION}"
+	git commit -a -m "Bump install instructions for readme in ${VERSION}"
+fi
