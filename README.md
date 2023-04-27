@@ -75,7 +75,7 @@ rpmtree(
 )
 ```
 
-### Running bazeldnf with bazel
+## Running bazeldnf with bazel
 
 The bazeldnf repository needs to be added  to your `WORKSPACE`:
 
