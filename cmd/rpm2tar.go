@@ -4,6 +4,7 @@ import (
 	"archive/tar"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 
 	"github.com/rmohr/bazeldnf/pkg/order"
@@ -12,11 +13,12 @@ import (
 )
 
 type rpm2tarOpts struct {
-	output        string
-	input         []string
-	symlinks      map[string]string
-	capabilities  map[string]string
-	selinuxLabels map[string]string
+	output         string
+	input          []string
+	sortedSymlinks []string
+	symlinks       map[string]string
+	capabilities   map[string]string
+	selinuxLabels  map[string]string
 }
 
 var rpm2taropts = rpm2tarOpts{}
@@ -26,6 +28,7 @@ func NewRpm2TarCmd() *cobra.Command {
 		Use:   "rpm2tar",
 		Short: "convert a rpm to a tar archive",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			sortSymlinkKeys()
 			rpmStream := os.Stdin
 			tarStream := os.Stdout
 			if rpm2taropts.output != "" {
@@ -50,7 +53,8 @@ func NewRpm2TarCmd() *cobra.Command {
 				if err != nil {
 					return err
 				}
-				for k, v := range rpm2taropts.symlinks {
+				for _, k := range rpm2taropts.sortedSymlinks {
+					v := rpm2taropts.symlinks[k]
 					// If an absolute path is given let's add a `.` in front. This is
 					// not strictly necessary but adds a more correct tar path
 					// which aligns with the usual rpm entries which start with `./`
@@ -107,4 +111,14 @@ func NewRpm2TarCmd() *cobra.Command {
 	rpm2tarCmd.Flags().MarkShorthandDeprecated("capabilities", "use --capabilities instead")
 	rpm2tarCmd.Flags().MarkShorthandDeprecated("symlinks", "use --symlinks instead")
 	return rpm2tarCmd
+}
+
+func sortSymlinkKeys() {
+	rpm2taropts.sortedSymlinks = make([]string, len(rpm2taropts.symlinks))
+	i := 0
+	for k := range rpm2taropts.symlinks {
+		rpm2taropts.sortedSymlinks[i] = k
+		i++
+	}
+	sort.Strings(rpm2taropts.sortedSymlinks)
 }
