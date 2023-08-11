@@ -8,9 +8,9 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/malt3/go-rpmutils"
 	"github.com/rmohr/bazeldnf/pkg/bazel"
 	"github.com/rmohr/bazeldnf/pkg/repo"
-	"github.com/sassoftware/go-rpmutils"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"golang.org/x/crypto/openpgp"
@@ -25,7 +25,6 @@ type VerifyOpts struct {
 var verifyopts = VerifyOpts{}
 
 func NewVerifyCmd() *cobra.Command {
-
 	verifyCmd := &cobra.Command{
 		Use:   "verify",
 		Short: "verify RPMs against gpg keys defined in repo.yaml",

@@ -15,8 +15,8 @@ def bazeldnf_build_dependencies():
         build_external = "external",
         name = "com_github_bazelbuild_buildtools",
         importpath = "github.com/bazelbuild/buildtools",
-        sum = "h1:DQ4RKicYtQ0KmtM6+PhBbMhd+qaazxi/8FuZoD7a1Zo=",
-        version = "v0.0.0-20230127124510-cf446296fb76",
+        sum = "h1:s3NA7b8mmqO7hrcnf1grVKxnJEkxBYt8ZW20Lxvh+R4=",
+        version = "v0.0.0-20230427141602-b182fc414c8b",
     )
     _maybe(
         build_external = "external",
@@ -141,8 +141,15 @@ def bazeldnf_build_dependencies():
         build_external = "external",
         name = "com_github_klauspost_compress",
         importpath = "github.com/klauspost/compress",
-        sum = "h1:bPb7nMRdOZYDrpPMTA3EInUQrdgoBinqUuSwlGdKDdE=",
-        version = "v1.11.1",
+        sum = "h1:0hzRabrMN4tSTvMfnL3SCv1ZGeAP23ynzodBgaHeMeg=",
+        version = "v1.11.7",
+    )
+    _maybe(
+        build_external = "external",
+        name = "com_github_malt3_go_rpmutils",
+        importpath = "github.com/malt3/go-rpmutils",
+        sum = "h1:3KgdA0owLcEwJrVo18q4DnF8XgdDShqKpXdBkVxvC6A=",
+        version = "v0.0.0-20230810164034-3fa3c6cdda0c",
     )
     _maybe(
         build_external = "external",
@@ -178,14 +185,6 @@ def bazeldnf_build_dependencies():
         importpath = "github.com/russross/blackfriday/v2",
         sum = "h1:JIOH55/0cWyOuilr9/qlrm0BSXldqnqwMsf35Ld67mk=",
         version = "v2.1.0",
-    )
-    _maybe(
-        build_external = "external",
-        name = "com_github_sassoftware_go_rpmutils",
-        importpath = "github.com/sassoftware/go-rpmutils",
-        replace = "github.com/rmohr/go-rpmutils",
-        sum = "h1:IPm+rJWi7P9mkoFQjloDEGThxlM71dzDrC2DZSjgnL8=",
-        version = "v0.1.2-0.20201215123907-5acf7436c00d",
     )
     _maybe(
         build_external = "external",
@@ -296,15 +295,15 @@ def bazeldnf_build_dependencies():
         build_external = "external",
         name = "org_golang_google_protobuf",
         importpath = "google.golang.org/protobuf",
-        sum = "h1:w43yiav+6bVFTBQFZX0r7ipe9JQ1QsbMgHwbBziscLw=",
-        version = "v1.28.0",
+        sum = "h1:d0NfwRgPtno5B1Wa6L2DAG+KivqkdutMf1UhdNx175w=",
+        version = "v1.28.1",
     )
     _maybe(
         build_external = "external",
         name = "org_golang_x_crypto",
         importpath = "golang.org/x/crypto",
-        sum = "h1:vEg9joUBmeBcK9iSJftGNf3coIG4HqZElCPehJsfAYM=",
-        version = "v0.0.0-20200604202706-70a84ac30bf9",
+        sum = "h1:NmSIgad6KjE6VvHciPZuNRTKxGhlPfD6OA87W/PLkqg=",
+        version = "v0.0.0-20221012134737-56aed061732a",
     )
     _maybe(
         build_external = "external",
@@ -331,8 +330,8 @@ def bazeldnf_build_dependencies():
         build_external = "external",
         name = "org_golang_x_net",
         importpath = "golang.org/x/net",
-        sum = "h1:GyT4nK/YDHSqa1c4753ouYCDajOYKTja9Xb/OHtgvSw=",
-        version = "v0.5.0",
+        sum = "h1:L4ZwwTvKW9gr0ZMS1yrHD9GZhIuVjOBBnaKH+SPQK0Q=",
+        version = "v0.6.0",
     )
     _maybe(
         build_external = "external",
@@ -352,22 +351,22 @@ def bazeldnf_build_dependencies():
         build_external = "external",
         name = "org_golang_x_sys",
         importpath = "golang.org/x/sys",
-        sum = "h1:Zr2JFtRQNX3BCZ8YtxRE9hNJYC8J6I1MVbMg6owUp18=",
-        version = "v0.4.0",
+        sum = "h1:MVltZSvRTcU2ljQOhs94SXPftV6DCNnZViHeQps87pQ=",
+        version = "v0.6.0",
     )
     _maybe(
         build_external = "external",
         name = "org_golang_x_term",
         importpath = "golang.org/x/term",
-        sum = "h1:O7UWfv5+A2qiuulQk30kVinPoMtoIPeVaKLEgLpVkvg=",
-        version = "v0.4.0",
+        sum = "h1:n2a8QNdAb0sZNpU9R1ALUXBbY+w51fCQDN+7EdxNBsY=",
+        version = "v0.5.0",
     )
     _maybe(
         build_external = "external",
         name = "org_golang_x_text",
         importpath = "golang.org/x/text",
-        sum = "h1:3XmdazWV+ubf7QgHSTWeykHOci5oeekaGJBLkrkaw4k=",
-        version = "v0.6.0",
+        sum = "h1:4BRB4x83lYWy72KwLD/qYDuTu7q9PjSagHvijDw7cLo=",
+        version = "v0.7.0",
     )
     _maybe(
         build_external = "external",

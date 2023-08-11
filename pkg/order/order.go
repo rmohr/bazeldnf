@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/malt3/go-rpmutils/cpio"
 	"github.com/rmohr/bazeldnf/pkg/rpm"
-	"github.com/sassoftware/go-rpmutils/cpio"
 )
 
 type Node struct {
