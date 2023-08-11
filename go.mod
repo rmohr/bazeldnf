@@ -1,6 +1,6 @@
 module github.com/rmohr/bazeldnf
 
-go 1.19
+go 1.20
 
 require (
 	github.com/bazelbuild/buildtools v0.0.0-20230127124510-cf446296fb76
