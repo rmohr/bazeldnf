@@ -44,6 +44,7 @@ def _rpm2tar_impl(ctx):
         inputs = ctx.files.rpms,
         outputs = [out],
         arguments = args,
+        mnemonic = "Rpm2Tar",
         progress_message = "Converting %s to tar" % ctx.label.name,
         executable = ctx.executable._bazeldnf,
     )
@@ -61,6 +62,7 @@ def _tar2files_impl(ctx):
         inputs = ctx.files.tar,
         outputs = ctx.outputs.out,
         arguments = args,
+        mnemonic = "Tar2Files",
         progress_message = "Extracting files",
         executable = ctx.executable._bazeldnf,
     )
