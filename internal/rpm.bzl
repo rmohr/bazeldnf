@@ -27,9 +27,10 @@ def _rpm_impl(ctx):
         downloaded_file_path = "downloaded"
         download_path = ctx.path("rpm/" + downloaded_file_path)
         download_info = ctx.download(
-            ctx.attr.urls,
-            "rpm/" + downloaded_file_path,
-            ctx.attr.sha256,
+            url = ctx.attr.urls,
+            output = "rpm/" + downloaded_file_path,
+            sha256 = ctx.attr.sha256,
+            integrity = ctx.attr.integrity,
         )
     else:
         fail("urls must be specified")
@@ -41,6 +42,7 @@ _rpm_attrs = {
     "urls": attr.string_list(),
     "strip_prefix": attr.string(),
     "sha256": attr.string(),
+    "integrity": attr.string(),
 }
 
 rpm = repository_rule(
