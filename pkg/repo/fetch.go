@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
 	"path/filepath"
 	"strings"
@@ -186,7 +187,7 @@ func (r *RepoFetcherImpl) fetchFile(fileType string, repo *bazeldnf.Repository, 
 	log.Infof("Loading %s file from %s", fileType, fileURL)
 	resp, err := r.Getter.Get(fileURL)
 	if err != nil {
-		return fmt.Errorf("Failed to load promary repository file from %s: %v", fileURL, err)
+		return fmt.Errorf("Failed to load primary repository file from %s: %v", fileURL, err)
 	}
 	sha := sha256.New()
 	defer resp.Body.Close()
@@ -214,8 +215,29 @@ type Getter interface {
 
 type getterImpl struct{}
 
-func (*getterImpl) Get(url string) (resp *http.Response, err error) {
-	return http.Get(url)
+func fileGet(filename string) (*http.Response, error) {
+	fp, err := os.Open(filename)
+	if err != nil {
+		return nil, err // skipped wrapping the error since the error already begins with "open: "
+	}
+
+	resp := &http.Response{
+		Status:     "OK",
+		StatusCode: http.StatusOK,
+		Body:       fp,
+	}
+	return resp, nil
+}
+
+func (*getterImpl) Get(rawURL string) (*http.Response, error) {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to parse URL: %w", err)
+	}
+	if u.Scheme == "file" {
+		return fileGet(u.Path)
+	}
+	return http.Get(rawURL)
 }
 
 func toHex(hasher hash.Hash) string {
