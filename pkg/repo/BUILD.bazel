@@ -20,7 +20,10 @@ go_library(
 
 go_test(
     name = "repo_test",
-    srcs = ["repo_test.go"],
+    srcs = [
+        "fetch_test.go",
+        "repo_test.go",
+    ],
     data = glob(["testdata/**"]),
     embed = [":repo"],
     deps = ["//pkg/api"],
