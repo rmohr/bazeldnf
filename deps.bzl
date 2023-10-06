@@ -28,36 +28,36 @@ def bazeldnf_dependencies():
     http_file(
         name = "bazeldnf-linux-amd64",
         executable = True,
-        sha256 = "5f786c1c21edfc5c8db1613eb832269e7c11d2e6007858ef06e11367a1860f85",
-        urls = ["https://github.com/rmohr/bazeldnf/releases/download/v0.5.7-rc1/bazeldnf-v0.5.7-rc1-linux-amd64"],
+        sha256 = "70b786059514033a6b2f313abe4a51fb11ef8737ac72432a55a3219c3ad74f1c",
+        urls = ["https://github.com/rmohr/bazeldnf/releases/download/v0.5.8-rc1/bazeldnf-v0.5.8-rc1-linux-amd64"],
     )
     http_file(
         name = "bazeldnf-linux-arm64",
         executable = True,
-        sha256 = "798c9dc01ede8d647b0f501c15b0a79f3c201bd035f7ad9e08ca28180db60ad9",
-        urls = ["https://github.com/rmohr/bazeldnf/releases/download/v0.5.7-rc1/bazeldnf-v0.5.7-rc1-linux-arm64"],
+        sha256 = "bdfa62ff81426bd5e0ced162b40e288c100745d3aa43204c543fc8e30cf02878",
+        urls = ["https://github.com/rmohr/bazeldnf/releases/download/v0.5.8-rc1/bazeldnf-v0.5.8-rc1-linux-arm64"],
     )
     http_file(
         name = "bazeldnf-darwin-amd64",
         executable = True,
-        sha256 = "46f90ac9cdc397cf9040f2051dafafb25a0d838c019f563200c95c2889f15b2a",
-        urls = ["https://github.com/rmohr/bazeldnf/releases/download/v0.5.7-rc1/bazeldnf-v0.5.7-rc1-darwin-amd64"],
+        sha256 = "0d972edc1b070302673a136a6979a49ad65c5097a2caa1b5f2c09bc170118b58",
+        urls = ["https://github.com/rmohr/bazeldnf/releases/download/v0.5.8-rc1/bazeldnf-v0.5.8-rc1-darwin-amd64"],
     )
     http_file(
         name = "bazeldnf-darwin-arm64",
         executable = True,
-        sha256 = "d5e1eafab40e1ddc4857520db9dc99ed2410c1aa0efb2a115107ae882c74801c",
-        urls = ["https://github.com/rmohr/bazeldnf/releases/download/v0.5.7-rc1/bazeldnf-v0.5.7-rc1-darwin-arm64"],
+        sha256 = "6329fc284361c65c47e81898a1b2c330afaa9de677127c1a924c0e0fa345f7d5",
+        urls = ["https://github.com/rmohr/bazeldnf/releases/download/v0.5.8-rc1/bazeldnf-v0.5.8-rc1-darwin-arm64"],
     )
     http_file(
         name = "bazeldnf-linux-ppc64",
         executable = True,
-        sha256 = "cb1e46c2254dfc4bccf7d8158f94a7de0f802fb5942eb682c103b128503de2dc",
-        urls = ["https://github.com/rmohr/bazeldnf/releases/download/v0.5.7-rc1/bazeldnf-v0.5.7-rc1-linux-ppc64"],
+        sha256 = "c3cd79563e3cd50467480cb31ffcc31f3f99fc371c9ac7fe78468e2ac609dadd",
+        urls = ["https://github.com/rmohr/bazeldnf/releases/download/v0.5.8-rc1/bazeldnf-v0.5.8-rc1-linux-ppc64"],
     )
     http_file(
         name = "bazeldnf-linux-ppc64le",
         executable = True,
-        sha256 = "5b619a6333c4a96467ba38d1acbac6937aaf65f1338b7049654650670c04fab6",
-        urls = ["https://github.com/rmohr/bazeldnf/releases/download/v0.5.7-rc1/bazeldnf-v0.5.7-rc1-linux-ppc64le"],
+        sha256 = "897d287519dd0609c498a4b16c477dd10b1737721809dc1f2fdf4801e17f3e35",
+        urls = ["https://github.com/rmohr/bazeldnf/releases/download/v0.5.8-rc1/bazeldnf-v0.5.8-rc1-linux-ppc64le"],
     )
