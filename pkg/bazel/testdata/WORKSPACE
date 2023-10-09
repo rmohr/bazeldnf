@@ -11,3 +11,12 @@ rpm(
     name = "test.rpm",
     urls = ["http://something.rpm"],
 )
+
+rpm(
+    name = "a-0__2.3.4.myarch",
+    sha256 = "0000",
+    urls = [
+        "old/url/1",
+        "old/url/2",
+    ],
+)

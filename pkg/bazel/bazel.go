@@ -122,14 +122,17 @@ func AddWorkspaceRPMs(workspace *build.File, pkgs []*api.Package, arch string) e
 			rpms[pkgName] = rule
 		}
 		rule.SetName(pkgName)
-		rule.SetSHA256(pkg.Checksum.Text)
 		urls := rule.URLs()
-		if len(urls) == 0 {
+		// Configure/re-configure the URLs when
+		// 1) no URLs are set, or
+		// 2) the checksum changed.
+		if len(urls) == 0 || (rule.SHA256() != pkg.Checksum.Text) {
 			err := rule.SetURLs(pkg.Repository.Mirrors, pkg.Location.Href)
 			if err != nil {
 				return err
 			}
 		}
+		rule.SetSHA256(pkg.Checksum.Text)
 	}
 
 	rules := []*RPMRule{}
