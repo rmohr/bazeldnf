@@ -42,6 +42,7 @@ build_arch darwin amd64
 build_arch darwin arm64
 build_arch linux ppc64
 build_arch linux ppc64le
+build_arch linux s390x
 
 cat <<EOT >./deps.bzl
 load(
@@ -79,6 +80,7 @@ write_arch darwin amd64
 write_arch darwin arm64
 write_arch linux ppc64
 write_arch linux ppc64le
+write_arch linux s390x
 
 git commit -a -m "Bump prebuilt binary references for ${VERSION}"
 
