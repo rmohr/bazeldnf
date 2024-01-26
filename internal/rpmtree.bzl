@@ -126,7 +126,7 @@ def tar2files(**kwargs):
             name = basename + k
             files = []
             for file in v:
-                files = files + [name + "/" + file]
+                files = files + [basename + "/" + file]
             _tar2files(
                 name = name,
                 prefix = k,
