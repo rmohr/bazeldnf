@@ -11,7 +11,6 @@ buildifier(
     name = "buildifier",
 )
 
-load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
 load("//:deps.bzl", "rpmtree", "tar2files")
 load("//:def.bzl", "bazeldnf")
 
@@ -37,11 +36,6 @@ tar2files(
     },
     tar = ":something",
     visibility = ["//visibility:public"],
-)
-
-pkg_tar(
-    name = "whatever",
-    deps = [":something"],
 )
 
 cc_library(
