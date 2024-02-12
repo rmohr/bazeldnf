@@ -24,8 +24,8 @@ import (
 	"sort"
 	"time"
 
+	"github.com/malt3/go-rpmutils/cpio"
 	"github.com/rmohr/bazeldnf/pkg/xattr"
-	"github.com/sassoftware/go-rpmutils/cpio"
 	"github.com/sirupsen/logrus"
 )
 

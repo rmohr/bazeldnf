@@ -39,11 +39,6 @@ tar2files(
     visibility = ["//visibility:public"],
 )
 
-pkg_tar(
-    name = "whatever",
-    deps = [":something"],
-)
-
 cc_library(
     name = "bar",
     srcs = ["//:something_libs/usr/lib64"],

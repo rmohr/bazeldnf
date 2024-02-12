@@ -7,7 +7,7 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/rpm",
-        "@com_github_sassoftware_go_rpmutils//cpio:go_default_library",
+        "@com_github_malt3_go_rpmutils//cpio:go_default_library",
     ],
 )
 

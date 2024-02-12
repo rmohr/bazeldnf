@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sassoftware/go-rpmutils"
-	"github.com/sassoftware/go-rpmutils/cpio"
+	"github.com/malt3/go-rpmutils"
+	"github.com/malt3/go-rpmutils/cpio"
 	log "github.com/sirupsen/logrus"
 )
 
