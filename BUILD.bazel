@@ -1,5 +1,5 @@
 load("@bazel_gazelle//:def.bzl", "gazelle")
-load("@com_github_bazelbuild_buildtools//buildifier:def.bzl", "buildifier")
+load("@buildifier_prebuilt//:rules.bzl", "buildifier")
 load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 load("//bazeldnf:def.bzl", "bazeldnf")
 load(":deps.bzl", "rpmtree", "tar2files")
