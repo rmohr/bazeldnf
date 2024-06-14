@@ -4,3 +4,4 @@ repo.yaml
 .bazeldnf
 dist
 cmd/cmd
+.bazelrc.user
