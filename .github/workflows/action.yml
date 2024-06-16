@@ -23,10 +23,9 @@ jobs:
     - uses: bazelbuild/setup-bazelisk@v1
     - run: cd e2e/bazel-5 && bazel build //...
 
-  # TODO: rename to build once we move into bazel 7 as the default
-  build-bazel-7:
+  build-e2e-bazel-6-nobzlmod:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: bazelbuild/setup-bazelisk@v1
-    - run: export USE_BAZEL_VERSION=6.x && bazel build //... && bazel test //...
+    - run: cd e2e/bazel-6 && bazel build //...
