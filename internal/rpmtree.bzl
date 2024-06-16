@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+load("//bazeldnf:toolchain.bzl", "BAZELDNF_TOOLCHAIN")
+
 def _rpm2tar_impl(ctx):
     rpms = []
     for rpm in ctx.files.rpms:
@@ -46,7 +48,7 @@ def _rpm2tar_impl(ctx):
         arguments = args,
         mnemonic = "Rpm2Tar",
         progress_message = "Converting %s to tar" % ctx.label.name,
-        executable = ctx.executable._bazeldnf,
+        executable = ctx.toolchains[BAZELDNF_TOOLCHAIN]._tool,
     )
 
     return [DefaultInfo(files = depset([ctx.outputs.out]))]
@@ -64,19 +66,13 @@ def _tar2files_impl(ctx):
         arguments = args,
         mnemonic = "Tar2Files",
         progress_message = "Extracting files",
-        executable = ctx.executable._bazeldnf,
+        executable = ctx.toolchains[BAZELDNF_TOOLCHAIN]._tool,
     )
 
     return [DefaultInfo(files = depset(ctx.outputs.out))]
 
 _rpm2tar_attrs = {
     "rpms": attr.label_list(allow_files = True),
-    "_bazeldnf": attr.label(
-        executable = True,
-        cfg = "exec",
-        allow_files = True,
-        default = Label("//cmd:prebuilt"),
-    ),
     "symlinks": attr.string_dict(),
     "capabilities": attr.string_list_dict(),
     "selinux_labels": attr.string_list_dict(),
@@ -85,12 +81,6 @@ _rpm2tar_attrs = {
 
 _tar2files_attrs = {
     "tar": attr.label(allow_single_file = True),
-    "_bazeldnf": attr.label(
-        executable = True,
-        cfg = "exec",
-        allow_files = True,
-        default = Label("//cmd:prebuilt"),
-    ),
     "prefix": attr.string(),
     "out": attr.output_list(mandatory = True),
 }
@@ -98,11 +88,13 @@ _tar2files_attrs = {
 _rpm2tar = rule(
     implementation = _rpm2tar_impl,
     attrs = _rpm2tar_attrs,
+    toolchains = [BAZELDNF_TOOLCHAIN],
 )
 
 _tar2files = rule(
     implementation = _tar2files_impl,
     attrs = _tar2files_attrs,
+    toolchains = [BAZELDNF_TOOLCHAIN],
 )
 
 def rpmtree(**kwargs):

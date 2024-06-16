@@ -1,4 +1,5 @@
 load("@bazel_skylib//lib:shell.bzl", "shell")
+load("//bazeldnf:toolchain.bzl", "BAZELDNF_TOOLCHAIN")
 
 def _bazeldnf_impl(ctx):
     transitive_dependencies = []
@@ -16,8 +17,10 @@ def _bazeldnf_impl(ctx):
     for lib in ctx.attr.libs:
         args += [lib]
 
+    toolchain = ctx.toolchains[BAZELDNF_TOOLCHAIN]
+
     substitutions = {
-        "@@BAZELDNF_SHORT_PATH@@": shell.quote(ctx.executable._bazeldnf.short_path),
+        "@@BAZELDNF_SHORT_PATH@@": shell.quote(toolchain._tool.short_path),
         "@@ARGS@@": shell.array_literal(args),
     }
     ctx.actions.expand_template(
@@ -27,7 +30,7 @@ def _bazeldnf_impl(ctx):
         is_executable = True,
     )
     runfiles = ctx.runfiles(
-        files = [ctx.executable._bazeldnf],
+        files = [toolchain._tool],
         transitive_files = depset([], transitive = transitive_dependencies),
     )
     return [DefaultInfo(
@@ -51,17 +54,12 @@ _bazeldnf = rule(
         "rpmtree": attr.string(),
         "libs": attr.string_list(),
         "tar": attr.label(allow_single_file = True),
-        "_bazeldnf": attr.label(
-            default = "@bazeldnf//cmd:prebuilt",
-            cfg = "host",
-            executable = True,
-            allow_files = True,
-        ),
         "_runner": attr.label(
             default = "@bazeldnf//internal:runner.bash.template",
             allow_single_file = True,
         ),
     },
+    toolchains = [BAZELDNF_TOOLCHAIN],
     executable = True,
 )
 

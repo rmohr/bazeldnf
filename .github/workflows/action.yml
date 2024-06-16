@@ -8,13 +8,12 @@ on:
 
 jobs:
 
-  # TODO: rename to build-bazel-6 once we move into bazel 7 as the default, to be deprecated by Dec 2025
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: bazelbuild/setup-bazelisk@v1
-    - run: bazel build //... && bazel test //...
+    - run: bazel build --config=built-toolchain //... && bazel test --config=built-toolchain //...
 
   # TODO: deprecate by Jan 2025 https://bazel.build/release
   build-bazel-5:

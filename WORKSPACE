@@ -125,3 +125,7 @@ aspect_bazel_lib_dependencies()
 # Register bazel-lib toolchains
 
 aspect_bazel_lib_register_toolchains()
+
+load("@bazeldnf//bazeldnf:toolchain.bzl", "bazeldnf_prebuilt_register_toolchains")
+
+bazeldnf_prebuilt_register_toolchains(name = "bazeldnf_prebuilt", register_toolchains = False)
