@@ -1,0 +1,14 @@
+"bazelndf test repo with bazel 6"
+
+module(
+    name = "bazel-6-bzlmod",
+)
+
+bazel_dep(name = "bazeldnf", version = "0.0.0")
+local_path_override(
+    module_name = "bazeldnf",
+    path = "../..",
+)
+
+bazel_dep(name = "bazel_skylib", version = "1.7.1")
+bazel_dep(name = "rules_pkg", version = "0.10.1", dev_dependency = True)

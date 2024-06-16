@@ -1,0 +1,4 @@
+# dependencies for integration tests
+load("@bazeldnf//:test_deps.bzl", "bazeldnf_test_dependencies")
+
+bazeldnf_test_dependencies()

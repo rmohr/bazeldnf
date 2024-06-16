@@ -1,22 +1,26 @@
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-
 local_repository(
     name = "bazeldnf",
     path = "../../",
 )
 
-load("@bazeldnf//bazeldnf:deps.bzl", "bazeldnf_dependencies")
+load(
+    "@bazeldnf//bazeldnf:repositories.bzl",
+    "bazeldnf_dependencies",
+    "bazeldnf_register_toolchains",
+)
 
 bazeldnf_dependencies()
 
-load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
-
-bazel_skylib_workspace()
+bazeldnf_register_toolchains(
+    name = "bazeldnf_prebuilt",
+)
 
 # dependencies for integration tests
 load("@bazeldnf//:test_deps.bzl", "bazeldnf_test_dependencies")
 
 bazeldnf_test_dependencies()
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 http_archive(
     name = "rules_pkg",
