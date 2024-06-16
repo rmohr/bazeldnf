@@ -1,5 +1,5 @@
 # Import Aspect bazelrc presets
-try-import %workspace%/.aspect/bazelrc/local/bazel7.bazelrc # will only work in bazel7+
+try-import %workspace%/.aspect/bazelrc/bazel7.bazelrc # will only work in bazel7+
 import %workspace%/.aspect/bazelrc/bazel6.bazelrc # will only work in bazel6+
 import %workspace%/.aspect/bazelrc/convenience.bazelrc
 import %workspace%/.aspect/bazelrc/correctness.bazelrc
@@ -8,6 +8,7 @@ import %workspace%/.aspect/bazelrc/performance.bazelrc
 
 # Specific project flags go here if we have some
 
+# inside the rules project we build from source
 common --extra_toolchains=//cmd:bazeldnf-host-toolchain
 
 # Load any settings & overrides specific to the current user from `.bazelrc.user`.
