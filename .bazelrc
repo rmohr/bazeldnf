@@ -9,15 +9,11 @@ import %workspace%/.aspect/bazelrc/performance.bazelrc
 # Specific project flags go here if we have some
 
 # register toolchains with prebuilts
-common:prebuilt-toolchain --extra_toolchains=@bazeldnf_prebuilt//:linux-amd64-toolchain
-common:prebuilt-toolchain --extra_toolchains=@bazeldnf_prebuilt//:linux-arm64-toolchain
-common:prebuilt-toolchain --extra_toolchains=@bazeldnf_prebuilt//:linux-ppc64-toolchain
-common:prebuilt-toolchain --extra_toolchains=@bazeldnf_prebuilt//:linux-ppc64le-toolchain
-common:prebuilt-toolchain --extra_toolchains=@bazeldnf_prebuilt//:linux-s390x-toolchain
-common:prebuilt-toolchain --extra_toolchains=@bazeldnf_prebuilt//:darwin-amd64-toolchain
-common:prebuilt-toolchain --extra_toolchains=@bazeldnf_prebuilt//:darwin-arm64-toolchain
+common:prebuilt-toolchain --extra_toolchains=@bazeldnf_toolchains//:all
 
 common:built-toolchain --extra_toolchains=//cmd:bazeldnf-host-toolchain
+
+common --enable_bzlmod
 
 # Load any settings & overrides specific to the current user from `.bazelrc.user`.
 # This file should appear in `.gitignore` so that settings are not shared with team members. This
