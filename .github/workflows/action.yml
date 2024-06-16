@@ -16,12 +16,12 @@ jobs:
     - run: bazel build --config=built-toolchain //... && bazel test --config=built-toolchain //...
 
   # TODO: deprecate by Jan 2025 https://bazel.build/release
-  build-bazel-5:
+  build-e2e-bazel-5:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: bazelbuild/setup-bazelisk@v1
-    - run: export USE_BAZEL_VERSION=5.x && bazel build //... && bazel test //...
+    - run: cd e2e/bazel-5 && bazel build //...
 
   # TODO: rename to build once we move into bazel 7 as the default
   build-bazel-7:

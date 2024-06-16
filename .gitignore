@@ -1,4 +1,5 @@
 /bazel-*
+/e2e/*/bazel-*
 /.idea
 repo.yaml
 .bazeldnf

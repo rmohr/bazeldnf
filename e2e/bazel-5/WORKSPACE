@@ -1,0 +1,35 @@
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+local_repository(
+    name = "bazeldnf",
+    path = "../../",
+)
+
+load("@bazeldnf//bazeldnf:deps.bzl", "bazeldnf_dependencies")
+
+bazeldnf_dependencies()
+
+load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
+
+bazel_skylib_workspace()
+
+# dependencies for integration tests
+load("@bazeldnf//:test_deps.bzl", "bazeldnf_test_dependencies")
+
+bazeldnf_test_dependencies()
+
+http_archive(
+    name = "rules_pkg",
+    sha256 = "cad05f864a32799f6f9022891de91ac78f30e0fa07dc68abac92a628121b5b11",
+    urls = [
+        "https://github.com/bazelbuild/rules_pkg/releases/download/1.0.0/rules_pkg-1.0.0.tar.gz",
+    ],
+)
+
+load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
+
+rules_pkg_dependencies()
+
+load("@bazeldnf//bazeldnf:toolchain.bzl", "bazeldnf_prebuilt_register_toolchains")
+
+bazeldnf_prebuilt_register_toolchains(name = "bazeldnf_prebuilt")
