@@ -1,6 +1,8 @@
 load(
-    "@bazeldnf//internal:bazeldnf.bzl",
+    "@bazeldnf//bazeldnf:defs.bzl",
     _bazeldnf = "bazeldnf",
 )
 
-bazeldnf = _bazeldnf
+def bazeldnf(*args, **kwargs):
+    print("import this method from @bazeldnf//bazeldnf:defs.bzl")
+    _bazeldnf(*args, **kwargs)

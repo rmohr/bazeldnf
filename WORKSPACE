@@ -49,7 +49,7 @@ http_archive(
 load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 load("//:build_deps.bzl", "bazeldnf_build_dependencies")
-load("//:deps.bzl", "bazeldnf_dependencies", "rpm")
+load("//bazeldnf:deps.bzl", "bazeldnf_dependencies", "rpm")
 
 # gazelle:repository_macro build_deps.bzl%bazeldnf_build_dependencies
 bazeldnf_build_dependencies()
