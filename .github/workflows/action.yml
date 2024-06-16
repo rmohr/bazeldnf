@@ -29,3 +29,10 @@ jobs:
     - uses: actions/checkout@v2
     - uses: bazelbuild/setup-bazelisk@v1
     - run: cd e2e/bazel-6 && bazel build //...
+
+  build-e2e-bazel-7-nobzlmod:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: bazelbuild/setup-bazelisk@v1
+    - run: cd e2e/bazel-7 && bazel build //...
