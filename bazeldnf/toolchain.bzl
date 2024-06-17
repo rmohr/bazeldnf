@@ -1,3 +1,5 @@
+"Wraps bazeldnf tool binary through a toolchain"
+
 def _bazeldnf_toolchain(ctx):
     return [
         platform_common.ToolchainInfo(

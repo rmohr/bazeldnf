@@ -97,31 +97,36 @@ _tar2files = rule(
     toolchains = [BAZELDNF_TOOLCHAIN],
 )
 
-def rpmtree(**kwargs):
-    kwargs.pop("files", None)
-    basename = kwargs["name"]
-    kwargs.pop("name", None)
-    tarname = basename + ".tar"
+def rpmtree(name, **kwargs):
+    """Creates a tar file from a list of rpm files."""
+    tarname = name + ".tar"
     _rpm2tar(
-        name = basename,
+        name = name,
         out = tarname,
         **kwargs
     )
 
-def tar2files(**kwargs):
-    files = kwargs["files"]
-    kwargs.pop("files", None)
-    basename = kwargs["name"]
-    kwargs.pop("name", None)
-    if files:
-        for k, v in files.items():
-            name = basename + k
-            files = []
-            for file in v:
-                files = files + [name + "/" + file]
-            _tar2files(
-                name = name,
-                prefix = k,
-                out = files,
-                **kwargs
-            )
+def tar2files(name, files = None, **kwargs):
+    """Extracts files from a tar file.
+
+    Args:
+        name: The name of the tar file to be processed.
+        files: A dictionary where each key-value pair represents a file to be extracted.
+               If not provided, the function will fail.
+        **kwargs: Additional keyword arguments to be passed to the _tar2files function.
+    """
+    if not files:
+        fail("files is a required attribute")
+
+    basename = name
+    for k, v in files.items():
+        name = basename + k
+        files = []
+        for file in v:
+            files.append(name + "/" + file)
+        _tar2files(
+            name = name,
+            prefix = k,
+            out = files,
+            **kwargs
+        )
