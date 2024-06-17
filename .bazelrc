@@ -1,5 +1,5 @@
 # Import Aspect bazelrc presets
-try-import %workspace%/.aspect/bazelrc/local/bazel7.bazelrc # will only work in bazel7+
+try-import %workspace%/.aspect/bazelrc/bazel7.bazelrc # will only work in bazel7+
 import %workspace%/.aspect/bazelrc/bazel6.bazelrc # will only work in bazel6+
 import %workspace%/.aspect/bazelrc/convenience.bazelrc
 import %workspace%/.aspect/bazelrc/correctness.bazelrc

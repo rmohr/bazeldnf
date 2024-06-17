@@ -13,7 +13,6 @@ concurrency:
   cancel-in-progress: ${{ github.ref_name != 'main' }}
 
 jobs:
-
   build-and-test:
     runs-on: ubuntu-latest
     steps:

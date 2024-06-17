@@ -1,0 +1,8 @@
+try-import %workspace%/.aspect/bazelrc/ci.bazelrc
+try-import %workspace%/../../.aspect/bazelrc/ci.bazelrc
+
+# Debug where options came from
+common --announce_rc
+
+# Allows tests to run bazelisk-in-bazel, since this is the cache folder used
+common --test_env=XDG_CACHE_HOME

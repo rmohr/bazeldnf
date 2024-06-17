@@ -14,10 +14,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: bazel-contrib/setup-bazel@0.8.5
+        with:
+          # Avoid downloading Bazel every time.
+          bazelisk-cache: true
+          # Store build cache per workflow.
+          disk-cache: ${{ github.workflow }}
+          # Share repository cache between workflows.
+          repository-cache: true
+          bazelrc: import %workspace%/.github/workflows/ci.bazelrc
+
+
       - name: Build Binaries
-        run: |
-          bazel --bazelrc=.aspect/bazelrc/ci.bazelrc \
-            build --config=release //tools/release
+        run: bazel  build --config=release //tools/release
 
       - uses: actions/upload-artifact@v4
         with:
