@@ -2,7 +2,6 @@
 
 load(
     "@bazeldnf//bazeldnf:defs.bzl",
-    _rpm = "rpm",
     _rpmtree = "rpmtree",
     _tar2files = "tar2files",
     _xattrs = "xattrs",
@@ -10,6 +9,7 @@ load(
 load(
     "@bazeldnf//bazeldnf:deps.bzl",
     _bazeldnf_dependencies = "bazeldnf_dependencies",
+    _rpm = "rpm",
 )
 
 def rpm(*args, **kwargs):
