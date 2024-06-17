@@ -4,8 +4,8 @@ load("@aspect_bazel_lib//lib:copy_file.bzl", "copy_file")
 load("@aspect_bazel_lib//lib:transitions.bzl", "platform_transition_filegroup")
 load("@aspect_bazel_lib//lib:write_source_files.bzl", "write_source_files")
 load("@aspect_bazel_lib//tools/release:hashes.bzl", "hashes")
-load("@bazeldnf//bazeldnf/private:toolchains_repo.bzl", "PLATFORMS")
-load("@bazeldnf//tools:version.bzl", "VERSION")
+load("//tools:platforms.bzl", "PLATFORMS")
+load("//tools:version.bzl", "VERSION")
 
 # buildozer: disable=function-docstring
 def build_for_platform(name, value):
