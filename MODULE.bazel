@@ -7,10 +7,10 @@ module(
 )
 
 bazeldnf = use_extension("//bazeldnf:extensions.bzl", "bazeldnf")
-bazeldnf.toolchain(bazeldnf_version = "0.5.9")
+bazeldnf.toolchain()
 use_repo(bazeldnf, "bazeldnf_toolchains")
 
-# register_toolchains("@bazeldnf_toolchains//:all")
+register_toolchains("@bazeldnf_toolchains//:all")
 
 bazel_dep(name = "bazel_skylib", version = "1.7.1")
 bazel_dep(name = "platforms", version = "0.0.10")

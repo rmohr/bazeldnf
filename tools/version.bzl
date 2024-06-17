@@ -4,7 +4,7 @@
 # See https://git-scm.com/docs/git-archive#Documentation/git-archive.txt-export-subst
 _VERSION_PRIVATE = "$Format:%(describe:tags)$"
 
-VERSION = "0.0.0" if _VERSION_PRIVATE.startswith("$Format") else _VERSION_PRIVATE.replace("v", "", 1)
+VERSION = "0.5.9" if _VERSION_PRIVATE.startswith("$Format") else _VERSION_PRIVATE.replace("v", "", 1)
 
 # Whether rules_py is a pre-release, and therefore has no release artifacts to download.
 # NB: When GitHub runs `git archive` to serve a source archive file,
