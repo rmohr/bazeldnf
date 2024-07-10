@@ -25,7 +25,7 @@ function write_arch() {
 	arch=$2
 
 	DIGEST=$(sha256sum dist/bazeldnf-${VERSION}-${os}-${arch} | cut -d " " -f 1)
-	cat <<EOT >>./deps.bzl
+	cat <<EOT >>bazeldnf/deps.bzl
     http_file(
         name = "bazeldnf-${os}-${arch}",
         executable = True,
@@ -44,32 +44,11 @@ build_arch linux ppc64
 build_arch linux ppc64le
 build_arch linux s390x
 
-cat <<EOT >./deps.bzl
+cat <<EOT >bazeldnf/deps.bzl
 load(
     "@bazel_tools//tools/build_defs/repo:http.bzl",
     "http_file",
 )
-load(
-    "@bazeldnf//internal:rpm.bzl",
-    _rpm = "rpm",
-)
-load(
-    "@bazeldnf//internal:rpmtree.bzl",
-    _rpmtree = "rpmtree",
-)
-load(
-    "@bazeldnf//internal:rpmtree.bzl",
-    _tar2files = "tar2files",
-)
-load(
-    "@bazeldnf//internal:xattrs.bzl",
-    _xattrs = "xattrs",
-)
-
-rpm = _rpm
-rpmtree = _rpmtree
-tar2files = _tar2files
-xattrs = _xattrs
 
 def bazeldnf_dependencies():
 EOT
@@ -102,7 +81,7 @@ http_archive(
     ],
 )
 
-load("@bazeldnf//:deps.bzl", "bazeldnf_dependencies")
+load("@bazeldnf//bazeldnf:deps.bzl", "bazeldnf_dependencies")
 
 bazeldnf_dependencies()
 \`\`\`

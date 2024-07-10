@@ -11,7 +11,7 @@ The `rpm` rule represents a pure RPM dependency. This dependency is not
 processed in any way.  They can be added to your `WORKSPACE` file like this:
 
 ```python
-load("@bazeldnf//:deps.bzl", "rpm")
+load("@bazeldnf//bazeldnf:deps.bzl", "rpm")
 
 rpm(
     name = "libvirt-devel-6.1.0-2.fc32.x86_64.rpm",
@@ -29,7 +29,7 @@ rpm(
 `tar` package.  `rpmtree` rules can be added like this to your `BUILD` files:
 
 ```python
-load("@bazeldnf//:deps.bzl", "rpmtree")
+load("@bazeldnf//bazeldnf:defs.bzl", "rpmtree")
 
 rpmtree(
     name = "rpmarchive",
@@ -91,7 +91,7 @@ http_archive(
     ],
 )
 
-load("@bazeldnf//:deps.bzl", "bazeldnf_dependencies")
+load("@bazeldnf//bazeldnf:deps.bzl", "bazeldnf_dependencies")
 
 bazeldnf_dependencies()
 ```
@@ -99,7 +99,7 @@ bazeldnf_dependencies()
 
 Define the `bazeldnf` executable rule in your `BUILD.bazel` file:
 ```python
-load("@bazeldnf//:def.bzl", "bazeldnf")
+load("@bazeldnf//bazeldnf:defs.bzl", "bazeldnf")
 
 bazeldnf(name = "bazeldnf")
 ```
@@ -121,7 +121,7 @@ a subset of libraries and headers and providing them to `cc_library` targets.
 An example:
 
 ```python
-load("@bazeldnf//:deps.bzl", "rpm", "rpmtree", "tar2files")
+load("@bazeldnf//bazeldnf:defs.bzl", "rpm", "rpmtree", "tar2files")
 
 tar2files(
     name = "libvirt-libs",
@@ -170,8 +170,7 @@ and create `tar2files` rules for you, based on a provided set of libraries.
 First define a target like this:
 
 ```python
-load("@bazeldnf//:deps.bzl", "rpm", "rpmtree", "tar2files")
-load("@bazeldnf//:def.bzl", "bazeldnf")
+load("@bazeldnf//bazeldnf:defs.bzl", "bazeldnf", "rpm", "rpmtree", "tar2files")
 
 bazeldnf(
     name = "ldd",

@@ -1,69 +1,34 @@
+"""legacy API for bazeldnf dependencies"""
+
 load(
-    "@bazel_tools//tools/build_defs/repo:http.bzl",
-    "http_file",
-)
-load(
-    "@bazeldnf//internal:rpm.bzl",
+    "@bazeldnf//bazeldnf:defs.bzl",
     _rpm = "rpm",
-)
-load(
-    "@bazeldnf//internal:rpmtree.bzl",
     _rpmtree = "rpmtree",
-)
-load(
-    "@bazeldnf//internal:rpmtree.bzl",
     _tar2files = "tar2files",
-)
-load(
-    "@bazeldnf//internal:xattrs.bzl",
     _xattrs = "xattrs",
 )
+load(
+    "@bazeldnf//bazeldnf:deps.bzl",
+    _bazeldnf_dependencies = "bazeldnf_dependencies",
+)
 
-rpm = _rpm
-rpmtree = _rpmtree
-tar2files = _tar2files
-xattrs = _xattrs
+def rpm(*args, **kwargs):
+    print("import rpm method from @bazeldnf//bazeldnf:defs.bzl")
+    _rpm(*args, **kwargs)
+
+def rpmtree(*args, **kwargs):
+    print("import rpmtree method from @bazeldnf//bazeldnf:defs.bzl")
+    _rpmtree(*args, **kwargs)
+
+def tar2files(*args, **kwargs):
+    print("import tar2files method from @bazeldnf//bazeldnf:defs.bzl")
+    _tar2files(*args, **kwargs)
+
+def xattrs(*args, **kwargs):
+    print("import xattrs method from @bazeldnf//bazeldnf:defs.bzl")
+    _xattrs(*args, **kwargs)
 
 def bazeldnf_dependencies():
-    http_file(
-        name = "bazeldnf-linux-amd64",
-        executable = True,
-        sha256 = "7e1035d8bd2f25b787b04843f4d6a05e7cdbd3995926497c2a587e52da6262a8",
-        urls = ["https://github.com/rmohr/bazeldnf/releases/download/v0.5.9/bazeldnf-v0.5.9-linux-amd64"],
-    )
-    http_file(
-        name = "bazeldnf-linux-arm64",
-        executable = True,
-        sha256 = "d954b785bfd79dbbd66a2f3df02b0d3a51f1fed4508a6d88fda13a9d24c878cc",
-        urls = ["https://github.com/rmohr/bazeldnf/releases/download/v0.5.9/bazeldnf-v0.5.9-linux-arm64"],
-    )
-    http_file(
-        name = "bazeldnf-darwin-amd64",
-        executable = True,
-        sha256 = "92afc7f6475981adf9ae32b563b051869d433d8d8c9666e28a1c1c6e840394cd",
-        urls = ["https://github.com/rmohr/bazeldnf/releases/download/v0.5.9/bazeldnf-v0.5.9-darwin-amd64"],
-    )
-    http_file(
-        name = "bazeldnf-darwin-arm64",
-        executable = True,
-        sha256 = "c5e99ed72448026ee63259a0a28440f8b43a125414fa312edbd569c2976515a3",
-        urls = ["https://github.com/rmohr/bazeldnf/releases/download/v0.5.9/bazeldnf-v0.5.9-darwin-arm64"],
-    )
-    http_file(
-        name = "bazeldnf-linux-ppc64",
-        executable = True,
-        sha256 = "9d5337c1afe4bab858742718ac4c230d9ca368299cb97c50078eef14ae180922",
-        urls = ["https://github.com/rmohr/bazeldnf/releases/download/v0.5.9/bazeldnf-v0.5.9-linux-ppc64"],
-    )
-    http_file(
-        name = "bazeldnf-linux-ppc64le",
-        executable = True,
-        sha256 = "7ea4db00947914bc1c51e8f042fe220a3167c65815c487eccd0c541ecfa78aa1",
-        urls = ["https://github.com/rmohr/bazeldnf/releases/download/v0.5.9/bazeldnf-v0.5.9-linux-ppc64le"],
-    )
-    http_file(
-        name = "bazeldnf-linux-s390x",
-        executable = True,
-        sha256 = "09aa4abcb1d85da11642889826b982ef90547eb32099fc8177456c92f66a4cfd",
-        urls = ["https://github.com/rmohr/bazeldnf/releases/download/v0.5.9/bazeldnf-v0.5.9-linux-s390x"],
-    )
+    """Download bazeldnf dependencies"""
+    print("import bazeldnf_dependencies method from @bazeldnf//bazeldnf:deps.bzl")
+    _bazeldnf_dependencies()

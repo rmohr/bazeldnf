@@ -8,9 +8,31 @@ on:
 
 jobs:
 
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: bazelbuild/setup-bazelisk@v1
-    - run: bazel build //... && bazel test //...
+    - run: bazel build --config=built-toolchain //... && bazel test --config=built-toolchain //...
+
+  # TODO: deprecate by Jan 2025 https://bazel.build/release
+  build-e2e-bazel-5:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: bazelbuild/setup-bazelisk@v1
+    - run: cd e2e/bazel-5 && bazel build //...
+
+  build-e2e-bazel-6-nobzlmod:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: bazelbuild/setup-bazelisk@v1
+    - run: cd e2e/bazel-6 && bazel build //...
+
+  build-e2e-bazel-7-nobzlmod:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: bazelbuild/setup-bazelisk@v1
+    - run: cd e2e/bazel-7 && bazel build //...

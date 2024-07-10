@@ -1,6 +1,8 @@
 /bazel-*
+/e2e/*/bazel-*
 /.idea
 repo.yaml
 .bazeldnf
 dist
 cmd/cmd
+.bazelrc.user

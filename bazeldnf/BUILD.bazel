@@ -1,0 +1,9 @@
+# this directory contains the public API from bazeldnf, anything on this directory
+# should be buildable withtout dev dependencies
+#
+
+# bazeldnf toolchain type
+toolchain_type(
+    name = "toolchain",
+    visibility = ["//visibility:public"],
+)
