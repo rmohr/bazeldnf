@@ -8,7 +8,7 @@ gazelle:
 	bazelisk run //:gazelle
 
 test: gazelle
-	bazelisk test //pkg/...
+	bazelisk build --config=built-toolchain //... && bazelisk test --config=built-toolchain //...
 
 buildifier:
 	bazelisk run //:buildifier
@@ -16,6 +16,11 @@ buildifier:
 gofmt:
 	gofmt -w pkg/.. cmd/..
 
+e2e:
+	(cd e2e/bazel-5 && bazelisk build //...)
+	(cd e2e/bazel-6 && bazelisk build //...)
+	(cd e2e/bazel-7 && bazelisk build //...)
+
 fmt: gofmt buildifier
 
-.PHONY: gazelle test deps-update buildifier gofmt fmt
+.PHONY: gazelle test deps-update buildifier gofmt fmt e2e

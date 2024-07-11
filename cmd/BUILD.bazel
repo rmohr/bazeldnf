@@ -51,11 +51,11 @@ go_binary(
 
 bazeldnf_toolchain(
     name = "host-toolchain",
-    tool = ":cmd"
+    tool = ":cmd",
 )
 
 toolchain(
     name = "bazeldnf-host-toolchain",
-    toolchain_type = "//bazeldnf:toolchain",
     toolchain = ":host-toolchain",
+    toolchain_type = "//bazeldnf:toolchain",
 )
