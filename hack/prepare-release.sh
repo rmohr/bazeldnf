@@ -45,12 +45,41 @@ build_arch linux ppc64le
 build_arch linux s390x
 
 cat <<EOT >bazeldnf/deps.bzl
+"""bazeldnf public dependency for WORKSPACE"""
+
 load(
     "@bazel_tools//tools/build_defs/repo:http.bzl",
+    "http_archive",
     "http_file",
 )
+load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
+load(
+    "@bazeldnf//internal:rpm.bzl",
+    _rpm = "rpm",
+)
+
+rpm = _rpm
 
 def bazeldnf_dependencies():
+    """bazeldnf dependencies when consuming the repo externally"""
+    maybe(
+        http_archive,
+        name = "bazel_skylib",
+        sha256 = "f24ab666394232f834f74d19e2ff142b0af17466ea0c69a3f4c276ee75f6efce",
+        urls = [
+            "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.4.0/bazel-skylib-1.4.0.tar.gz",
+            "https://github.com/bazelbuild/bazel-skylib/releases/download/1.4.0/bazel-skylib-1.4.0.tar.gz",
+        ],
+    )
+    maybe(
+        http_archive,
+        name = "platforms",
+        urls = [
+            "https://mirror.bazel.build/github.com/bazelbuild/platforms/releases/download/0.0.10/platforms-0.0.10.tar.gz",
+            "https://github.com/bazelbuild/platforms/releases/download/0.0.10/platforms-0.0.10.tar.gz",
+        ],
+        sha256 = "218efe8ee736d26a3572663b374a253c012b716d8af0c07e842e82f238a0a7ee",
+    )
 EOT
 
 write_arch linux amd64
