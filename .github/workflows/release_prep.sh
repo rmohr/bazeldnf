@@ -32,7 +32,7 @@ mkdir -p ${PREFIX}/tools
 cat >${PREFIX}/tools/prebuilts.bzl <<EOF
 "Generated during release by release_prep.sh, using integrity.jq"
 
-VERSION = "${VERSION}"
+VERSION = "${TAG:1}"
 
 REPO_URL = "${REPO_URL}"
 

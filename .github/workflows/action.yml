@@ -30,7 +30,7 @@ jobs:
           import %workspace%/.aspect/bazelrc/ci.bazelrc
         # keep a cache for MODULE.bazel repos
         external-cache: true
-    - run: bazel build --config=built-toolchain //... && bazel test --config=built-toolchain //...
+    - run: bazel build //... && bazel test //...
 
   e2e-workspace-matrix:
     strategy:
@@ -80,4 +80,6 @@ jobs:
         # enable some flags for CI
         bazelrc: |
           import %workspace%/../../.aspect/bazelrc/ci.bazelrc
+        # keep a cache for MODULE.bazel repos
+        external-cache: true
     - run: cd e2e/bazel-workspace && USE_BAZEL_VERSION=${{ matrix.version }} bazel build //...

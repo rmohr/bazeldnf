@@ -18,12 +18,14 @@ jobs:
         with:
           # Avoid downloading Bazel every time.
           bazelisk-cache: true
-          # Store build cache per workflow.
-          disk-cache: ${{ github.workflow }}
+          # Enable disk-cache
+          disk-cache: true
           # Share repository cache between workflows.
           repository-cache: true
-          bazelrc: import %workspace%/.github/workflows/ci.bazelrc
-
+          # enable CI specific flags
+          bazelrc: |
+            import %workspace%/.github/workflows/ci.bazelrc
+          # keep a cache for MODUL
 
       - name: Build Binaries
         run: bazel run //tools/release

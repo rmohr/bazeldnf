@@ -1,7 +1,7 @@
-"bazelndf test repo with bazel 6"
+"bazelndf test repo with bzlmod"
 
 module(
-    name = "bazel-6-bzlmod",
+    name = "bazel-bzlmod",
 )
 
 bazel_dep(name = "bazeldnf", version = "0.0.0")
