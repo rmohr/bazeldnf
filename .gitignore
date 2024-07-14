@@ -9,3 +9,6 @@ cmd/cmd
 
 # temporary files from MODULE.bazel
 MODULE.bazel.lock
+
+# this is where we store the release artifacts, so we can ignore it
+tools/release

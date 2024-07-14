@@ -4,6 +4,6 @@
 
 # bazeldnf toolchain type
 toolchain_type(
-    name = "toolchain",
+    name = "toolchain_type",
     visibility = ["//visibility:public"],
 )

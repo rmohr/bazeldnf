@@ -49,7 +49,7 @@ http_archive(
 load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 load("//:build_deps.bzl", "bazeldnf_build_dependencies")
-load("//bazeldnf:deps.bzl", "bazeldnf_dependencies", "rpm")
+load("//bazeldnf:deps.bzl", "bazeldnf_dependencies")
 
 # gazelle:repository_macro build_deps.bzl%bazeldnf_build_dependencies
 bazeldnf_build_dependencies()
@@ -111,10 +111,3 @@ aspect_bazel_lib_dependencies()
 # Register bazel-lib toolchains
 
 aspect_bazel_lib_register_toolchains()
-
-load("@bazeldnf//bazeldnf:toolchain.bzl", "bazeldnf_prebuilt_register_toolchains")
-
-bazeldnf_prebuilt_register_toolchains(
-    name = "bazeldnf_prebuilt",
-    register_toolchains = False,
-)

@@ -29,7 +29,3 @@ http_archive(
 load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 
 rules_pkg_dependencies()
-
-load("@bazeldnf//bazeldnf:toolchain.bzl", "bazeldnf_prebuilt_register_toolchains")
-
-bazeldnf_prebuilt_register_toolchains(name = "bazeldnf_prebuilt")
