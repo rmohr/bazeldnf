@@ -7,6 +7,7 @@ import %workspace%/.aspect/bazelrc/debug.bazelrc
 import %workspace%/.aspect/bazelrc/performance.bazelrc
 
 # Specific project flags go here if we have some
+common --incompatible_enable_proto_toolchain_resolution
 
 # inside the rules project we build from source
 common --extra_toolchains=//cmd:bazeldnf-host-toolchain
