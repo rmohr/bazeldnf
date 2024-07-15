@@ -6,7 +6,6 @@ based on: https://github.com/bazel-contrib/rules-template/blob/0dadcb716f06f6728
 """
 
 load("@bazel_features//:features.bzl", "bazel_features")
-load("//bazeldnf/private:toolchains_repo.bzl", "toolchains_repo")
 load("//internal:rpm.bzl", rpm_repository = "rpm")
 load(":repositories.bzl", "bazeldnf_register_toolchains")
 
@@ -38,7 +37,7 @@ _proxy_repo = repository_rule(
 
 _DEFAULT_NAME = "bazeldnf"
 
-def _handle_rpms(alias, mod, module_ctx):
+def _handle_rpms(alias, mod):
     if not mod.tags.rpm:
         return {}
 
@@ -98,7 +97,7 @@ def _toolchain_extension(module_ctx):
             alias = _alias.name
             dev_dependency = _alias.dev_dependency
 
-        rpms = _handle_rpms(alias, mod, module_ctx)
+        rpms = _handle_rpms(alias, mod)
         if rpms:
             if not dev_dependency:
                 repos[alias] = 1

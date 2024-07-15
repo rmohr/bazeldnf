@@ -2,20 +2,18 @@
 # NB: the sha256 files are expected to be newline-terminated.
 #
 # Input looks like
-# 48552e399a1f2ab97e62ca7fce5783b6214e284330c7555383f43acf82446636 bazeldnf_linux-amd64\nfd265552bfd236efef519f81ce783322a50d8d7ab5af5d08a713e519cedff87f bazeldnf_linux-arm64\n
+# 48552e399a1f2ab97e62ca7fce5783b6214e284330c7555383f43acf82446636 bazeldnf-v0.6.0-rc7-linux-amd64\n...
 #
 # Output should look like
 # {
-#  "bazeldnf_linux-amd64": "48552e399a1f2ab97e62ca7fce5783b6214e284330c7555383f43acf82446636",
-#  "bazeldnf_linux-x86_64": "fd265552bfd236efef519f81ce783322a50d8d7ab5af5d08a713e519cedff87f"
+#  "linux-amd64": "48552e399a1f2ab97e62ca7fce5783b6214e284330c7555383f43acf82446636",
+#  ...
 # }
 
 .
-# Don't end with an empty object
+| sub($ARGS.named.PREFIX; ""; "g")
 | rtrimstr("\n")
 | split("\n")
-| map(
-    split(" ")
-    | {"key": .[1], "value": .[0]}
-  )
+| map(split(" "))
+| map({"key": .[1], "value": .[0]})
 | from_entries

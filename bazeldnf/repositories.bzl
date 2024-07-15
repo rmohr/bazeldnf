@@ -8,7 +8,7 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file", _http_archive 
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
 load("//bazeldnf/private:toolchains_repo.bzl", "toolchains_repo")
 load("//tools:integrity.bzl", "PREBUILTS")
-load("//tools:version.bzl", "VERSION", "REPO_URL")
+load("//tools:version.bzl", "REPO_URL", "VERSION")
 load(":platforms.bzl", "PLATFORMS")
 
 def http_archive(name, **kwargs):

@@ -30,6 +30,7 @@ PREFIX=$PREFIX ${SCRIPT_DIR}/generate_tools_versions.sh
 
 PREBUILTS=$(jq \
   --from-file .github/workflows/integrity.jq \
+  --arg PREFIX "bazeldnf-${GITHUB_REF_NAME}-" \
   --slurp \
   --raw-input artifacts/*.sha256 \
 )
@@ -37,7 +38,7 @@ PREBUILTS=$(jq \
 cat >${PREFIX}/tools/integrity.bzl <<EOF
 "Generated during release by release_prep.sh, using integrity.jq"
 
-PREBUILTS = "${PREBUILTS}"
+PREBUILTS = ${PREBUILTS}
 
 EOF
 

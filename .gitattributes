@@ -4,5 +4,8 @@ docs/*.md linguist-generated=true
 # see https://git-scm.com/docs/git-archive/2.40.0#ATTRIBUTES
 # Exclude a bunch of paths to save some disk space
 e2e export-ignore
-.aspect
-.github
+.aspect export-ignore
+.github export-ignore
+pkg/*/testdata export-ignore
+tools/release export-ignore
+
