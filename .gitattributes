@@ -2,11 +2,7 @@ docs/*.md linguist-generated=true
 
 # Configuration for 'git archive'
 # see https://git-scm.com/docs/git-archive/2.40.0#ATTRIBUTES
-# Exclude a bungh of paths to save some disk space
+# Exclude a bunch of paths to save some disk space
 e2e export-ignore
-.aspect export-ignore
-.github export-ignore
-hack export-ignore
-
-# Substitution for the _VERSION_PRIVATE placeholder
-tools/version.bzl export-subst
+.aspect
+.github

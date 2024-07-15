@@ -28,8 +28,7 @@ jobs:
           # keep a cache for MODUL
 
       - name: Build Binaries
-        run: bazel run //tools/release
-
+        run: .github/workflows/build_assets.sh
       - uses: actions/upload-artifact@v4
         with:
           name: artifacts

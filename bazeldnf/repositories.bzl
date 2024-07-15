@@ -6,9 +6,10 @@ See https://docs.bazel.build/versions/main/skylark/deploying.html#dependencies
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file", _http_archive = "http_archive")
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "maybe")
-load("//bazeldnf/private:prebuilts.bzl", "PREBUILTS", "REPO_URL", "VERSION")
 load("//bazeldnf/private:toolchains_repo.bzl", "toolchains_repo")
-load("//tools:platforms.bzl", "PLATFORMS")
+load("//tools:integrity.bzl", "PREBUILTS")
+load("//tools:version.bzl", "VERSION", "REPO_URL")
+load(":platforms.bzl", "PLATFORMS")
 
 def http_archive(name, **kwargs):
     maybe(_http_archive, name = name, **kwargs)
@@ -61,7 +62,7 @@ bazeldnf_toolchain(
     # Base BUILD file for this repository
     repository_ctx.file("BUILD.bazel", build_content)
 
-bazeldnf_repositories = repository_rule(
+bazeldnf_prebuilt_repository = repository_rule(
     _bazeldnf_repo_impl,
     doc = _DOC,
     attrs = _ATTRS,
@@ -100,7 +101,7 @@ def bazeldnf_register_toolchains(name, register = True, **kwargs):
             executable = True,
             url = url,
         )
-        bazeldnf_repositories(
+        bazeldnf_prebuilt_repository(
             name = "%s_%s" % (name, platform),
             tool = name_,
             **kwargs

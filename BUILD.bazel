@@ -27,8 +27,8 @@ bazeldnf(
 rpmtree(
     name = "something",
     rpms = [
-        "@libvirt-libs-6.1.0-2.fc32.x86_64.rpm//rpm",
-        "@libvirt-devel-6.1.0-2.fc32.x86_64.rpm//rpm",
+        "@bazeldnf-dev-rpms//:libvirt-libs-6.1.0-2.fc32.x86_64.rpm",
+        "@bazeldnf-dev-rpms//:libvirt-devel-6.1.0-2.fc32.x86_64.rpm",
     ],
 )
 

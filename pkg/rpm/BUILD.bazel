@@ -24,8 +24,11 @@ go_test(
         "rpm_test.go",
         "tar_test.go",
     ],
-    data = ["@libvirt-libs-6.1.0-2.fc32.x86_64.rpm//rpm"],
+    data = ["@bazeldnf-dev-rpms//:libvirt-libs-6.1.0-2.fc32.x86_64.rpm"],
     embed = [":rpm"],
+    env = {
+        "TEST_RPM": "$(rlocationpath @bazeldnf-dev-rpms//:libvirt-libs-6.1.0-2.fc32.x86_64.rpm)",
+    },
     deps = [
         "//pkg/api",
         "@com_github_onsi_gomega//:gomega",

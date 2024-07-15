@@ -7,7 +7,7 @@ gazelle:
 	bazelisk run //:gazelle
 
 test: gazelle
-	bazelisk build --config=built-toolchain //... && bazelisk test --config=built-toolchain //...
+	bazelisk build //... && bazelisk test //...
 
 buildifier:
 	bazelisk run //:buildifier
@@ -18,7 +18,9 @@ gofmt:
 e2e:
 	(cd e2e/bazel-5 && bazelisk build //...)
 	(cd e2e/bazel-6 && bazelisk build //...)
+	(cd e2e/bazel-6-bzlmod && bazelisk build //...)
 	(cd e2e/bazel-7 && bazelisk build //...)
+	(cd e2e/bazel-7-bzlmod && bazelisk build //...)
 
 fmt: gofmt buildifier
 

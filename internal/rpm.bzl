@@ -20,13 +20,15 @@ _HTTP_FILE_BUILD = """
 package(default_visibility = ["//visibility:public"])
 filegroup(
     name = "rpm",
-    srcs = ["downloaded"],
+    srcs = ["{downloaded_file_path}"],
 )
 """
 
 def _rpm_impl(ctx):
     if ctx.attr.urls:
-        downloaded_file_path = "downloaded"
+        downloaded_file_path = ctx.attr.name
+        if not downloaded_file_path.endswith(".rpm"):
+            downloaded_file_path = "%s.rpm" % downloaded_file_path
         download_info = ctx.download(
             url = ctx.attr.urls,
             output = "rpm/" + downloaded_file_path,
@@ -36,12 +38,11 @@ def _rpm_impl(ctx):
     else:
         fail("urls must be specified")
     ctx.file("WORKSPACE", "workspace(name = \"{name}\")".format(name = ctx.name))
-    ctx.file("rpm/BUILD", _HTTP_FILE_BUILD.format(downloaded_file_path))
+    ctx.file("rpm/BUILD", _HTTP_FILE_BUILD.format(downloaded_file_path = downloaded_file_path))
     return update_attrs(ctx.attr, _rpm_attrs.keys(), {"sha256": download_info.sha256})
 
 _rpm_attrs = {
     "urls": attr.string_list(),
-    "strip_prefix": attr.string(),
     "sha256": attr.string(),
     "integrity": attr.string(),
 }

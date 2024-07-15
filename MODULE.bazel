@@ -8,12 +8,16 @@ module(
 
 bazeldnf = use_extension("//bazeldnf:extensions.bzl", "bazeldnf")
 bazeldnf.toolchain()
-use_repo(bazeldnf, "bazeldnf_toolchains")
+use_repo(
+    bazeldnf,
+    "bazeldnf_toolchains",
+)
 
 register_toolchains("@bazeldnf_toolchains//:all")
 
 bazel_dep(name = "bazel_skylib", version = "1.7.1")
 bazel_dep(name = "platforms", version = "0.0.10")
+bazel_dep(name = "bazel_features", version = "1.13.0")
 
 bazel_dep(name = "gazelle", version = "0.37.0", dev_dependency = True)
 bazel_dep(name = "rules_go", version = "0.49.0", dev_dependency = True, repo_name = "io_bazel_rules_go")
@@ -40,4 +44,30 @@ use_repo(
     "com_github_spf13_cobra",
     "io_k8s_sigs_yaml",
     "org_golang_x_crypto",
+)
+
+bazeldnf_dev = use_extension("//bazeldnf:extensions.bzl", "bazeldnf", dev_dependency = True)
+bazeldnf_dev.alias(
+    name = "bazeldnf-dev-rpms",
+    dev_dependency = True,
+)
+bazeldnf_dev.rpm(
+    name = "libvirt-libs-6.1.0-2.fc32.x86_64.rpm",
+    sha256 = "3a0a3d88c6cb90008fbe49fe05e7025056fb9fa3a887c4a78f79e63f8745c845",
+    urls = [
+        "https://download-ib01.fedoraproject.org/pub/fedora/linux/releases/32/Everything/x86_64/os/Packages/l/libvirt-libs-6.1.0-2.fc32.x86_64.rpm",
+        "https://storage.googleapis.com/builddeps/3a0a3d88c6cb90008fbe49fe05e7025056fb9fa3a887c4a78f79e63f8745c845",
+    ],
+)
+bazeldnf_dev.rpm(
+    name = "libvirt-devel-6.1.0-2.fc32.x86_64.rpm",
+    sha256 = "2ebb715341b57a74759aff415e0ff53df528c49abaa7ba5b794b4047461fa8d6",
+    urls = [
+        "https://download-ib01.fedoraproject.org/pub/fedora/linux/releases/32/Everything/x86_64/os/Packages/l/libvirt-devel-6.1.0-2.fc32.x86_64.rpm",
+        "https://storage.googleapis.com/builddeps/2ebb715341b57a74759aff415e0ff53df528c49abaa7ba5b794b4047461fa8d6",
+    ],
+)
+use_repo(
+    bazeldnf_dev,
+    "bazeldnf-dev-rpms",
 )

@@ -9,10 +9,7 @@ import %workspace%/.aspect/bazelrc/performance.bazelrc
 # Specific project flags go here if we have some
 common --incompatible_enable_proto_toolchain_resolution
 
-# register toolchains with prebuilts
-common:prebuilt-toolchain --extra_toolchains=@bazeldnf_toolchains//:all
-
-common:built-toolchain --extra_toolchains=//cmd:bazeldnf-host-toolchain
+common --extra_toolchains=//cmd:bazeldnf-host-toolchain
 
 common --enable_bzlmod
 

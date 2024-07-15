@@ -1,8 +1,4 @@
-"""Expose prebuilt binaries for bazeldnf."""
-
-VERSION = "v0.5.9"
-
-REPO_URL = "rmohr/bazeldnf"
+"""Expose prebuilt binaries integrities for bazeldnf."""
 
 PREBUILTS = {
     "linux-amd64": "7e1035d8bd2f25b787b04843f4d6a05e7cdbd3995926497c2a587e52da6262a8",
