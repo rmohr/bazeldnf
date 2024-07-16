@@ -12,5 +12,5 @@ go_test(
     srcs = ["xattr_test.go"],
     data = glob(["testdata/**"]),
     embed = [":xattr"],
-    deps = ["@com_github_onsi_gomega//:go_default_library"],
+    deps = ["@com_github_onsi_gomega//:gomega"],
 )

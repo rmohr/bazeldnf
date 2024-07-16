@@ -1,3 +1,5 @@
+"Provides a wrapper to run bazeldnf as a run target"
+
 load("@bazel_skylib//lib:shell.bzl", "shell")
 load("//bazeldnf:toolchain.bzl", "BAZELDNF_TOOLCHAIN")
 
@@ -6,16 +8,15 @@ def _bazeldnf_impl(ctx):
     out_file = ctx.actions.declare_file(ctx.label.name + ".bash")
     args = []
     if ctx.attr.command:
-        args += [ctx.attr.command]
+        args.append(ctx.attr.command)
     if ctx.attr.rulename:
-        args += ["--name", ctx.attr.rulename]
+        args.extend(["--name", ctx.attr.rulename])
     if ctx.attr.rpmtree:
-        args += ["--rpmtree", ctx.attr.rpmtree]
+        args.extend(["--rpmtree", ctx.attr.rpmtree])
     if ctx.file.tar:
-        args += ["--input", ctx.file.tar.path]
-        transitive_dependencies += [ctx.attr.tar.files]
-    for lib in ctx.attr.libs:
-        args += [lib]
+        args.extend(["--input", ctx.file.tar.path])
+        transitive_dependencies.extend(ctx.attr.tar.files)
+    args.extend(ctx.attr.libs)
 
     toolchain = ctx.toolchains[BAZELDNF_TOOLCHAIN]
 

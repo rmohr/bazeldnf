@@ -3,6 +3,7 @@ import %workspace%/../../.aspect/bazelrc/convenience.bazelrc
 import %workspace%/../../.aspect/bazelrc/correctness.bazelrc
 import %workspace%/../../.aspect/bazelrc/debug.bazelrc
 import %workspace%/../../.aspect/bazelrc/performance.bazelrc
+import %workspace%/../../.github/workflows/ci.bazelrc
 
 # Specific project flags go here if we have some
 
@@ -10,4 +11,4 @@ import %workspace%/../../.aspect/bazelrc/performance.bazelrc
 # This file should appear in `.gitignore` so that settings are not shared with team members. This
 # should be last statement in this config so the user configuration is able to overwrite flags from
 # this file. See https://bazel.build/configure/best-practices#bazelrc-file.
-try-import %workspace%/../../.bazelrc.user
+try-import %workspace%/.bazelrc.user

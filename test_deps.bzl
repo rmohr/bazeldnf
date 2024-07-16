@@ -1,6 +1,6 @@
 "bazeldnf repo integration test dependencies"
 
-load("@bazeldnf//bazeldnf:deps.bzl", "rpm")
+load("@bazeldnf//bazeldnf:defs.bzl", "rpm")
 
 def bazeldnf_test_dependencies():
     rpm(

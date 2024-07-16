@@ -1,5 +1,5 @@
-load("@bazel_gazelle//:def.bzl", "gazelle")
 load("@buildifier_prebuilt//:rules.bzl", "buildifier")
+load("@gazelle//:def.bzl", "gazelle")
 load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 load("//bazeldnf:defs.bzl", "bazeldnf", "rpmtree", "tar2files")
 
@@ -12,6 +12,14 @@ buildifier(
     name = "buildifier",
 )
 
+buildifier(
+    name = "buildifier.check",
+    diff_command = "diff -u",
+    exclude_patterns = ["./.git/*"],
+    lint_mode = "warn",
+    mode = "diff",
+)
+
 bazeldnf(
     name = "bazeldnf",
 )
@@ -19,8 +27,8 @@ bazeldnf(
 rpmtree(
     name = "something",
     rpms = [
-        "@libvirt-libs-6.1.0-2.fc32.x86_64.rpm//rpm",
-        "@libvirt-devel-6.1.0-2.fc32.x86_64.rpm//rpm",
+        "@bazeldnf-dev-rpms//:libvirt-libs-6.1.0-2.fc32.x86_64.rpm",
+        "@bazeldnf-dev-rpms//:libvirt-devel-6.1.0-2.fc32.x86_64.rpm",
     ],
 )
 

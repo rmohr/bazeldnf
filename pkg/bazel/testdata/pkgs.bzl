@@ -1,3 +1,5 @@
+"provider for unit-test"
+
 def rpms():
     rpm(
         name = "a-0__1.2.3.myarch",
