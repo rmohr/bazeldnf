@@ -3,6 +3,7 @@ import %workspace%/../../.aspect/bazelrc/convenience.bazelrc
 import %workspace%/../../.aspect/bazelrc/correctness.bazelrc
 import %workspace%/../../.aspect/bazelrc/debug.bazelrc
 import %workspace%/../../.aspect/bazelrc/performance.bazelrc
+import %workspace%/../../.github/workflows/ci.bazelrc
 
 # Specific project flags go here if we have some
 

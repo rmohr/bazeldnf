@@ -18,14 +18,15 @@ jobs:
         with:
           # Avoid downloading Bazel every time.
           bazelisk-cache: true
-          # Enable disk-cache
+          # Keep a disk-cache
           disk-cache: true
           # Share repository cache between workflows.
           repository-cache: true
-          # enable CI specific flags
+          # enable some flags for CI
           bazelrc: |
-            import %workspace%/.github/workflows/ci.bazelrc
-          # keep a cache for MODUL
+            import %workspace%/.aspect/workflows/ci.bazelrc
+          # keep a cache for MODULE.bazel repos
+          external-cache: true
 
       - name: Build Binaries
         run: .github/workflows/build_assets.sh
