@@ -7,8 +7,8 @@ deps-update:
 gazelle:
 	bazelisk run //:gazelle
 
-test: gazelle
-	bazelisk build --config=built-toolchain //... && bazelisk test --config=built-toolchain //...
+test: gazelle e2e
+	bazelisk build //... && bazelisk test //...
 
 buildifier:
 	bazelisk run //:buildifier
@@ -17,9 +17,13 @@ gofmt:
 	gofmt -w pkg/.. cmd/..
 
 e2e:
-	(cd e2e/bazel-5 && bazelisk build //...)
-	(cd e2e/bazel-6 && bazelisk build //...)
-	(cd e2e/bazel-7 && bazelisk build //...)
+	@for version in 5.x 6.x 7.x; do \
+		( \
+			cd e2e/bazel-workspace && \
+			echo "Testing $$version" > /dev/stderr && \
+			USE_BAZEL_VERSION=$$version bazelisk --batch build //...\
+		) \
+	done
 
 fmt: gofmt buildifier
 

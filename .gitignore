@@ -6,3 +6,6 @@ repo.yaml
 dist
 cmd/cmd
 .bazelrc.user
+
+# temporary files from MODULE.bazel
+MODULE.bazel.lock
