@@ -14,6 +14,8 @@
 
 "Modify xattrs on tar file members"
 
+load("//bazeldnf:toolchain.bzl", "BAZELDNF_TOOLCHAIN")
+
 def _xattrs_impl(ctx):
     out = ctx.outputs.out
     args = ["xattr", "--input", ctx.files.tar[0].path, "--output", out.path]
@@ -21,33 +23,29 @@ def _xattrs_impl(ctx):
     if ctx.attr.capabilities:
         capabilities = []
         for k, v in ctx.attr.capabilities.items():
-            capabilities += [k + "=" + ":".join(v)]
+            capabilities.append([k + "=" + ":".join(v)])
         args += ["--capabilities", ",".join(capabilities)]
 
     if ctx.attr.selinux_labels:
         selinux_labels = []
         for k, v in ctx.attr.selinux_labels.items():
-            selinux_labels += [k + "=" + v]
+            selinux_labels.append([k + "=" + v])
         args += ["--selinux-labels", ",".join(selinux_labels)]
+
+    bazeldnf = ctx.toolchains[BAZELDNF_TOOLCHAIN]._tool
 
     ctx.actions.run(
         inputs = ctx.files.tar,
         outputs = [out],
         arguments = args,
         progress_message = "Enriching %s with xattrs" % ctx.label.name,
-        executable = ctx.executable._bazeldnf,
+        executable = bazeldnf,
     )
 
     return [DefaultInfo(files = depset([ctx.outputs.out]))]
 
 _xattrs_attrs = {
     "tar": attr.label(allow_single_file = True),
-    "_bazeldnf": attr.label(
-        executable = True,
-        cfg = "exec",
-        allow_files = True,
-        default = Label("//cmd:prebuilt"),
-    ),
     "capabilities": attr.string_list_dict(),
     "selinux_labels": attr.string_dict(),
     "out": attr.output(mandatory = True),
@@ -56,6 +54,7 @@ _xattrs_attrs = {
 _xattrs = rule(
     implementation = _xattrs_impl,
     attrs = _xattrs_attrs,
+    toolchains = [BAZELDNF_TOOLCHAIN],
 )
 
 def xattrs(**kwargs):
