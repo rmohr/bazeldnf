@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"Exposes rpm files to a Bazel workspace"
+
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "update_attrs")
 
 _HTTP_FILE_BUILD = """

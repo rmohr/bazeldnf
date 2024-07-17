@@ -12,6 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Provide helpers to convert rpm files into a single tar file
+
+This file exposes rpmtree and tar2files to convert a group of
+rpm files into either a .tar or extract files from that tar to
+make available to bazel
+"""
+
 load("//bazeldnf:toolchain.bzl", "BAZELDNF_TOOLCHAIN")
 
 def _rpm2tar_impl(ctx):
@@ -98,6 +105,7 @@ _tar2files = rule(
 )
 
 def rpmtree(**kwargs):
+    """Creates a tar file from a list of rpm files."""
     kwargs.pop("files", None)
     basename = kwargs["name"]
     kwargs.pop("name", None)
@@ -109,6 +117,14 @@ def rpmtree(**kwargs):
     )
 
 def tar2files(**kwargs):
+    """Extracts files from a tar file.
+
+    Args:
+        name: The name of the tar file to be processed.
+        files: A dictionary where each key-value pair represents a file to be extracted.
+               If not provided, the function will fail.
+        **kwargs: Additional keyword arguments to be passed to the _tar2files function.
+    """
     files = kwargs["files"]
     kwargs.pop("files", None)
     basename = kwargs["name"]

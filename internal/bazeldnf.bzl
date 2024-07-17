@@ -1,3 +1,5 @@
+"Provides a wrapper to run bazeldnf as a run target"
+
 load("@bazel_skylib//lib:shell.bzl", "shell")
 load("//bazeldnf:toolchain.bzl", "BAZELDNF_TOOLCHAIN")
 

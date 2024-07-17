@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"Modify xattrs on tar file members"
+
 def _xattrs_impl(ctx):
     out = ctx.outputs.out
     args = ["xattr", "--input", ctx.files.tar[0].path, "--output", out.path]
