@@ -1,0 +1,6 @@
+# this settings are extra to the ones from .aspect/bazelrc/ci.bazelrc
+# we don't put it there as otherwise the test to keep flags up to date will
+# always fail
+
+# Allows tests to run bazelisk-in-bazel, since this is the cache folder used
+common --test_env=XDG_CACHE_HOME
