@@ -1,4 +1,4 @@
-name: Buildifier
+name: Linters
 
 # Controls when the action will run.
 on:
@@ -37,3 +37,5 @@ jobs:
           external-cache: true
       - name: buildifier
         run: bazel run //:buildifier.check
+      - name: gazelle
+        run: bazel run //:gazelle.check
