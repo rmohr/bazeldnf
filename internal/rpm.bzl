@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"Exposes rpm files to a Bazel workspace"
+
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "update_attrs")
 
 _HTTP_FILE_BUILD = """
@@ -25,7 +27,6 @@ filegroup(
 def _rpm_impl(ctx):
     if ctx.attr.urls:
         downloaded_file_path = "downloaded"
-        download_path = ctx.path("rpm/" + downloaded_file_path)
         download_info = ctx.download(
             url = ctx.attr.urls,
             output = "rpm/" + downloaded_file_path,

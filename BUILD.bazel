@@ -8,8 +8,24 @@ load("//bazeldnf:defs.bzl", "bazeldnf", "rpmtree", "tar2files")
 # gazelle:resolve go github.com/bazelbuild/buildtools/edit @com_github_bazelbuild_buildtools//edit:go_default_library
 gazelle(name = "gazelle")
 
+gazelle(
+    name = "gazelle.check",
+    mode = "diff",
+)
+
 buildifier(
     name = "buildifier",
+)
+
+buildifier(
+    name = "buildifier.check",
+    diff_command = "diff -u",
+    exclude_patterns = [
+        "./.git/*",
+        "./**/testdata/*",
+    ],
+    lint_mode = "warn",
+    mode = "diff",
 )
 
 bazeldnf(

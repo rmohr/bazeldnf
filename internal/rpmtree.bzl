@@ -12,40 +12,46 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""Provide helpers to convert rpm files into a single tar file
+
+This file exposes rpmtree and tar2files to convert a group of
+rpm files into either a .tar or extract files from that tar to
+make available to bazel
+"""
+
 load("//bazeldnf:toolchain.bzl", "BAZELDNF_TOOLCHAIN")
 
 def _rpm2tar_impl(ctx):
-    rpms = []
-    for rpm in ctx.files.rpms:
-        rpms += ["--input", rpm.path]
+    args = ctx.actions.args()
 
     out = ctx.outputs.out
-    args = ["rpm2tar", "--output", out.path]
+    args.add_all(["rpm2tar", "--output", out])
 
     if ctx.attr.symlinks:
         symlinks = []
         for k, v in ctx.attr.symlinks.items():
-            symlinks += [k + "=" + v]
-        args += ["--symlinks", ",".join(symlinks)]
+            symlinks.append(k + "=" + v)
+        args.add_joined("--symlinks", symlinks, join_with = ",")
 
     if ctx.attr.capabilities:
         capabilities = []
         for k, v in ctx.attr.capabilities.items():
-            capabilities += [k + "=" + ":".join(v)]
-        args += ["--capabilities", ",".join(capabilities)]
+            capabilities.append(k + "=" + ":".join(v))
+        args.add_joined("--capabilities", capabilities, join_with = ",")
 
     if ctx.attr.selinux_labels:
         selinux_labels = []
         for k, v in ctx.attr.selinux_labels.items():
-            selinux_labels += [k + "=" + v]
-        args += ["--selinux-labels", ",".join(selinux_labels)]
+            selinux_labels.append(k + "=" + v)
+        args.add_joined("--selinux-labels", selinux_labels, join_with = ",")
 
-    args += rpms
+    for rpm in ctx.files.rpms:
+        args.add_all(["--input", rpm.path])
 
     ctx.actions.run(
         inputs = ctx.files.rpms,
         outputs = [out],
-        arguments = args,
+        arguments = [args],
         mnemonic = "Rpm2Tar",
         progress_message = "Converting %s to tar" % ctx.label.name,
         executable = ctx.toolchains[BAZELDNF_TOOLCHAIN]._tool,
@@ -53,17 +59,19 @@ def _rpm2tar_impl(ctx):
 
     return [DefaultInfo(files = depset([ctx.outputs.out]))]
 
-def _tar2files_impl(ctx):
-    out = ctx.outputs.out
-    files = []
-    for out in ctx.outputs.out:
-        files += [out.path]
+def _expand_path(files):
+    return [x.path for x in files]
 
-    args = ["tar2files", "--file-prefix", ctx.attr.prefix, "--input", ctx.files.tar[0].path] + files
+def _tar2files_impl(ctx):
+    args = ctx.actions.args()
+
+    args.add_all(["tar2files", "--file-prefix", ctx.attr.prefix, "--input", ctx.files.tar[0]])
+    args.add_all([ctx.outputs.out], map_each = _expand_path)
+
     ctx.actions.run(
         inputs = ctx.files.tar,
         outputs = ctx.outputs.out,
-        arguments = args,
+        arguments = [args],
         mnemonic = "Tar2Files",
         progress_message = "Extracting files",
         executable = ctx.toolchains[BAZELDNF_TOOLCHAIN]._tool,
@@ -97,31 +105,36 @@ _tar2files = rule(
     toolchains = [BAZELDNF_TOOLCHAIN],
 )
 
-def rpmtree(**kwargs):
-    kwargs.pop("files", None)
-    basename = kwargs["name"]
-    kwargs.pop("name", None)
-    tarname = basename + ".tar"
+def rpmtree(name, **kwargs):
+    """Creates a tar file from a list of rpm files."""
+    tarname = name + ".tar"
     _rpm2tar(
-        name = basename,
+        name = name,
         out = tarname,
         **kwargs
     )
 
-def tar2files(**kwargs):
-    files = kwargs["files"]
-    kwargs.pop("files", None)
-    basename = kwargs["name"]
-    kwargs.pop("name", None)
-    if files:
-        for k, v in files.items():
-            name = basename + k
-            files = []
-            for file in v:
-                files = files + [name + "/" + file]
-            _tar2files(
-                name = name,
-                prefix = k,
-                out = files,
-                **kwargs
-            )
+def tar2files(name, files = None, **kwargs):
+    """Extracts files from a tar file.
+
+    Args:
+        name: The name of the tar file to be processed.
+        files: A dictionary where each key-value pair represents a file to be extracted.
+               If not provided, the function will fail.
+        **kwargs: Additional keyword arguments to be passed to the _tar2files function.
+    """
+    if not files:
+        fail("files is a required attribute")
+
+    basename = name
+    for k, v in files.items():
+        name = basename + k
+        files = []
+        for file in v:
+            files.append(name + "/" + file)
+        _tar2files(
+            name = name,
+            prefix = k,
+            out = files,
+            **kwargs
+        )

@@ -11,7 +11,7 @@ test: gazelle e2e
 	bazelisk build //... && bazelisk test //...
 
 buildifier:
-	bazelisk run //:buildifier
+	bazelisk run //:buildifier.check
 
 gofmt:
 	gofmt -w pkg/.. cmd/..

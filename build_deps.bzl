@@ -1,9 +1,12 @@
+"Provides WORKSPACE build dependencies to build the bazeldnf binary"
+
 load(
     "@bazel_gazelle//:deps.bzl",
     _go_repository = "go_repository",
 )
 
 def bazeldnf_build_dependencies():
+    "dependencies to build the bazeldnf binary"
     _maybe(
         build_external = "external",
         name = "co_honnef_go_tools",
