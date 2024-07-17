@@ -22,37 +22,36 @@ make available to bazel
 load("//bazeldnf:toolchain.bzl", "BAZELDNF_TOOLCHAIN")
 
 def _rpm2tar_impl(ctx):
-    rpms = []
-    for rpm in ctx.files.rpms:
-        rpms += ["--input", rpm.path]
+    args = ctx.actions.args()
 
     out = ctx.outputs.out
-    args = ["rpm2tar", "--output", out.path]
+    args.add_all(["rpm2tar", "--output", out])
 
     if ctx.attr.symlinks:
         symlinks = []
         for k, v in ctx.attr.symlinks.items():
-            symlinks += [k + "=" + v]
-        args += ["--symlinks", ",".join(symlinks)]
+            symlinks.append(k + "=" + v)
+        args.add_joined("--symlinks", symlinks, join_with = ",")
 
     if ctx.attr.capabilities:
         capabilities = []
         for k, v in ctx.attr.capabilities.items():
-            capabilities += [k + "=" + ":".join(v)]
-        args += ["--capabilities", ",".join(capabilities)]
+            capabilities.append(k + "=" + ":".join(v))
+        args.add_joined("--capabilities", capabilities, join_with = ",")
 
     if ctx.attr.selinux_labels:
         selinux_labels = []
         for k, v in ctx.attr.selinux_labels.items():
-            selinux_labels += [k + "=" + v]
-        args += ["--selinux-labels", ",".join(selinux_labels)]
+            selinux_labels.append(k + "=" + v)
+        args.add_joined("--selinux-labels", selinux_labels, join_with = ",")
 
-    args += rpms
+    for rpm in ctx.files.rpms:
+        args.add_all(["--input", rpm.path])
 
     ctx.actions.run(
         inputs = ctx.files.rpms,
         outputs = [out],
-        arguments = args,
+        arguments = [args],
         mnemonic = "Rpm2Tar",
         progress_message = "Converting %s to tar" % ctx.label.name,
         executable = ctx.toolchains[BAZELDNF_TOOLCHAIN]._tool,
@@ -60,17 +59,19 @@ def _rpm2tar_impl(ctx):
 
     return [DefaultInfo(files = depset([ctx.outputs.out]))]
 
-def _tar2files_impl(ctx):
-    out = ctx.outputs.out
-    files = []
-    for out in ctx.outputs.out:
-        files += [out.path]
+def _expand_path(files):
+    return [x.path for x in files]
 
-    args = ["tar2files", "--file-prefix", ctx.attr.prefix, "--input", ctx.files.tar[0].path] + files
+def _tar2files_impl(ctx):
+    args = ctx.actions.args()
+
+    args.add_all(["tar2files", "--file-prefix", ctx.attr.prefix, "--input", ctx.files.tar[0]])
+    args.add_all([ctx.outputs.out], map_each = _expand_path)
+
     ctx.actions.run(
         inputs = ctx.files.tar,
         outputs = ctx.outputs.out,
-        arguments = args,
+        arguments = [args],
         mnemonic = "Tar2Files",
         progress_message = "Extracting files",
         executable = ctx.toolchains[BAZELDNF_TOOLCHAIN]._tool,
