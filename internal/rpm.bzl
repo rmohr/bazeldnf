@@ -27,7 +27,6 @@ filegroup(
 def _rpm_impl(ctx):
     if ctx.attr.urls:
         downloaded_file_path = "downloaded"
-        download_path = ctx.path("rpm/" + downloaded_file_path)
         download_info = ctx.download(
             url = ctx.attr.urls,
             output = "rpm/" + downloaded_file_path,
