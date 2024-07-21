@@ -86,3 +86,29 @@ jobs:
           import %workspace%/../../.aspect/bazelrc/ci.bazelrc
           import %workspace%/../../.github/workflows/ci.bazelrc
     - run: cd e2e/bazel-bzlmod && USE_BAZEL_VERSION=${{ matrix.version }} bazelisk build //...
+
+  e2e-bzlmod-build-toolchain-matrix:
+    strategy:
+      matrix:
+        config:
+          - version: 6.x
+            flags:
+          - version: 7.x
+            flags: --incompatible_enable_proto_toolchain_resolution
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: bazel-contrib/setup-bazel@0.8.5
+      with:
+        # Avoid downloading Bazel every time.
+        bazelisk-cache: true
+        # Keep a disk-cache
+        disk-cache: true
+        # Share repository cache between workflows.
+        repository-cache: true
+        # enable some flags for CI
+        bazelrc: |
+          import %workspace%/../../.aspect/bazelrc/ci.bazelrc
+          import %workspace%/../../.github/workflows/ci.bazelrc
+    - run: cd e2e/bazel-bzlmod-toolchain-from-source && USE_BAZEL_VERSION=${{ matrix.config.version }} bazelisk build //... ${{ matrix.config.flags }}

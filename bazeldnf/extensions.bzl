@@ -22,6 +22,8 @@ def _toolchain_extension(module_ctx):
                 Only the root module may override the default name for the bazeldnf toolchain.
                 This prevents conflicting registrations in the global namespace of external repos.
                 """)
+            if mod.is_root and toolchain.disable:
+                break
             registrations[toolchain.name] = 1
             if mod.is_root:
                 repos.append(toolchain.name + "_toolchains")
@@ -66,6 +68,7 @@ Overriding the default is only permitted in the root module.
 """,
             default = _DEFAULT_NAME,
         ),
+        "disable": attr.bool(default = False),
     },
     doc = "Allows registering a prebuilt bazeldnf toolchain",
 )
