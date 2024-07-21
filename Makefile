@@ -15,7 +15,7 @@ buildifier:
 gofmt:
 	gofmt -w pkg/.. cmd/..
 
-e2e:
+e2e-workspace:
 	@for version in 5.x 6.x 7.x; do \
 		( \
 			cd e2e/bazel-workspace && \
@@ -23,6 +23,17 @@ e2e:
 			USE_BAZEL_VERSION=$$version bazelisk --batch build //...\
 		) \
 	done
+
+e2e-bzlmod:
+	@for version in 6.x 7.x; do \
+		( \
+			cd e2e/bazel-bzlmod && \
+			echo "Testing $$version with bzlmod" > /dev/stderr && \
+			USE_BAZEL_VERSION=$$version bazelisk --batch build //...\
+		) \
+	done
+
+e2e: e2e-workspace e2e-bzlmod
 
 fmt: gofmt buildifier
 
