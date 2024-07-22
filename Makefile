@@ -6,7 +6,7 @@ deps-update:
 gazelle:
 	bazelisk run //:gazelle
 
-test: gazelle e2e
+test: gazelle buildifier e2e
 	bazelisk build //... && bazelisk test //...
 
 buildifier:
@@ -33,6 +33,15 @@ e2e-bzlmod:
 		) \
 	done
 
+e2e-bzlmod-non-legacy-mode:
+	@for version in 6.x 7.x; do \
+		( \
+			cd e2e/bazel-bzlmod-non-legacy-mode && \
+			echo "Testing $$version with bzlmod with non-legacy mode" > /dev/stderr && \
+			USE_BAZEL_VERSION=$$version bazelisk --batch build //...\
+		) \
+	done
+
 e2e-bzlmod-build-toolchain-6.x:
 	( \
 		cd e2e/bazel-bzlmod-toolchain-from-source && \
@@ -47,7 +56,7 @@ e2e-bzlmod-build-toolchain-7.x:
 
 e2e-bzlmod-build-toolchain: e2e-bzlmod-build-toolchain-6.x e2e-bzlmod-build-toolchain-7.x
 
-e2e: e2e-workspace e2e-bzlmod e2e-bzlmod-build-toolchain
+e2e: e2e-workspace e2e-bzlmod e2e-bzlmod-build-toolchain e2e-bzlmod-non-legacy-mode
 
 fmt: gofmt buildifier
 

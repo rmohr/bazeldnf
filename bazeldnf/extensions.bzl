@@ -9,10 +9,31 @@ load("@bazel_features//:features.bzl", "bazel_features")
 load("//internal:rpm.bzl", rpm_repository = "rpm")
 load(":repositories.bzl", "bazeldnf_register_toolchains")
 
+_ALIAS_TEMPLATE = """\
+alias(
+    name = "{name}",
+    actual = "@{name}//rpm",
+    visibility = ["//visibility:public"],
+)
+"""
+
+def _alias_repository_impl(repository_ctx):
+    """Creates a repository that aliases other repositories."""
+    repository_ctx.file("WORKSPACE", "")
+    for rpm in repository_ctx.attr.rpms:
+        repo_name = rpm.repo_name
+        repository_ctx.file("%s/BUILD.bazel" % repo_name, _ALIAS_TEMPLATE.format(name = repo_name))
+
+_alias_repository = repository_rule(
+    implementation = _alias_repository_impl,
+    attrs = {
+        "rpms": attr.label_list(),
+    },
+)
+
 _DEFAULT_NAME = "bazeldnf"
 
 def _toolchain_extension(module_ctx):
-    registrations = {}
     repos = []
 
     for mod in module_ctx.modules:
@@ -24,17 +45,22 @@ def _toolchain_extension(module_ctx):
                 """)
             if mod.is_root and toolchain.disable:
                 break
-            registrations[toolchain.name] = 1
+            bazeldnf_register_toolchains(
+                name = toolchain.name,
+                register = False,
+            )
             if mod.is_root:
                 repos.append(toolchain.name + "_toolchains")
 
-    for name in registrations.keys():
-        bazeldnf_register_toolchains(
-            name = name,
-            register = False,
-        )
+        legacy = True
+        name = "bazeldnf_rpms"
+        for config in mod.tags.config:
+            if not config.legacy_mode:
+                legacy = False
+                name = config.name or name
 
-    for mod in module_ctx.modules:
+        rpms = []
+
         for rpm in mod.tags.rpm:
             rpm_repository(
                 name = rpm.name,
@@ -43,8 +69,17 @@ def _toolchain_extension(module_ctx):
                 integrity = rpm.integrity,
             )
 
-            if mod.is_root:
+            if mod.is_root and legacy:
                 repos.append(rpm.name)
+            else:
+                rpms.append(rpm.name)
+
+        if not legacy:
+            _alias_repository(
+                name = name,
+                rpms = ["@@%s//rpm" % x for x in rpms],
+            )
+            repos.append(name)
 
     kwargs = {}
     if bazel_features.external_deps.extension_metadata_has_reproducible:
@@ -97,10 +132,27 @@ It is optional to make development easier but either this attribute or
     doc = "Allows registering a Bazel repository wrapping an RPM file",
 )
 
+_config_tag = tag_class(
+    attrs = {
+        "legacy_mode": attr.bool(
+            default = True,
+            doc = """\
+If true, the module is loaded in legacy mode and exposes one Bazel repository \
+per rpm entry in this invocation of the bazel extension.
+""",
+        ),
+        "name": attr.string(
+            doc = "Name of the generated proxy repository",
+            default = "bazeldnf_rpms",
+        ),
+    },
+)
+
 bazeldnf = module_extension(
     implementation = _toolchain_extension,
     tag_classes = {
         "toolchain": _toolchain_tag,
         "rpm": _rpm_tag,
+        "config": _config_tag,
     },
 )

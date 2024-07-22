@@ -69,6 +69,7 @@ jobs:
     strategy:
       matrix:
         version: [6.x, 7.x]
+        path: ["bazel-bzlmod", "bazel-bzlmod-non-legacy-mode"]
 
     runs-on: ubuntu-latest
     steps:
@@ -85,7 +86,7 @@ jobs:
         bazelrc: |
           import %workspace%/../../.aspect/bazelrc/ci.bazelrc
           import %workspace%/../../.github/workflows/ci.bazelrc
-    - run: cd e2e/bazel-bzlmod && USE_BAZEL_VERSION=${{ matrix.version }} bazelisk build //...
+    - run: cd e2e/${{ matrix.path }} && USE_BAZEL_VERSION=${{ matrix.version }} bazelisk build //...
 
   e2e-bzlmod-build-toolchain-matrix:
     strategy:
