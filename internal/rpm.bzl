@@ -41,7 +41,6 @@ def _rpm_impl(ctx):
 
 _rpm_attrs = {
     "urls": attr.string_list(),
-    "strip_prefix": attr.string(),
     "sha256": attr.string(),
     "integrity": attr.string(),
 }

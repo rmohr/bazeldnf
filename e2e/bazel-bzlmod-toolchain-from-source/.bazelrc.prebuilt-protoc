@@ -1,0 +1,2 @@
+common --remote_build_event_upload
+common --incompatible_enable_proto_toolchain_resolution

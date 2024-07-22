@@ -1,0 +1,20 @@
+"example MODULE.bazel to test bzlmod integration for bazeldnf with a prebuilt toolchain"
+
+module(name = "example-bazeldnf-with-bzlmod-lock-file")
+
+bazel_dep(name = "bazeldnf")
+local_path_override(
+    module_name = "bazeldnf",
+    path = "../..",
+)
+
+bazel_dep(name = "rules_pkg", version = "1.0.1")
+
+bazeldnf = use_extension("@bazeldnf//bazeldnf:extensions.bzl", "bazeldnf")
+bazeldnf.config(lock_file = "//:rpms.json")
+bazeldnf.config(lock_file = "//:rpms-with-no-name-attribute.json")
+use_repo(
+    bazeldnf,
+    "bazeldnf-rpms",
+    "rpms-with-no-name-attribute",
+)
