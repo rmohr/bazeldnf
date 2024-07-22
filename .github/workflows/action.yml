@@ -69,7 +69,10 @@ jobs:
     strategy:
       matrix:
         version: [6.x, 7.x]
-        path: ["bazel-bzlmod", "bazel-bzlmod-non-legacy-mode"]
+        path:
+          - bazel-bzlmod
+          - bazel-bzlmod-non-legacy-mode
+          - bazel-bzlmod-lock-file
 
     runs-on: ubuntu-latest
     steps:

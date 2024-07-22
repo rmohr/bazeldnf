@@ -33,6 +33,30 @@ _alias_repository = repository_rule(
 
 _DEFAULT_NAME = "bazeldnf"
 
+def _handle_lock_file(lock_file, module_ctx):
+    content = module_ctx.read(lock_file)
+    lock_file_json = json.decode(content)
+    name = lock_file_json.get("name", lock_file.name.rsplit(".json", 1)[0])
+
+    rpms = []
+
+    for rpm in lock_file_json.get("rpms", []):
+        rpm_name = rpm.pop("name", None)
+        if not rpm_name:
+            urls = rpm.get("urls", [])
+            if len(urls) < 1:
+                fail("invalid entry in %s for %s" % (lock_file, rpm_name))
+            rpm_name = urls[0].rsplit("/", 1)[-1]
+        rpm_repository(name = rpm_name, **rpm)
+        rpms.append(rpm_name)
+
+    _alias_repository(
+        name = name,
+        rpms = ["@@%s//rpm" % x for x in rpms],
+    )
+
+    return name
+
 def _toolchain_extension(module_ctx):
     repos = []
 
@@ -58,6 +82,8 @@ def _toolchain_extension(module_ctx):
             if not config.legacy_mode:
                 legacy = False
                 name = config.name or name
+            if config.lock_file:
+                repos.append(_handle_lock_file(config.lock_file, module_ctx))
 
         rpms = []
 
@@ -74,7 +100,7 @@ def _toolchain_extension(module_ctx):
             else:
                 rpms.append(rpm.name)
 
-        if not legacy:
+        if not legacy and rpms:
             _alias_repository(
                 name = name,
                 rpms = ["@@%s//rpm" % x for x in rpms],
@@ -144,6 +170,28 @@ per rpm entry in this invocation of the bazel extension.
         "name": attr.string(
             doc = "Name of the generated proxy repository",
             default = "bazeldnf_rpms",
+        ),
+        "lock_file": attr.label(
+            doc = """\
+Label of the JSON file that contains the RPMs to expose, there's no legacy mode \
+for RPMs defined by a lock file.
+
+The lock file content is as:
+```json
+    {
+        "name": "optional name for the proxy repository, defaults to the file name",
+        "rpms": [
+            {
+                "name": "<name of the rpm>",
+                "urls": ["<url0>", ...],
+                "sha256": "<sha256 of the file>",
+                "integrity": "<integrity of the file>"
+            }
+        ]
+    }
+```
+""",
+            allow_single_file = [".json"],
         ),
     },
 )

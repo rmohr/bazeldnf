@@ -42,6 +42,15 @@ e2e-bzlmod-non-legacy-mode:
 		) \
 	done
 
+e2e-bazel-bzlmod-lock-file:
+	@for version in 6.x 7.x; do \
+		( \
+			cd e2e/bazel-bzlmod-lock-file && \
+			echo "Testing $$version with bzlmod with lock file" > /dev/stderr && \
+			USE_BAZEL_VERSION=$$version bazelisk --batch build //...\
+		) \
+	done
+
 e2e-bzlmod-build-toolchain-6.x:
 	( \
 		cd e2e/bazel-bzlmod-toolchain-from-source && \
