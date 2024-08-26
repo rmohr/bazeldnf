@@ -24,8 +24,13 @@ def build_for_platform(name, value):
         target_platform = ":{}".format(name),
     )
 
+    _version = VERSION
+
+    if _version.startswith("v"):
+        _version = _version[1:]
+
     artifact = "bazeldnf-v{version}-{platform}".format(
-        version = VERSION,
+        version = _version,
         platform = name,
     )
     copy_file(
