@@ -14,21 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: bazel-contrib/setup-bazel@0.8.5
-        with:
-          # Avoid downloading Bazel every time.
-          bazelisk-cache: true
-          # Keep a disk-cache
-          disk-cache: true
-          # Share repository cache between workflows.
-          repository-cache: true
-          # enable some flags for CI
-          bazelrc: |
-            import %workspace%/.aspect/bazelrc/ci.bazelrc
-            import %workspace%/.github/workflows/ci.bazelrc
-          # keep a cache for MODULE.bazel repos
-          external-cache: true
-
       - name: Build Binaries
         run: .github/workflows/build_assets.sh
 
