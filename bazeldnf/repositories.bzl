@@ -90,6 +90,10 @@ def bazeldnf_register_toolchains(name, register = True, **kwargs):
             VERSION,
             platform,
         )
+        integrity = INTEGRITY.get(platform, INTEGRITY.get(fname, None))
+        if integrity == None:
+            print("WARNING: integrity checksum for {0} or {1} not found in INTEGRITY".format(fname, platform))  # buildifier: disable=print
+            continue
         url = "https://github.com/{repo_url}/releases/download/{version}/{file_name}".format(
             file_name = fname,
             repo_url = REPO_URL,
@@ -97,7 +101,7 @@ def bazeldnf_register_toolchains(name, register = True, **kwargs):
         )
         http_file(
             name = name_,
-            sha256 = INTEGRITY[platform],
+            sha256 = integrity,
             executable = True,
             url = url,
         )
