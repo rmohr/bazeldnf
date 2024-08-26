@@ -1,15 +1,37 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load("@buildifier_prebuilt//:rules.bzl", "buildifier")
-load("@gazelle//:def.bzl", "gazelle")
+load("@gazelle//:def.bzl", "gazelle", "gazelle_binary")
 load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 load("//bazeldnf:defs.bzl", "bazeldnf", "rpmtree", "tar2files")
+
+gazelle_binary(
+    name = "gazelle_binary",
+    languages = [
+        "@bazel_skylib_gazelle_plugin//bzl",
+        "@gazelle//language/go",
+        "@gazelle//language/proto",
+    ],
+)
 
 # gazelle:prefix github.com/rmohr/bazeldnf
 # gazelle:resolve go github.com/bazelbuild/buildtools/build @com_github_bazelbuild_buildtools//build:go_default_library
 # gazelle:resolve go github.com/bazelbuild/buildtools/edit @com_github_bazelbuild_buildtools//edit:go_default_library
-gazelle(name = "gazelle")
+gazelle(
+    name = "gazelle",
+    args = [
+        "-exclude",
+        "pkg/bazel/testdata",
+    ],
+    gazelle = "//:gazelle_binary",
+)
 
 gazelle(
     name = "gazelle.check",
+    args = [
+        "-exclude",
+        "pkg/bazel/testdata",
+    ],
+    gazelle = "//:gazelle_binary",
     mode = "diff",
 )
 
@@ -60,4 +82,35 @@ pkg_tar(
 cc_library(
     name = "bar",
     srcs = ["//:something_libs/usr/lib64"],
+)
+
+bzl_library(
+    name = "build_deps",
+    srcs = ["build_deps.bzl"],
+    visibility = ["//visibility:public"],
+    deps = ["@bazel_gazelle//:deps"],
+)
+
+bzl_library(
+    name = "def",
+    srcs = ["def.bzl"],
+    visibility = ["//visibility:public"],
+    deps = ["@bazeldnf//bazeldnf:defs"],
+)
+
+bzl_library(
+    name = "deps",
+    srcs = ["deps.bzl"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "@bazeldnf//bazeldnf:defs",
+        "@bazeldnf//bazeldnf:deps",
+    ],
+)
+
+bzl_library(
+    name = "test_deps",
+    srcs = ["test_deps.bzl"],
+    visibility = ["//visibility:public"],
+    deps = ["@bazeldnf//bazeldnf:defs"],
 )

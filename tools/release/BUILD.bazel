@@ -1,3 +1,18 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 load(":defs.bzl", "build_for_all_platforms")
 
 build_for_all_platforms(name = "release")
+
+bzl_library(
+    name = "defs",
+    srcs = ["defs.bzl"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//bazeldnf:platforms",
+        "//tools:version",
+        "@aspect_bazel_lib//lib:copy_file",
+        "@aspect_bazel_lib//lib:transitions",
+        "@aspect_bazel_lib//lib:write_source_files",
+        "@aspect_bazel_lib//tools/release:hashes",
+    ],
+)

@@ -19,4 +19,4 @@ bazeldnf_toolchain = rule(
     provides = [platform_common.ToolchainInfo],
 )
 
-BAZELDNF_TOOLCHAIN = "@bazeldnf//bazeldnf:toolchain"
+BAZELDNF_TOOLCHAIN = "@bazeldnf//bazeldnf:toolchain_type"

@@ -1,9 +1,67 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+
 # this directory contains the public API from bazeldnf, anything on this directory
 # should be buildable withtout dev dependencies
 #
 
 # bazeldnf toolchain type
 toolchain_type(
+    name = "toolchain_type",
+    visibility = ["//visibility:public"],
+)
+
+bzl_library(
+    name = "defs",
+    srcs = ["defs.bzl"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//internal:bazeldnf",
+        "//internal:rpm",
+        "//internal:rpmtree",
+        "//internal:xattrs",
+    ],
+)
+
+bzl_library(
+    name = "deps",
+    srcs = ["deps.bzl"],
+    visibility = ["//visibility:public"],
+    deps = [":repositories"],
+)
+
+bzl_library(
+    name = "extensions",
+    srcs = ["extensions.bzl"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":repositories",
+        "//internal:rpm",
+        "@bazel_features//:features",
+    ],
+)
+
+bzl_library(
+    name = "repositories",
+    srcs = ["repositories.bzl"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":platforms",
+        "//bazeldnf/private:toolchains_repo",
+        "//tools:integrity",
+        "//tools:version",
+        "@bazel_tools//tools/build_defs/repo:http.bzl",
+        "@bazel_tools//tools/build_defs/repo:utils.bzl",
+    ],
+)
+
+bzl_library(
+    name = "platforms",
+    srcs = ["platforms.bzl"],
+    visibility = ["//visibility:public"],
+)
+
+bzl_library(
     name = "toolchain",
+    srcs = ["toolchain.bzl"],
     visibility = ["//visibility:public"],
 )
