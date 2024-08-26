@@ -13,6 +13,5 @@ bzl_library(
         "@aspect_bazel_lib//lib:copy_file",
         "@aspect_bazel_lib//lib:transitions",
         "@aspect_bazel_lib//lib:write_source_files",
-        "@aspect_bazel_lib//tools/release:hashes",
     ],
 )

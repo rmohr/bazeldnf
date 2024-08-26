@@ -1,0 +1,23 @@
+load("@stardoc//stardoc:stardoc.bzl", "stardoc")
+
+stardoc(
+    name = "defs",
+    out = "defs.md",
+    input = "//bazeldnf:defs.bzl",
+    deps = [
+        "//internal:bazeldnf",
+        "//internal:rpm",
+        "//internal:rpmtree",
+        "//internal:xattrs",
+    ],
+)
+
+stardoc(
+    name = "deps",
+    out = "deps.md",
+    input = "//bazeldnf:deps.bzl",
+    deps = [
+        "//bazeldnf:repositories",
+        "@bazel_tools//tools/build_defs/repo:cache.bzl",
+    ],
+)

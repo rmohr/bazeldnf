@@ -88,7 +88,7 @@ bzl_library(
     name = "build_deps",
     srcs = ["build_deps.bzl"],
     visibility = ["//visibility:public"],
-    deps = ["@bazel_gazelle//:deps"],
+    deps = ["@gazelle//:deps"],
 )
 
 bzl_library(

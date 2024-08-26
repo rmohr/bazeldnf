@@ -54,6 +54,14 @@ bzl_library(
     ],
 )
 
+exports_files(
+    [
+        "defs.bzl",
+        "deps.bzl",
+    ],
+    visibility = ["//:__subpackages__"],
+)
+
 bzl_library(
     name = "platforms",
     srcs = ["platforms.bzl"],
