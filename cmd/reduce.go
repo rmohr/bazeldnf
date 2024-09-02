@@ -42,7 +42,15 @@ which allow reducing huge rpm repos to a smaller problem set for debugging, remo
 					return err
 				}
 			}
-			_, involved, err := reducer.Resolve(repos, reduceopts.in, reduceopts.baseSystem, reduceopts.arch, required)
+
+			repo := reducer.NewRepoReducer(repos, reduceopts.in, reduceopts.baseSystem, reduceopts.arch, repo.NewCacheHelper())
+			logrus.Info("Loading packages.")
+			if err := repo.Load(); err != nil {
+				return err
+			}
+			logrus.Info("Reduction of involved packages.")
+			_, involved, err := repo.Resolve(required)
+
 			if err != nil {
 				return err
 			}
@@ -74,5 +82,8 @@ which allow reducing huge rpm repos to a smaller problem set for debugging, remo
 	reduceCmd.Flags().MarkDeprecated("fedora-base-system", "use --basesystem instead")
 	reduceCmd.Flags().MarkShorthandDeprecated("fedora-base-system", "use --basesystem instead")
 	reduceCmd.Flags().MarkShorthandDeprecated("nobest", "use --nobest instead")
+
+	repo.AddCacheHelperFlags(reduceCmd)
+
 	return reduceCmd
 }

@@ -13,7 +13,7 @@ func Test(t *testing.T) {
 		fmt.Println(err)
 		return
 	}
-	helper := CacheHelper{CacheDir: ".bazeldnf"}
+	helper := NewCacheHelper(".bazeldnf")
 	a, b, err := helper.CurrentFilelistsForPackages(&repos.Repositories[0], []string{"myarch"}, []*api.Package{
 		{Name: "blub", Arch: "myarch", Version: api.Version{Epoch: "1"}},
 		{Name: "blub", Arch: "myarch", Version: api.Version{Epoch: "3"}},

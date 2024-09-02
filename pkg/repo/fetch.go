@@ -63,11 +63,11 @@ func (r *RepoFetcherImpl) Fetch() (err error) {
 	return nil
 }
 
-func NewRemoteRepoFetcher(repos []bazeldnf.Repository, cacheDir string) RepoFetcher {
+func NewRemoteRepoFetcher(repos []bazeldnf.Repository) RepoFetcher {
 	return &RepoFetcherImpl{
 		Repos:       repos,
 		Getter:      &getterImpl{},
-		CacheHelper: &CacheHelper{CacheDir: cacheDir},
+		CacheHelper: NewCacheHelper(),
 	}
 }
 

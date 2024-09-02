@@ -22,10 +22,11 @@ func NewFetchCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			return repo.NewRemoteRepoFetcher(repos.Repositories, ".bazeldnf").Fetch()
+			return repo.NewRemoteRepoFetcher(repos.Repositories).Fetch()
 		},
 	}
 
 	fetchCmd.Flags().StringArrayVarP(&fetchopts.repofiles, "repofile", "r", []string{"repo.yaml"}, "repository information file. Can be specified multiple times")
+	repo.AddCacheHelperFlags(fetchCmd)
 	return fetchCmd
 }

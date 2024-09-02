@@ -10,13 +10,40 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/adrg/xdg"
 	"github.com/rmohr/bazeldnf/pkg/api"
 	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 	"github.com/rmohr/bazeldnf/pkg/rpm"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
 )
 
+type cacheHelperOpts struct {
+	cacheDir string
+}
+
+var cacheHelperValues = cacheHelperOpts{}
+
 type CacheHelper struct {
-	CacheDir string
+	cacheDir string
+}
+
+func NewCacheHelper(cacheDir ...string) *CacheHelper {
+	if len(cacheDir) == 0 {
+		cacheDir = append(cacheDir, cacheHelperValues.cacheDir)
+	} else if len(cacheDir) > 1 {
+		panic("too many cache directories")
+	}
+
+	logrus.Infof("Using cache directory %s", cacheDir[0])
+
+	return &CacheHelper{
+		cacheDir: cacheDir[0],
+	}
+}
+
+func AddCacheHelperFlags(cmd *cobra.Command) {
+	cmd.Flags().StringVarP(&cacheHelperValues.cacheDir, "cache-dir", "c", xdg.CacheHome+"/bazeldnf", "Cache directory")
 }
 
 func (r *CacheHelper) LoadMetaLink(repo *bazeldnf.Repository) (*api.Metalink, error) {
@@ -28,7 +55,7 @@ func (r *CacheHelper) LoadMetaLink(repo *bazeldnf.Repository) (*api.Metalink, er
 }
 
 func (r *CacheHelper) WriteToRepoDir(repo *bazeldnf.Repository, body io.Reader, name string) error {
-	dir := filepath.Join(r.CacheDir, repo.Name)
+	dir := filepath.Join(r.cacheDir, repo.Name)
 	file := filepath.Join(dir, name)
 
 	err := os.MkdirAll(dir, 0770)
@@ -48,7 +75,7 @@ func (r *CacheHelper) WriteToRepoDir(repo *bazeldnf.Repository, body io.Reader, 
 }
 
 func (r *CacheHelper) OpenFromRepoDir(repo *bazeldnf.Repository, name string) (io.ReadCloser, error) {
-	dir := filepath.Join(r.CacheDir, repo.Name)
+	dir := filepath.Join(r.cacheDir, repo.Name)
 	file := filepath.Join(dir, name)
 	f, err := os.Open(file)
 	if err != nil {
