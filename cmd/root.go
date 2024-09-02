@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -16,6 +17,15 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
+	if logLevel, hasIt := os.LookupEnv("BAZELDNF_LOG_LEVEL"); hasIt {
+		level, err := logrus.ParseLevel(logLevel)
+		if err != nil {
+			fmt.Println("Unable to parse log level from environment variable BAZELDNF_LOG_LEVEL")
+			os.Exit(1)
+		}
+		logrus.SetLevel(level)
+	}
+
 	rootCmd.AddCommand(NewXATTRCmd())
 	rootCmd.AddCommand(NewSandboxCmd())
 	rootCmd.AddCommand(NewFetchCmd())
