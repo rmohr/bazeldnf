@@ -174,7 +174,7 @@ func (r *RepoReducer) requires(p *api.Package) (wants []*api.Package) {
 	return wants
 }
 
-func NewRepoReducer(repos *bazeldnf.Repositories, repoFiles []string, lang string, baseSystem string, arch string, cachDir string) *RepoReducer {
+func NewRepoReducer(repos *bazeldnf.Repositories, repoFiles []string, lang string, baseSystem string, arch string, cacheHelper *repo.CacheHelper) *RepoReducer {
 	return &RepoReducer{
 		packages:         nil,
 		lang:             lang,
@@ -184,7 +184,7 @@ func NewRepoReducer(repos *bazeldnf.Repositories, repoFiles []string, lang strin
 		architectures:    []string{"noarch", arch},
 		arch:             arch,
 		repos:            repos,
-		cacheHelper:      &repo.CacheHelper{CacheDir: cachDir},
+		cacheHelper:      cacheHelper,
 	}
 }
 

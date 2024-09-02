@@ -42,7 +42,7 @@ func NewRpmTreeCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			repoReducer := reducer.NewRepoReducer(repos, nil, rpmtreeopts.lang, rpmtreeopts.baseSystem, rpmtreeopts.arch, ".bazeldnf")
+			repoReducer := reducer.NewRepoReducer(repos, nil, rpmtreeopts.lang, rpmtreeopts.baseSystem, rpmtreeopts.arch, repo.NewCacheHelper())
 			logrus.Info("Loading packages.")
 			if err := repoReducer.Load(); err != nil {
 				return err
@@ -144,5 +144,7 @@ func NewRpmTreeCmd() *cobra.Command {
 	rpmtreeCmd.Flags().MarkDeprecated("fedora-base-system", "use --basesystem instead")
 	rpmtreeCmd.Flags().MarkShorthandDeprecated("fedora-base-system", "use --basesystem instead")
 	rpmtreeCmd.Flags().MarkShorthandDeprecated("nobest", "use --nobest instead")
+	repo.AddCacheHelperFlags(rpmtreeCmd)
+
 	return rpmtreeCmd
 }

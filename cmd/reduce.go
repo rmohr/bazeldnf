@@ -43,7 +43,7 @@ which allow reducing huge rpm repos to a smaller problem set for debugging, remo
 					return err
 				}
 			}
-			repo := reducer.NewRepoReducer(repos, reduceopts.in, reduceopts.lang, reduceopts.baseSystem, reduceopts.arch, ".bazeldnf")
+			repo := reducer.NewRepoReducer(repos, reduceopts.in, reduceopts.lang, reduceopts.baseSystem, reduceopts.arch, repo.NewCacheHelper())
 			logrus.Info("Loading packages.")
 			if err := repo.Load(); err != nil {
 				return err
@@ -81,5 +81,8 @@ which allow reducing huge rpm repos to a smaller problem set for debugging, remo
 	reduceCmd.Flags().MarkDeprecated("fedora-base-system", "use --basesystem instead")
 	reduceCmd.Flags().MarkShorthandDeprecated("fedora-base-system", "use --basesystem instead")
 	reduceCmd.Flags().MarkShorthandDeprecated("nobest", "use --nobest instead")
+
+	repo.AddCacheHelperFlags(reduceCmd)
+
 	return reduceCmd
 }
