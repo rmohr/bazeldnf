@@ -16,11 +16,58 @@
 
 load("@bazel_tools//tools/build_defs/repo:utils.bzl", "update_attrs")
 
+RpmInfo = provider(
+    doc = """\
+        Information about an RPM file
+
+        Used to pass information about an RPM file from the rpm rule to
+        other rules like rpmtree
+    """,
+    fields = {
+        "deps": "depset of other dependencies",
+        "file": "label of the RPM file",
+    },
+)
+
+def _rpm_rule_impl(ctx):
+    """\
+    Implementation for the rpm rule
+
+    Allows to pass information about an RPM file to other rules
+    like rpmtree, keeping track of the dependency tree
+    """
+    deps_list = []
+
+    for dep in ctx.attr.deps:
+        deps_list.append(dep[RpmInfo].deps)
+
+    rpm_info = RpmInfo(
+        file = ctx.file.file,
+        deps = depset(direct = [ctx.file.file], transitive = deps_list),
+    )
+
+    return [
+        rpm_info,
+        DefaultInfo(
+            files = depset(direct = [ctx.file.file], transitive = deps_list),
+        ),
+    ]
+
+rpm_rule = rule(
+    implementation = _rpm_rule_impl,
+    attrs = {
+        "file": attr.label(allow_single_file = True, mandatory = True),
+        "deps": attr.label_list(providers = [RpmInfo]),
+    },
+)
+
 _HTTP_FILE_BUILD = """
+load("@bazeldnf//internal:rpm.bzl", "rpm_rule")
 package(default_visibility = ["//visibility:public"])
-filegroup(
+rpm_rule(
     name = "rpm",
-    srcs = ["downloaded"],
+    file = "{downloaded_file_path}",
+    deps = [{deps}],
 )
 """
 
@@ -36,13 +83,22 @@ def _rpm_impl(ctx):
     else:
         fail("urls must be specified")
     ctx.file("WORKSPACE", "workspace(name = \"{name}\")".format(name = ctx.name))
-    ctx.file("rpm/BUILD", _HTTP_FILE_BUILD.format(downloaded_file_path))
+    ctx.file(
+        "rpm/BUILD",
+        _HTTP_FILE_BUILD.format(
+            downloaded_file_path = downloaded_file_path,
+            deps = ", ".join(["\"%s\"" % dep for dep in ctx.attr.dependencies]),
+        ),
+    )
     return update_attrs(ctx.attr, _rpm_attrs.keys(), {"sha256": download_info.sha256})
 
 _rpm_attrs = {
     "urls": attr.string_list(),
     "sha256": attr.string(),
     "integrity": attr.string(),
+    "dependencies": attr.string_list(
+        mandatory = False,
+    ),
 }
 
 rpm = repository_rule(
