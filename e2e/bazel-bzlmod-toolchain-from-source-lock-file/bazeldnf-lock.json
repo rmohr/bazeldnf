@@ -1,0 +1,63 @@
+{
+	"cli-arguments": [
+		"--output",
+		"bazeldnf-lock.json",
+		"-i",
+		"filesystem",
+		"-i",
+		"setup",
+		"-i",
+		"basesystem",
+		"-i",
+		"glibc.*",
+		"-i",
+		"coreutils",
+		"-i",
+		"alternatives",
+		"-i",
+		"audit-libs",
+		"-i",
+		"fedora-release-common",
+		"bash"
+	],
+	"repositories": {
+		"41-x86_64-primary-repo": [
+			"https://eu.edge.kernel.org/fedora/development/41/Everything/x86_64/os/",
+			"https://mirror.i3d.net/pub/fedora/linux/development/41/Everything/x86_64/os/",
+			"https://mirror.nl.mirhosting.net/fedora/linux/development/41/Everything/x86_64/os/",
+			"https://ftp.plusline.net/fedora/linux/development/41/Everything/x86_64/os/"
+		]
+	},
+	"packages": [
+		{
+			"name": "bash",
+			"sha256": "b10f7b9039bd3079d27e9883cd412f66acdac73b530b336c8c33e105a26391e8",
+			"href": "Packages/b/bash-5.2.32-1.fc41.x86_64.rpm",
+			"repository": "41-x86_64-primary-repo",
+			"dependencies": [
+				"ncurses-libs"
+			]
+		},
+		{
+			"name": "ncurses-base",
+			"sha256": "48f210a4fa76a3d7faf56a0742b0465063feec816ba0f279d6841b8b31dcbaa2",
+			"href": "Packages/n/ncurses-base-6.5-2.20240629.fc41.noarch.rpm",
+			"repository": "41-x86_64-primary-repo",
+			"dependencies": []
+		},
+		{
+			"name": "ncurses-libs",
+			"sha256": "965d08fdd9eacb2eeb3c693fd70e8f725bdf73fe11186e9eff47d8d51b13709a",
+			"href": "Packages/n/ncurses-libs-6.5-2.20240629.fc41.x86_64.rpm",
+			"repository": "41-x86_64-primary-repo",
+			"dependencies": []
+		}
+	],
+	"targets": [
+		"bash"
+	],
+	"ignored": [
+		"filesystem",
+		"glibc"
+	]
+}
