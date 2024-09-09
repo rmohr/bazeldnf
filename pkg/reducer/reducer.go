@@ -25,6 +25,10 @@ func (r *RepoReducer) Load() error {
 	return nil
 }
 
+func (r *RepoReducer) PackageCount() int {
+	return len(r.packageInfo.packages)
+}
+
 func (r *RepoReducer) Resolve(packages []string, ignoreMissing bool) (matched []string, involved []*api.Package, err error) {
 	packages = append(packages, r.implicitRequires...)
 	discovered := map[string]*api.Package{}
@@ -114,7 +118,6 @@ func (r *RepoReducer) Resolve(packages []string, ignoreMissing bool) (matched []
 func (r *RepoReducer) requires(p *api.Package) (wants []*api.Package) {
 	for _, requires := range p.Format.Requires.Entries {
 		if val, exists := r.packageInfo.provides[requires.Name]; exists {
-
 			var packages []string
 			for _, p := range val {
 				packages = append(packages, p.Name)
@@ -125,13 +128,18 @@ func (r *RepoReducer) requires(p *api.Package) (wants []*api.Package) {
 			logrus.Debugf("%s requires %v which can't be satisfied\n", p.Name, requires)
 		}
 	}
+
 	return wants
 }
 
 func NewRepoReducer(repos *bazeldnf.Repositories, repoFiles []string, baseSystem string, arch string, cacheHelper *repo.CacheHelper) *RepoReducer {
+	implicitRequires := make([]string, 0, 1)
+	if baseSystem != "" {
+		implicitRequires = append(implicitRequires, baseSystem)
+	}
 	return &RepoReducer{
 		packageInfo:      nil,
-		implicitRequires: []string{baseSystem},
+		implicitRequires: implicitRequires,
 		loader: RepoLoader{
 			repoFiles:     repoFiles,
 			architectures: []string{"noarch", arch},
@@ -148,6 +156,7 @@ func Resolve(repos *bazeldnf.Repositories, repoFiles []string, baseSystem, arch 
 	if err := repoReducer.Load(); err != nil {
 		return nil, nil, err
 	}
+	logrus.Infof("loaded %d packages", repoReducer.PackageCount())
 	logrus.Info("Initial reduction of involved packages.")
 	return repoReducer.Resolve(packages, ignoreMissing)
 }
