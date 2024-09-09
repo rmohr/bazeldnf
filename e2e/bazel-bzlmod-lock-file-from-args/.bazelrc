@@ -5,10 +5,12 @@ import %workspace%/../../.aspect/bazelrc/correctness.bazelrc
 import %workspace%/../../.aspect/bazelrc/debug.bazelrc
 import %workspace%/../../.aspect/bazelrc/performance.bazelrc
 
+# Specific project flags go here if we have some
 common --enable_bzlmod
 common --extra_toolchains=@bazeldnf//cmd:bazeldnf-host-toolchain
 
-# Specific project flags go here if we have some
+# prebuilt protoc
+common --incompatible_enable_proto_toolchain_resolution
 
 # Load any settings & overrides specific to the current user from `.bazelrc.user`.
 # This file should appear in `.gitignore` so that settings are not shared with team members. This

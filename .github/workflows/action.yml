@@ -132,3 +132,25 @@ jobs:
         bazelisk run //cmd -- init --fc 41 --output $(pwd)/repo.yaml
         bazelisk run //cmd -- fetch --repofile $(pwd)/repo.yaml
         bazelisk run //cmd -- resolve --repofile $(pwd)/repo.yaml bash
+
+  e2e-bzlmod-lock-file-from-args:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: bazel-contrib/setup-bazel@0.8.5
+      with:
+        # Avoid downloading Bazel every time.
+        bazelisk-cache: true
+        # Keep a disk-cache
+        disk-cache: true
+        # Share repository cache between workflows.
+        repository-cache: true
+        # enable some flags for CI
+        bazelrc: |
+          import %workspace%/../../.aspect/bazelrc/ci.bazelrc
+          import %workspace%/../../.github/workflows/ci.bazelrc
+    - run: |
+        cd e2e/bazel-bzlmod-lock-file-from-args && \
+        bazelisk run @bazeldnf_rpms//:update-lock-file && \
+        bazelisk build ...
+
