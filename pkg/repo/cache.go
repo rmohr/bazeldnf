@@ -37,8 +37,11 @@ func NewCacheHelper(cacheDir ...string) *CacheHelper {
 
 	logrus.Infof("Using cache directory %s", cacheDir[0])
 
+	dir := strings.ReplaceAll(cacheDir[0], "~", "${HOME}")
+	dir = os.ExpandEnv(dir)
+
 	return &CacheHelper{
-		cacheDir: cacheDir[0],
+		cacheDir: dir,
 	}
 }
 
