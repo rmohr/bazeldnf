@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/user"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -22,28 +23,46 @@ type cacheHelperOpts struct {
 	cacheDir string
 }
 
-var cacheHelperValues = cacheHelperOpts{};
+var cacheHelperValues = cacheHelperOpts{}
 
 type CacheHelper struct {
 	cacheDir string
 }
 
-func NewCacheHelper(cacheDir ...string) (*CacheHelper) {
-	if (len(cacheDir) == 0) {
-		cacheDir = append(cacheDir, cacheHelperValues.cacheDir);
-	} else if (len(cacheDir) > 1) {
+func expand(path string) (string, error) {
+	if len(path) == 0 || path[0] != '~' {
+		return path, nil
+	}
+
+	usr, err := user.Current()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(usr.HomeDir, path[1:]), nil
+}
+
+func NewCacheHelper(cacheDir ...string) *CacheHelper {
+	if len(cacheDir) == 0 {
+		cacheDir = append(cacheDir, cacheHelperValues.cacheDir)
+	} else if len(cacheDir) > 1 {
 		panic("too many cache directories")
 	}
 
 	logrus.Infof("Using cache directory %s", cacheDir[0])
 
+	dir, err := expand(cacheDir[0])
+
+	if err != nil {
+		panic(err)
+	}
+
 	return &CacheHelper{
-		cacheDir: cacheDir[0],
-	};
+		cacheDir: dir,
+	}
 }
 
 func AddCacheHelperFlags(cmd *cobra.Command) {
-	cmd.Flags().StringVarP(&cacheHelperValues.cacheDir, "cache-dir", "c", xdg.CacheHome + "/bazeldnf", "Cache directory");
+	cmd.Flags().StringVarP(&cacheHelperValues.cacheDir, "cache-dir", "c", xdg.CacheHome+"/bazeldnf", "Cache directory")
 }
 
 func (r *CacheHelper) LoadMetaLink(repo *bazeldnf.Repository) (*api.Metalink, error) {
