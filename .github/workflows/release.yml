@@ -1,41 +1,49 @@
-
-name: release
-
-# This workflow can be manually triggered to create a GitHub release and upload release bins.
-#
-# Steps to use:
-# - Create a new Git tag and push
-# - Navigate to https://github.com/rmohr/bazeldnf/actions/workflows/release.yml
-# - Click on "Run workflow"
-# - Select the tag you want to release
-# - Click on green button
-#
-# Requires read-write workflow permissions which can be configured in Actions repo settings.
+# Cut a release whenever a new tag is pushed to the repo.
+# You should use an annotated tag, like `git tag -a v1.2.3`
+# and put the release notes into the commit message for the tag.
+name: Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      release_version:
-        description: 'Bazeldnf release version (e.g. v1.2.3)'
-        required: true
+  push:
+    tags:
+      - "v*.*.*"
 
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: bazelbuild/setup-bazelisk@v1
-      - run: |
-          git config --global user.name "CI"
-          git config --global user.email "rmohr@users.noreply.github.com"
-          hack/prepare-release.sh
-          git push origin ${VERSION}
-          git push
-        env:
-          VERSION: ${{ inputs.release_version }}
-      - uses: softprops/action-gh-release@v1
+      - uses: actions/checkout@v4
+
+      - name: Build Binaries
+        run: .github/workflows/build_assets.sh
+
+      - uses: actions/upload-artifact@v4
         with:
-          body_path: dist/releasenote.txt
-          tag_name: ${{ inputs.release_version }}
+          name: artifacts
+          path: tools/release/latest
+          retention-days: 1
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Fetch the built artifacts from build jobs above and extract into
+      # ${GITHUB_WORKSPACE}/artifacts/bazeldnf_dawrin-amd64
+      - uses: actions/download-artifact@v4
+
+      - name: Prepare release
+        run: .github/workflows/release_prep.sh > release_notes.txt
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          prerelease: true
+          # Use GH feature to populate the changelog automatically
+          generate_release_notes: true
+          body_path: release_notes.txt
           files: |
-            dist/bazeldnf-*
+            artifacts/*
+            bazeldnf-*.tar.gz
+          fail_on_unmatched_files: true

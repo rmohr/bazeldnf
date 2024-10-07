@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "bazel",
@@ -20,6 +20,6 @@ go_test(
     deps = [
         "//pkg/api",
         "//pkg/api/bazeldnf",
-        "@com_github_onsi_gomega//:go_default_library",
+        "@com_github_onsi_gomega//:gomega",
     ],
 )

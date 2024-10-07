@@ -1,1 +1,33 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+
 exports_files(["runner.bash.template"])
+
+bzl_library(
+    name = "bazeldnf",
+    srcs = ["bazeldnf.bzl"],
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "@bazel_skylib//lib:shell",
+    ],
+)
+
+bzl_library(
+    name = "rpm",
+    srcs = ["rpm.bzl"],
+    visibility = ["//:__subpackages__"],
+    deps = ["@bazel_tools//tools/build_defs/repo:utils.bzl"],
+)
+
+bzl_library(
+    name = "rpmtree",
+    srcs = ["rpmtree.bzl"],
+    visibility = ["//:__subpackages__"],
+    deps = ["//bazeldnf:toolchain"],
+)
+
+bzl_library(
+    name = "xattrs",
+    srcs = ["xattrs.bzl"],
+    visibility = ["//:__subpackages__"],
+    deps = ["//bazeldnf:toolchain"],
+)

@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "xattr",
@@ -12,5 +12,5 @@ go_test(
     srcs = ["xattr_test.go"],
     data = glob(["testdata/**"]),
     embed = [":xattr"],
-    deps = ["@com_github_onsi_gomega//:go_default_library"],
+    deps = ["@com_github_onsi_gomega//:gomega"],
 )
