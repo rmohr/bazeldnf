@@ -1,11 +1,13 @@
 package main
 
 import (
+	"errors"
 	"os"
 
 	"github.com/bazelbuild/buildtools/build"
 	"github.com/rmohr/bazeldnf/cmd/template"
 	"github.com/rmohr/bazeldnf/pkg/api"
+	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 	"github.com/rmohr/bazeldnf/pkg/bazel"
 	"github.com/rmohr/bazeldnf/pkg/reducer"
 	"github.com/rmohr/bazeldnf/pkg/repo"
@@ -22,6 +24,8 @@ type rpmtreeOpts struct {
 	workspace        string
 	toMacro          string
 	buildfile        string
+	configname       string
+	lockfile         string
 	name             string
 	public           bool
 	forceIgnoreRegex []string
@@ -83,7 +87,7 @@ func NewWorkspaceHandler(workspace string) (Handler, error) {
 	}
 
 	return &WorkspaceHandler{
-		workspace: workspace,
+		workspace:     workspace,
 		workspacefile: workspacefile,
 	}, nil
 }
@@ -100,6 +104,31 @@ func (h *WorkspaceHandler) Write() error {
 	return bazel.WriteWorkspace(false, h.workspacefile, h.workspace)
 }
 
+type LockFileHandler struct {
+	filename string
+	config   *bazeldnf.Config
+}
+
+func NewLockFileHandler(configname, filename string) (Handler, error) {
+	return &LockFileHandler{
+		filename: filename,
+		config: &bazeldnf.Config{
+			Name: configname,
+			RPMs: []bazeldnf.RPM{},
+		},
+	}, nil
+}
+
+func (h *LockFileHandler) AddRPMs(pkgs []*api.Package, arch string) error {
+	return bazel.AddConfigRPMs(h.config, pkgs, arch)
+}
+
+func (h *LockFileHandler) PruneRPMs(buildfile *build.File) {}
+
+func (h *LockFileHandler) Write() error {
+	return bazel.WriteLockFile(h.config, h.filename)
+}
+
 func NewRpmTreeCmd() *cobra.Command {
 
 	rpmtreeCmd := &cobra.Command{
@@ -107,7 +136,9 @@ func NewRpmTreeCmd() *cobra.Command {
 		Short: "Writes a rpmtree rule and its rpmdependencies to bazel files",
 		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, required []string) error {
-			writeToMacro := rpmtreeopts.toMacro != ""
+			if rpmtreeopts.toMacro != "" && rpmtreeopts.lockfile != "" {
+				return errors.New("Must provide at most one of --lockfile --to-macro")
+			}
 
 			repos, err := repo.LoadRepoFiles(rpmtreeopts.repofiles)
 			if err != nil {
@@ -142,16 +173,21 @@ func NewRpmTreeCmd() *cobra.Command {
 			}
 
 			var handler Handler
-			if writeToMacro {
+			if rpmtreeopts.toMacro != "" {
 				handler, err = NewMacroHandler(rpmtreeopts.toMacro)
+			} else if rpmtreeopts.lockfile != "" {
+				handler, err = NewLockFileHandler(
+					rpmtreeopts.configname,
+					rpmtreeopts.lockfile,
+				)
 			} else {
 				handler, err = NewWorkspaceHandler(rpmtreeopts.workspace)
 			}
-			
+
 			if err != nil {
 				return err
 			}
-			
+
 			build, err := bazel.LoadBuild(rpmtreeopts.buildfile)
 			if err != nil {
 				return err
@@ -162,8 +198,8 @@ func NewRpmTreeCmd() *cobra.Command {
 				return err
 			}
 
-			bazel.AddTree(rpmtreeopts.name, build, install, rpmtreeopts.arch, rpmtreeopts.public)
-			
+			bazel.AddTree(rpmtreeopts.name, rpmtreeopts.configname, build, install, rpmtreeopts.arch, rpmtreeopts.public)
+
 			handler.PruneRPMs(build)
 			logrus.Info("Writing bazel files.")
 			err = handler.Write()
@@ -191,6 +227,8 @@ func NewRpmTreeCmd() *cobra.Command {
 	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.workspace, "workspace", "w", "WORKSPACE", "Bazel workspace file")
 	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.toMacro, "to-macro", "", "", "Tells bazeldnf to write the RPMs to a macro in the given bzl file instead of the WORKSPACE file. The expected format is: macroFile%defName")
 	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.buildfile, "buildfile", "b", "rpm/BUILD.bazel", "Build file for RPMs")
+	rpmtreeCmd.Flags().StringVar(&rpmtreeopts.configname, "configname", "rpms", "config name to use in lockfile")
+	rpmtreeCmd.Flags().StringVar(&rpmtreeopts.lockfile, "lockfile", "", "lockfile for RPMs")
 	rpmtreeCmd.Flags().StringVar(&rpmtreeopts.name, "name", "", "rpmtree rule name")
 	rpmtreeCmd.Flags().StringArrayVar(&rpmtreeopts.forceIgnoreRegex, "force-ignore-with-dependencies", []string{}, "Packages matching these regex patterns will not be installed. Allows force-removing unwanted dependencies. Be careful, this can lead to hidden missing dependencies.")
 	rpmtreeCmd.MarkFlagRequired("name")

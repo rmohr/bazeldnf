@@ -1,9 +1,10 @@
 package bazel
 
 import (
+	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/url"
+	"os"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -11,6 +12,7 @@ import (
 	"github.com/bazelbuild/buildtools/build"
 	"github.com/bazelbuild/buildtools/edit"
 	"github.com/rmohr/bazeldnf/pkg/api"
+	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 )
 
 type Artifact struct {
@@ -18,7 +20,7 @@ type Artifact struct {
 }
 
 func LoadWorkspace(path string) (*build.File, error) {
-	workspaceData, err := ioutil.ReadFile(path)
+	workspaceData, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse WORSPACE orig: %v", err)
 	}
@@ -30,7 +32,7 @@ func LoadWorkspace(path string) (*build.File, error) {
 }
 
 func LoadBuild(path string) (*build.File, error) {
-	buildfileData, err := ioutil.ReadFile(path)
+	buildfileData, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse BUILD.bazel orig: %v", err)
 	}
@@ -42,7 +44,7 @@ func LoadBuild(path string) (*build.File, error) {
 }
 
 func LoadBzl(path string) (*build.File, error) {
-	bzlData, err := ioutil.ReadFile(path)
+	bzlData, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse bzl orig: %v", err)
 	}
@@ -58,7 +60,7 @@ func WriteBuild(dryRun bool, buildfile *build.File, path string) error {
 		fmt.Println(build.FormatString(buildfile))
 		return nil
 	}
-	return ioutil.WriteFile(path, build.Format(buildfile), 0666)
+	return os.WriteFile(path, build.Format(buildfile), 0666)
 }
 
 func WriteWorkspace(dryRun bool, workspace *build.File, path string) error {
@@ -66,7 +68,7 @@ func WriteWorkspace(dryRun bool, workspace *build.File, path string) error {
 		fmt.Println(build.FormatString(workspace))
 		return nil
 	}
-	return ioutil.WriteFile(path, build.Format(workspace), 0666)
+	return os.WriteFile(path, build.Format(workspace), 0666)
 }
 
 func WriteBzl(dryRun bool, bzl *build.File, path string) error {
@@ -74,7 +76,15 @@ func WriteBzl(dryRun bool, bzl *build.File, path string) error {
 		fmt.Println(build.FormatString(bzl))
 		return nil
 	}
-	return ioutil.WriteFile(path, build.Format(bzl), 0666)
+	return os.WriteFile(path, build.Format(bzl), 0666)
+}
+
+func WriteLockFile(config *bazeldnf.Config, path string) error {
+	configJson, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(path, configJson, 0666)
 }
 
 // ParseMacro parses a macro expression of the form macroFile%defName and returns the bzl file and the def name.
@@ -258,7 +268,16 @@ func AddTar2Files(name string, rpmtree string, buildfile *build.File, files []st
 	}
 }
 
-func AddTree(name string, buildfile *build.File, pkgs []*api.Package, arch string, public bool) {
+func AddTree(name, configname string, buildfile *build.File, pkgs []*api.Package, arch string, public bool) {
+	transform := func(n string) string {
+		return "@"+n+"//rpm"
+	}
+	if configname != "" {
+		transform = func(n string) string {
+			return "@" + configname + "//" + n
+		}
+	}
+
 	rpmtrees := map[string]*rpmTree{}
 
 	for _, rule := range buildfile.Rules("rpmtree") {
@@ -269,7 +288,7 @@ func AddTree(name string, buildfile *build.File, pkgs []*api.Package, arch strin
 	rpms := []string{}
 	for _, pkg := range pkgs {
 		pkgName := sanitize(pkg.String() + "." + arch)
-		rpms = append(rpms, "@"+pkgName+"//rpm")
+		rpms = append(rpms, transform(pkgName))
 	}
 	sort.SliceStable(rpms, func(i, j int) bool {
 		return rpms[i] < rpms[j]
@@ -484,6 +503,32 @@ func (r *tar2Files) SetFiles(dirs []string, fileMap map[string][]string) {
 		filesMapExpr.List = append(filesMapExpr.List, &build.KeyValueExpr{Key: &build.StringExpr{Value: dir}, Value: filesListExpr})
 	}
 	r.Rule.SetAttr("files", filesMapExpr)
+}
+
+func AddConfigRPMs(config *bazeldnf.Config, pkgs []*api.Package, arch string) error {
+	for _, pkg := range pkgs {
+		URLs := []string{}
+
+		for _, mirror := range pkg.Repository.Mirrors {
+			u, err := url.Parse(mirror)
+			if err != nil {
+				return err
+			}
+			u = u.JoinPath(pkg.Location.Href)
+			URLs = append(URLs, u.String())
+		}
+
+		config.RPMs = append(
+			config.RPMs,
+			bazeldnf.RPM{
+				Name:   sanitize(pkg.String() + "." + arch),
+				SHA256: pkg.Checksum.Text,
+				URLs:   URLs,
+			},
+		)
+	}
+
+	return nil
 }
 
 func sanitize(name string) string {

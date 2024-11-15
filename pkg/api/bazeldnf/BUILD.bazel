@@ -2,7 +2,10 @@ load("@rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "bazeldnf",
-    srcs = ["repo.go"],
+    srcs = [
+        "config.go",
+        "repo.go",
+    ],
     importpath = "github.com/rmohr/bazeldnf/pkg/api/bazeldnf",
     visibility = ["//visibility:public"],
 )
