@@ -27,7 +27,7 @@ func TestRecursive(t *testing.T) {
 			for i, _ := range repo.Packages {
 				packages = append(packages, &repo.Packages[i])
 			}
-			err = resolver.LoadInvolvedPackages(packages, nil)
+			err = resolver.LoadInvolvedPackages(packages, nil, nil)
 			g.Expect(err).ToNot(HaveOccurred())
 			err = resolver.ConstructRequirements([]string{pkg.Name})
 			g.Expect(err).ToNot(HaveOccurred())
@@ -1229,7 +1229,7 @@ func Test(t *testing.T) {
 			for i, _ := range repo.Packages {
 				packages = append(packages, &repo.Packages[i])
 			}
-			err = resolver.LoadInvolvedPackages(packages, nil)
+			err = resolver.LoadInvolvedPackages(packages, nil, nil)
 			g.Expect(err).ToNot(HaveOccurred())
 			err = resolver.ConstructRequirements(tt.requires)
 			g.Expect(err).ToNot(HaveOccurred())
@@ -1359,7 +1359,7 @@ func TestNewResolver(t *testing.T) {
 		}
 		t.Run(tt.name, func(t *testing.T) {
 			resolver := NewResolver(tt.nobest)
-			err := resolver.LoadInvolvedPackages(tt.packages, nil)
+			err := resolver.LoadInvolvedPackages(tt.packages, nil, nil)
 			if err != nil {
 				t.Fail()
 			}

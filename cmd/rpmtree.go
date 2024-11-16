@@ -28,6 +28,7 @@ type rpmtreeOpts struct {
 	name             string
 	public           bool
 	forceIgnoreRegex []string
+	onlyAllowRegex   []string
 }
 
 var rpmtreeopts = rpmtreeOpts{}
@@ -151,7 +152,7 @@ func NewRpmTreeCmd() *cobra.Command {
 			}
 			solver := sat.NewResolver(rpmtreeopts.nobest)
 			logrus.Info("Loading involved packages into the rpmtreer.")
-			err = solver.LoadInvolvedPackages(involved, rpmtreeopts.forceIgnoreRegex)
+			err = solver.LoadInvolvedPackages(involved, rpmtreeopts.forceIgnoreRegex, rpmtreeopts.onlyAllowRegex)
 			if err != nil {
 				return err
 			}
@@ -225,6 +226,7 @@ func NewRpmTreeCmd() *cobra.Command {
 	rpmtreeCmd.Flags().StringVar(&rpmtreeopts.lockfile, "lockfile", "", "lockfile for RPMs")
 	rpmtreeCmd.Flags().StringVar(&rpmtreeopts.name, "name", "", "rpmtree rule name")
 	rpmtreeCmd.Flags().StringArrayVar(&rpmtreeopts.forceIgnoreRegex, "force-ignore-with-dependencies", []string{}, "Packages matching these regex patterns will not be installed. Allows force-removing unwanted dependencies. Be careful, this can lead to hidden missing dependencies.")
+	rpmtreeCmd.Flags().StringArrayVar(&rpmtreeopts.onlyAllowRegex, "only-allow", []string{}, "Packages matching these regex patterns may be installed. Allows scoping dependencies. Be careful, this can lead to hidden missing dependencies.")
 	rpmtreeCmd.MarkFlagRequired("name")
 	// deprecated options
 	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.baseSystem, "fedora-base-system", "f", "fedora-release-container", "base system to use (e.g. fedora-release-server, centos-stream-release, ...)")
