@@ -4,6 +4,7 @@ import (
 	"crypto/sha1"
 	"crypto/sha256"
 	"crypto/sha512"
+	"encoding/base64"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -12,10 +13,12 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/user"
 	"path"
 	"path/filepath"
 	"strings"
 
+	"github.com/jdx/go-netrc"
 	"github.com/rmohr/bazeldnf/pkg/api"
 	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 	log "github.com/sirupsen/logrus"
@@ -234,6 +237,41 @@ func fileGet(filename string) (*http.Response, error) {
 	return resp, nil
 }
 
+var netrcCached *netrc.Netrc
+
+func getNetrc() (*netrc.Netrc, error) {
+	if netrcCached != nil {
+		return netrcCached, nil
+	}
+	usr, err := user.Current()
+	if err != nil {
+		return nil, fmt.Errorf("getting current user: %w", err)
+	}
+	n, err := netrc.Parse(filepath.Join(usr.HomeDir, ".netrc"))
+	if err == nil {
+		netrcCached = n
+	}
+	return n, err
+}
+
+func httpGet(rawUrl string) (*http.Response, error) {
+	url, err := url.Parse(rawUrl)
+	if err != nil {
+		return nil, fmt.Errorf("parsing %s as a URL: %w", rawUrl, err)
+	}
+	netrc, err := getNetrc()
+	if err != nil {
+		return nil, fmt.Errorf("getting netrc: %w", err)
+	}
+	m := netrc.Machine(url.Hostname())
+	req, err := http.NewRequest("GET", rawUrl, nil)
+	if m != nil {
+		auth := m.Get("login") + ":" + m.Get("password")
+		req.Header.Add("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(auth)))
+	}
+	return http.DefaultClient.Do(req)
+}
+
 func (*getterImpl) Get(rawURL string) (*http.Response, error) {
 	u, err := url.Parse(rawURL)
 	if err != nil {
@@ -242,7 +280,7 @@ func (*getterImpl) Get(rawURL string) (*http.Response, error) {
 	if u.Scheme == "file" {
 		return fileGet(u.Path)
 	}
-	return http.Get(rawURL)
+	return httpGet(rawURL)
 }
 
 func toHex(hasher hash.Hash) string {
