@@ -1,8 +1,11 @@
 package repo
 
 import (
+	"crypto/sha1"
 	"crypto/sha256"
+	"crypto/sha512"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"hash"
 	"io"
@@ -189,23 +192,25 @@ func (r *RepoFetcherImpl) fetchFile(fileType string, repo *bazeldnf.Repository, 
 	if err != nil {
 		return fmt.Errorf("Failed to load primary repository file from %s: %v", fileURL, err)
 	}
-	sha := sha256.New()
 	defer resp.Body.Close()
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		return fmt.Errorf("Failed to download %s: %v ", fileURL, fmt.Errorf("status : %v", resp.StatusCode))
 	}
+	sha, shasum, err := chooseHashType(file)
+	if err != nil {
+		return err
+	}
+
 	body := io.TeeReader(resp.Body, sha)
 	err = r.CacheHelper.WriteToRepoDir(repo, body, fileName)
 	if err != nil {
 		return fmt.Errorf("Failed to write file.xml from %s to file: %v", fileURL, err)
 	}
-	sha256sum, err := file.SHA256()
-	if err != nil {
-		return fmt.Errorf("failed to get sha256sum of file: %v", err)
+
+	if shasum != toHex(sha) {
+		return fmt.Errorf("Expected sha sum %s, but got %s", shasum, toHex(sha))
 	}
-	if sha256sum != toHex(sha) {
-		return fmt.Errorf("Expected sha256 sum %s, but got %s", sha256sum, toHex(sha))
-	}
+
 	return nil
 }
 
@@ -242,4 +247,37 @@ func (*getterImpl) Get(rawURL string) (*http.Response, error) {
 
 func toHex(hasher hash.Hash) string {
 	return hex.EncodeToString(hasher.Sum(nil))
+}
+
+// chooseHashType tries to get the SHA(512|256|1) sum for the file
+// and returns the appropriate hash write as well as that sum
+func chooseHashType(f *api.Data) (hash.Hash, string, error) {
+	sha512sum, err := f.SHA512()
+	if err == nil {
+		return sha512.New(), sha512sum, nil
+	}
+
+	if err.Error() != "no sha512 found" {
+		return nil, "", fmt.Errorf("error getting sha512sum of file: %w", err)
+	}
+
+	sha256sum, err := f.SHA256()
+	if err == nil {
+		return sha256.New(), sha256sum, nil
+	}
+
+	if err.Error() != "no sha256 found" {
+		return nil, "", fmt.Errorf("error getting sha256sum of file: %w", err)
+	}
+
+	sha1sum, err := f.SHA()
+	if err == nil {
+		return sha1.New(), sha1sum, nil
+	}
+
+	if err.Error() != "no sha found" {
+		return nil, "", fmt.Errorf("err getting sha1sum of file: %w", err)
+	}
+
+	return nil, "", errors.New("Unable identify file checksum: no sha512, sha256, or sha1 found")
 }
