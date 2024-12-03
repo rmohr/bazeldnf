@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"os"
 
 	"github.com/bazelbuild/buildtools/build"
@@ -136,10 +135,6 @@ func NewRpmTreeCmd() *cobra.Command {
 		Short: "Writes a rpmtree rule and its rpmdependencies to bazel files",
 		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, required []string) error {
-			if rpmtreeopts.toMacro != "" && rpmtreeopts.lockfile != "" {
-				return errors.New("Must provide at most one of --lockfile --to-macro")
-			}
-
 			repos, err := repo.LoadRepoFiles(rpmtreeopts.repofiles)
 			if err != nil {
 				return err
@@ -173,9 +168,12 @@ func NewRpmTreeCmd() *cobra.Command {
 			}
 
 			var handler Handler
+			var configname string
+
 			if rpmtreeopts.toMacro != "" {
 				handler, err = NewMacroHandler(rpmtreeopts.toMacro)
 			} else if rpmtreeopts.lockfile != "" {
+				configname = rpmtreeopts.configname
 				handler, err = NewLockFileHandler(
 					rpmtreeopts.configname,
 					rpmtreeopts.lockfile,
@@ -198,7 +196,7 @@ func NewRpmTreeCmd() *cobra.Command {
 				return err
 			}
 
-			bazel.AddTree(rpmtreeopts.name, rpmtreeopts.configname, build, install, rpmtreeopts.arch, rpmtreeopts.public)
+			bazel.AddTree(rpmtreeopts.name, configname, build, install, rpmtreeopts.arch, rpmtreeopts.public)
 
 			handler.PruneRPMs(build)
 			logrus.Info("Writing bazel files.")
