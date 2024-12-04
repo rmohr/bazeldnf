@@ -80,7 +80,7 @@ func WriteBzl(dryRun bool, bzl *build.File, path string) error {
 }
 
 func WriteLockFile(config *bazeldnf.Config, path string) error {
-	configJson, err := json.Marshal(config)
+	configJson, err := json.MarshalIndent(config, "", "\t")
 	if err != nil {
 		return err
 	}
@@ -520,7 +520,7 @@ func AddConfigRPMs(config *bazeldnf.Config, pkgs []*api.Package, arch string) er
 
 		config.RPMs = append(
 			config.RPMs,
-			bazeldnf.RPM{
+			&bazeldnf.RPM{
 				Name:   sanitize(pkg.String() + "." + arch),
 				SHA256: pkg.Checksum.Text,
 				URLs:   URLs,

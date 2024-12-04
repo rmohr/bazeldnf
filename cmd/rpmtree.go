@@ -108,7 +108,7 @@ func NewLockFileHandler(configname, filename string) (Handler, error) {
 		filename: filename,
 		config: &bazeldnf.Config{
 			Name: configname,
-			RPMs: []bazeldnf.RPM{},
+			RPMs: []*bazeldnf.RPM{},
 		},
 	}, nil
 }
