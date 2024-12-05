@@ -102,11 +102,17 @@ func (r *RepoReducer) Resolve(packages []string) (matched []string, involved []*
 		if !found {
 			return nil, nil, fmt.Errorf("Package %s does not exist", req)
 		}
-		for i, p := range candidates {
-			discovered[p.String()] = candidates[i]
-		}
 
 		if len(candidates) > 0 {
+			selected := candidates[0]
+			for _, p := range candidates {
+				if selected.Repository.Priority > p.Repository.Priority {
+					selected = p
+				}
+
+			}
+
+			discovered[selected.String()] = selected
 			matched = append(matched, candidates[0].Name)
 		}
 	}
