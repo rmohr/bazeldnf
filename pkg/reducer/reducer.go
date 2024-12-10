@@ -18,8 +18,8 @@ type RepoReducer struct {
 	repoFiles        []string
 	provides         map[string][]*api.Package
 	implicitRequires []string
-	arch             string
 	architectures    []string
+	architecturesSet map[string]bool
 	repos            *bazeldnf.Repositories
 	cacheHelper      *repo.CacheHelper
 }
@@ -37,19 +37,19 @@ func (r *RepoReducer) Load() error {
 			return err
 		}
 		for i, p := range repoFile.Packages {
-			if skip(p.Arch, r.architectures) {
+			if skip(p.Arch, r.architecturesSet) {
 				continue
 			}
 			r.packages = append(r.packages, repoFile.Packages[i])
 		}
 	}
-	repos, err := r.cacheHelper.CurrentPrimaries(r.repos, r.arch)
+	repos, err := r.cacheHelper.CurrentPrimaries(r.repos, r.architecturesSet)
 	if err != nil {
 		return err
 	}
 	for _, rpmrepo := range repos {
 		for i, p := range rpmrepo.Packages {
-			if skip(p.Arch, r.architectures) {
+			if skip(p.Arch, r.architecturesSet) {
 				continue
 			}
 			r.packages = append(r.packages, rpmrepo.Packages[i])
@@ -175,6 +175,12 @@ func (r *RepoReducer) requires(p *api.Package) (wants []*api.Package) {
 }
 
 func NewRepoReducer(repos *bazeldnf.Repositories, repoFiles []string, lang string, baseSystem string, arch string, cacheHelper *repo.CacheHelper) *RepoReducer {
+
+	architecturesSet := map[string]bool{}
+	for _, arch := range []string{"noarch", arch} {
+		architecturesSet[arch] = true
+	}
+
 	return &RepoReducer{
 		packages:         nil,
 		lang:             lang,
@@ -182,21 +188,17 @@ func NewRepoReducer(repos *bazeldnf.Repositories, repoFiles []string, lang strin
 		repoFiles:        repoFiles,
 		provides:         map[string][]*api.Package{},
 		architectures:    []string{"noarch", arch},
-		arch:             arch,
+		architecturesSet: architecturesSet,
 		repos:            repos,
 		cacheHelper:      cacheHelper,
 	}
 }
 
-func skip(arch string, arches []string) bool {
-	skip := true
-	for _, a := range arches {
-		if a == arch {
-			skip = false
-			break
-		}
+func skip(arch string, arches map[string]bool) bool {
+	if _, ok := arches[arch]; ok {
+		return false
 	}
-	return skip
+	return true
 }
 
 // FixPackages contains hacks which should probably not have to exist

@@ -256,9 +256,10 @@ func (r *CacheHelper) CurrentFilelistsForPackages(repo *bazeldnf.Repository, arc
 	return filelistpkgs, remaining, nil
 }
 
-func (r *CacheHelper) CurrentPrimaries(repos *bazeldnf.Repositories, arch string) (primaries []*api.Repository, err error) {
+func (r *CacheHelper) CurrentPrimaries(repos *bazeldnf.Repositories, architecturesSet map[string]bool) (primaries []*api.Repository, err error) {
 	for i, repo := range repos.Repositories {
-		if repo.Arch != arch {
+		if _, ok := architecturesSet[repo.Arch]; !ok {
+			logrus.Infof("Ignoring primary for %s - %s", repo.Name, repo.Arch)
 			continue
 		}
 		primary, err := r.CurrentPrimary(&repos.Repositories[i])
