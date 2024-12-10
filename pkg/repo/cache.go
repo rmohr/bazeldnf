@@ -242,7 +242,8 @@ func (r *CacheHelper) CurrentFilelistsForPackages(repo *bazeldnf.Repository, arc
 
 func (r *CacheHelper) CurrentPrimaries(repos *bazeldnf.Repositories, arch string) (primaries []*api.Repository, err error) {
 	for i, repo := range repos.Repositories {
-		if repo.Arch != arch {
+		if repo.Arch != arch && repo.Arch != "noarch" {
+			logrus.Infof("Ignoring primary for %s - %s", repo.Name, repo.Arch)
 			continue
 		}
 		primary, err := r.CurrentPrimary(&repos.Repositories[i])
