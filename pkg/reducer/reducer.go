@@ -109,7 +109,6 @@ func (r *RepoReducer) Resolve(packages []string) (matched []string, involved []*
 				if selected.Repository.Priority > p.Repository.Priority {
 					selected = p
 				}
-
 			}
 
 			discovered[selected.String()] = selected
