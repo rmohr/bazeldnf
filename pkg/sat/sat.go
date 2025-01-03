@@ -114,10 +114,10 @@ func (r *Resolver) ticket() string {
 	return "x" + strconv.Itoa(r.varsCount)
 }
 
-// LoadInvolvedPackages takes a list of all involved packages to install, as well as a list of regular
-// expressions which denote packages which should be taken into account for solving the problem, but they
-// should then be ignored together with their requirements in the provided list of installed packages.
-// Additionally, we can take a list of packages that the maximum selection desired.
+// LoadInvolvedPackages takes a list of all involved packages to install, a list of regular expressions
+// which denote packages which should be taken into account for solving the problem, but they should
+// then be ignored together with their requirements in the provided list of installed packages, and also
+// a list of regular expressions that may be used to limit the selection to matching packages.
 func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, ignoreRegex []string, allowRegex []string) error {
 	// Deduplicate and detect excludes
 	deduplicated := map[string]*api.Package{}
@@ -127,33 +127,38 @@ func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, ignoreRegex []s
 		}
 		fullName := pkg.String()
 		if _, exists := deduplicated[fullName]; !exists {
-			matchedAllow := len(allowRegex) == 0
-			
+			allowed := len(allowRegex) == 0
 			for _, rex := range allowRegex {
 				if match, err := regexp.MatchString(rex, fullName); err != nil {
 					return fmt.Errorf("failed to match package with regex '%v': %v", rex, err)
 				} else if match {
-					matchedAllow = true
+					allowed = true
+					break
 				}
 			}
 
-			if !matchedAllow {
-				packages[i].Format.Requires.Entries = nil
-				logrus.Warnf("Package %v does not match allow list", pkg.String())
-				r.forceIgnoreWithDependencies[pkg.String()] = packages[i]
-			} else {
+			ignored := len(ignoreRegex) == 0
+			if allowed {
 				for _, rex := range ignoreRegex {
 					if match, err := regexp.MatchString(rex, fullName); err != nil {
 						return fmt.Errorf("failed to match package with regex '%v': %v", rex, err)
 					} else if match {
-						packages[i].Format.Requires.Entries = nil
 						logrus.Warnf("Package %v is forcefully ignored by regex '%v'.", pkg.String(), rex)
-						r.forceIgnoreWithDependencies[pkg.String()] = packages[i]
+						ignored = true
 						break
 					}
 				}
 			}
-			
+
+			if !allowed {
+				logrus.Warnf("Package %v is not explicitly allowed", pkg.String())
+			}
+
+			if !allowed || ignored {
+				packages[i].Format.Requires.Entries = nil
+				r.forceIgnoreWithDependencies[pkg.String()] = packages[i]
+			}
+
 			deduplicated[pkg.String()] = packages[i]
 		}
 	}
