@@ -16,7 +16,7 @@ func (m *MockPackageLoader) Load() (*packageInfo, error) {
 	return m.packageInfo, nil
 }
 
-func resolve(p *packageInfo, requires, implicitRequires []string) (matched []string, involved []*api.Package, err error) {
+func resolve(p *packageInfo, requires, implicitRequires []string, ignoreMissing bool) (matched []string, involved []*api.Package, err error) {
 	repoReducer := &RepoReducer{
 		implicitRequires: implicitRequires,
 		loader:           &MockPackageLoader{packageInfo: p},
@@ -25,13 +25,13 @@ func resolve(p *packageInfo, requires, implicitRequires []string) (matched []str
 	if err := repoReducer.Load(); err != nil {
 		return nil, nil, err
 	}
-	return repoReducer.Resolve(requires)
+	return repoReducer.Resolve(requires, ignoreMissing)
 
 }
 
 func TestReducerZeroPackages(t *testing.T) {
 	g := NewGomegaWithT(t)
-	matched, involved, err := resolve(&packageInfo{}, []string{}, []string{})
+	matched, involved, err := resolve(&packageInfo{}, []string{}, []string{}, false)
 
 	g.Expect(err).Should(BeNil())
 	g.Expect(len(matched)).Should(BeZero())
@@ -40,7 +40,7 @@ func TestReducerZeroPackages(t *testing.T) {
 
 func TestReducerPackageNotFound(t *testing.T) {
 	g := NewGomegaWithT(t)
-	matched, involved, err := resolve(&packageInfo{}, []string{"foo"}, []string{})
+	matched, involved, err := resolve(&packageInfo{}, []string{"foo"}, []string{}, false)
 
 	g.Expect(err).To(MatchError("Package foo does not exist"))
 	g.Expect(len(matched)).Should(BeZero())
@@ -49,7 +49,7 @@ func TestReducerPackageNotFound(t *testing.T) {
 
 func TestReducerImplicitPackageNotFound(t *testing.T) {
 	g := NewGomegaWithT(t)
-	matched, involved, err := resolve(&packageInfo{}, []string{}, []string{"bar"})
+	matched, involved, err := resolve(&packageInfo{}, []string{}, []string{"bar"}, false)
 
 	g.Expect(err).To(MatchError("Package bar does not exist"))
 	g.Expect(len(matched)).Should(BeZero())
@@ -63,7 +63,7 @@ func TestReducerOnlyImplicitRequires(t *testing.T) {
 		packages: withRepository(newPackageList("foo")),
 	}
 
-	matched, involved, err := resolve(&packageInfo, []string{}, []string{"foo"})
+	matched, involved, err := resolve(&packageInfo, []string{}, []string{"foo"}, false)
 
 	g.Expect(err).Should(BeNil())
 	g.Expect(matched).Should(ConsistOf("foo"))
@@ -75,11 +75,23 @@ func TestReducerSingleCandidate(t *testing.T) {
 	packages := withRepository(newPackageList("bar"))
 	packageInfo := packageInfo{packages: packages}
 
-	matched, involved, err := resolve(&packageInfo, []string{"bar"}, []string{})
+	matched, involved, err := resolve(&packageInfo, []string{"bar"}, []string{}, false)
 
 	g.Expect(err).Should(BeNil())
 	g.Expect(matched).Should(ConsistOf("bar"))
-	g.Expect(involved).Should(ConsistOf(&packages[0]))
+	g.Expect(involved).Should(ConsistOf(&packages[0]), false)
+}
+
+func TestReducerSingleCandidateMissing(t *testing.T) {
+	g := NewGomegaWithT(t)
+	packages := withRepository(newPackageList())
+	packageInfo := packageInfo{packages: packages}
+
+	matched, involved, err := resolve(&packageInfo, []string{"bar"}, []string{}, true)
+
+	g.Expect(err).Should(BeNil())
+	g.Expect(matched).Should(BeEmpty())
+	g.Expect(involved).Should(BeEmpty())
 }
 
 func TestReducerMultipleCandidates(t *testing.T) {
@@ -88,7 +100,7 @@ func TestReducerMultipleCandidates(t *testing.T) {
 	packages := withRepository(newPackageList(packageNames...))
 	packageInfo := packageInfo{packages: packages}
 
-	matched, involved, err := resolve(&packageInfo, packageNames, []string{})
+	matched, involved, err := resolve(&packageInfo, packageNames, []string{}, false)
 
 	g.Expect(err).Should(BeNil())
 	g.Expect(matched).Should(ConsistOf("foo", "bar", "baz"))
@@ -101,7 +113,7 @@ func TestReducerMultipleNameMatch(t *testing.T) {
 	packages[0].Version = api.Version{Epoch: "1"}
 	packageInfo := packageInfo{packages: packages}
 
-	matched, involved, err := resolve(&packageInfo, []string{"foo", "bar"}, []string{})
+	matched, involved, err := resolve(&packageInfo, []string{"foo", "bar"}, []string{}, false)
 	g.Expect(err).Should(BeNil())
 	g.Expect(matched).Should(ConsistOf("foo", "bar"))
 	g.Expect(involved).Should(ConsistOf(&packages[0], &packages[1], &packages[2]))
@@ -114,7 +126,7 @@ func TestReducerRequiresMissingProvides(t *testing.T) {
 	})
 	packageInfo := packageInfo{packages: packages}
 
-	matched, involved, err := resolve(&packageInfo, []string{"foo"}, []string{})
+	matched, involved, err := resolve(&packageInfo, []string{"foo"}, []string{}, false)
 	g.Expect(err).Should(BeNil())
 	g.Expect(matched).Should(ConsistOf("foo"))
 	g.Expect(involved).Should(ConsistOf(&packages[0]))
@@ -133,7 +145,7 @@ func TestReducerRequiresFoundProvides(t *testing.T) {
 		},
 	}
 
-	matched, involved, err := resolve(&packageInfo, []string{"foo"}, []string{})
+	matched, involved, err := resolve(&packageInfo, []string{"foo"}, []string{}, false)
 	g.Expect(err).Should(BeNil())
 	g.Expect(matched).Should(ConsistOf("foo"))
 	g.Expect(involved).Should(ConsistOf(&packages[0], &packages[1]))
@@ -155,7 +167,7 @@ func TestReducerRequiresFoundMultipleProvides(t *testing.T) {
 		},
 	}
 
-	matched, involved, err := resolve(&packageInfo, []string{"foo"}, []string{})
+	matched, involved, err := resolve(&packageInfo, []string{"foo"}, []string{}, false)
 	g.Expect(err).Should(BeNil())
 	g.Expect(matched).Should(ConsistOf("foo"))
 	g.Expect(involved).Should(ConsistOf(&packages[0], &packages[1], &packages[2]))
@@ -176,7 +188,7 @@ func TestReducerRequiresFoundMultipleProvidesInOne(t *testing.T) {
 		},
 	}
 
-	matched, involved, err := resolve(&packageInfo, []string{"foo"}, []string{})
+	matched, involved, err := resolve(&packageInfo, []string{"foo"}, []string{}, false)
 	g.Expect(err).Should(BeNil())
 	g.Expect(matched).Should(ConsistOf("foo"))
 	g.Expect(involved).Should(ConsistOf(&packages[0], &packages[1], &packages[2]))
@@ -198,7 +210,7 @@ func TestReducerMultiLevelRequires(t *testing.T) {
 		},
 	}
 
-	matched, involved, err := resolve(&packageInfo, []string{"foo"}, []string{})
+	matched, involved, err := resolve(&packageInfo, []string{"foo"}, []string{}, false)
 	g.Expect(err).Should(BeNil())
 	g.Expect(matched).Should(ConsistOf("foo"))
 	g.Expect(involved).Should(ConsistOf(&packages[0], &packages[1], &packages[2]))
@@ -221,7 +233,7 @@ func TestReducerExcludePinnedDependency(t *testing.T) {
 		},
 	}
 
-	matched, involved, err := resolve(&packageInfo, []string{"foo", "bar"}, []string{})
+	matched, involved, err := resolve(&packageInfo, []string{"foo", "bar"}, []string{}, false)
 	g.Expect(err).Should(BeNil())
 	g.Expect(matched).Should(ConsistOf("foo", "bar"))
 	g.Expect(involved).Should(ConsistOf(&packages[0], &packages[1]))
@@ -236,7 +248,7 @@ func TestInvolvedProvidesIsNotRequiredOrSelf(t *testing.T) {
 	expectedPackage.Repository = &bazeldnf.Repository{}
 	packageInfo := packageInfo{packages: packages}
 
-	matched, involved, err := resolve(&packageInfo, []string{"foo"}, []string{})
+	matched, involved, err := resolve(&packageInfo, []string{"foo"}, []string{}, false)
 	g.Expect(err).Should(BeNil())
 	g.Expect(matched).Should(ConsistOf("foo"))
 	g.Expect(involved).Should(ConsistOf(&expectedPackage))
@@ -252,7 +264,7 @@ func TestInvolvedProvidesIsSelf(t *testing.T) {
 
 	packageInfo := packageInfo{packages: packages}
 
-	matched, involved, err := resolve(&packageInfo, []string{"foo"}, []string{})
+	matched, involved, err := resolve(&packageInfo, []string{"foo"}, []string{}, false)
 	g.Expect(err).Should(BeNil())
 	g.Expect(matched).Should(ConsistOf("foo"))
 	g.Expect(involved).Should(ConsistOf(&expectedPackage))
@@ -267,7 +279,7 @@ func TestRepositoryPriority(t *testing.T) {
 
 	packageInfo := packageInfo{packages: packages}
 
-	matched, involved, err := resolve(&packageInfo, []string{"bar"}, []string{})
+	matched, involved, err := resolve(&packageInfo, []string{"bar"}, []string{}, false)
 
 	g.Expect(err).Should(BeNil())
 	g.Expect(matched).Should(ConsistOf("bar"))
@@ -284,7 +296,7 @@ func TestRepositoryPriorityWithVersion(t *testing.T) {
 
 	packageInfo := packageInfo{packages: packages}
 
-	matched, involved, err := resolve(&packageInfo, []string{"bar"}, []string{})
+	matched, involved, err := resolve(&packageInfo, []string{"bar"}, []string{}, false)
 
 	g.Expect(err).Should(BeNil())
 	g.Expect(matched).Should(ConsistOf("bar"))
