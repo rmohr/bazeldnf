@@ -122,7 +122,9 @@ func (h *LockFileHandler) AddRPMs(pkgs []*api.Package, arch string) error {
 	return bazel.AddConfigRPMs(h.config, pkgs, arch)
 }
 
-func (h *LockFileHandler) PruneRPMs(buildfile *build.File) {}
+func (h *LockFileHandler) PruneRPMs(buildfile *build.File) {
+	// we always generate from scratch and have nothing to prune
+}
 
 func (h *LockFileHandler) Write() error {
 	return bazel.WriteLockFile(h.config, h.filename)
