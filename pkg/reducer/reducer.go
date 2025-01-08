@@ -27,50 +27,55 @@ type RepoReducer struct {
 	cacheHelper      RepoCache
 }
 
-func (r *RepoReducer) loadRepos() error {
-	for _, rpmrepo := range r.repoFiles {
+func loadRepos(repoFiles, architectures []string, arch string, repos *bazeldnf.Repositories, cacheHelper RepoCache) ([]api.Package, error) {
+	packages := []api.Package{}
+
+	for _, rpmrepo := range repoFiles {
 		repoFile := &api.Repository{}
 		f, err := os.Open(rpmrepo)
 		if err != nil {
-			return err
+			return packages, err
 		}
 		defer f.Close()
 		err = xml.NewDecoder(f).Decode(repoFile)
 		if err != nil {
-			return err
+			return packages, err
 		}
 		for i, p := range repoFile.Packages {
-			if skip(p.Arch, r.architectures) {
+			if skip(p.Arch, architectures) {
 				continue
 			}
-			r.packages = append(r.packages, repoFile.Packages[i])
+			packages = append(packages, repoFile.Packages[i])
 		}
 	}
 
-	repos, err := r.cacheHelper.CurrentPrimaries(r.repos, r.arch)
+	cachedRepos, err := cacheHelper.CurrentPrimaries(repos, arch)
 	if err != nil {
-		return err
+		return packages, err
 	}
-	for _, rpmrepo := range repos {
+	for _, rpmrepo := range cachedRepos {
 		for i, p := range rpmrepo.Packages {
-			if skip(p.Arch, r.architectures) {
+			if skip(p.Arch, architectures) {
 				continue
 			}
-			r.packages = append(r.packages, rpmrepo.Packages[i])
+			packages = append(packages, rpmrepo.Packages[i])
 		}
 	}
 
-	for i, _ := range r.packages {
-		FixPackages(&r.packages[i])
+	for i, _ := range packages {
+		FixPackages(&packages[i])
 	}
 
-	return nil
+	return packages, nil
 }
 
 func (r *RepoReducer) Load() error {
-	if err := r.loadRepos(); err != nil {
+	packages, err := loadRepos(r.repoFiles, r.architectures, r.arch, r.repos, r.cacheHelper)
+	if err != nil {
 		return err
 	}
+
+	r.packages = packages
 
 	for i, p := range r.packages {
 		requires := []api.Entry{}
