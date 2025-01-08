@@ -14,7 +14,6 @@ import (
 
 type resolveOpts struct {
 	in               []string
-	lang             string
 	nobest           bool
 	arch             string
 	baseSystem       string
@@ -40,7 +39,7 @@ func NewResolveCmd() *cobra.Command {
 					return err
 				}
 			}
-			repo := reducer.NewRepoReducer(repos, resolveopts.in, resolveopts.lang, resolveopts.baseSystem, resolveopts.arch, ".bazeldnf")
+			repo := reducer.NewRepoReducer(repos, resolveopts.in, resolveopts.baseSystem, resolveopts.arch, ".bazeldnf")
 			logrus.Info("Loading packages.")
 			if err := repo.Load(); err != nil {
 				return err

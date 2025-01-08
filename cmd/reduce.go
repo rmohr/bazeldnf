@@ -17,7 +17,6 @@ type reduceOpts struct {
 	in         []string
 	repofiles  []string
 	out        string
-	lang       string
 	nobest     bool
 	arch       string
 	baseSystem string
@@ -43,7 +42,7 @@ which allow reducing huge rpm repos to a smaller problem set for debugging, remo
 					return err
 				}
 			}
-			repo := reducer.NewRepoReducer(repos, reduceopts.in, reduceopts.lang, reduceopts.baseSystem, reduceopts.arch, ".bazeldnf")
+			repo := reducer.NewRepoReducer(repos, reduceopts.in, reduceopts.baseSystem, reduceopts.arch, ".bazeldnf")
 			logrus.Info("Loading packages.")
 			if err := repo.Load(); err != nil {
 				return err

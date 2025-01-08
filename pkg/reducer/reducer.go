@@ -18,7 +18,6 @@ type RepoCache interface {
 
 type RepoReducer struct {
 	packages         []api.Package
-	lang             string
 	repoFiles        []string
 	provides         map[string][]*api.Package
 	implicitRequires []string
@@ -178,10 +177,9 @@ func (r *RepoReducer) requires(p *api.Package) (wants []*api.Package) {
 	return wants
 }
 
-func NewRepoReducer(repos *bazeldnf.Repositories, repoFiles []string, lang string, baseSystem string, arch string, cachDir string) *RepoReducer {
+func NewRepoReducer(repos *bazeldnf.Repositories, repoFiles []string, baseSystem string, arch string, cachDir string) *RepoReducer {
 	return &RepoReducer{
 		packages:         nil,
-		lang:             lang,
 		implicitRequires: []string{baseSystem},
 		repoFiles:        repoFiles,
 		provides:         map[string][]*api.Package{},
