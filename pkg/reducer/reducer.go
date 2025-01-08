@@ -12,6 +12,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+type RepoCache interface {
+	CurrentPrimaries(repos *bazeldnf.Repositories, arch string) (primaries []*api.Repository, err error)
+}
+
 type RepoReducer struct {
 	packages         []api.Package
 	lang             string
@@ -21,7 +25,7 @@ type RepoReducer struct {
 	arch             string
 	architectures    []string
 	repos            *bazeldnf.Repositories
-	cacheHelper      *repo.CacheHelper
+	cacheHelper      RepoCache
 }
 
 func (r *RepoReducer) Load() error {
