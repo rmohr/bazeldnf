@@ -3,6 +3,7 @@ package reducer
 import (
 	"encoding/xml"
 	"os"
+	"strings"
 
 	"github.com/rmohr/bazeldnf/pkg/api"
 	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
@@ -13,7 +14,16 @@ type RepoCache interface {
 }
 
 type ReducerPackageLoader interface {
-	Load() ([]api.Package, error)
+	Load() (*packageInfo, error)
+}
+
+// packageInfo captures the package information required by the reducer
+type packageInfo struct {
+	// the list of available packages
+	packages []api.Package
+
+	// mapping of provisions to a list of associated packages
+	provides map[string][]*api.Package
 }
 
 type RepoLoader struct {
@@ -24,46 +34,66 @@ type RepoLoader struct {
 	cacheHelper   RepoCache
 }
 
-func (r RepoLoader) Load() ([]api.Package, error) {
-	packages := []api.Package{}
+func (r RepoLoader) Load() (*packageInfo, error) {
+	packageInfo := &packageInfo{
+		packages: []api.Package{},
+		provides: map[string][]*api.Package{},
+	}
 
 	for _, rpmrepo := range r.repoFiles {
 		repoFile := &api.Repository{}
 		f, err := os.Open(rpmrepo)
 		if err != nil {
-			return packages, err
+			return packageInfo, err
 		}
 		defer f.Close()
 		err = xml.NewDecoder(f).Decode(repoFile)
 		if err != nil {
-			return packages, err
+			return packageInfo, err
 		}
 		for i, p := range repoFile.Packages {
 			if skip(p.Arch, r.architectures) {
 				continue
 			}
-			packages = append(packages, repoFile.Packages[i])
+			packageInfo.packages = append(packageInfo.packages, repoFile.Packages[i])
 		}
 	}
 
 	cachedRepos, err := r.cacheHelper.CurrentPrimaries(r.repos, r.arch)
 	if err != nil {
-		return packages, err
+		return packageInfo, err
 	}
 	for _, rpmrepo := range cachedRepos {
 		for i, p := range rpmrepo.Packages {
 			if skip(p.Arch, r.architectures) {
 				continue
 			}
-			packages = append(packages, rpmrepo.Packages[i])
+			packageInfo.packages = append(packageInfo.packages, rpmrepo.Packages[i])
 		}
 	}
 
-	for i, _ := range packages {
-		FixPackages(&packages[i])
+	for i, _ := range packageInfo.packages {
+		FixPackages(&packageInfo.packages[i])
 	}
 
-	return packages, nil
+	for i, p := range packageInfo.packages {
+		requires := []api.Entry{}
+		for _, requirement := range p.Format.Requires.Entries {
+			if !strings.HasPrefix(requirement.Name, "(") {
+				requires = append(requires, requirement)
+			}
+		}
+		packageInfo.packages[i].Format.Requires.Entries = requires
+
+		for _, p := range p.Format.Provides.Entries {
+			packageInfo.provides[p.Name] = append(packageInfo.provides[p.Name], &packageInfo.packages[i])
+		}
+		for _, file := range p.Format.Files {
+			packageInfo.provides[file.Text] = append(packageInfo.provides[file.Text], &packageInfo.packages[i])
+		}
+	}
+
+	return packageInfo, nil
 }
 
 // FixPackages contains hacks which should probably not have to exist

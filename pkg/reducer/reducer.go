@@ -11,36 +11,17 @@ import (
 )
 
 type RepoReducer struct {
-	packages         []api.Package
-	provides         map[string][]*api.Package
+	packageInfo      *packageInfo
 	implicitRequires []string
 	loader           ReducerPackageLoader
 }
 
 func (r *RepoReducer) Load() error {
-	packages, err := r.loader.Load()
+	packageInfo, err := r.loader.Load()
 	if err != nil {
 		return err
 	}
-
-	r.packages = packages
-
-	for i, p := range r.packages {
-		requires := []api.Entry{}
-		for _, requirement := range p.Format.Requires.Entries {
-			if !strings.HasPrefix(requirement.Name, "(") {
-				requires = append(requires, requirement)
-			}
-		}
-		r.packages[i].Format.Requires.Entries = requires
-
-		for _, provides := range p.Format.Provides.Entries {
-			r.provides[provides.Name] = append(r.provides[provides.Name], &r.packages[i])
-		}
-		for _, file := range p.Format.Files {
-			r.provides[file.Text] = append(r.provides[file.Text], &r.packages[i])
-		}
-	}
+	r.packageInfo = packageInfo
 	return nil
 }
 
@@ -52,15 +33,15 @@ func (r *RepoReducer) Resolve(packages []string) (matched []string, involved []*
 		found := false
 		name := ""
 		var candidates []*api.Package
-		for i, p := range r.packages {
+		for i, p := range r.packageInfo.packages {
 			if strings.HasPrefix(p.String(), req) {
 				if strings.HasPrefix(req, p.Name) {
 					if !found || len(p.Name) < len(name) {
-						candidates = []*api.Package{&r.packages[i]}
+						candidates = []*api.Package{&r.packageInfo.packages[i]}
 						name = p.Name
 						found = true
 					} else if p.Name == name {
-						candidates = append(candidates, &r.packages[i])
+						candidates = append(candidates, &r.packageInfo.packages[i])
 					}
 				}
 			}
@@ -125,7 +106,7 @@ func (r *RepoReducer) Resolve(packages []string) (matched []string, involved []*
 
 func (r *RepoReducer) requires(p *api.Package) (wants []*api.Package) {
 	for _, requires := range p.Format.Requires.Entries {
-		if val, exists := r.provides[requires.Name]; exists {
+		if val, exists := r.packageInfo.provides[requires.Name]; exists {
 
 			var packages []string
 			for _, p := range val {
@@ -142,9 +123,8 @@ func (r *RepoReducer) requires(p *api.Package) (wants []*api.Package) {
 
 func NewRepoReducer(repos *bazeldnf.Repositories, repoFiles []string, baseSystem string, arch string, cachDir string) *RepoReducer {
 	return &RepoReducer{
-		packages:         nil,
+		packageInfo:      nil,
 		implicitRequires: []string{baseSystem},
-		provides:         map[string][]*api.Package{},
 		loader: RepoLoader{
 			repoFiles:     repoFiles,
 			architectures: []string{"noarch", arch},
