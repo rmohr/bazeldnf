@@ -27,7 +27,7 @@ type RepoReducer struct {
 	cacheHelper      RepoCache
 }
 
-func (r *RepoReducer) Load() error {
+func (r *RepoReducer) loadRepos() error {
 	for _, rpmrepo := range r.repoFiles {
 		repoFile := &api.Repository{}
 		f, err := os.Open(rpmrepo)
@@ -46,6 +46,7 @@ func (r *RepoReducer) Load() error {
 			r.packages = append(r.packages, repoFile.Packages[i])
 		}
 	}
+
 	repos, err := r.cacheHelper.CurrentPrimaries(r.repos, r.arch)
 	if err != nil {
 		return err
@@ -58,8 +59,17 @@ func (r *RepoReducer) Load() error {
 			r.packages = append(r.packages, rpmrepo.Packages[i])
 		}
 	}
+
 	for i, _ := range r.packages {
 		FixPackages(&r.packages[i])
+	}
+
+	return nil
+}
+
+func (r *RepoReducer) Load() error {
+	if err := r.loadRepos(); err != nil {
+		return err
 	}
 
 	for i, p := range r.packages {
