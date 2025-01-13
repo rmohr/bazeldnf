@@ -12,6 +12,9 @@ common --incompatible_enable_proto_toolchain_resolution
 # inside the rules project we build from source
 common --extra_toolchains=//cmd:bazeldnf-host-toolchain
 
+# make sure bazel doesn't complain on hosts without java
+common --java_runtime_version=remotejdk_21
+
 # Load any settings & overrides specific to the current user from `.bazelrc.user`.
 # This file should appear in `.gitignore` so that settings are not shared with team members. This
 # should be last statement in this config so the user configuration is able to overwrite flags from
