@@ -16,9 +16,22 @@ go_library(
     ],
 )
 
+# gazelle:go_test file
+
 go_test(
     name = "sat_test",
     srcs = ["sat_test.go"],
+    data = glob(["testdata/**"]),
+    embed = [":sat"],
+    deps = [
+        "//pkg/api",
+        "@com_github_onsi_gomega//:gomega",
+    ],
+)
+
+go_test(
+    name = "sat_determinsitic_test",
+    srcs = ["sat_determinsitic_test.go"],
     data = glob(["testdata/**"]),
     embed = [":sat"],
     deps = [
