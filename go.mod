@@ -5,7 +5,7 @@ go 1.22.0
 toolchain go1.22.2
 
 require (
-	github.com/bazelbuild/buildtools v0.0.0-20240823132350-3488089d3661
+	github.com/bazelbuild/buildtools v0.0.0-20250110114635-13fa61383b99
 	github.com/crillab/gophersat v1.4.0
 	github.com/onsi/gomega v1.36.2
 	github.com/sassoftware/go-rpmutils v0.2.0
@@ -22,6 +22,7 @@ require (
 	github.com/klauspost/compress v1.11.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
+	golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.21.0 // indirect
