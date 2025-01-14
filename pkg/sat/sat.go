@@ -2,6 +2,7 @@ package sat
 
 import (
 	"bufio"
+	"cmp"
 	"fmt"
 	"io"
 	"regexp"
@@ -16,6 +17,8 @@ import (
 	"github.com/rmohr/bazeldnf/pkg/reducer"
 	"github.com/rmohr/bazeldnf/pkg/rpm"
 	"github.com/sirupsen/logrus"
+	"golang.org/x/exp/maps"
+	"golang.org/x/exp/slices"
 )
 
 type VarType string
@@ -32,6 +35,13 @@ type VarContext struct {
 	Package  string
 	Provides string
 	Version  api.Version
+}
+
+func varContextSort(a VarContext, b VarContext) int {
+	return cmp.Or(
+		cmp.Compare(a.Package, b.Package),
+		rpm.Compare(a.Version, b.Version),
+	)
 }
 
 type Var struct {
@@ -129,8 +139,12 @@ func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, ignoreRegex []s
 			deduplicated[pkg.String()] = packages[i]
 		}
 	}
+
+	deduplicatedKeys := maps.Keys(deduplicated)
+	slices.Sort(deduplicatedKeys)
+
 	packages = nil
-	for k, _ := range deduplicated {
+	for _, k := range deduplicatedKeys {
 		reducer.FixPackages(deduplicated[k])
 		packages = append(packages, deduplicated[k])
 	}
@@ -146,8 +160,10 @@ func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, ignoreRegex []s
 
 	if !r.nobest {
 		packages = nil
-		for _, v := range r.bestPackages {
-			packages = append(packages, v)
+		bestPackagesKeys := maps.Keys(r.bestPackages)
+		slices.Sort(bestPackagesKeys)
+		for _, v := range bestPackagesKeys {
+			packages = append(packages, r.bestPackages[v])
 		}
 	}
 	// Generate variables
@@ -161,17 +177,25 @@ func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, ignoreRegex []s
 		}
 	}
 
-	for x, _ := range r.packages {
+	packagesKeys := maps.Keys(r.packages)
+	slices.Sort(packagesKeys)
+
+	for _, x := range packagesKeys {
 		sort.SliceStable(r.packages[x], func(i, j int) bool {
 			return rpm.Compare(r.packages[x][i].Package.Version, r.packages[x][j].Package.Version) < 0
 		})
 	}
 
 	logrus.Infof("Loaded %v packages.", len(r.pkgProvides))
+
+	pkgProvideKeys := maps.Keys(r.pkgProvides)
+	slices.SortFunc(pkgProvideKeys, varContextSort)
+
 	// Generate imply rules
-	for _, resourceVars := range r.pkgProvides {
+	for _, provided := range pkgProvideKeys {
 		// Create imply rules for every package and add them to the formula
 		// one provided dependency implies all dependencies from that package
+		resourceVars := r.pkgProvides[provided]
 		bfVar := bf.And(toBFVars(resourceVars)...)
 		var ands []bf.Formula
 		for _, res := range resourceVars {
