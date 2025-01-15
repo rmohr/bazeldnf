@@ -2,6 +2,7 @@ package reducer
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/rmohr/bazeldnf/pkg/api"
@@ -113,6 +114,26 @@ func (r *RepoReducer) Resolve(packages []string, ignoreMissing bool) (matched []
 	}
 
 	return matched, involved, nil
+}
+
+func (r *RepoReducer) filterWithIgnoreRegex(candidates []*api.Package, ignoreRegex []string) []*api.Package {
+	out := []*api.Package{}
+	for _, p := range candidates {
+		filter := false
+		for _, rex := range ignoreRegex {
+			if match, err := regexp.MatchString(rex, p.String()); err != nil {
+				logrus.Errorf("failed to match package with regex '%v': %v", rex, err)
+			} else if match {
+				logrus.Warnf("Package %v is forcefully ignored by regex '%v'.", p.String(), rex)
+				filter = true
+				break
+			}
+		}
+		if !filter {
+			out = append(out, p)
+		}
+	}
+	return out
 }
 
 func (r *RepoReducer) requires(p *api.Package) (wants []*api.Package) {

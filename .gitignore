@@ -16,3 +16,6 @@ MODULE.bazel.lock
 
 # this is where we store the release artifacts, so we can ignore it
 tools/release/latest
+
+# IDE temporary files
+.vscode

@@ -5,6 +5,7 @@ go_library(
     name = "cmd_lib",
     srcs = [
         "bazeldnf.go",
+        "bzlmod.go",
         "config_helper.go",
         "fetch.go",
         "filter.go",
@@ -37,7 +38,7 @@ go_library(
         "//pkg/rpm",
         "//pkg/sat",
         "//pkg/xattr",
-        "@com_github_bazelbuild_buildtools//build:go_default_library",
+        "@com_github_bazelbuild_buildtools//build",
         "@com_github_sassoftware_go_rpmutils//:go-rpmutils",
         "@com_github_sirupsen_logrus//:logrus",
         "@com_github_spf13_cobra//:cobra",

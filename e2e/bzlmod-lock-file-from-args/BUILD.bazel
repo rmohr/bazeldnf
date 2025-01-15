@@ -8,18 +8,16 @@ bazeldnf(
 rpmtree(
     name = "something",
     rpms = [
-        "@bazeldnf-rpms//libvirt-libs",
-        "@bazeldnf-rpms//libvirt-devel",
-        "@bazeldnf-others//libvirt-libs-11.0.0-1.fc42.x86_64.rpm",
+        "@bazeldnf_rpms//bash",
     ],
 )
 
 tar2files(
-    name = "something_libs",
+    name = "something_binaries",
     files = {
-        "/usr/lib64": [
-            "libvirt.so.0",
-            "libvirt.so.0.11000.0",
+        "/usr/bin": [
+            "sh",
+            "bash",
         ],
     },
     tar = ":something",
@@ -29,9 +27,4 @@ tar2files(
 pkg_tar(
     name = "whatever",
     deps = [":something"],
-)
-
-cc_library(
-    name = "bar",
-    srcs = ["//:something_libs/usr/lib64"],
 )

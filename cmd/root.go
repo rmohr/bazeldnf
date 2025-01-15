@@ -43,6 +43,7 @@ func Execute() {
 	rootCmd.AddCommand(NewTar2FilesCmd())
 	rootCmd.AddCommand(NewLddCmd())
 	rootCmd.AddCommand(NewVerifyCmd())
+	rootCmd.AddCommand(NewBzlmodCmd())
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)

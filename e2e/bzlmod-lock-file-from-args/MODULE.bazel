@@ -20,24 +20,34 @@ use_repo(
     "com_github_adrg_xdg",
     "com_github_bazelbuild_buildtools",
     "com_github_crillab_gophersat",
-    "com_github_mholt_archives",
     "com_github_onsi_gomega",
     "com_github_sassoftware_go_rpmutils",
     "com_github_sirupsen_logrus",
     "com_github_spf13_cobra",
     "io_k8s_sigs_yaml",
     "org_golang_x_crypto",
-    "org_golang_x_exp",
-    "org_golang_x_net",
 )
 
-bazeldnf_toolchain = use_extension("@bazeldnf//bazeldnf:extensions.bzl", "bazeldnf_toolchain")
-bazeldnf_toolchain.register(disable = True)
-
 bazeldnf = use_extension("@bazeldnf//bazeldnf:extensions.bzl", "bazeldnf")
+bazeldnf.toolchain(disable = True)
 bazeldnf.config(
     name = "bazeldnf_rpms",
+    excludes = [
+        "filesystem",
+        "setup",
+        "basesystem",
+        "glibc-[0-9]",
+        "glibc-devel",
+        "coreutils",
+        "alternatives",
+        "audit-libs",
+        "fedora-release-common",
+    ],
     lock_file = "//:bazeldnf-lock.json",
+    repofile = "//:repo.yaml",
+    rpms = [
+        "bash",
+    ],
 )
 use_repo(
     bazeldnf,
