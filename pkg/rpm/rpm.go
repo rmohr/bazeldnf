@@ -1,6 +1,7 @@
 package rpm
 
 import (
+	"cmp"
 	"strconv"
 	"strings"
 
@@ -8,16 +9,11 @@ import (
 )
 
 func Compare(a api.Version, b api.Version) int {
-	if res := compare(a.Epoch, b.Epoch); res != 0 {
-		return res
-	}
-	if res := compare(a.Ver, b.Ver); res != 0 {
-		return res
-	}
-	if res := compare(a.Rel, b.Rel); res != 0 {
-		return res
-	}
-	return 0
+	return cmp.Or(
+		compare(a.Epoch, b.Epoch),
+		compare(a.Ver, b.Ver),
+		compare(a.Rel, b.Rel),
+	)
 }
 
 func compare(a string, b string) int {
