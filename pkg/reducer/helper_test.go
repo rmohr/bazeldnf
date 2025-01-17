@@ -2,7 +2,18 @@ package reducer
 
 import (
 	"github.com/rmohr/bazeldnf/pkg/api"
+	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 )
+
+func withRepository(packages []api.Package) []api.Package{
+	r := []api.Package{}
+	for _, p := range packages {
+		p.Repository = &bazeldnf.Repository{}
+		r = append(r, p)
+	}
+
+	return r
+}
 
 func newPackageList(names ...string) []api.Package {
 	r := []api.Package{}
