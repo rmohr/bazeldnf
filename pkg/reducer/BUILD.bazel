@@ -22,6 +22,7 @@ go_test(
     srcs = [
         "helper_test.go",
         "loader_test.go",
+        "reducer_test.go",
     ],
     embed = [":reducer"],
     deps = [
