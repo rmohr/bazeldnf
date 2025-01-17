@@ -12,4 +12,5 @@ type Repository struct {
 	Arch     string   `json:"arch"`
 	Mirrors  []string `json:"mirrors,omitempty"`
 	GPGKey   string   `json:"gpgkey,omitempty"`
+	Priority int      `json:"priority,omitempty"`
 }

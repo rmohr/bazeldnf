@@ -5,6 +5,7 @@ import (
 
 	. "github.com/onsi/gomega"
 	"github.com/rmohr/bazeldnf/pkg/api"
+	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 )
 
 type MockPackageLoader struct {
@@ -59,7 +60,7 @@ func TestReducerOnlyImplicitRequires(t *testing.T) {
 	g := NewGomegaWithT(t)
 
 	packageInfo := packageInfo{
-		packages: newPackageList("foo"),
+		packages: withRepository(newPackageList("foo")),
 	}
 
 	matched, involved, err := resolve(&packageInfo, []string{}, []string{"foo"})
@@ -71,7 +72,7 @@ func TestReducerOnlyImplicitRequires(t *testing.T) {
 
 func TestReducerSingleCandidate(t *testing.T) {
 	g := NewGomegaWithT(t)
-	packages := newPackageList("bar")
+	packages := withRepository(newPackageList("bar"))
 	packageInfo := packageInfo{packages: packages}
 
 	matched, involved, err := resolve(&packageInfo, []string{"bar"}, []string{})
@@ -84,7 +85,7 @@ func TestReducerSingleCandidate(t *testing.T) {
 func TestReducerMultipleCandidates(t *testing.T) {
 	g := NewGomegaWithT(t)
 	packageNames := []string{"foo", "bar", "baz"}
-	packages := newPackageList(packageNames...)
+	packages := withRepository(newPackageList(packageNames...))
 	packageInfo := packageInfo{packages: packages}
 
 	matched, involved, err := resolve(&packageInfo, packageNames, []string{})
@@ -96,7 +97,7 @@ func TestReducerMultipleCandidates(t *testing.T) {
 
 func TestReducerMultipleNameMatch(t *testing.T) {
 	g := NewGomegaWithT(t)
-	packages := newPackageList("foo", "foo", "bar")
+	packages := withRepository(newPackageList("foo", "foo", "bar"))
 	packages[0].Version = api.Version{Epoch: "1"}
 	packageInfo := packageInfo{packages: packages}
 
@@ -108,9 +109,9 @@ func TestReducerMultipleNameMatch(t *testing.T) {
 
 func TestReducerRequiresMissingProvides(t *testing.T) {
 	g := NewGomegaWithT(t)
-	packages := []api.Package{
+	packages := withRepository([]api.Package{
 		newPackageWithDeps("foo", []string{"bar"}, nil),
-	}
+	})
 	packageInfo := packageInfo{packages: packages}
 
 	matched, involved, err := resolve(&packageInfo, []string{"foo"}, []string{})
@@ -121,10 +122,10 @@ func TestReducerRequiresMissingProvides(t *testing.T) {
 
 func TestReducerRequiresFoundProvides(t *testing.T) {
 	g := NewGomegaWithT(t)
-	packages := []api.Package{
+	packages := withRepository([]api.Package{
 		newPackageWithDeps("foo", []string{"bar"}, nil),
 		newPackage("bar"),
-	}
+	})
 	packageInfo := packageInfo{
 		packages: packages,
 		provides: map[string][]*api.Package{
@@ -140,12 +141,12 @@ func TestReducerRequiresFoundProvides(t *testing.T) {
 
 func TestReducerRequiresFoundMultipleProvides(t *testing.T) {
 	g := NewGomegaWithT(t)
-	packages := []api.Package{
+	packages := withRepository([]api.Package{
 		newPackageWithDeps("foo", []string{"baz", "bam"}, nil),
 		newPackage("baz"),
 		newPackage("bam"),
-	}
-		
+	})
+
 	packageInfo := packageInfo{
 		packages: packages,
 		provides: map[string][]*api.Package{
@@ -162,11 +163,11 @@ func TestReducerRequiresFoundMultipleProvides(t *testing.T) {
 
 func TestReducerRequiresFoundMultipleProvidesInOne(t *testing.T) {
 	g := NewGomegaWithT(t)
-	packages := []api.Package{
+	packages := withRepository([]api.Package{
 		newPackageWithDeps("foo", []string{"baz", "bam"}, nil),
 		newPackage("baz"),
 		newPackage("bam"),
-	}
+	})
 
 	packageInfo := packageInfo{
 		packages: packages,
@@ -183,11 +184,11 @@ func TestReducerRequiresFoundMultipleProvidesInOne(t *testing.T) {
 
 func TestReducerMultiLevelRequires(t *testing.T) {
 	g := NewGomegaWithT(t)
-	packages := []api.Package{
+	packages := withRepository([]api.Package{
 		newPackageWithDeps("foo", []string{"baz"}, nil),
 		newPackageWithDeps("baz", []string{"bam"}, nil),
 		newPackage("bam"),
-	}
+	})
 
 	packageInfo := packageInfo{
 		packages: packages,
@@ -206,13 +207,13 @@ func TestReducerMultiLevelRequires(t *testing.T) {
 func TestReducerExcludePinnedDependency(t *testing.T) {
 	g := NewGomegaWithT(t)
 	pinned := newPackage("bar")
-	pinned.Version = api.Version{Epoch:"1"}
-	
-	packages := []api.Package{
+	pinned.Version = api.Version{Epoch: "1"}
+
+	packages := withRepository([]api.Package{
 		newPackageWithDeps("foo", []string{"bar"}, nil),
 		newPackage("bar"),
-	}
-	
+	})
+
 	packageInfo := packageInfo{
 		packages: packages,
 		provides: map[string][]*api.Package{
@@ -227,11 +228,12 @@ func TestReducerExcludePinnedDependency(t *testing.T) {
 }
 
 func TestInvolvedProvidesIsNotRequiredOrSelf(t *testing.T) {
-	g:= NewGomegaWithT(t)
-	packages := []api.Package{
+	g := NewGomegaWithT(t)
+	packages := withRepository([]api.Package{
 		newPackageWithDeps("foo", nil, []string{"bar"}),
-	}
+	})
 	expectedPackage := newPackageWithDeps("foo", nil, []string{})
+	expectedPackage.Repository = &bazeldnf.Repository{}
 	packageInfo := packageInfo{packages: packages}
 
 	matched, involved, err := resolve(&packageInfo, []string{"foo"}, []string{})
@@ -241,15 +243,50 @@ func TestInvolvedProvidesIsNotRequiredOrSelf(t *testing.T) {
 }
 
 func TestInvolvedProvidesIsSelf(t *testing.T) {
-	g:= NewGomegaWithT(t)
-	packages := []api.Package{
+	g := NewGomegaWithT(t)
+	packages := withRepository([]api.Package{
 		newPackageWithDeps("foo", nil, []string{"foo"}),
-	}
+	})
 	expectedPackage := newPackageWithDeps("foo", nil, []string{"foo"})
+	expectedPackage.Repository = &bazeldnf.Repository{}
+
 	packageInfo := packageInfo{packages: packages}
 
 	matched, involved, err := resolve(&packageInfo, []string{"foo"}, []string{})
 	g.Expect(err).Should(BeNil())
 	g.Expect(matched).Should(ConsistOf("foo"))
 	g.Expect(involved).Should(ConsistOf(&expectedPackage))
+}
+
+func TestRepositoryPriority(t *testing.T) {
+	g := NewGomegaWithT(t)
+	packages := withRepository(newPackageList("bar", "bar"))
+	packages[0].Repository.Priority = 2
+	packages[1].Repository.Priority = 1
+	packages[1].Summary = "I'm the one"
+
+	packageInfo := packageInfo{packages: packages}
+
+	matched, involved, err := resolve(&packageInfo, []string{"bar"}, []string{})
+
+	g.Expect(err).Should(BeNil())
+	g.Expect(matched).Should(ConsistOf("bar"))
+	g.Expect(involved).Should(ConsistOf(&packages[1]))
+}
+
+func TestRepositoryPriorityWithVersion(t *testing.T) {
+	g := NewGomegaWithT(t)
+	packages := withRepository(newPackageList("bar", "bar", "bar"))
+	packages[0].Repository.Priority = 2
+	packages[1].Repository.Priority = 1
+	packages[1].Summary = "I'm the one"
+	packages[2].Version = api.Version{Epoch: "3"}
+
+	packageInfo := packageInfo{packages: packages}
+
+	matched, involved, err := resolve(&packageInfo, []string{"bar"}, []string{})
+
+	g.Expect(err).Should(BeNil())
+	g.Expect(matched).Should(ConsistOf("bar"))
+	g.Expect(involved).Should(ConsistOf(&packages[1], &packages[2]))
 }
