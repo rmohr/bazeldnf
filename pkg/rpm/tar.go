@@ -49,18 +49,6 @@ func RPMToCPIO(rpmReader io.Reader) (*cpio.CpioStream, error) {
 	return cpio.NewCpioStream(payloadReader), nil
 }
 
-func RPMReader(rpmReader io.Reader, tarWriter *tar.Writer) error {
-	rpm, err := rpmutils.ReadRpm(rpmReader)
-	if err != nil {
-		return fmt.Errorf("failed to read rpm: %s", err)
-	}
-	payloadReader, err := rpm.RawUncompressedRPMPayloadReader()
-	if err != nil {
-		return fmt.Errorf("failed to open the payload reader: %s", err)
-	}
-	return cpio.Tar(payloadReader, tarWriter)
-}
-
 func PrefixFilter(prefix string, reader *tar.Reader, files []string) error {
 	prefix = strings.TrimPrefix(prefix, ".")
 

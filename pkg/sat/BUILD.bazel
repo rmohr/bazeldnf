@@ -13,12 +13,27 @@ go_library(
         "@com_github_crillab_gophersat//explain",
         "@com_github_crillab_gophersat//maxsat",
         "@com_github_sirupsen_logrus//:logrus",
+        "@org_golang_x_exp//maps",
+        "@org_golang_x_exp//slices",
     ],
 )
+
+# gazelle:go_test file
 
 go_test(
     name = "sat_test",
     srcs = ["sat_test.go"],
+    data = glob(["testdata/**"]),
+    embed = [":sat"],
+    deps = [
+        "//pkg/api",
+        "@com_github_onsi_gomega//:gomega",
+    ],
+)
+
+go_test(
+    name = "sat_determinsitic_test",
+    srcs = ["sat_determinsitic_test.go"],
     data = glob(["testdata/**"]),
     embed = [":sat"],
     deps = [

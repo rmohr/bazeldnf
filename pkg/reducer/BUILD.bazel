@@ -1,9 +1,10 @@
-load("@rules_go//go:def.bzl", "go_library")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "reducer",
     srcs = [
         "doc.go",
+        "loader.go",
         "reducer.go",
     ],
     importpath = "github.com/rmohr/bazeldnf/pkg/reducer",
@@ -13,5 +14,20 @@ go_library(
         "//pkg/api/bazeldnf",
         "//pkg/repo",
         "@com_github_sirupsen_logrus//:logrus",
+    ],
+)
+
+go_test(
+    name = "reducer_test",
+    srcs = [
+        "helper_test.go",
+        "loader_test.go",
+        "reducer_test.go",
+    ],
+    embed = [":reducer"],
+    deps = [
+        "//pkg/api",
+        "//pkg/api/bazeldnf",
+        "@com_github_onsi_gomega//:gomega",
     ],
 )
