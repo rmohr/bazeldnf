@@ -16,6 +16,7 @@ require (
 )
 
 require (
+	github.com/adrg/xdg v0.5.3
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect

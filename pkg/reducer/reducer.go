@@ -128,7 +128,7 @@ func (r *RepoReducer) requires(p *api.Package) (wants []*api.Package) {
 	return wants
 }
 
-func NewRepoReducer(repos *bazeldnf.Repositories, repoFiles []string, baseSystem string, arch string, cachDir string) *RepoReducer {
+func NewRepoReducer(repos *bazeldnf.Repositories, repoFiles []string, baseSystem string, arch string, cacheHelper *repo.CacheHelper) *RepoReducer {
 	return &RepoReducer{
 		packageInfo:      nil,
 		implicitRequires: []string{baseSystem},
@@ -137,17 +137,7 @@ func NewRepoReducer(repos *bazeldnf.Repositories, repoFiles []string, baseSystem
 			architectures: []string{"noarch", arch},
 			arch:          arch,
 			repos:         repos,
-			cacheHelper:   &repo.CacheHelper{CacheDir: cachDir},
+			cacheHelper:   cacheHelper,
 		},
 	}
-}
-
-func Resolve(repos *bazeldnf.Repositories, repoFiles []string, baseSystem, arch string, packages []string) (matched []string, involved []*api.Package, err error) {
-	repoReducer := NewRepoReducer(repos, repoFiles, baseSystem, arch, ".bazeldnf")
-	logrus.Info("Loading packages.")
-	if err := repoReducer.Load(); err != nil {
-		return nil, nil, err
-	}
-	logrus.Info("Initial reduction of involved packages.")
-	return repoReducer.Resolve(packages)
 }
