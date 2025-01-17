@@ -33,8 +33,7 @@ type rpmtreeOpts struct {
 var rpmtreeopts = rpmtreeOpts{}
 
 type Handler interface {
-	AddRPMs(pkgs []*api.Package, arch string) error
-	PruneRPMs(buildfile *build.File)
+	Process(pkgs []*api.Package, arch string, buildfile *build.File) error
 	Write() error
 }
 
@@ -62,12 +61,13 @@ func NewMacroHandler(toMacro string) (Handler, error) {
 	}, nil
 }
 
-func (h *MacroHandler) AddRPMs(pkgs []*api.Package, arch string) error {
-	return bazel.AddBzlfileRPMs(h.bzlfile, h.defName, pkgs, arch)
-}
+func (h *MacroHandler) Process(pkgs []*api.Package, arch string, buildfile *build.File) error {
+	if err := bazel.AddBzlfileRPMs(h.bzlfile, h.defName, pkgs, arch); err != nil {
+		return err
+	}
 
-func (h *MacroHandler) PruneRPMs(buildfile *build.File) {
 	bazel.PruneBzlfileRPMs(buildfile, h.bzlfile, h.defName)
+	return nil
 }
 
 func (h *MacroHandler) Write() error {
@@ -91,12 +91,13 @@ func NewWorkspaceHandler(workspace string) (Handler, error) {
 	}, nil
 }
 
-func (h *WorkspaceHandler) AddRPMs(pkgs []*api.Package, arch string) error {
-	return bazel.AddWorkspaceRPMs(h.workspacefile, pkgs, arch)
-}
+func (h *WorkspaceHandler) Process(pkgs []*api.Package, arch string, buildfile *build.File) error {
+	if err := bazel.AddWorkspaceRPMs(h.workspacefile, pkgs, arch); err != nil {
+		return err
+	}
 
-func (h *WorkspaceHandler) PruneRPMs(buildfile *build.File) {
 	bazel.PruneWorkspaceRPMs(buildfile, h.workspacefile)
+	return nil
 }
 
 func (h *WorkspaceHandler) Write() error {
@@ -118,12 +119,8 @@ func NewLockFileHandler(configname, filename string) (Handler, error) {
 	}, nil
 }
 
-func (h *LockFileHandler) AddRPMs(pkgs []*api.Package, arch string) error {
+func (h *LockFileHandler) Process(pkgs []*api.Package, arch string, buildfile *build.File) error {
 	return bazel.AddConfigRPMs(h.config, pkgs, arch)
-}
-
-func (h *LockFileHandler) PruneRPMs(buildfile *build.File) {
-	// we always generate from scratch and have nothing to prune
 }
 
 func (h *LockFileHandler) Write() error {
@@ -192,15 +189,12 @@ func NewRpmTreeCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			bazel.AddTree(rpmtreeopts.name, configname, build, install, rpmtreeopts.arch, rpmtreeopts.public)
 
-			err = handler.AddRPMs(install, rpmtreeopts.arch)
-			if err != nil {
+			if err := handler.Process(install, rpmtreeopts.arch, build); err != nil {
 				return err
 			}
 
-			bazel.AddTree(rpmtreeopts.name, configname, build, install, rpmtreeopts.arch, rpmtreeopts.public)
-
-			handler.PruneRPMs(build)
 			logrus.Info("Writing bazel files.")
 			err = handler.Write()
 			if err != nil {
