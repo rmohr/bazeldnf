@@ -4,6 +4,7 @@ go_library(
     name = "reducer",
     srcs = [
         "doc.go",
+        "loader.go",
         "reducer.go",
     ],
     importpath = "github.com/rmohr/bazeldnf/pkg/reducer",
