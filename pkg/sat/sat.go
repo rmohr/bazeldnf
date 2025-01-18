@@ -137,7 +137,7 @@ func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, ignoreRegex []s
 				}
 			}
 
-			ignored := len(ignoreRegex) == 0
+			ignored := false
 			if allowed {
 				for _, rex := range ignoreRegex {
 					if match, err := regexp.MatchString(rex, fullName); err != nil {

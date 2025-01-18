@@ -65,7 +65,7 @@ func TestDeterministicOutput(t *testing.T) {
 			for i, _ := range repo.Packages {
 				packages = append(packages, &repo.Packages[i])
 			}
-			err = resolver.LoadInvolvedPackages(packages, nil)
+			err = resolver.LoadInvolvedPackages(packages, nil, nil)
 			g.Expect(err).ToNot(HaveOccurred())
 			err = resolver.ConstructRequirements(tt.requires)
 			g.Expect(err).ToNot(HaveOccurred())
