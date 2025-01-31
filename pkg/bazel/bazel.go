@@ -60,7 +60,7 @@ func WriteBuild(dryRun bool, buildfile *build.File, path string) error {
 		fmt.Println(build.FormatString(buildfile))
 		return nil
 	}
-	return os.WriteFile(path, build.Format(buildfile), 0666)
+	return os.WriteFile(path, build.Format(buildfile), 0644)
 }
 
 func WriteWorkspace(dryRun bool, workspace *build.File, path string) error {
@@ -68,7 +68,7 @@ func WriteWorkspace(dryRun bool, workspace *build.File, path string) error {
 		fmt.Println(build.FormatString(workspace))
 		return nil
 	}
-	return os.WriteFile(path, build.Format(workspace), 0666)
+	return os.WriteFile(path, build.Format(workspace), 0644)
 }
 
 func WriteBzl(dryRun bool, bzl *build.File, path string) error {
@@ -76,7 +76,7 @@ func WriteBzl(dryRun bool, bzl *build.File, path string) error {
 		fmt.Println(build.FormatString(bzl))
 		return nil
 	}
-	return os.WriteFile(path, build.Format(bzl), 0666)
+	return os.WriteFile(path, build.Format(bzl), 0644)
 }
 
 func WriteLockFile(config *bazeldnf.Config, path string) error {
@@ -84,7 +84,7 @@ func WriteLockFile(config *bazeldnf.Config, path string) error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(path, configJson, 0666)
+	return os.WriteFile(path, configJson, 0644)
 }
 
 // ParseMacro parses a macro expression of the form macroFile%defName and returns the bzl file and the def name.
