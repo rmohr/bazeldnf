@@ -67,7 +67,7 @@ tar2files(
     files = {
         "/usr/lib64": [
             "libvirt.so.0",
-            "libvirt.so.0.6001.0",
+            "libvirt.so.0.11000.0",
         ],
     },
     tar = ":something",
