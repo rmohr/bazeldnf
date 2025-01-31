@@ -97,8 +97,8 @@ func TestTar2Files(t *testing.T) {
 			wantErr: false,
 			files:   []string{"/usr/lib64/libvirt.so.0"},
 			expected: []fileInfo{
-				{Name: "usr", Size: 96, Children: []fileInfo{
-					{Name: "lib64", Size: 96, Children: []fileInfo{
+				{Name: "usr", Children: []fileInfo{
+					{Name: "lib64", Children: []fileInfo{
 						{Name: "libvirt.so.0", Size: 20},
 					}},
 				}},
@@ -114,8 +114,8 @@ func TestTar2Files(t *testing.T) {
 				"/etc/libvirt/libvirt.conf",
 			},
 			expected: []fileInfo{
-				{Name: "etc", Size: 96, Children: []fileInfo{
-					{Name: "libvirt", Size: 128, Children: []fileInfo{
+				{Name: "etc", Children: []fileInfo{
+					{Name: "libvirt", Children: []fileInfo{
 						{Name: "libvirt-admin.conf", Size: 450},
 						{Name: "libvirt.conf", Size: 547},
 					}},
@@ -132,12 +132,12 @@ func TestTar2Files(t *testing.T) {
 				"/usr/include/absl/log/internal/globals.h",
 			},
 			expected: []fileInfo{
-				{Name: "usr", Size: 96, Children: []fileInfo{
-					{Name: "include", Size: 96, Children: []fileInfo{
-						{Name: "absl", Size: 96, Children: []fileInfo{
-							{Name: "log", Size: 128, Children: []fileInfo{
+				{Name: "usr", Children: []fileInfo{
+					{Name: "include", Children: []fileInfo{
+						{Name: "absl", Children: []fileInfo{
+							{Name: "log", Children: []fileInfo{
 								{Name: "globals.h", Size: 8391},
-								{Name: "internal", Size: 96, Children: []fileInfo{
+								{Name: "internal", Children: []fileInfo{
 									{Name: "globals.h", Size: 4030},
 								}},
 							}},
@@ -198,7 +198,6 @@ func collectFileInfo(dirName string) ([]fileInfo, error) {
 	for _, file := range fileInfos {
 		fileInfo := fileInfo{
 			Name: file.Name(),
-			Size: file.Size(),
 		}
 
 		if file.IsDir() {
@@ -207,6 +206,8 @@ func collectFileInfo(dirName string) ([]fileInfo, error) {
 				return r, err
 			}
 			fileInfo.Children = children
+		} else {
+			fileInfo.Size = file.Size()
 		}
 
 		r = append(r, fileInfo)
