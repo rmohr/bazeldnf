@@ -24,7 +24,10 @@ go_test(
         "rpm_test.go",
         "tar_test.go",
     ],
-    data = ["@libvirt-libs-11.0.0-1.fc42.x86_64.rpm//rpm"],
+    data = [
+        "@abseil-cpp-devel-20240722.1-1.fc42.x86_64.rpm//rpm",
+        "@libvirt-libs-11.0.0-1.fc42.x86_64.rpm//rpm",
+    ],
     embed = [":rpm"],
     deps = [
         "//pkg/api",

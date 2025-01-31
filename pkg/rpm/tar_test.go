@@ -107,7 +107,7 @@ func TestTar2Files(t *testing.T) {
 		},
 		{
 			name:    "should extract multiple files from a tar archive",
-			rpm:     filepath.Join(os.Getenv("TEST_SRCDIR"), "libvirt-libs-6.1.0-2.fc32.x86_64.rpm/rpm/downloaded"),
+			rpm:     filepath.Join(os.Getenv("TEST_SRCDIR"), "libvirt-libs-11.0.0-1.fc42.x86_64.rpm/rpm/downloaded"),
 			wantErr: false,
 			files: []string{
 				"/etc/libvirt/libvirt-admin.conf",
@@ -122,6 +122,30 @@ func TestTar2Files(t *testing.T) {
 				}},
 			},
 			prefix: "./etc/libvirt/",
+		},
+		{
+			name:    "should extract multiple files with the same name from a tar archive",
+			rpm:     filepath.Join(os.Getenv("TEST_SRCDIR"), "abseil-cpp-devel-20240722.1-1.fc42.x86_64.rpm/rpm/downloaded"),
+			wantErr: false,
+			files: []string{
+				"/usr/include/absl/log/globals.h",
+				"/usr/include/absl/log/internal/globals.h",
+			},
+			expected: []fileInfo{
+				{Name: "usr", Size: 96, Children: []fileInfo{
+					{Name: "include", Size: 96, Children: []fileInfo{
+						{Name: "absl", Size: 96, Children: []fileInfo{
+							{Name: "log", Size: 128, Children: []fileInfo{
+								{Name: "globals.h", Size: 8391},
+								{Name: "internal", Size: 96, Children: []fileInfo{
+									{Name: "globals.h", Size: 4030},
+								}},
+							}},
+						}},
+					}},
+				}},
+			},
+			prefix: "./usr/include/",
 		},
 	}
 	for _, tt := range tests {

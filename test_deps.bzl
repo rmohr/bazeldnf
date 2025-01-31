@@ -18,3 +18,11 @@ def bazeldnf_test_dependencies():
             "https://kojipkgs.fedoraproject.org//packages/libvirt/11.0.0/1.fc42/x86_64/libvirt-devel-11.0.0-1.fc42.x86_64.rpm",
         ],
     )
+
+    rpm(
+        name = "abseil-cpp-devel-20240722.1-1.fc42.x86_64.rpm",
+        sha256 = "1393c28f5a3f3029769bbe3436b3eec58c7b11761c4ad6695c309b21474d9804",
+        urls = [
+            "https://kojipkgs.fedoraproject.org//packages/abseil-cpp/20240722.1/1.fc42/x86_64/abseil-cpp-devel-20240722.1-1.fc42.x86_64.rpm",
+        ],
+    )
