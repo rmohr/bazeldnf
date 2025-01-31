@@ -27,6 +27,6 @@ bazeldnf.rpm(
 )
 use_repo(
     bazeldnf,
-    "libvirt-devel-6.1.0-2.fc32.x86_64.rpm",
-    "libvirt-libs-6.1.0-2.fc32.x86_64.rpm",
+    "libvirt-devel-11.0.0-1.fc42.x86_64.rpm",
+    "libvirt-libs-11.0.0-1.fc42.x86_64.rpm",
 )
