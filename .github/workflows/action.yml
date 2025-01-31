@@ -38,8 +38,6 @@ jobs:
     strategy:
       matrix:
         version:
-          - version: 5.x # TODO: deprecate by Jan 2025 https://bazel.build/release
-            bazelrc:
           - version: 6.x
             bazelrc: |
               import %workspace%/../../.aspect/bazelrc/bazel6.bazelrc
