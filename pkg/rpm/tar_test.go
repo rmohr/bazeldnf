@@ -84,18 +84,24 @@ func TestRPMToTar(t *testing.T) {
 
 func TestTar2Files(t *testing.T) {
 	tests := []struct {
-		name          string
-		rpm           string
-		expectedFiles []*fileInfo
-		wantErr       bool
-		prefix        string
+		name     string
+		rpm      string
+		files    []string
+		expected []fileInfo
+		wantErr  bool
+		prefix   string
 	}{
 		{
 			name:    "should extract a symlink from a tar archive",
 			rpm:     filepath.Join(os.Getenv("TEST_SRCDIR"), "libvirt-libs-6.1.0-2.fc32.x86_64.rpm/rpm/downloaded"),
 			wantErr: false,
-			expectedFiles: []*fileInfo{
-				{Name: "libvirt.so.0", Size: 19},
+			files:   []string{"/usr/lib64/libvirt.so.0"},
+			expected: []fileInfo{
+				{Name: "usr", Size: 96, Children: []fileInfo{
+					{Name: "lib64", Size: 96, Children: []fileInfo{
+						{Name: "libvirt.so.0", Size: 19},
+					}},
+				}},
 			},
 			prefix: "./usr/lib64",
 		},
@@ -103,9 +109,17 @@ func TestTar2Files(t *testing.T) {
 			name:    "should extract multiple files from a tar archive",
 			rpm:     filepath.Join(os.Getenv("TEST_SRCDIR"), "libvirt-libs-6.1.0-2.fc32.x86_64.rpm/rpm/downloaded"),
 			wantErr: false,
-			expectedFiles: []*fileInfo{
-				{Name: "libvirt-admin.conf", Size: 450},
-				{Name: "libvirt.conf", Size: 547},
+			files: []string{
+				"/etc/libvirt/libvirt-admin.conf",
+				"/etc/libvirt/libvirt.conf",
+			},
+			expected: []fileInfo{
+				{Name: "etc", Size: 96, Children: []fileInfo{
+					{Name: "libvirt", Size: 128, Children: []fileInfo{
+						{Name: "libvirt-admin.conf", Size: 450},
+						{Name: "libvirt.conf", Size: 547},
+					}},
+				}},
 			},
 			prefix: "./etc/libvirt/",
 		},
@@ -132,28 +146,53 @@ func TestTar2Files(t *testing.T) {
 			}()
 
 			files := []string{}
-			for _, file := range tt.expectedFiles {
-				files = append(files, filepath.Join(tmpdir, file.Name))
+			for _, file := range tt.files {
+				// bazel rules automagically create these directories
+				err = os.MkdirAll(filepath.Join(tmpdir, filepath.Dir(file)), 0777)
+				g.Expect(err).ToNot(HaveOccurred())
+				files = append(files, filepath.Join(tmpdir, file))
 			}
 
 			err = PrefixFilter(tt.prefix, tar.NewReader(pipeReader), files)
 			g.Expect(err).ToNot(HaveOccurred())
 
-			discoveredHeaders := []*fileInfo{}
-			fileInfos, err := ioutil.ReadDir(tmpdir)
+			discoveredHeaders, err := collectFileInfo(tmpdir)
 			g.Expect(err).ToNot(HaveOccurred())
-			for _, file := range fileInfos {
-				discoveredHeaders = append(discoveredHeaders, &fileInfo{
-					Name: file.Name(),
-					Size: file.Size(),
-				})
-			}
-			g.Expect(discoveredHeaders).To(ConsistOf(tt.expectedFiles))
+			g.Expect(discoveredHeaders).To(ConsistOf(tt.expected))
 		})
 	}
 }
 
+func collectFileInfo(dirName string) ([]fileInfo, error) {
+	r := []fileInfo{}
+
+	fileInfos, err := ioutil.ReadDir(dirName)
+	if err != nil {
+		return r, err
+	}
+
+	for _, file := range fileInfos {
+		fileInfo := fileInfo{
+			Name: file.Name(),
+			Size: file.Size(),
+		}
+
+		if file.IsDir() {
+			children, err := collectFileInfo(filepath.Join(dirName, file.Name()))
+			if err != nil {
+				return r, err
+			}
+			fileInfo.Children = children
+		}
+
+		r = append(r, fileInfo)
+	}
+
+	return r, nil
+}
+
 type fileInfo struct {
-	Name string
-	Size int64
+	Name     string
+	Size     int64
+	Children []fileInfo
 }
