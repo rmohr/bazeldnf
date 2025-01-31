@@ -7,6 +7,7 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/api",
+        "//pkg/api/bazeldnf",
         "@com_github_bazelbuild_buildtools//build:go_default_library",
         "@com_github_bazelbuild_buildtools//edit:go_default_library",
     ],

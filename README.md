@@ -234,6 +234,35 @@ the `--nobest` option can be supplied. With this option all packages are
 considered. Newest packages will have the higest weight but it may not always be
 able to choose them and older packages may be pulled in instead.
 
+### Lock files
+
+bazeldnf can use lock files as the source of RPMs in lieu of using the WORKSPACE file. These
+can be hand written or generated with `bazeldnf rpmtree` similarly to how WORKSPACE files work.
+Lock files can *only* be used when working in bzlmod mode, not in workspace mode.
+
+To generate lock files you can run the following:
+
+```bash
+bazeldnf rpmtree --lockfile rpms.json --configname myrpms --name libvirttree libvirt
+```
+
+The lock file JSON format is as follows:
+```
+{
+    "name": "bazeldnf-rpms",
+    "rpms": [
+        {
+            "name": "libvirt-libs",
+            "sha256": "aac272a2ace134b5ef60a41e6624deb24331e79c76699ef6cef0dca22d94ac7e",
+            "urls": [
+                "https://kojipkgs.fedoraproject.org//packages/libvirt/11.0.0/1.fc42/x86_64/libvirt-libs-11.0.0-1.fc42.x86_64.rpm"
+            ]
+        }
+    ]
+}
+
+```
+
 ### Dependency resolution limitations
 
 ##### Missing features

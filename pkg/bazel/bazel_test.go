@@ -115,7 +115,7 @@ func TestBuildfileWithRPMs(t *testing.T) {
 			defer os.Remove(tmpFile.Name())
 			file, err := LoadBuild(tt.orig)
 			g.Expect(err).ToNot(HaveOccurred())
-			AddTree("mytree", file, tt.pkgs, "myarch", false)
+			AddTree("mytree", "", file, tt.pkgs, "myarch", false)
 			err = WriteBuild(false, file, tmpFile.Name())
 			g.Expect(err).ToNot(HaveOccurred())
 
