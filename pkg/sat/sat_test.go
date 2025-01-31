@@ -1242,14 +1242,16 @@ func Test(t *testing.T) {
 
 func TestNewResolver(t *testing.T) {
 	tests := []struct {
-		name     string
-		packages []*api.Package
-		requires []string
-		install  []string
-		exclude  []string
-		solvable bool
-		focus    bool
-		nobest   bool
+		name        string
+		packages    []*api.Package
+		requires    []string
+		ignoreRegex []string
+		allowRegex  []string
+		install     []string
+		exclude     []string
+		solvable    bool
+		focus       bool
+		nobest      bool
 	}{
 		{name: "with indirect dependency", packages: []*api.Package{
 			newPkg("testa", "1", []string{"testa", "a", "b"}, []string{"d", "g"}, []string{}),
@@ -1344,6 +1346,30 @@ func TestNewResolver(t *testing.T) {
 			exclude:  []string{},
 			solvable: true,
 		},
+		{name: "exclude transitive package", packages: []*api.Package{
+			newPkg("testa", "1", []string{}, []string{"b", "c"}, []string{}),
+			newPkg("testb", "1", []string{"b"}, []string{}, []string{}),
+			newPkg("testc", "1", []string{"c"}, []string{}, []string{}),
+		}, requires: []string{
+			"testa",
+		},
+			ignoreRegex: []string{"testb.*"},
+			install: []string{"testa-0:1", "testc-0:1"},
+			exclude: []string{},
+			solvable: true,
+		},
+		{name: "only allow package", packages: []*api.Package{
+			newPkg("testa", "1", []string{}, []string{"b", "c"}, []string{}),
+			newPkg("testb", "1", []string{"b"}, []string{}, []string{}),
+			newPkg("testc", "1", []string{"c"}, []string{}, []string{}),
+		}, requires: []string{
+			"testa",
+		},
+			allowRegex: []string{"testa.*"},
+			install: []string{"testa-0:1"},
+			exclude: []string{},
+			solvable: true,
+		},
 		// TODO: Add test cases.
 	}
 	focus := false
@@ -1359,7 +1385,7 @@ func TestNewResolver(t *testing.T) {
 		}
 		t.Run(tt.name, func(t *testing.T) {
 			resolver := NewResolver(tt.nobest)
-			err := resolver.LoadInvolvedPackages(tt.packages, nil, nil)
+			err := resolver.LoadInvolvedPackages(tt.packages, tt.ignoreRegex, tt.allowRegex)
 			if err != nil {
 				t.Fail()
 			}
