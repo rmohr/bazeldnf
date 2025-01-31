@@ -54,8 +54,13 @@ func PrefixFilter(prefix string, reader *tar.Reader, files []string) error {
 
 	fileMap := map[string]string{}
 	for _, file := range files {
-		fileMap[filepath.Base(file)] = file
+		prefixIdx := strings.Index(file, prefix)
+		if prefixIdx == -1 {
+			return fmt.Errorf("prefix %s is not found in %s", prefix, file)
+		}
+		fileMap[file[prefixIdx:]] = file
 	}
+
 	for {
 		entry, err := reader.Next()
 		if err == io.EOF {
@@ -70,13 +75,14 @@ func PrefixFilter(prefix string, reader *tar.Reader, files []string) error {
 		} else {
 			continue
 		}
-		basename := filepath.Base(name)
-		if _, exists := fileMap[basename]; !exists {
+
+		if _, exists := fileMap[name]; !exists {
 			continue
 		}
+
 		if entry.Typeflag == tar.TypeReg {
 			err := func() error {
-				writer, err := os.Create(fileMap[basename])
+				writer, err := os.Create(fileMap[name])
 				if err != nil {
 					return err
 				}
@@ -89,16 +95,16 @@ func PrefixFilter(prefix string, reader *tar.Reader, files []string) error {
 			if err != nil {
 				return err
 			}
-			delete(fileMap, basename)
+			delete(fileMap, name)
 		} else if entry.Typeflag == tar.TypeSymlink {
 			linkname := strings.TrimPrefix(entry.Linkname, ".")
-			err = os.Symlink(linkname, fileMap[basename])
+			err = os.Symlink(linkname, fileMap[name])
 			if err != nil {
 				return err
 			}
-			delete(fileMap, basename)
+			delete(fileMap, name)
 		} else {
-			return fmt.Errorf("can't extract %s, only symlinks and files can be specified", fileMap[basename])
+			return fmt.Errorf("can't extract %s, only symlinks and files can be specified", fileMap[name])
 		}
 	}
 
