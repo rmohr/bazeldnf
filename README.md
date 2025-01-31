@@ -14,11 +14,10 @@ processed in any way.  They can be added to your `WORKSPACE` file like this:
 load("@bazeldnf//bazeldnf:deps.bzl", "rpm")
 
 rpm(
-    name = "libvirt-devel-6.1.0-2.fc32.x86_64.rpm",
-    sha256 = "2ebb715341b57a74759aff415e0ff53df528c49abaa7ba5b794b4047461fa8d6",
+    name = "libvirt-devel-11.0.0-1.fc42.x86_64.rpm",
+    sha256 = "aac272a2ace134b5ef60a41e6624deb24331e79c76699ef6cef0dca22d94ac7e",
     urls = [
-        "https://download-ib01.fedoraproject.org/pub/fedora/linux/releases/32/Everything/x86_64/os/Packages/l/libvirt-devel-6.1.0-2.fc32.x86_64.rpm",
-        "https://storage.googleapis.com/builddeps/2ebb715341b57a74759aff415e0ff53df528c49abaa7ba5b794b4047461fa8d6",
+        "https://kojipkgs.fedoraproject.org//packages/libvirt/11.0.0/1.fc42/x86_64/libvirt-libs-11.0.0-1.fc42.x86_64.rpm",
     ],
 )
 ```
@@ -34,8 +33,8 @@ load("@bazeldnf//bazeldnf:defs.bzl", "rpmtree")
 rpmtree(
     name = "rpmarchive",
     rpms = [
-        "@libvirt-libs-6.1.0-2.fc32.x86_64.rpm//rpm",
-        "@libvirt-devel-6.1.0-2.fc32.x86_64.rpm//rpm",
+        "@libvirt-libs-11.0.0-1.fc42.x86_64.rpm//rpm",
+        "@libvirt-devel-11.0.0-1.fc42.x86_64.rpm//rpm",
     ],
 )
 ```
@@ -61,8 +60,8 @@ privileged ports:
 rpmtree(
     name = "rpmarchive",
     rpms = [
-        "@libvirt-libs-6.1.0-2.fc32.x86_64.rpm//rpm",
-        "@libvirt-devel-6.1.0-2.fc32.x86_64.rpm//rpm",
+        "@libvirt-libs-11.0.0-1.fc42.x86_64.rpm//rpm",
+        "@libvirt-devel-11.0.0-1.fc42.x86_64.rpm//rpm",
     ],
     symlinks = {
         "/var/run": "../run",

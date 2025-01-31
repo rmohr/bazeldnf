@@ -24,7 +24,7 @@ go_test(
         "rpm_test.go",
         "tar_test.go",
     ],
-    data = ["@libvirt-libs-6.1.0-2.fc32.x86_64.rpm//rpm"],
+    data = ["@libvirt-libs-11.0.0-1.fc42.x86_64.rpm//rpm"],
     embed = [":rpm"],
     deps = [
         "//pkg/api",

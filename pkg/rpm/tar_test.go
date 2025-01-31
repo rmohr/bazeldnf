@@ -23,7 +23,7 @@ func TestRPMToTar(t *testing.T) {
 	}{
 		{
 			name:    "should convert a RPM to tar and keep all entries",
-			rpm:     filepath.Join(os.Getenv("TEST_SRCDIR"), "libvirt-libs-6.1.0-2.fc32.x86_64.rpm/rpm/downloaded"),
+			rpm:     filepath.Join(os.Getenv("TEST_SRCDIR"), "libvirt-libs-11.0.0-1.fc42.x86_64.rpm/rpm/downloaded"),
 			wantErr: false,
 			expectedHeaders: []*tar.Header{
 				{Name: "./etc/libvirt/libvirt-admin.conf", Size: 450, Mode: 33188},
@@ -93,13 +93,13 @@ func TestTar2Files(t *testing.T) {
 	}{
 		{
 			name:    "should extract a symlink from a tar archive",
-			rpm:     filepath.Join(os.Getenv("TEST_SRCDIR"), "libvirt-libs-6.1.0-2.fc32.x86_64.rpm/rpm/downloaded"),
+			rpm:     filepath.Join(os.Getenv("TEST_SRCDIR"), "libvirt-libs-11.0.0-1.fc42.x86_64.rpm/rpm/downloaded"),
 			wantErr: false,
 			files:   []string{"/usr/lib64/libvirt.so.0"},
 			expected: []fileInfo{
 				{Name: "usr", Size: 96, Children: []fileInfo{
 					{Name: "lib64", Size: 96, Children: []fileInfo{
-						{Name: "libvirt.so.0", Size: 19},
+						{Name: "libvirt.so.0", Size: 20},
 					}},
 				}},
 			},
