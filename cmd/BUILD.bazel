@@ -12,6 +12,7 @@ go_library(
         "prune.go",
         "reduce.go",
         "resolve.go",
+        "resolve_helper.go",
         "root.go",
         "rpm2tar.go",
         "rpmtree.go",

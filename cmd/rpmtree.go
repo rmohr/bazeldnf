@@ -8,17 +8,12 @@ import (
 	"github.com/rmohr/bazeldnf/pkg/api"
 	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 	"github.com/rmohr/bazeldnf/pkg/bazel"
-	"github.com/rmohr/bazeldnf/pkg/reducer"
 	"github.com/rmohr/bazeldnf/pkg/repo"
-	"github.com/rmohr/bazeldnf/pkg/sat"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
 type rpmtreeOpts struct {
-	nobest           bool
-	arch             string
-	baseSystem       string
 	repofiles        []string
 	workspace        string
 	toMacro          string
@@ -27,8 +22,6 @@ type rpmtreeOpts struct {
 	lockfile         string
 	name             string
 	public           bool
-	forceIgnoreRegex []string
-	onlyAllowRegex   []string
 }
 
 var rpmtreeopts = rpmtreeOpts{}
@@ -155,23 +148,7 @@ func NewRpmTreeCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			matched, involved, err := reducer.Resolve(repos, nil, rpmtreeopts.baseSystem, rpmtreeopts.arch, required)
-			if err != nil {
-				return err
-			}
-			solver := sat.NewResolver(rpmtreeopts.nobest)
-			logrus.Info("Loading involved packages into the rpmtreer.")
-			err = solver.LoadInvolvedPackages(involved, rpmtreeopts.forceIgnoreRegex, rpmtreeopts.onlyAllowRegex)
-			if err != nil {
-				return err
-			}
-			logrus.Info("Adding required packages to the rpmtreer.")
-			err = solver.ConstructRequirements(matched)
-			if err != nil {
-				return err
-			}
-			logrus.Info("Solving.")
-			install, _, forceIgnored, err := solver.Resolve()
+			install, forceIgnored, err := resolve(repos, required)
 			if err != nil {
 				return err
 			}
@@ -181,17 +158,13 @@ func NewRpmTreeCmd() *cobra.Command {
 				return err
 			}
 
-			if err != nil {
-				return err
-			}
-
 			build, err := bazel.LoadBuild(rpmtreeopts.buildfile)
 			if err != nil {
 				return err
 			}
-			bazel.AddTree(rpmtreeopts.name, configname, build, install, rpmtreeopts.arch, rpmtreeopts.public)
+			bazel.AddTree(rpmtreeopts.name, configname, build, install, resolvehelperopts.arch, rpmtreeopts.public)
 
-			if err := handler.Process(install, rpmtreeopts.arch, build); err != nil {
+			if err := handler.Process(install, resolvehelperopts.arch, build); err != nil {
 				return err
 			}
 
@@ -213,9 +186,9 @@ func NewRpmTreeCmd() *cobra.Command {
 		},
 	}
 
-	rpmtreeCmd.Flags().StringVar(&rpmtreeopts.baseSystem, "basesystem", "fedora-release-container", "base system to use (e.g. fedora-release-server, centos-stream-release, ...)")
-	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.arch, "arch", "a", "x86_64", "target architecture")
-	rpmtreeCmd.Flags().BoolVarP(&rpmtreeopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
+	rpmtreeCmd.Flags().StringVar(&resolvehelperopts.baseSystem, "basesystem", "fedora-release-container", "base system to use (e.g. fedora-release-server, centos-stream-release, ...)")
+	rpmtreeCmd.Flags().StringVarP(&resolvehelperopts.arch, "arch", "a", "x86_64", "target architecture")
+	rpmtreeCmd.Flags().BoolVarP(&resolvehelperopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
 	rpmtreeCmd.Flags().BoolVarP(&rpmtreeopts.public, "public", "p", true, "if the rpmtree rule should be public")
 	rpmtreeCmd.Flags().StringArrayVarP(&rpmtreeopts.repofiles, "repofile", "r", []string{"repo.yaml"}, "repository information file. Can be specified multiple times. Will be used by default if no explicit inputs are provided.")
 	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.workspace, "workspace", "w", "WORKSPACE", "Bazel workspace file")
@@ -224,11 +197,11 @@ func NewRpmTreeCmd() *cobra.Command {
 	rpmtreeCmd.Flags().StringVar(&rpmtreeopts.configname, "configname", "rpms", "config name to use in lockfile")
 	rpmtreeCmd.Flags().StringVar(&rpmtreeopts.lockfile, "lockfile", "", "lockfile for RPMs")
 	rpmtreeCmd.Flags().StringVar(&rpmtreeopts.name, "name", "", "rpmtree rule name")
-	rpmtreeCmd.Flags().StringArrayVar(&rpmtreeopts.forceIgnoreRegex, "force-ignore-with-dependencies", []string{}, "Packages matching these regex patterns will not be installed. Allows force-removing unwanted dependencies. Be careful, this can lead to hidden missing dependencies.")
-	rpmtreeCmd.Flags().StringArrayVar(&rpmtreeopts.onlyAllowRegex, "only-allow", []string{}, "Packages matching these regex patterns may be installed. Allows scoping dependencies. Be careful, this can lead to hidden missing dependencies.")
+	rpmtreeCmd.Flags().StringArrayVar(&resolvehelperopts.forceIgnoreRegex, "force-ignore-with-dependencies", []string{}, "Packages matching these regex patterns will not be installed. Allows force-removing unwanted dependencies. Be careful, this can lead to hidden missing dependencies.")
+	rpmtreeCmd.Flags().StringArrayVar(&resolvehelperopts.onlyAllowRegex, "only-allow", []string{}, "Packages matching these regex patterns may be installed. Allows scoping dependencies. Be careful, this can lead to hidden missing dependencies.")
 	rpmtreeCmd.MarkFlagRequired("name")
 	// deprecated options
-	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.baseSystem, "fedora-base-system", "f", "fedora-release-container", "base system to use (e.g. fedora-release-server, centos-stream-release, ...)")
+	rpmtreeCmd.Flags().StringVarP(&resolvehelperopts.baseSystem, "fedora-base-system", "f", "fedora-release-container", "base system to use (e.g. fedora-release-server, centos-stream-release, ...)")
 	rpmtreeCmd.Flags().MarkDeprecated("fedora-base-system", "use --basesystem instead")
 	rpmtreeCmd.Flags().MarkShorthandDeprecated("fedora-base-system", "use --basesystem instead")
 	rpmtreeCmd.Flags().MarkShorthandDeprecated("nobest", "use --nobest instead")
