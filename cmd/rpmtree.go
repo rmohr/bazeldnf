@@ -128,6 +128,22 @@ func (h *LockFileHandler) Write() error {
 	return bazel.WriteLockFile(h.config, h.filename)
 }
 
+func newHandler() (Handler, string, error) {
+	if rpmtreeopts.toMacro != "" {
+		handler, err := NewMacroHandler(rpmtreeopts.toMacro)
+		return handler, "", err
+	} else if rpmtreeopts.lockfile != "" {
+		handler, err := NewLockFileHandler(
+			rpmtreeopts.configname,
+			rpmtreeopts.lockfile,
+		)
+		return handler, rpmtreeopts.configname, err
+	}
+
+	handler, err := NewWorkspaceHandler(rpmtreeopts.workspace)
+	return handler, "", err
+}
+
 func NewRpmTreeCmd() *cobra.Command {
 
 	rpmtreeCmd := &cobra.Command{
@@ -160,19 +176,9 @@ func NewRpmTreeCmd() *cobra.Command {
 				return err
 			}
 
-			var handler Handler
-			var configname string
-
-			if rpmtreeopts.toMacro != "" {
-				handler, err = NewMacroHandler(rpmtreeopts.toMacro)
-			} else if rpmtreeopts.lockfile != "" {
-				configname = rpmtreeopts.configname
-				handler, err = NewLockFileHandler(
-					rpmtreeopts.configname,
-					rpmtreeopts.lockfile,
-				)
-			} else {
-				handler, err = NewWorkspaceHandler(rpmtreeopts.workspace)
+			handler, configname, err := newHandler()
+			if err != nil {
+				return err
 			}
 
 			if err != nil {
