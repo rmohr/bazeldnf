@@ -139,14 +139,7 @@ func NewRpmTreeCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			repoReducer := reducer.NewRepoReducer(repos, nil, rpmtreeopts.baseSystem, rpmtreeopts.arch, repo.NewCacheHelper())
-			logrus.Info("Loading packages.")
-			if err := repoReducer.Load(); err != nil {
-				return err
-			}
-			logrus.Info("Initial reduction of involved packages.")
-			matched, involved, err := repoReducer.Resolve(required)
-
+			matched, involved, err := reducer.Resolve(repos, nil, rpmtreeopts.baseSystem, rpmtreeopts.arch, required)
 			if err != nil {
 				return err
 			}
