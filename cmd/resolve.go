@@ -19,6 +19,7 @@ type resolveOpts struct {
 	baseSystem       string
 	repofiles        []string
 	forceIgnoreRegex []string
+	onlyAllowRegex   []string
 }
 
 var resolveopts = resolveOpts{}
@@ -52,7 +53,7 @@ func NewResolveCmd() *cobra.Command {
 			}
 			solver := sat.NewResolver(resolveopts.nobest)
 			logrus.Info("Loading involved packages into the resolver.")
-			err = solver.LoadInvolvedPackages(involved, resolveopts.forceIgnoreRegex)
+			err = solver.LoadInvolvedPackages(involved, resolveopts.forceIgnoreRegex, resolveopts.onlyAllowRegex)
 			if err != nil {
 				return err
 			}
@@ -79,6 +80,7 @@ func NewResolveCmd() *cobra.Command {
 	resolveCmd.Flags().BoolVarP(&resolveopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
 	resolveCmd.Flags().StringArrayVarP(&resolveopts.repofiles, "repofile", "r", []string{"repo.yaml"}, "repository information file. Can be specified multiple times. Will be used by default if no explicit inputs are provided.")
 	resolveCmd.Flags().StringArrayVar(&resolveopts.forceIgnoreRegex, "force-ignore-with-dependencies", []string{}, "Packages matching these regex patterns will not be installed. Allows force-removing unwanted dependencies. Be careful, this can lead to hidden missing dependencies.")
+	resolveCmd.Flags().StringArrayVar(&resolveopts.onlyAllowRegex, "only-allow", []string{}, "Packages matching these regex patterns may be installed. Allows limiting the dependency scope. Be careful, this can lead to hidden missing dependencies.")
 	// deprecated options
 	resolveCmd.Flags().StringVarP(&resolveopts.baseSystem, "fedora-base-system", "f", "fedora-release-container", "base system to use (e.g. fedora-release-server, centos-stream-release, ...)")
 	resolveCmd.Flags().MarkDeprecated("fedora-base-system", "use --basesystem instead")
