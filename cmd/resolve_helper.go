@@ -52,7 +52,7 @@ func addResolveHelperFlags(cmd *cobra.Command) {
 	cmd.Flags().StringVar(&resolvehelperopts.baseSystem, "basesystem", "fedora-release-container", "base system to use (e.g. fedora-release-server, centos-stream-release, ...)")
 	cmd.Flags().StringVarP(&resolvehelperopts.arch, "arch", "a", "x86_64", "target architecture")
 	cmd.Flags().BoolVarP(&resolvehelperopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
-	cmd.Flags().BoolVarP(&resolvehelperopts.ignoreMissing, "ignore-missing", "i", false, "ignore missing packages")
+	cmd.Flags().BoolVar(&resolvehelperopts.ignoreMissing, "ignore-missing", false, "ignore missing packages")
 	cmd.Flags().StringArrayVar(&resolvehelperopts.forceIgnoreRegex, "force-ignore-with-dependencies", []string{}, "Packages matching these regex patterns will not be installed. Allows force-removing unwanted dependencies. Be careful, this can lead to hidden missing dependencies.")
 	cmd.Flags().StringArrayVar(&resolvehelperopts.onlyAllowRegex, "only-allow", []string{}, "Packages matching these regex patterns may be installed. Allows scoping dependencies. Be careful, this can lead to hidden missing dependencies.")
 	// deprecated options
