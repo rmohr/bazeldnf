@@ -69,7 +69,7 @@ which allow reducing huge rpm repos to a smaller problem set for debugging, remo
 	reduceCmd.Flags().StringVar(&reduceopts.baseSystem, "basesystem", "fedora-release-container", "base system to use (e.g. fedora-release-server, centos-stream-release, ...)")
 	reduceCmd.Flags().StringVarP(&reduceopts.arch, "arch", "a", "x86_64", "target architecture")
 	reduceCmd.Flags().BoolVarP(&reduceopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
-	reduceCmd.Flags().BoolVarP(&reduceopts.ignoreMissing, "ignore-missing", "i", false, "ignore missing packages")
+	reduceCmd.Flags().BoolVar(&reduceopts.ignoreMissing, "ignore-missing", false, "ignore missing packages")
 	reduceCmd.Flags().StringArrayVarP(&reduceopts.repofiles, "repofile", "r", []string{"repo.yaml"}, "repository information file. Can be specified multiple times. Will be used by default if no explicit inputs are provided.")
 	// deprecated options
 	reduceCmd.Flags().StringVarP(&reduceopts.baseSystem, "fedora-base-system", "f", "fedora-release-container", "base system to use (e.g. fedora-release-server, centos-stream-release, ...)")
