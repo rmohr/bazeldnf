@@ -44,19 +44,10 @@ func NewResolveCmd() *cobra.Command {
 		},
 	}
 
-	resolveCmd.Flags().StringArrayVarP(&resolvehelperopts.in, "input", "i", nil, "primary.xml of the repository")
-	resolveCmd.Flags().StringVar(&resolvehelperopts.baseSystem, "basesystem", "fedora-release-container", "base system to use (e.g. fedora-release-server, centos-stream-release, ...)")
-	resolveCmd.Flags().StringVarP(&resolvehelperopts.arch, "arch", "a", "x86_64", "target architecture")
-	resolveCmd.Flags().BoolVarP(&resolvehelperopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
 	resolveCmd.Flags().StringArrayVarP(&resolveopts.repofiles, "repofile", "r", []string{"repo.yaml"}, "repository information file. Can be specified multiple times. Will be used by default if no explicit inputs are provided.")
-	resolveCmd.Flags().StringArrayVar(&resolvehelperopts.forceIgnoreRegex, "force-ignore-with-dependencies", []string{}, "Packages matching these regex patterns will not be installed. Allows force-removing unwanted dependencies. Be careful, this can lead to hidden missing dependencies.")
-	resolveCmd.Flags().StringArrayVar(&resolvehelperopts.onlyAllowRegex, "only-allow", []string{}, "Packages matching these regex patterns may be installed. Allows limiting the dependency scope. Be careful, this can lead to hidden missing dependencies.")
-	// deprecated options
-	resolveCmd.Flags().StringVarP(&resolvehelperopts.baseSystem, "fedora-base-system", "f", "fedora-release-container", "base system to use (e.g. fedora-release-server, centos-stream-release, ...)")
-	resolveCmd.Flags().MarkDeprecated("fedora-base-system", "use --basesystem instead")
-	resolveCmd.Flags().MarkShorthandDeprecated("fedora-base-system", "use --basesystem instead")
-	resolveCmd.Flags().MarkShorthandDeprecated("nobest", "use --nobest instead")
+
 	repo.AddCacheHelperFlags(resolveCmd)
+	addResolveHelperFlags(resolveCmd)
 
 	return resolveCmd
 }

@@ -186,9 +186,6 @@ func NewRpmTreeCmd() *cobra.Command {
 		},
 	}
 
-	rpmtreeCmd.Flags().StringVar(&resolvehelperopts.baseSystem, "basesystem", "fedora-release-container", "base system to use (e.g. fedora-release-server, centos-stream-release, ...)")
-	rpmtreeCmd.Flags().StringVarP(&resolvehelperopts.arch, "arch", "a", "x86_64", "target architecture")
-	rpmtreeCmd.Flags().BoolVarP(&resolvehelperopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
 	rpmtreeCmd.Flags().BoolVarP(&rpmtreeopts.public, "public", "p", true, "if the rpmtree rule should be public")
 	rpmtreeCmd.Flags().StringArrayVarP(&rpmtreeopts.repofiles, "repofile", "r", []string{"repo.yaml"}, "repository information file. Can be specified multiple times. Will be used by default if no explicit inputs are provided.")
 	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.workspace, "workspace", "w", "WORKSPACE", "Bazel workspace file")
@@ -197,15 +194,10 @@ func NewRpmTreeCmd() *cobra.Command {
 	rpmtreeCmd.Flags().StringVar(&rpmtreeopts.configname, "configname", "rpms", "config name to use in lockfile")
 	rpmtreeCmd.Flags().StringVar(&rpmtreeopts.lockfile, "lockfile", "", "lockfile for RPMs")
 	rpmtreeCmd.Flags().StringVar(&rpmtreeopts.name, "name", "", "rpmtree rule name")
-	rpmtreeCmd.Flags().StringArrayVar(&resolvehelperopts.forceIgnoreRegex, "force-ignore-with-dependencies", []string{}, "Packages matching these regex patterns will not be installed. Allows force-removing unwanted dependencies. Be careful, this can lead to hidden missing dependencies.")
-	rpmtreeCmd.Flags().StringArrayVar(&resolvehelperopts.onlyAllowRegex, "only-allow", []string{}, "Packages matching these regex patterns may be installed. Allows scoping dependencies. Be careful, this can lead to hidden missing dependencies.")
 	rpmtreeCmd.MarkFlagRequired("name")
-	// deprecated options
-	rpmtreeCmd.Flags().StringVarP(&resolvehelperopts.baseSystem, "fedora-base-system", "f", "fedora-release-container", "base system to use (e.g. fedora-release-server, centos-stream-release, ...)")
-	rpmtreeCmd.Flags().MarkDeprecated("fedora-base-system", "use --basesystem instead")
-	rpmtreeCmd.Flags().MarkShorthandDeprecated("fedora-base-system", "use --basesystem instead")
-	rpmtreeCmd.Flags().MarkShorthandDeprecated("nobest", "use --nobest instead")
+
 	repo.AddCacheHelperFlags(rpmtreeCmd)
+	addResolveHelperFlags(rpmtreeCmd)
 
 	return rpmtreeCmd
 }
