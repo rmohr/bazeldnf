@@ -141,3 +141,13 @@ func NewRepoReducer(repos *bazeldnf.Repositories, repoFiles []string, baseSystem
 		},
 	}
 }
+
+func Resolve(repos *bazeldnf.Repositories, repoFiles []string, baseSystem, arch string, packages []string) (matched []string, involved []*api.Package, err error) {
+	repoReducer := NewRepoReducer(repos, repoFiles, baseSystem, arch, repo.NewCacheHelper())
+	logrus.Info("Loading packages.")
+	if err := repoReducer.Load(); err != nil {
+		return nil, nil, err
+	}
+	logrus.Info("Initial reduction of involved packages.")
+	return repoReducer.Resolve(packages)
+}
