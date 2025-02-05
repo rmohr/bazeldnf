@@ -15,9 +15,11 @@ require (
 	sigs.k8s.io/yaml v1.4.0
 )
 
+require github.com/bazelbuild/rules_go v0.52.0
+
 require (
 	github.com/adrg/xdg v0.5.3
-	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/klauspost/compress v1.11.1 // indirect

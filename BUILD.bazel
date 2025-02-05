@@ -107,10 +107,3 @@ bzl_library(
         "@bazeldnf//bazeldnf:deps",
     ],
 )
-
-bzl_library(
-    name = "test_deps",
-    srcs = ["test_deps.bzl"],
-    visibility = ["//visibility:public"],
-    deps = ["@bazeldnf//bazeldnf:defs"],
-)
