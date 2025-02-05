@@ -66,7 +66,7 @@ jobs:
   e2e-bzlmod-matrix:
     strategy:
       matrix:
-        version: [7.x]
+        version: [7.x, 8.x]
         path:
           - bazel-bzlmod
           - bazel-bzlmod-non-legacy-mode
@@ -94,6 +94,8 @@ jobs:
       matrix:
         config:
           - version: 7.x
+            flags: --incompatible_enable_proto_toolchain_resolution
+          - version: 8.x
             flags: --incompatible_enable_proto_toolchain_resolution
 
     runs-on: ubuntu-latest
