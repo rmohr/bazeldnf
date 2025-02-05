@@ -73,3 +73,18 @@ bazel_dep(name = "aspect_bazel_lib", version = "2.8.1", dev_dependency = True)
 bazel_dep(name = "buildifier_prebuilt", version = "6.4.0", dev_dependency = True)
 bazel_dep(name = "rules_pkg", version = "1.0.1", dev_dependency = True)
 bazel_dep(name = "stardoc", version = "0.8.0", dev_dependency = True)
+bazel_dep(name = "rules_proto", version = "6.0.0", dev_dependency = True)
+bazel_dep(name = "rules_java", version = "7.9.0", dev_dependency = True)
+
+http_jar = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_jar")
+
+http_jar(
+    name = "protobuf-java",
+    integrity = "sha256-0C+GOpCj/8d9Xu7AMcGOV58wx8uY8/OoFP6LiMQ9O8g=",
+    urls = ["https://repo1.maven.org/maven2/com/google/protobuf/protobuf-java/4.27.3/protobuf-java-4.27.3.jar"],
+)
+
+register_toolchains(
+    "//tools/toolchains:all",
+    dev_dependency = True,
+)
