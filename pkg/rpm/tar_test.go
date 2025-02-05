@@ -13,7 +13,7 @@ import (
 )
 
 func TestRPMToTar(t *testing.T) {
-	libvirtLibsRpm, err := runfiles.Rlocation("libvirt-libs-11.0.0-1.fc42.x86_64.rpm/rpm/downloaded")
+	libvirtLibsRpm, err := runfiles.Rlocation("bazeldnf_internal_libvirt-libs/rpm/downloaded")
 	if err != nil {
 		panic(err)
 	}
@@ -89,12 +89,12 @@ func TestRPMToTar(t *testing.T) {
 }
 
 func TestTar2Files(t *testing.T) {
-	abseilCppDevelRpm, err := runfiles.Rlocation("abseil-cpp-devel-20240722.1-1.fc42.x86_64.rpm/rpm/downloaded")
+	abseilCppDevelRpm, err := runfiles.Rlocation("bazeldnf_internal_abseil-cpp-devel/rpm/downloaded")
 	if err != nil {
 		panic(err)
 	}
 
-	libvirtLibsRpm, err := runfiles.Rlocation("libvirt-libs-11.0.0-1.fc42.x86_64.rpm/rpm/downloaded")
+	libvirtLibsRpm, err := runfiles.Rlocation("bazeldnf_internal_libvirt-libs/rpm/downloaded")
 	if err != nil {
 		panic(err)
 	}

@@ -9,21 +9,21 @@ module(
 bazeldnf = use_extension("//bazeldnf:extensions.bzl", "bazeldnf")
 bazeldnf.toolchain()
 bazeldnf.rpm(
-    name = "abseil-cpp-devel-20240722.1-1.fc42.x86_64.rpm",
+    name = "bazeldnf_internal_abseil-cpp-devel",
     sha256 = "1393c28f5a3f3029769bbe3436b3eec58c7b11761c4ad6695c309b21474d9804",
     urls = [
         "https://kojipkgs.fedoraproject.org//packages/abseil-cpp/20240722.1/1.fc42/x86_64/abseil-cpp-devel-20240722.1-1.fc42.x86_64.rpm",
     ],
 )
 bazeldnf.rpm(
-    name = "libvirt-devel-11.0.0-1.fc42.x86_64.rpm",
+    name = "bazeldnf_internal_libvirt-devel",
     sha256 = "dba37bbe57903afe49b5666f1781eb50001baa81af4584b355db0b6a2afad9fa",
     urls = [
         "https://kojipkgs.fedoraproject.org//packages/libvirt/11.0.0/1.fc42/x86_64/libvirt-devel-11.0.0-1.fc42.x86_64.rpm",
     ],
 )
 bazeldnf.rpm(
-    name = "libvirt-libs-11.0.0-1.fc42.x86_64.rpm",
+    name = "bazeldnf_internal_libvirt-libs",
     sha256 = "aac272a2ace134b5ef60a41e6624deb24331e79c76699ef6cef0dca22d94ac7e",
     urls = [
         "https://kojipkgs.fedoraproject.org//packages/libvirt/11.0.0/1.fc42/x86_64/libvirt-libs-11.0.0-1.fc42.x86_64.rpm",
@@ -31,10 +31,10 @@ bazeldnf.rpm(
 )
 use_repo(
     bazeldnf,
-    "abseil-cpp-devel-20240722.1-1.fc42.x86_64.rpm",
+    "bazeldnf_internal_abseil-cpp-devel",
+    "bazeldnf_internal_libvirt-devel",
+    "bazeldnf_internal_libvirt-libs",
     "bazeldnf_toolchains",
-    "libvirt-devel-11.0.0-1.fc42.x86_64.rpm",
-    "libvirt-libs-11.0.0-1.fc42.x86_64.rpm",
 )
 
 # registers toolchain for consumers of the repo

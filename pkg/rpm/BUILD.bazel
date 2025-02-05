@@ -25,8 +25,8 @@ go_test(
         "tar_test.go",
     ],
     data = [
-        "@abseil-cpp-devel-20240722.1-1.fc42.x86_64.rpm//rpm",
-        "@libvirt-libs-11.0.0-1.fc42.x86_64.rpm//rpm",
+        "@bazeldnf_internal_abseil-cpp-devel//rpm",
+        "@bazeldnf_internal_libvirt-libs//rpm",
     ],
     embed = [":rpm"],
     deps = [
