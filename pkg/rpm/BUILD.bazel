@@ -31,7 +31,7 @@ go_test(
     embed = [":rpm"],
     deps = [
         "//pkg/api",
-        "@com_github_bazelbuild_rules_go//go/runfiles",
         "@com_github_onsi_gomega//:gomega",
+        "@rules_go//go/runfiles",
     ],
 )
