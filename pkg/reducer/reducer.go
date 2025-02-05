@@ -25,7 +25,7 @@ func (r *RepoReducer) Load() error {
 	return nil
 }
 
-func (r *RepoReducer) Resolve(packages []string) (matched []string, involved []*api.Package, err error) {
+func (r *RepoReducer) Resolve(packages []string, ignoreMissing bool) (matched []string, involved []*api.Package, err error) {
 	packages = append(packages, r.implicitRequires...)
 	discovered := map[string]*api.Package{}
 	pinned := map[string]*api.Package{}
@@ -46,7 +46,7 @@ func (r *RepoReducer) Resolve(packages []string) (matched []string, involved []*
 				}
 			}
 		}
-		if !found {
+		if !found && !ignoreMissing {
 			return nil, nil, fmt.Errorf("Package %s does not exist", req)
 		}
 
@@ -142,12 +142,12 @@ func NewRepoReducer(repos *bazeldnf.Repositories, repoFiles []string, baseSystem
 	}
 }
 
-func Resolve(repos *bazeldnf.Repositories, repoFiles []string, baseSystem, arch string, packages []string) (matched []string, involved []*api.Package, err error) {
+func Resolve(repos *bazeldnf.Repositories, repoFiles []string, baseSystem, arch string, packages []string, ignoreMissing bool) (matched []string, involved []*api.Package, err error) {
 	repoReducer := NewRepoReducer(repos, repoFiles, baseSystem, arch, repo.NewCacheHelper())
 	logrus.Info("Loading packages.")
 	if err := repoReducer.Load(); err != nil {
 		return nil, nil, err
 	}
 	logrus.Info("Initial reduction of involved packages.")
-	return repoReducer.Resolve(packages)
+	return repoReducer.Resolve(packages, ignoreMissing)
 }
