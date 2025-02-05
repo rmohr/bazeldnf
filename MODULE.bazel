@@ -29,11 +29,10 @@ bazeldnf.rpm(
         "https://kojipkgs.fedoraproject.org//packages/libvirt/11.0.0/1.fc42/x86_64/libvirt-libs-11.0.0-1.fc42.x86_64.rpm",
     ],
 )
-
 use_repo(
     bazeldnf,
-    "bazeldnf_toolchains",
     "abseil-cpp-devel-20240722.1-1.fc42.x86_64.rpm",
+    "bazeldnf_toolchains",
     "libvirt-devel-11.0.0-1.fc42.x86_64.rpm",
     "libvirt-libs-11.0.0-1.fc42.x86_64.rpm",
 )

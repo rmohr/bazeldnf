@@ -23,6 +23,7 @@ rpm(
         "https://kojipkgs.fedoraproject.org//packages/libvirt/11.0.0/1.fc42/x86_64/libvirt-devel-11.0.0-1.fc42.x86_64.rpm",
     ],
 )
+
 rpm(
     name = "libvirt-libs-11.0.0-1.fc42.x86_64.rpm",
     sha256 = "aac272a2ace134b5ef60a41e6624deb24331e79c76699ef6cef0dca22d94ac7e",
