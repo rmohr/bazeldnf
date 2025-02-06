@@ -3,6 +3,22 @@ local_repository(
     path = "../../",
 )
 
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "bazel_skylib",
+    sha256 = "bc283cdfcd526a52c3201279cda4bc298652efa898b10b4db0837dc51652756f",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.7.1/bazel-skylib-1.7.1.tar.gz",
+        "https://github.com/bazelbuild/bazel-skylib/releases/download/1.7.1/bazel-skylib-1.7.1.tar.gz",
+    ],
+)
+
+load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
+
+bazel_skylib_workspace()
+
+load("@bazeldnf//bazeldnf:defs.bzl", "rpm")
 load(
     "@bazeldnf//bazeldnf:repositories.bzl",
     "bazeldnf_dependencies",
@@ -15,12 +31,21 @@ bazeldnf_register_toolchains(
     name = "bazeldnf_prebuilt",
 )
 
-# dependencies for integration tests
-load("@bazeldnf//:test_deps.bzl", "bazeldnf_test_dependencies")
+rpm(
+    name = "libvirt-devel-11.0.0-1.fc42.x86_64.rpm",
+    sha256 = "dba37bbe57903afe49b5666f1781eb50001baa81af4584b355db0b6a2afad9fa",
+    urls = [
+        "https://kojipkgs.fedoraproject.org//packages/libvirt/11.0.0/1.fc42/x86_64/libvirt-devel-11.0.0-1.fc42.x86_64.rpm",
+    ],
+)
 
-bazeldnf_test_dependencies()
-
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+rpm(
+    name = "libvirt-libs-11.0.0-1.fc42.x86_64.rpm",
+    sha256 = "aac272a2ace134b5ef60a41e6624deb24331e79c76699ef6cef0dca22d94ac7e",
+    urls = [
+        "https://kojipkgs.fedoraproject.org//packages/libvirt/11.0.0/1.fc42/x86_64/libvirt-libs-11.0.0-1.fc42.x86_64.rpm",
+    ],
+)
 
 http_archive(
     name = "rules_pkg",

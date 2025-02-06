@@ -8,10 +8,16 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/bazelbuild/rules_go/go/runfiles"
 	. "github.com/onsi/gomega"
 )
 
 func TestRPMToTar(t *testing.T) {
+	libvirtLibsRpm, err := runfiles.Rlocation("bazeldnf_internal_libvirt-libs/rpm/downloaded")
+	if err != nil {
+		panic(err)
+	}
+
 	tests := []struct {
 		name            string
 		rpm             string
@@ -23,7 +29,7 @@ func TestRPMToTar(t *testing.T) {
 	}{
 		{
 			name:    "should convert a RPM to tar and keep all entries",
-			rpm:     filepath.Join(os.Getenv("TEST_SRCDIR"), "libvirt-libs-11.0.0-1.fc42.x86_64.rpm/rpm/downloaded"),
+			rpm:     libvirtLibsRpm,
 			wantErr: false,
 			expectedHeaders: []*tar.Header{
 				{Name: "./etc/libvirt/libvirt-admin.conf", Size: 450, Mode: 33188},
@@ -83,6 +89,16 @@ func TestRPMToTar(t *testing.T) {
 }
 
 func TestTar2Files(t *testing.T) {
+	abseilCppDevelRpm, err := runfiles.Rlocation("bazeldnf_internal_abseil-cpp-devel/rpm/downloaded")
+	if err != nil {
+		panic(err)
+	}
+
+	libvirtLibsRpm, err := runfiles.Rlocation("bazeldnf_internal_libvirt-libs/rpm/downloaded")
+	if err != nil {
+		panic(err)
+	}
+
 	tests := []struct {
 		name     string
 		rpm      string
@@ -93,7 +109,7 @@ func TestTar2Files(t *testing.T) {
 	}{
 		{
 			name:    "should extract a symlink from a tar archive",
-			rpm:     filepath.Join(os.Getenv("TEST_SRCDIR"), "libvirt-libs-11.0.0-1.fc42.x86_64.rpm/rpm/downloaded"),
+			rpm:     libvirtLibsRpm,
 			wantErr: false,
 			files:   []string{"/usr/lib64/libvirt.so.0"},
 			expected: []fileInfo{
@@ -107,7 +123,7 @@ func TestTar2Files(t *testing.T) {
 		},
 		{
 			name:    "should extract multiple files from a tar archive",
-			rpm:     filepath.Join(os.Getenv("TEST_SRCDIR"), "libvirt-libs-11.0.0-1.fc42.x86_64.rpm/rpm/downloaded"),
+			rpm:     libvirtLibsRpm,
 			wantErr: false,
 			files: []string{
 				"/etc/libvirt/libvirt-admin.conf",
@@ -125,7 +141,7 @@ func TestTar2Files(t *testing.T) {
 		},
 		{
 			name:    "should extract multiple files with the same name from a tar archive",
-			rpm:     filepath.Join(os.Getenv("TEST_SRCDIR"), "abseil-cpp-devel-20240722.1-1.fc42.x86_64.rpm/rpm/downloaded"),
+			rpm:     abseilCppDevelRpm,
 			wantErr: false,
 			files: []string{
 				"/usr/include/absl/log/globals.h",
