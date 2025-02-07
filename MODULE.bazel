@@ -51,6 +51,15 @@ bazel_dep(name = "rules_go", version = "0.52.0")
 bazel_dep(name = "protobuf", version = "27.3", dev_dependency = True)
 bazel_dep(name = "toolchains_protoc", version = "0.3.2", dev_dependency = True)
 
+# make sure no .cc file gets compiled for golang protobuf support
+protoc = use_extension("@toolchains_protoc//protoc:extensions.bzl", "protoc", dev_dependency = True)
+use_repo(protoc, "toolchains_protoc_hub")
+
+register_toolchains(
+    "@toolchains_protoc_hub//:all",
+    dev_dependency = True,
+)
+
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
 go_deps.from_file(go_mod = "//:go.mod")
 use_repo(
