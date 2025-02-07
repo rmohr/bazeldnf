@@ -30,6 +30,7 @@ func Execute() {
 	rootCmd.AddCommand(NewSandboxCmd())
 	rootCmd.AddCommand(NewFetchCmd())
 	rootCmd.AddCommand(NewInitCmd())
+	rootCmd.AddCommand(NewLockFileCmd())
 	rootCmd.AddCommand(NewRpmTreeCmd())
 	rootCmd.AddCommand(NewResolveCmd())
 	rootCmd.AddCommand(NewReduceCmd())
