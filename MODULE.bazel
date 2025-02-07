@@ -7,10 +7,12 @@ module(
     compatibility_level = 0,
 )
 
-# registers toolchain for consumers of the repo
-bazeldnf = use_extension("//bazeldnf:extensions.bzl", "bazeldnf")
-bazeldnf.toolchain()
-use_repo(bazeldnf, "bazeldnf_toolchains")
+bazeldnf_toolchain = use_extension("//bazeldnf:extensions.bzl", "bazeldnf_toolchain")
+bazeldnf_toolchain.register()
+use_repo(
+    bazeldnf_toolchain,
+    "bazeldnf_toolchains",
+)
 
 register_toolchains("@bazeldnf_toolchains//:all")
 
@@ -40,7 +42,6 @@ use_repo(
 )
 
 # DEV DEPENDENCIES
-
 bazeldnf_dev = use_extension("//bazeldnf:extensions.bzl", "bazeldnf", dev_dependency = True)
 bazeldnf_dev.rpm(
     name = "bazeldnf_internal_abseil-cpp-devel",

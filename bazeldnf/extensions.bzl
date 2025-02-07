@@ -10,6 +10,60 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_jar")
 load("//internal:rpm.bzl", rpm_repository = "rpm")
 load(":repositories.bzl", "bazeldnf_register_toolchains")
 
+_DEFAULT_NAME = "bazeldnf"
+
+def _bazeldnf_toolchain_extension(module_ctx):
+    repos = []
+    for mod in module_ctx.modules:
+        for toolchain in mod.tags.register:
+            if toolchain.name != _DEFAULT_NAME and not mod.is_root:
+                fail("""\
+                Only the root module may override the default name for the bazeldnf toolchain.
+                This prevents conflicting registrations in the global namespace of external repos.
+                """)
+            if mod.is_root and toolchain.disable:
+                break
+            bazeldnf_register_toolchains(
+                name = toolchain.name,
+                register = False,
+            )
+            if mod.is_root:
+                repos.append(toolchain.name + "_toolchains")
+
+    kwargs = {}
+    if bazel_features.external_deps.extension_metadata_has_reproducible:
+        kwargs["reproducible"] = True
+
+    if module_ctx.root_module_has_non_dev_dependency:
+        kwargs["root_module_direct_deps"] = repos
+        kwargs["root_module_direct_dev_deps"] = []
+    else:
+        kwargs["root_module_direct_deps"] = []
+        kwargs["root_module_direct_dev_deps"] = repos
+
+    return module_ctx.extension_metadata(**kwargs)
+
+_toolchain_tag = tag_class(
+    attrs = {
+        "name": attr.string(
+            doc = """\
+Base name for generated repositories, allowing more than one bazeldnf toolchain to be registered.
+Overriding the default is only permitted in the root module.
+""",
+            default = _DEFAULT_NAME,
+        ),
+        "disable": attr.bool(default = False),
+    },
+    doc = "Allows registering a prebuilt bazeldnf toolchain",
+)
+
+bazeldnf_toolchain = module_extension(
+    implementation = _bazeldnf_toolchain_extension,
+    tag_classes = {
+        "register": _toolchain_tag,
+    },
+)
+
 _ALIAS_TEMPLATE = """\
 alias(
     name = "{name}",
@@ -31,8 +85,6 @@ _alias_repository = repository_rule(
         "rpms": attr.label_list(),
     },
 )
-
-_DEFAULT_NAME = "bazeldnf"
 
 def _handle_lock_file(lock_file, module_ctx):
     content = module_ctx.read(lock_file)
@@ -58,25 +110,10 @@ def _handle_lock_file(lock_file, module_ctx):
 
     return name
 
-def _toolchain_extension(module_ctx):
+def _bazeldnf_extension(module_ctx):
     repos = []
 
     for mod in module_ctx.modules:
-        for toolchain in mod.tags.toolchain:
-            if toolchain.name != _DEFAULT_NAME and not mod.is_root:
-                fail("""\
-                Only the root module may override the default name for the bazeldnf toolchain.
-                This prevents conflicting registrations in the global namespace of external repos.
-                """)
-            if mod.is_root and toolchain.disable:
-                break
-            bazeldnf_register_toolchains(
-                name = toolchain.name,
-                register = False,
-            )
-            if mod.is_root:
-                repos.append(toolchain.name + "_toolchains")
-
         legacy = True
         name = "bazeldnf_rpms"
         for config in mod.tags.config:
@@ -120,20 +157,6 @@ def _toolchain_extension(module_ctx):
         kwargs["root_module_direct_dev_deps"] = repos
 
     return module_ctx.extension_metadata(**kwargs)
-
-_toolchain_tag = tag_class(
-    attrs = {
-        "name": attr.string(
-            doc = """\
-Base name for generated repositories, allowing more than one bazeldnf toolchain to be registered.
-Overriding the default is only permitted in the root module.
-""",
-            default = _DEFAULT_NAME,
-        ),
-        "disable": attr.bool(default = False),
-    },
-    doc = "Allows registering a prebuilt bazeldnf toolchain",
-)
 
 _rpm_tag = tag_class(
     attrs = {
@@ -198,9 +221,8 @@ The lock file content is as:
 )
 
 bazeldnf = module_extension(
-    implementation = _toolchain_extension,
+    implementation = _bazeldnf_extension,
     tag_classes = {
-        "toolchain": _toolchain_tag,
         "rpm": _rpm_tag,
         "config": _config_tag,
     },
