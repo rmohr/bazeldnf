@@ -2,7 +2,8 @@
 
 module(
     name = "bazeldnf",
-    version = "v0.5.9",
+    version = "0.0.0",
+    bazel_compatibility = [">=6.0.0"],
     compatibility_level = 0,
 )
 

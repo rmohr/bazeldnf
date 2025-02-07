@@ -16,7 +16,7 @@ gofmt:
 	gofmt -w pkg/.. cmd/..
 
 e2e-workspace:
-	@for version in 5.x 6.x 7.x; do \
+	@for version in 6.x 7.x; do \
 		( \
 			cd e2e/bazel-workspace && \
 			echo "Testing $$version" > /dev/stderr && \
