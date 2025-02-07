@@ -1,8 +1,13 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("//bazeldnf:defs.bzl", "bazeldnf")
 
 # this directory contains the public API from bazeldnf, anything on this directory
-# should be buildable withtout dev dependencies
+# should be buildable without dev dependencies
 #
+
+bazeldnf(
+    name = "bazeldnf",
+)
 
 # bazeldnf toolchain type
 toolchain_type(
