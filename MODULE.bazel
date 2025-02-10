@@ -6,58 +6,21 @@ module(
     compatibility_level = 0,
 )
 
+# registers toolchain for consumers of the repo
 bazeldnf = use_extension("//bazeldnf:extensions.bzl", "bazeldnf")
 bazeldnf.toolchain()
-bazeldnf.rpm(
-    name = "bazeldnf_internal_abseil-cpp-devel",
-    sha256 = "1393c28f5a3f3029769bbe3436b3eec58c7b11761c4ad6695c309b21474d9804",
-    urls = [
-        "https://kojipkgs.fedoraproject.org//packages/abseil-cpp/20240722.1/1.fc42/x86_64/abseil-cpp-devel-20240722.1-1.fc42.x86_64.rpm",
-    ],
-)
-bazeldnf.rpm(
-    name = "bazeldnf_internal_libvirt-devel",
-    sha256 = "dba37bbe57903afe49b5666f1781eb50001baa81af4584b355db0b6a2afad9fa",
-    urls = [
-        "https://kojipkgs.fedoraproject.org//packages/libvirt/11.0.0/1.fc42/x86_64/libvirt-devel-11.0.0-1.fc42.x86_64.rpm",
-    ],
-)
-bazeldnf.rpm(
-    name = "bazeldnf_internal_libvirt-libs",
-    sha256 = "aac272a2ace134b5ef60a41e6624deb24331e79c76699ef6cef0dca22d94ac7e",
-    urls = [
-        "https://kojipkgs.fedoraproject.org//packages/libvirt/11.0.0/1.fc42/x86_64/libvirt-libs-11.0.0-1.fc42.x86_64.rpm",
-    ],
-)
-use_repo(
-    bazeldnf,
-    "bazeldnf_internal_abseil-cpp-devel",
-    "bazeldnf_internal_libvirt-devel",
-    "bazeldnf_internal_libvirt-libs",
-    "bazeldnf_toolchains",
-)
+use_repo(bazeldnf, "bazeldnf_toolchains")
 
-# registers toolchain for consumers of the repo
 register_toolchains("@bazeldnf_toolchains//:all")
 
+# bazeldnf starlark dependenies
 bazel_dep(name = "bazel_skylib", version = "1.7.1")
 bazel_dep(name = "platforms", version = "0.0.10")
 bazel_dep(name = "bazel_features", version = "1.14.0")
 
-# dependenices for building bazeldnf
+# if someone wants to build the bazeldnf toolchain from sources needs this set of dependencies
 bazel_dep(name = "gazelle", version = "0.42.0")
 bazel_dep(name = "rules_go", version = "0.52.0")
-
-bazel_dep(name = "protobuf", version = "27.3", dev_dependency = True)
-bazel_dep(name = "toolchains_protoc", version = "0.3.7", dev_dependency = True)
-
-protoc = use_extension("@toolchains_protoc//protoc:extensions.bzl", "protoc", dev_dependency = True)
-use_repo(protoc, "toolchains_protoc_hub")
-
-register_toolchains(
-    "@toolchains_protoc_hub//:all",
-    dev_dependency = True,
-)
 
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
 go_deps.from_file(go_mod = "//:go.mod")
@@ -75,6 +38,43 @@ use_repo(
     "org_golang_x_exp",
 )
 
+# DEV DEPENDENCIES
+
+bazeldnf_dev = use_extension("//bazeldnf:extensions.bzl", "bazeldnf", dev_dependency = True)
+bazeldnf_dev.rpm(
+    name = "bazeldnf_internal_abseil-cpp-devel",
+    sha256 = "1393c28f5a3f3029769bbe3436b3eec58c7b11761c4ad6695c309b21474d9804",
+    urls = [
+        "https://kojipkgs.fedoraproject.org//packages/abseil-cpp/20240722.1/1.fc42/x86_64/abseil-cpp-devel-20240722.1-1.fc42.x86_64.rpm",
+    ],
+)
+bazeldnf_dev.rpm(
+    name = "bazeldnf_internal_libvirt-devel",
+    sha256 = "dba37bbe57903afe49b5666f1781eb50001baa81af4584b355db0b6a2afad9fa",
+    urls = [
+        "https://kojipkgs.fedoraproject.org//packages/libvirt/11.0.0/1.fc42/x86_64/libvirt-devel-11.0.0-1.fc42.x86_64.rpm",
+    ],
+)
+bazeldnf_dev.rpm(
+    name = "bazeldnf_internal_libvirt-libs",
+    sha256 = "aac272a2ace134b5ef60a41e6624deb24331e79c76699ef6cef0dca22d94ac7e",
+    urls = [
+        "https://kojipkgs.fedoraproject.org//packages/libvirt/11.0.0/1.fc42/x86_64/libvirt-libs-11.0.0-1.fc42.x86_64.rpm",
+    ],
+)
+use_repo(
+    bazeldnf_dev,
+    "bazeldnf_internal_abseil-cpp-devel",
+    "bazeldnf_internal_libvirt-devel",
+    "bazeldnf_internal_libvirt-libs",
+)
+
+bazel_dep(name = "protobuf", version = "27.3", dev_dependency = True)
+bazel_dep(name = "toolchains_protoc", version = "0.3.7", dev_dependency = True)
+
+protoc = use_extension("@toolchains_protoc//protoc:extensions.bzl", "protoc", dev_dependency = True)
+use_repo(protoc, "toolchains_protoc_hub")
+
 # deps only needed for the repo internals
 bazel_dep(name = "bazel_skylib_gazelle_plugin", version = "1.7.1", dev_dependency = True)
 bazel_dep(name = "aspect_bazel_lib", version = "2.13.0", dev_dependency = True)
@@ -84,15 +84,15 @@ bazel_dep(name = "stardoc", version = "0.8.0", dev_dependency = True)
 bazel_dep(name = "rules_proto", version = "7.1.0", dev_dependency = True)
 bazel_dep(name = "rules_java", version = "7.9.0", dev_dependency = True)
 
-http_jar = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_jar")
-
-http_jar(
-    name = "protobuf-java",
-    integrity = "sha256-0C+GOpCj/8d9Xu7AMcGOV58wx8uY8/OoFP6LiMQ9O8g=",
-    urls = ["https://repo1.maven.org/maven2/com/google/protobuf/protobuf-java/4.27.3/protobuf-java-4.27.3.jar"],
-)
+protobuf_java = use_extension("//bazeldnf:extensions.bzl", "protobuf_java", dev_dependency = True)
+use_repo(protobuf_java, "protobuf-java")
 
 register_toolchains(
     "//tools/toolchains:all",
+    dev_dependency = True,
+)
+
+register_toolchains(
+    "@toolchains_protoc_hub//:all",
     dev_dependency = True,
 )
