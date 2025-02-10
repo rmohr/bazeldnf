@@ -2,7 +2,7 @@
 
 module(
     name = "bazeldnf",
-    version = "v0.5.9",
+    version = "v0.0.0",
     compatibility_level = 0,
 )
 
