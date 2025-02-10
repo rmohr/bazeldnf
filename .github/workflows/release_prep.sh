@@ -46,6 +46,16 @@ EOF
 tar --file $ARCHIVE_TMP --append ${PREFIX}/tools/version.bzl
 tar --file $ARCHIVE_TMP --append ${PREFIX}/tools/integrity.bzl
 
+# patch MODULE.bazel
+tar --file $ARCHIVE_TMP --extract ${PREFIX}/MODULE.bazel
+tar --file $ARCHIVE_TMP --delete ${PREFIX}/MODULE.bazel
+csplit MODULE.bazel "/# DEV DEPENDENCIES/" '{*}'
+mv xx00 ${PREFIX}/MODULE.bazel
+
+sed -i -e "s/\"v0.0.0\"/\"${GITHUB_REF_NAME}\"/" ${PREFIX}/MODULE.bazel
+
+tar --file $ARCHIVE_TMP --append ${PREFIX}/MODULE.bazel
+
 # END patch up the archive
 ############
 
