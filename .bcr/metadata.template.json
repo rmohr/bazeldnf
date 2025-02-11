@@ -1,0 +1,25 @@
+{
+  "homepage": "https://github.com/rmohr/bazeldnf",
+  "maintainers": [
+    {
+      "name": "Roman Mohr",
+      "email": "rmohr@google.com",
+      "github": "rmohr"
+    },
+    {
+      "name": "Michael Kelly",
+      "email": "mkelly@arista.com",
+      "github": "kellyma2"
+    },
+    {
+      "name": "Manuel Naranjo",
+      "email": "manuel.naranjo@gmail.com",
+      "github": "manuelnaranjo"
+    }
+  ],
+  "repository": [
+    "github:rmohr/bazeldnf"
+  ],
+  "versions": [],
+  "yanked_versions": {}
+}
