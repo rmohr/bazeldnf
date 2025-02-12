@@ -85,13 +85,6 @@ cc_library(
 )
 
 bzl_library(
-    name = "build_deps",
-    srcs = ["build_deps.bzl"],
-    visibility = ["//visibility:public"],
-    deps = ["@gazelle//:deps"],
-)
-
-bzl_library(
     name = "def",
     srcs = ["def.bzl"],
     visibility = ["//visibility:public"],
