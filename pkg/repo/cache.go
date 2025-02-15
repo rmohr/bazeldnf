@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/adrg/xdg"
+	"github.com/klauspost/compress/zstd"
 	"github.com/rmohr/bazeldnf/pkg/api"
 	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 	"github.com/rmohr/bazeldnf/pkg/rpm"
@@ -96,6 +97,22 @@ func (r *CacheHelper) UnmarshalFromRepoDir(repo *bazeldnf.Repository, name strin
 	return xml.NewDecoder(reader).Decode(obj)
 }
 
+func (r *CacheHelper) getCompressFileReader(filename string, stream io.Reader) (io.ReadCloser, error) {
+	if strings.HasSuffix(filename, ".gz") {
+		return gzip.NewReader(stream)
+	}
+
+	if strings.HasSuffix(filename, ".zst") {
+		rc, err := zstd.NewReader(stream)
+		if err != nil {
+			return nil, err
+		}
+		return rc.IOReadCloser(), nil
+	}
+
+	return nil, fmt.Errorf("file format not supported: %s", filepath.Ext(filename))
+}
+
 func (r *CacheHelper) CurrentPrimary(repo *bazeldnf.Repository) (*api.Repository, error) {
 	repomd := &api.Repomd{}
 	if err := r.UnmarshalFromRepoDir(repo, "repomd.xml", repomd); err != nil {
@@ -107,16 +124,16 @@ func (r *CacheHelper) CurrentPrimary(repo *bazeldnf.Repository) (*api.Repository
 	if err != nil {
 		return nil, err
 	}
-
 	defer file.Close()
-	reader, err := gzip.NewReader(file)
+
+	rc, err := r.getCompressFileReader(primaryName, file)
 	if err != nil {
 		return nil, err
 	}
-	defer reader.Close()
+	defer rc.Close()
 
 	repository := &api.Repository{}
-	err = xml.NewDecoder(reader).Decode(repository)
+	err = xml.NewDecoder(rc).Decode(repository)
 	if err != nil {
 		return nil, err
 	}
@@ -149,18 +166,21 @@ func (r *CacheHelper) CurrentPrimary(repo *bazeldnf.Repository) (*api.Repository
 
 func (r *CacheHelper) CurrentFilelistsForPackages(repo *bazeldnf.Repository, arches []string, packages []*api.Package) (filelistpkgs []*api.FileListPackage, remaining []*api.Package, err error) {
 	repomd := &api.Repomd{}
+
 	if err := r.UnmarshalFromRepoDir(repo, "repomd.xml", repomd); err != nil {
 		return nil, nil, err
 	}
+
 	filelists := repomd.File(api.FilelistsFileType)
 	filelistsName := filepath.Base(filelists.Location.Href)
+
 	file, err := r.OpenFromRepoDir(repo, filelistsName)
 	if err != nil {
 		return nil, nil, err
 	}
-
 	defer file.Close()
-	reader, err := gzip.NewReader(file)
+
+	reader, err := r.getCompressFileReader(filelists.Location.Href, file)
 	if err != nil {
 		return nil, nil, err
 	}
