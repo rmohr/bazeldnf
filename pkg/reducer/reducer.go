@@ -2,6 +2,7 @@ package reducer
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/rmohr/bazeldnf/pkg/api"
@@ -23,6 +24,10 @@ func (r *RepoReducer) Load() error {
 	}
 	r.packageInfo = packageInfo
 	return nil
+}
+
+func (r *RepoReducer) PackageCount() int {
+	return len(r.packageInfo.packages)
 }
 
 func (r *RepoReducer) Resolve(packages []string, ignoreMissing bool) (matched []string, involved []*api.Package, err error) {
@@ -111,10 +116,29 @@ func (r *RepoReducer) Resolve(packages []string, ignoreMissing bool) (matched []
 	return matched, involved, nil
 }
 
+func (r *RepoReducer) filterWithIgnoreRegex(candidates []*api.Package, ignoreRegex []string) []*api.Package {
+	out := []*api.Package{}
+	for _, p := range candidates {
+		filter := false
+		for _, rex := range ignoreRegex {
+			if match, err := regexp.MatchString(rex, p.String()); err != nil {
+				logrus.Errorf("failed to match package with regex '%v': %v", rex, err)
+			} else if match {
+				logrus.Warnf("Package %v is forcefully ignored by regex '%v'.", p.String(), rex)
+				filter = true
+				break
+			}
+		}
+		if !filter {
+			out = append(out, p)
+		}
+	}
+	return out
+}
+
 func (r *RepoReducer) requires(p *api.Package) (wants []*api.Package) {
 	for _, requires := range p.Format.Requires.Entries {
 		if val, exists := r.packageInfo.provides[requires.Name]; exists {
-
 			var packages []string
 			for _, p := range val {
 				packages = append(packages, p.Name)
@@ -125,13 +149,18 @@ func (r *RepoReducer) requires(p *api.Package) (wants []*api.Package) {
 			logrus.Debugf("%s requires %v which can't be satisfied\n", p.Name, requires)
 		}
 	}
+
 	return wants
 }
 
 func NewRepoReducer(repos *bazeldnf.Repositories, repoFiles []string, baseSystem string, arch string, cacheHelper *repo.CacheHelper) *RepoReducer {
+	implicitRequires := make([]string, 0, 1)
+	if baseSystem != "" {
+		implicitRequires = append(implicitRequires, baseSystem)
+	}
 	return &RepoReducer{
 		packageInfo:      nil,
-		implicitRequires: []string{baseSystem},
+		implicitRequires: implicitRequires,
 		loader: RepoLoader{
 			repoFiles:     repoFiles,
 			architectures: []string{"noarch", arch},

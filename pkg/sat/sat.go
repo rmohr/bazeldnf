@@ -248,8 +248,6 @@ func (r *Resolver) ConstructRequirements(packages []string) error {
 }
 
 func (res *Resolver) Resolve() (install []*api.Package, excluded []*api.Package, forceIgnoredWithDependencies []*api.Package, err error) {
-	logrus.WithField("bf", bf.And(res.ands...)).Debug("Formula to solve")
-
 	satReader, satWriter := io.Pipe()
 	pwMaxSatReader, pwMaxSatWriter := io.Pipe()
 	rex := regexp.MustCompile("c (x[0-9]+)=([0-9]+)")

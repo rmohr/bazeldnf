@@ -1,0 +1,50 @@
+{
+	"cli-arguments": [
+		"--repofile",
+		"repo.yaml",
+		"bash",
+		"--force-ignore-with-dependencies",
+		"filesystem",
+		"--force-ignore-with-dependencies",
+		"glibc",
+		"--force-ignore-with-dependencies",
+		"ncurses-libs",
+		"--output",
+		"bazeldnf-lock.json"
+	],
+	"repositories": {
+		"41-x86_64-primary-repo": [
+			"https://mirror.i3d.net/pub/fedora/linux/releases/41/Everything/x86_64/os/",
+			"https://eu.edge.kernel.org/fedora/releases/41/Everything/x86_64/os/",
+			"https://mirror.nl.mirhosting.net/fedora/linux/releases/41/Everything/x86_64/os/",
+			"https://fedora.ipacct.com/fedora/linux/releases/41/Everything/x86_64/os/"
+		]
+	},
+	"packages": [
+		{
+			"name": "bash",
+			"sha256": "b10f7b9039bd3079d27e9883cd412f66acdac73b530b336c8c33e105a26391e8",
+			"href": "Packages/b/bash-5.2.32-1.fc41.x86_64.rpm",
+			"repository": "41-x86_64-primary-repo",
+			"dependencies": []
+		}
+	],
+	"targets": [
+		"bash"
+	],
+	"ignored": [
+		"basesystem",
+		"fedora-gpg-keys",
+		"fedora-repos",
+		"filesystem",
+		"generic-release",
+		"generic-release-common",
+		"glibc",
+		"glibc-all-langpacks",
+		"glibc-common",
+		"libgcc",
+		"ncurses-base",
+		"ncurses-libs",
+		"setup"
+	]
+}
