@@ -272,18 +272,15 @@ func getNetrc() (*netrc.Netrc, error) {
 		if err != nil {
 			return nil, fmt.Errorf("getting current user: %w", err)
 		}
-		netrcPath = filepath.Join(usr.HomeDir, ".netrc")
+		homeNetrc := filepath.Join(usr.HomeDir, ".netrc")
+		_, err = os.Stat(homeNetrc)
+		if err == nil {
+			netrcPath = homeNetrc
+		}
 	}
 
 	if netrcPath != "" {
-		n, err := netrcCache.Read(netrcPath)
-		if err != nil {
-			if !errors.Is(err, os.ErrNotExist) {
-				log.Warnf("Error reading netrc from %s: %v", netrcPath, err)
-			}
-			return nil, nil
-		}
-		return n, nil
+		return netrcCache.Read(netrcPath)
 	}
 	return nil, nil
 }
