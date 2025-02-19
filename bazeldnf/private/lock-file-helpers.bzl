@@ -1,3 +1,5 @@
+"""Helpers for dealing with lock file updates"""
+
 load("@bazel_skylib//lib:shell.bzl", "shell")
 load("//bazeldnf:toolchain.bzl", "BAZELDNF_TOOLCHAIN")
 
