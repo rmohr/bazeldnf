@@ -17,6 +17,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/jdx/go-netrc"
 	"github.com/rmohr/bazeldnf/pkg/api"
@@ -237,21 +238,43 @@ func fileGet(filename string) (*http.Response, error) {
 	return resp, nil
 }
 
-var netrcCached *netrc.Netrc
+type parsedNetrcCache struct {
+	c map[string]*netrc.Netrc
+	l sync.Mutex
+}
 
-func getNetrc() (*netrc.Netrc, error) {
-	if netrcCached != nil {
-		return netrcCached, nil
+func (c *parsedNetrcCache) Read(netrcPath string) (*netrc.Netrc, error) {
+	c.l.Lock()
+	defer c.l.Unlock()
+	if cachedValue, ok := c.c[netrcPath]; ok {
+		return cachedValue, nil
 	}
-	usr, err := user.Current()
-	if err != nil {
-		return nil, fmt.Errorf("getting current user: %w", err)
-	}
-	n, err := netrc.Parse(filepath.Join(usr.HomeDir, ".netrc"))
+
+	c.l.Unlock()
+	n, err := netrc.Parse(netrcPath)
+	c.l.Lock()
+
 	if err == nil {
-		netrcCached = n
+		c.c[netrcPath] = n
 	}
 	return n, err
+}
+
+var netrcCache = parsedNetrcCache{c: make(map[string]*netrc.Netrc)}
+
+func getNetrc() (*netrc.Netrc, error) {
+	var netrcPath string
+	netrcEnv := os.Getenv("NETRC")
+	if netrcEnv != "" {
+		netrcPath = netrcEnv
+	} else {
+		usr, err := user.Current()
+		if err != nil {
+			return nil, fmt.Errorf("getting current user: %w", err)
+		}
+		netrcPath = filepath.Join(usr.HomeDir, ".netrc")
+	}
+	return netrcCache.Read(netrcPath)
 }
 
 func httpGet(rawUrl string) (*http.Response, error) {
@@ -266,6 +289,7 @@ func httpGet(rawUrl string) (*http.Response, error) {
 	m := netrc.Machine(url.Hostname())
 	req, err := http.NewRequest("GET", rawUrl, nil)
 	if m != nil {
+		log.Debugf("Reading auth headers for %s from %s", url.Hostname(), netrc.Path)
 		auth := m.Get("login") + ":" + m.Get("password")
 		req.Header.Add("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(auth)))
 	}

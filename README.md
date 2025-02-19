@@ -263,6 +263,16 @@ The lock file JSON format is as follows:
 
 ```
 
+### Authentication
+
+During the build, downloading the resolved rpm files is handled by Bazel and authentication is also handled by Bazel.
+By default, Bazel will read the `.netrc` file, but more advanced mechanisms, such as the credential helper are also
+available.
+
+During dependency resolution authentication is handled by the bazeldnf command. At the moment only `.netrc` basic auth
+is supported. Credentials will be read from the file indicated by the `NETRC` environment variable if it is set,
+otherwise the `~/.netrc` file will be read.
+
 ### Dependency resolution limitations
 
 ##### Missing features
