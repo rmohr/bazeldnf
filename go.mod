@@ -15,7 +15,10 @@ require (
 	sigs.k8s.io/yaml v1.4.0
 )
 
-require github.com/bazelbuild/rules_go v0.52.0
+require (
+	github.com/bazelbuild/rules_go v0.52.0
+	github.com/jdx/go-netrc v1.0.0
+)
 
 require (
 	github.com/adrg/xdg v0.5.3

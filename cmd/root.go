@@ -26,6 +26,10 @@ func Execute() {
 		logrus.SetLevel(level)
 	}
 
+	if chrootPath, hasIt := os.LookupEnv("BUILD_WORKING_DIRECTORY"); hasIt {
+		os.Chdir(chrootPath)
+	}
+
 	rootCmd.AddCommand(NewXATTRCmd())
 	rootCmd.AddCommand(NewSandboxCmd())
 	rootCmd.AddCommand(NewFetchCmd())
@@ -39,6 +43,7 @@ func Execute() {
 	rootCmd.AddCommand(NewTar2FilesCmd())
 	rootCmd.AddCommand(NewLddCmd())
 	rootCmd.AddCommand(NewVerifyCmd())
+
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)

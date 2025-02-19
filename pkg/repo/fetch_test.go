@@ -2,6 +2,8 @@ package repo
 
 import (
 	"bytes"
+	"encoding/base64"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -59,5 +61,58 @@ func TestGetter(t *testing.T) {
 				t.Fatalf("Read wrong content, %v instead of %v", recv, content)
 			}
 		})
+	}
+}
+
+func TestNetrc(t *testing.T) {
+	user := "user"
+	password := "secret_whispers"
+	authHeader := fmt.Sprintf("Basic %s", base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", user, password))))
+	s := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		t.Logf("Auth header: %v", r.Header.Get("Authorization"))
+		if r.Header.Get("Authorization") != authHeader {
+			rw.WriteHeader(http.StatusUnauthorized)
+		} else {
+			rw.WriteHeader(http.StatusOK)
+		}
+	}))
+	defer s.Close()
+
+	// Do an unauthenticated get and confirm the server denies that.
+	resp, err := Getter(&getterImpl{}).Get(s.URL)
+	if err != nil {
+		t.Fatalf("Get %v: %v", s.URL, err)
+	}
+	if err := resp.Body.Close(); err != nil {
+		t.Fatalf("Close response failed: %v", err)
+	}
+	if resp.StatusCode != http.StatusUnauthorized {
+		t.Fatalf("We shouldn't be supplying credentials, so the server should reply with 401 but got %d", resp.StatusCode)
+	}
+
+	// Set the netrc file and confirm the header gets set.
+	netrcFile := path.Join(t.TempDir(), ".netrc")
+	if err := os.Setenv("NETRC", netrcFile); err != nil {
+		t.Fatalf("Setting NETRC env var failed: %v", err)
+	}
+	netrcContent := fmt.Sprintf(`machine 127.0.0.1
+login %s
+password %s`, user, password)
+	if err := os.WriteFile(netrcFile, []byte(netrcContent), os.ModePerm); err != nil {
+		t.Fatalf("writing netrc contents to %s failed: %v", netrcFile, err)
+	}
+
+	if err := os.Setenv("NETRC", netrcFile); err != nil {
+		t.Fatalf("Setting NETRC env var failed: %v", err)
+	}
+	resp, err = Getter(&getterImpl{}).Get(s.URL)
+	if err != nil {
+		t.Fatalf("Get %v: %v", s.URL, err)
+	}
+	if err := resp.Body.Close(); err != nil {
+		t.Fatalf("Close response failed: %v", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("We've set NETRC so the server should reply with 200 but got %d", resp.StatusCode)
 	}
 }
