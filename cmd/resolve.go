@@ -32,6 +32,10 @@ func NewResolveCmd() *cobra.Command {
 				}
 			}
 
+			if resolvehelperopts.baseSystem == "scratch" {
+				resolvehelperopts.baseSystem = ""
+			}
+
 			install, forceIgnored, err := resolve(repos, required)
 			if err != nil {
 				return err
