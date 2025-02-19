@@ -21,7 +21,7 @@ def _bazeldnf_impl(ctx):
     toolchain = ctx.toolchains[BAZELDNF_TOOLCHAIN]
 
     substitutions = {
-        "@@BAZELDNF_SHORT_PATH@@": shell.quote(toolchain._tool.short_path),
+        "@@BAZELDNF_SHORT_PATH@@": "%s/%s" % (ctx.workspace_name, toolchain._tool.short_path),
         "@@ARGS@@": shell.array_literal(args),
     }
     ctx.actions.expand_template(
