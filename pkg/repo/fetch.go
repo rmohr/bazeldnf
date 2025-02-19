@@ -274,24 +274,45 @@ func getNetrc() (*netrc.Netrc, error) {
 		}
 		netrcPath = filepath.Join(usr.HomeDir, ".netrc")
 	}
-	return netrcCache.Read(netrcPath)
+
+	if netrcPath != "" {
+		n, err := netrcCache.Read(netrcPath)
+		if err != nil {
+			if !errors.Is(err, os.ErrNotExist) {
+				log.Warnf("Error reading netrc from %s: %v", netrcPath, err)
+			}
+			return nil, nil
+		}
+		return n, nil
+	}
+	return nil, nil
+}
+
+func addAuthHeader(r *http.Request) error {
+	netrc, err := getNetrc()
+	if err != nil {
+		return fmt.Errorf("getting netrc: %w", err)
+	}
+	if netrc == nil {
+		return nil
+	}
+	m := netrc.Machine(r.URL.Hostname())
+	if m != nil {
+		log.Debugf("Reading auth headers for %s from %s", r.URL.Hostname(), netrc.Path)
+		auth := m.Get("login") + ":" + m.Get("password")
+		r.Header.Add("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(auth)))
+	}
+	return nil
 }
 
 func httpGet(rawUrl string) (*http.Response, error) {
-	url, err := url.Parse(rawUrl)
-	if err != nil {
-		return nil, fmt.Errorf("parsing %s as a URL: %w", rawUrl, err)
-	}
-	netrc, err := getNetrc()
-	if err != nil {
-		return nil, fmt.Errorf("getting netrc: %w", err)
-	}
-	m := netrc.Machine(url.Hostname())
 	req, err := http.NewRequest("GET", rawUrl, nil)
-	if m != nil {
-		log.Debugf("Reading auth headers for %s from %s", url.Hostname(), netrc.Path)
-		auth := m.Get("login") + ":" + m.Get("password")
-		req.Header.Add("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(auth)))
+	if err != nil {
+		return nil, err
+	}
+	err = addAuthHeader(req)
+	if err != nil {
+		return nil, err
 	}
 	return http.DefaultClient.Do(req)
 }
