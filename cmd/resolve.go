@@ -1,8 +1,6 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"os"
 
 	"github.com/rmohr/bazeldnf/cmd/template"
@@ -13,7 +11,6 @@ import (
 
 type resolveOpts struct {
 	repofiles        []string
-	jsonOutput       bool
 }
 
 var resolveopts = resolveOpts{}
@@ -44,26 +41,13 @@ func NewResolveCmd() *cobra.Command {
 				return err
 			}
 
-			if !resolveopts.jsonOutput {
-				return template.Render(os.Stdout, install, forceIgnored)
-			} else {
-				config, err := toConfig(install, forceIgnored, required, []string{})
-				if err != nil {
-					return err
-				}
-
-				configJson, err := json.MarshalIndent(config, "", "\t")
-				if err != nil {
-					return err
-				}
-
-				fmt.Println(configJson)
+			if err := template.Render(os.Stdout, install, forceIgnored); err != nil {
+				return err
 			}
 			return nil
 		},
 	}
 
-	resolveCmd.Flags().BoolVar(&resolveopts.jsonOutput, "json-output", false, "output in JSON format")
 	resolveCmd.Flags().StringArrayVarP(&resolveopts.repofiles, "repofile", "r", []string{"repo.yaml"}, "repository information file. Can be specified multiple times. Will be used by default if no explicit inputs are provided.")
 
 	repo.AddCacheHelperFlags(resolveCmd)
