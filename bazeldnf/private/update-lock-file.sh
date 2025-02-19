@@ -10,4 +10,4 @@ fi
 
 cd ${BUILD_WORKSPACE_DIRECTORY}
 
-exec $BAZELDNF_SHORT_PATH lockfile @@BZLMOD_ARGS@@ "$@"
+exec $BAZELDNF_SHORT_PATH lockfile @@LOCKFILE_ARGS@@ "$@"
