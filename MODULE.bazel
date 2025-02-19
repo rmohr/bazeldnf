@@ -32,6 +32,7 @@ use_repo(
     "com_github_adrg_xdg",
     "com_github_bazelbuild_buildtools",
     "com_github_crillab_gophersat",
+    "com_github_jdx_go_netrc",
     "com_github_onsi_gomega",
     "com_github_sassoftware_go_rpmutils",
     "com_github_sirupsen_logrus",
