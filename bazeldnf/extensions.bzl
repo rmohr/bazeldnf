@@ -204,6 +204,18 @@ The lock file content is as:
 ```json
     {
         "name": "optional name for the proxy repository, defaults to the file name",
+        "cli-arguments": [
+            "cli",
+            "arguments",
+            "used",
+            "for"
+            "generation",
+        ],
+        "repositories": {
+            "repo-name": [
+                "https://repo-url/path",
+            ],
+        },
         "rpms": [
             {
                 "name": "<name of the rpm>",
@@ -211,7 +223,13 @@ The lock file content is as:
                 "sha256": "<sha256 of the file>",
                 "integrity": "<integrity of the file>"
             }
-        ]
+        ],
+        "targets": [
+            "target to install",
+        ],
+        "ignored": [
+            "ignored package",
+        ],
     }
 ```
 """,
