@@ -172,8 +172,12 @@ def _handle_lock_file(config, module_ctx, registered_rpms = {}):
 
     for rpm in lock_file_json.get("rpms", []):
         dependencies = rpm.pop("dependencies", [])
-        dependencies = [x.replace("+", "plus") for x in dependencies]
-        dependencies = ["@{}{}//rpm".format(config.rpm_repository_prefix, x) for x in dependencies]
+        if config.ignore_deps:
+            dependencies = []
+        else:
+            dependencies = [x.replace("+", "plus") for x in dependencies]
+            dependencies = ["@{}{}//rpm".format(config.rpm_repository_prefix, x) for x in dependencies]
+
         name = rpm.pop("name").replace("+", "plus")
         name = "{}{}".format(config.rpm_repository_prefix, name)
         if name in registered_rpms:
@@ -338,6 +342,10 @@ The lock file content is as:
         ),
         "nobest": attr.bool(
             doc = "Allow picking versions which are not the newest",
+            default = False,
+        ),
+        "ignore_deps": attr.bool(
+            doc = "Don't include dependencies in resulting repositories",
             default = False,
         ),
     },
