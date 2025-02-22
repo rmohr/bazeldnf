@@ -69,7 +69,6 @@ jobs:
         version: [7.x, 8.x]
         path:
           - bazel-bzlmod
-          - bazel-bzlmod-non-legacy-mode
           - bazel-bzlmod-lock-file
 
     runs-on: ubuntu-latest
