@@ -20,6 +20,7 @@ make available to bazel
 """
 
 load("//bazeldnf:toolchain.bzl", "BAZELDNF_TOOLCHAIN")
+load("//internal:rpm.bzl", "RpmInfo")
 
 def _rpm2tar_impl(ctx):
     args = ctx.actions.args()
@@ -45,7 +46,14 @@ def _rpm2tar_impl(ctx):
             selinux_labels.append(k + "=" + v)
         args.add_joined("--selinux-labels", selinux_labels, join_with = ",")
 
-    for rpm in ctx.files.rpms:
+    all_rpms = []
+
+    for target in ctx.attr.rpms:
+        for rpm in target[RpmInfo].deps.to_list():
+            if rpm not in all_rpms:
+                all_rpms.append(rpm)
+
+    for rpm in all_rpms:
         args.add_all(["--input", rpm.path])
 
     ctx.actions.run(
@@ -80,7 +88,7 @@ def _tar2files_impl(ctx):
     return [DefaultInfo(files = depset(ctx.outputs.out))]
 
 _rpm2tar_attrs = {
-    "rpms": attr.label_list(allow_files = True),
+    "rpms": attr.label_list(allow_files = True, providers = [RpmInfo]),
     "symlinks": attr.string_dict(),
     "capabilities": attr.string_list_dict(),
     "selinux_labels": attr.string_list_dict(),
