@@ -149,7 +149,5 @@ jobs:
           import %workspace%/../../.aspect/bazelrc/ci.bazelrc
           import %workspace%/../../.github/workflows/ci.bazelrc
     - run: |
-        cd e2e/bazel-bzlmod-lock-file-from-args && \
-        bazelisk run @bazeldnf_rpms//:update-lock-file && \
-        bazelisk build ...
+        cd e2e/bazel-bzlmod-lock-file-from-args && bazelisk run :bazeldnf -- fetch && bazelisk run @bazeldnf_rpms//:update-lock-file && bazelisk build ...
 

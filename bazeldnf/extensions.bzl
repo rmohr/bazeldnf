@@ -178,7 +178,14 @@ def _handle_lock_file(config, module_ctx, registered_rpms = {}):
             dependencies = [x.replace("+", "plus") for x in dependencies]
             dependencies = ["@{}{}//rpm".format(config.rpm_repository_prefix, x) for x in dependencies]
 
-        name = rpm.pop("name").replace("+", "plus")
+        rpm_name = rpm.pop("name", None)
+        if not rpm_name:
+            urls = rpm.get("urls", [])
+            if len(urls) < 1:
+                fail("invalid entry in %s for %s" % (config.lock_file, rpm_name))
+            rpm_name = urls[0].rsplit("/", 1)[-1]
+
+        name = rpm_name.replace("+", "plus")
         name = "{}{}".format(config.rpm_repository_prefix, name)
         if name in registered_rpms:
             continue
