@@ -10,7 +10,7 @@ rpmtree(
     rpms = [
         "@bazeldnf-rpms//libvirt-libs",
         "@bazeldnf-rpms//libvirt-devel-11.0.0-1.fc42.x86_64.rpm",
-        "@rpms-with-no-name-attribute//libvirt-libs-11.0.0-1.fc42.x86_64.rpm",
+        "@bazeldnf-others//libvirt-libs-11.0.0-1.fc42.x86_64.rpm",
     ],
 )
 
