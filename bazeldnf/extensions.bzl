@@ -112,9 +112,10 @@ def _alias_repository_impl(repository_ctx):
     )
     for rpm in repository_ctx.attr.rpms:
         actual_name = rpm.repo_name
-        if not repository_ctx.attr.repository_prefix:
-            continue
-        name = actual_name.split(repository_ctx.attr.repository_prefix, 1)[-1]
+        name = rpm.repo_name
+
+        if repository_ctx.attr.repository_prefix:
+            name = actual_name.split(repository_ctx.attr.repository_prefix, 1)[-1]
 
         repository_ctx.file(
             "%s/BUILD.bazel" % name,
