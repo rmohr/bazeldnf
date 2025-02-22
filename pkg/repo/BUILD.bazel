@@ -15,6 +15,7 @@ go_library(
         "//pkg/rpm",
         "@com_github_adrg_xdg//:xdg",
         "@com_github_jdx_go_netrc//:go-netrc",
+        "@com_github_klauspost_compress//zstd",
         "@com_github_sirupsen_logrus//:logrus",
         "@com_github_spf13_cobra//:cobra",
         "@io_k8s_sigs_yaml//:yaml",
