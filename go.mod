@@ -25,7 +25,7 @@ require (
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/klauspost/compress v1.11.1 // indirect
+	github.com/klauspost/compress v1.18.0
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8
