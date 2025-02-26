@@ -99,6 +99,7 @@ fail("Lock file hasn't been generated for this repository, please run `bazel run
 def _alias_repository_impl(repository_ctx):
     """Creates a repository that aliases other repositories."""
     repository_ctx.file("WORKSPACE", "")
+    repository_ctx.watch(repository_ctx.attr.lock_file)
     lock_file_path = repository_ctx.attr.lock_file.name
 
     repofile = repository_ctx.attr.repofile.name if repository_ctx.attr.repofile else "invalid-repo.yaml"
