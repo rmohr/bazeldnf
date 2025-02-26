@@ -1,0 +1,72 @@
+{
+	"cli-arguments": [
+		"-r",
+		"repo.yaml",
+		"--lockfile",
+		"bazeldnf-lock.json",
+		"--force-ignore-with-dependencies",
+		"filesystem",
+		"--force-ignore-with-dependencies",
+		"setup",
+		"--force-ignore-with-dependencies",
+		"basesystem",
+		"--force-ignore-with-dependencies",
+		"glibc-[0-9]",
+		"--force-ignore-with-dependencies",
+		"glibc-devel",
+		"--force-ignore-with-dependencies",
+		"coreutils",
+		"--force-ignore-with-dependencies",
+		"alternatives",
+		"--force-ignore-with-dependencies",
+		"audit-libs",
+		"bash",
+		"--ignore-missing"
+	],
+	"name": "",
+	"repositories": {
+		"Abuild-eos-trunk": [
+			"http://buildpack/Abuild/eos-trunk/x86_64_el9/40494756/RPMS/"
+		]
+	},
+	"rpms": [
+		{
+			"name": "bash",
+			"sha256": "05dc1b806bd5456d40e3d7f882ead037aaf480c596e83fbfb6ab86be74a2d8d1",
+			"urls": [
+				"bash-5.1.8-9.el9.x86_64.rpm"
+			],
+			"repository": "Abuild-eos-trunk",
+			"dependencies": [
+				"ncurses-libs"
+			]
+		},
+		{
+			"name": "ncurses-base",
+			"sha256": "d8307bfbd2428c8d08deffaff1ec61f7bc016ef03c77798b32ce021965e1bc65",
+			"urls": [
+				"ncurses-base-6.2-10.20210508.el9.noarch.rpm"
+			],
+			"repository": "Abuild-eos-trunk",
+			"dependencies": []
+		},
+		{
+			"name": "ncurses-libs",
+			"sha256": "d06b0e491481a345faf21a69666cbdc302d19b54fb29ae1aa78fa6b205f9e604",
+			"urls": [
+				"ncurses-libs-6.2-10.20210508.el9.x86_64.rpm"
+			],
+			"repository": "Abuild-eos-trunk",
+			"dependencies": [
+				"ncurses-base"
+			]
+		}
+	],
+	"targets": [
+		"bash"
+	],
+	"ignored": [
+		"filesystem",
+		"glibc"
+	]
+}

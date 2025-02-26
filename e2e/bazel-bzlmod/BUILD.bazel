@@ -34,3 +34,12 @@ cc_library(
     name = "bar",
     srcs = ["//:something_libs/usr/lib64"],
 )
+
+sh_binary(
+    name = "run-wrapper",
+    srcs = ["run-wrapper.sh"],
+    data = [":bazeldnf"],
+    env = {
+        "BAZELDNF_PATH": "$(location :bazeldnf)",
+    },
+)
