@@ -1,0 +1,10 @@
+repositories:
+- arch: x86_64
+  baseurl: https://mirror.stream.centos.org/9-stream/BaseOS/x86_64/os
+  name: centos-stream-9-stable-baseos
+- arch: x86_64
+  baseurl: https://mirror.stream.centos.org/9-stream/AppStream/x86_64/os
+  name: centos-stream-9-stable-appstream
+- arch: x86_64
+  baseurl: https://dl.fedoraproject.org/pub/epel/9/Everything/x86_64/
+  name: epel-everything

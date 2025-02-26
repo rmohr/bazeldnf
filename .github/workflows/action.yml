@@ -151,3 +151,43 @@ jobs:
     - run: |
         cd e2e/bazel-bzlmod-lock-file-from-args && bazelisk run :bazeldnf -- fetch && bazelisk run @bazeldnf_rpms//:update-lock-file && bazelisk build ...
 
+  e2e-bzlmod-toolchain-circular-dependencies:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+    - uses: actions/checkout@v4
+    - uses: bazel-contrib/setup-bazel@0.8.5
+      with:
+        # Avoid downloading Bazel every time.
+        bazelisk-cache: true
+        # Keep a disk-cache
+        disk-cache: true
+        # Share repository cache between workflows.
+        repository-cache: true
+        # enable some flags for CI
+        bazelrc: |
+          import %workspace%/../../.aspect/bazelrc/ci.bazelrc
+          import %workspace%/../../.github/workflows/ci.bazelrc
+    - id: prepare
+      run: |
+        cd e2e/bzlmod-toolchain-circular-dependencies
+        bazelisk run @bazeldnf_rpms//:fetch-repo
+        bazelisk run @bazeldnf_rpms//:update-lock-file
+    - id: test
+      run: |
+        cd e2e/bzlmod-toolchain-circular-dependencies
+        bazelisk build //... || status=$?
+        if [ ${status} -ne 0 ]; then
+          echo "::warning::Optional job failed."
+          echo "optional_fail=true" >> "${GITHUB_OUTPUT}"
+          echo "optional_fail_status=${status}" >> "${GITHUB_OUTPUT}"
+        fi;
+    - name: Add comment if optional job failed; delete otherwise
+      uses: thollander/actions-comment-pull-request@v3
+      with:
+        comment-tag: "circular-dependencies-optional-notice"
+        message: |
+          ### ⚠️ Optional job e2e-bzlmod-toolchain-circular-dependencies failed ⚠️
+            - exit status: ${{ steps.test.outputs.optional_fail_status }}
+        mode: ${{ steps.test.outputs.optional_fail == 'true' && 'upsert' || 'delete' }}
