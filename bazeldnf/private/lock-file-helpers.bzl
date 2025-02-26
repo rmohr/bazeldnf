@@ -18,21 +18,19 @@ def _collect_lockfile_args(ctx):
     if ctx.attr.nobest:
         lockfile_args.append("--nobest")
 
+    if ctx.attr.cache_dir:
+        lockfile_args.extend(["--cache-dir", ctx.attr.cache_dir])
+
     lockfile_args.append("--ignore-missing")
 
     return lockfile_args
 
-def _update_lock_file_impl(ctx):
+def _generic_bazeldnf_cmd_impl(ctx, substitutions):
     out_file = ctx.actions.declare_file(ctx.label.name + ".bash")
 
     bazeldnf = ctx.toolchains[BAZELDNF_TOOLCHAIN]
 
-    substitutions = {
-        "@@BAZELDNF_SHORT_PATH@@": bazeldnf._tool.short_path,
-        "@@LOCK_FILE@@": shell.quote(ctx.attr.lock_file),
-        "@@REPO_NAME@@": ctx.workspace_name,
-        "@@LOCKFILE_ARGS@@": " ".join(_collect_lockfile_args(ctx)),
-    }
+    substitutions["@@BAZELDNF_SHORT_PATH@@"] = bazeldnf._tool.short_path
 
     ctx.actions.expand_template(
         template = ctx.file._runner,
@@ -51,6 +49,15 @@ def _update_lock_file_impl(ctx):
         executable = out_file,
     )]
 
+def _update_lock_file_impl(ctx):
+    substitutions = {
+        "@@LOCK_FILE@@": shell.quote(ctx.attr.lock_file),
+        "@@REPO_NAME@@": ctx.workspace_name,
+        "@@LOCKFILE_ARGS@@": " ".join(_collect_lockfile_args(ctx)),
+    }
+
+    return _generic_bazeldnf_cmd_impl(ctx, substitutions)
+
 update_lock_file = rule(
     implementation = _update_lock_file_impl,
     attrs = {
@@ -59,7 +66,32 @@ update_lock_file = rule(
         "excludes": attr.string_list(),
         "repofile": attr.string(),
         "nobest": attr.bool(default = False),
+        "cache_dir": attr.string(),
         "_runner": attr.label(allow_single_file = True, default = Label("//bazeldnf/private:update-lock-file.sh")),
+    },
+    toolchains = [
+        BAZELDNF_TOOLCHAIN,
+    ],
+    executable = True,
+)
+
+def _fetch_dnf_repo_impl(ctx):
+    substitutions = {
+        "@@REPO_NAME@@": ctx.workspace_name,
+        "@@REPO_FILE@@": shell.quote(ctx.attr.repofile),
+    }
+
+    if ctx.attr.cache_dir:
+        substitutions["@@CACHE_DIR@@"] = "--cache-dir {}".format(ctx.attr.cache_dir)
+
+    return _generic_bazeldnf_cmd_impl(ctx, substitutions)
+
+fetch_dnf_repo = rule(
+    implementation = _fetch_dnf_repo_impl,
+    attrs = {
+        "repofile": attr.string(),
+        "cache_dir": attr.string(),
+        "_runner": attr.label(allow_single_file = True, default = Label("//bazeldnf/private:fetch-dnf-repo.sh")),
     },
     toolchains = [
         BAZELDNF_TOOLCHAIN,

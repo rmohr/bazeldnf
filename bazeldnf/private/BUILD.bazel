@@ -7,7 +7,10 @@ bzl_library(
     deps = ["//bazeldnf:platforms"],
 )
 
-exports_files(["update-lock-file.sh"])
+exports_files([
+    "update-lock-file.sh",
+    "fetch-dnf-repo.sh",
+])
 
 bzl_library(
     name = "lock-file-helpers",
