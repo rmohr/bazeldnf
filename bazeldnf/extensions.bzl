@@ -73,7 +73,13 @@ alias(
 """
 
 _ALIAS_REPO_TOP_LEVEL_TEMPLATE = """\
-load("@bazeldnf//bazeldnf/private:lock-file-helpers.bzl", "update_lock_file")
+load("@bazeldnf//bazeldnf/private:lock-file-helpers.bzl", "fetch_dnf_repo", "update_lock_file")
+
+fetch_dnf_repo(
+    name = "fetch-repo",
+    repofile = "{repofile}",
+    cache_dir = {cache_dir},
+)
 
 update_lock_file(
     name = "update-lock-file",
@@ -82,6 +88,7 @@ update_lock_file(
     excludes = [{excludes}],
     repofile = "{repofile}",
     nobest = {nobest},
+    cache_dir = {cache_dir},
 )
 """
 
@@ -92,6 +99,7 @@ fail("Lock file hasn't been generated for this repository, please run `bazel run
 def _alias_repository_impl(repository_ctx):
     """Creates a repository that aliases other repositories."""
     repository_ctx.file("WORKSPACE", "")
+    repository_ctx.watch(repository_ctx.attr.lock_file)
     lock_file_path = repository_ctx.attr.lock_file.name
 
     repofile = repository_ctx.attr.repofile.name if repository_ctx.attr.repofile else "invalid-repo.yaml"
@@ -103,6 +111,7 @@ def _alias_repository_impl(repository_ctx):
     repository_ctx.file(
         "BUILD.bazel",
         _ALIAS_REPO_TOP_LEVEL_TEMPLATE.format(
+            cache_dir = '"{}"'.format(repository_ctx.attr.cache_dir) if repository_ctx.attr.cache_dir else None,
             path = lock_file_path,
             rpms = ", ".join(["'{}'".format(x) for x in repository_ctx.attr.rpms_to_install]),
             excludes = ", ".join(["'{}'".format(x) for x in repository_ctx.attr.excludes]),
@@ -144,6 +153,7 @@ _alias_repository = repository_rule(
         "repofile": attr.label(),
         "repository_prefix": attr.string(),
         "nobest": attr.bool(default = False),
+        "cache_dir": attr.string(),
     },
 )
 
@@ -160,6 +170,9 @@ def _handle_lock_file(config, module_ctx, registered_rpms = {}):
         "repository_prefix": config.rpm_repository_prefix,
         "nobest": config.nobest,
     }
+
+    if config.cache_dir:
+        repository_args["cache_dir"] = config.cache_dir
 
     if not module_ctx.path(config.lock_file).exists:
         _alias_repository(
@@ -292,6 +305,9 @@ _config_tag = tag_class(
         "name": attr.string(
             doc = "Name of the generated proxy repository",
             default = "bazeldnf_rpms",
+        ),
+        "cache_dir": attr.string(
+            doc = "Path of the bazeldnf cache repository",
         ),
         "lock_file": attr.label(
             doc = """\

@@ -1,0 +1,2122 @@
+{
+	"cli-arguments": [
+		"-r",
+		"repos.yaml",
+		"--lockfile",
+		"bazeldnf-lock.json",
+		"--force-ignore-with-dependencies",
+		"alternatives",
+		"--force-ignore-with-dependencies",
+		"basesystem",
+		"git",
+		"glibc",
+		"--cache-dir",
+		"./.bazeldnf-test-issues-with-ignore-flag",
+		"--ignore-missing"
+	],
+	"name": "",
+	"repositories": {
+		"centos-stream-9-stable-appstream": [
+			"https://mirror.stream.centos.org/9-stream/AppStream/x86_64/os"
+		],
+		"centos-stream-9-stable-baseos": [
+			"https://mirror.stream.centos.org/9-stream/BaseOS/x86_64/os"
+		]
+	},
+	"rpms": [
+		{
+			"name": "audit-libs",
+			"sha256": "d1482f65e84e761f0282e9e2c2a7111f0638dc889d6f34e4cde160e465855d1e",
+			"urls": [
+				"Packages/audit-libs-3.1.5-4.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"libcap-ng"
+			]
+		},
+		{
+			"name": "bash",
+			"sha256": "823859a9e8fad83004fa0d9f698ff223f6f7d38fd8e7629509d98b5ba6764c03",
+			"urls": [
+				"Packages/bash-5.1.8-9.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"filesystem",
+				"glibc",
+				"ncurses-libs"
+			]
+		},
+		{
+			"name": "bzip2-libs",
+			"sha256": "84392815cc1a8f01c651edd17f570aa449ef6f397ae48d773d655606ea7b4c96",
+			"urls": [
+				"Packages/bzip2-libs-1.0.8-10.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc"
+			]
+		},
+		{
+			"name": "ca-certificates",
+			"sha256": "d18c1b9763c22dc93da804f96ad3d92b3157195c9eff6e923c33e9011df3e246",
+			"urls": [
+				"Packages/ca-certificates-2024.2.69_v8.0.303-91.4.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"bash",
+				"coreutils",
+				"grep",
+				"p11-kit-trust",
+				"sed"
+			]
+		},
+		{
+			"name": "centos-gpg-keys",
+			"sha256": "8d601d9f96356a200ad6ed8e5cb49bbac4aa3c4b762d10a23e11311daa5711ca",
+			"urls": [
+				"Packages/centos-gpg-keys-9.0-26.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": []
+		},
+		{
+			"name": "centos-stream-release",
+			"sha256": "3d60dc8ed86717f68394fc7468b8024557c43ac2ad97b8e40911d056cd6d64d3",
+			"urls": [
+				"Packages/centos-stream-release-9.0-26.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"centos-stream-repos"
+			]
+		},
+		{
+			"name": "centos-stream-repos",
+			"sha256": "eb3b55a5cf0e1a93a91cd2d39035bd1754b46f69ff3d062b3331e765b2345035",
+			"urls": [
+				"Packages/centos-stream-repos-9.0-26.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"centos-gpg-keys"
+			]
+		},
+		{
+			"name": "coreutils",
+			"sha256": "2afe3e8ef2b82e75ad5a735994d3a877bda13ac0ec7ef92f0ec5205b7451e95c",
+			"urls": [
+				"Packages/coreutils-8.32-39.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"coreutils-common",
+				"glibc",
+				"gmp",
+				"libacl",
+				"libattr",
+				"libcap",
+				"libselinux",
+				"openssl-libs"
+			]
+		},
+		{
+			"name": "coreutils-common",
+			"sha256": "7e0a2ae2601cbfe8811e6c3c2bc10de303a4138a48b0407bc21f929876b54fb2",
+			"urls": [
+				"Packages/coreutils-common-8.32-39.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": []
+		},
+		{
+			"name": "cracklib",
+			"sha256": "be9deb2efd06b4b2c1c130acae94c687161d04830119e65a989d904ba9fd1864",
+			"urls": [
+				"Packages/cracklib-2.9.6-27.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"bash",
+				"glibc",
+				"gzip",
+				"zlib"
+			]
+		},
+		{
+			"name": "cracklib-dicts",
+			"sha256": "01df2a72fcdf988132e82764ce1a22a5a9513fa253b54e17d23058bdb53c2d85",
+			"urls": [
+				"Packages/cracklib-dicts-2.9.6-27.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"cracklib"
+			]
+		},
+		{
+			"name": "crypto-policies",
+			"sha256": "f811d2c848f6f93a188f2d74d4ccd172e1dc88fa7919e8e203cf1df3d93571e1",
+			"urls": [
+				"Packages/crypto-policies-20250128-1.git5269e22.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"bash"
+			]
+		},
+		{
+			"name": "emacs-filesystem",
+			"sha256": "1b5841ddc4862a7e52f29534ed42eb84d8ed4b2dd969be68fabe475c75aa955f",
+			"urls": [
+				"Packages/emacs-filesystem-27.2-10.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-appstream",
+			"dependencies": []
+		},
+		{
+			"name": "expat",
+			"sha256": "360ed994ea2af5b3a7f37694dfdf2249d97e5e5ec2492c9223a2aec72ff8f480",
+			"urls": [
+				"Packages/expat-2.5.0-4.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc"
+			]
+		},
+		{
+			"name": "filesystem",
+			"sha256": "da7750fc31248ecc606016391c3f570e1abe7422f812b29a49d830c71884e6dc",
+			"urls": [
+				"Packages/filesystem-3.16-5.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"bash",
+				"setup"
+			]
+		},
+		{
+			"name": "gawk",
+			"sha256": "6e6d77b76b1e89fe6f012cdc16111bea35eb4ceedac5040e5d81b5a066429af8",
+			"urls": [
+				"Packages/gawk-5.1.0-6.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"filesystem",
+				"glibc",
+				"gmp",
+				"libsigsegv",
+				"mpfr",
+				"readline"
+			]
+		},
+		{
+			"name": "git",
+			"sha256": "973bcf0bf47568f0b1871faed0ac4a15eaaf9ee354da35b0ddfe8cc08f40004c",
+			"urls": [
+				"Packages/git-2.47.1-1.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-appstream",
+			"dependencies": [
+				"bash",
+				"emacs-filesystem",
+				"git-core",
+				"git-core-doc",
+				"perl-File-Basename",
+				"perl-File-Find",
+				"perl-Getopt-Long",
+				"perl-Git",
+				"perl-IPC-Open3",
+				"perl-PathTools",
+				"perl-TermReadKey",
+				"perl-interpreter",
+				"perl-lib",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "git-core",
+			"sha256": "9e39f1ddef47d848f97595701d0b4657f3eefafa6cae5953d503d132ca38f3a1",
+			"urls": [
+				"Packages/git-core-2.47.1-1.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-appstream",
+			"dependencies": [
+				"bash",
+				"expat",
+				"glibc",
+				"less",
+				"libcurl-minimal",
+				"openssh-clients",
+				"openssl-libs",
+				"pcre2",
+				"zlib"
+			]
+		},
+		{
+			"name": "git-core-doc",
+			"sha256": "ab9166f73f102ceef3187f52aa940deee49dd68b15430dbe4889b0ddedf2431e",
+			"urls": [
+				"Packages/git-core-doc-2.47.1-1.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-appstream",
+			"dependencies": [
+				"git-core"
+			]
+		},
+		{
+			"name": "glibc",
+			"sha256": "e06212b1cac1d9fd9857a00ddefefe9fb9f406199cb84fdd1153589c15e16289",
+			"urls": [
+				"Packages/glibc-2.34-168.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc-all-langpacks",
+				"glibc-common",
+				"libgcc"
+			]
+		},
+		{
+			"name": "glibc-all-langpacks",
+			"sha256": "a1714ab74c097094aad9808a48e21c57f3876fa3de5f247b10197d7c8a2de8b8",
+			"urls": [
+				"Packages/glibc-all-langpacks-2.34-168.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"glibc-common"
+			]
+		},
+		{
+			"name": "glibc-common",
+			"sha256": "531650744909efd0284bf6c16a45dbaf455b214c0cac4197cf6d43e8c7d83af8",
+			"urls": [
+				"Packages/glibc-common-2.34-168.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"bash",
+				"glibc",
+				"tzdata"
+			]
+		},
+		{
+			"name": "gmp",
+			"sha256": "b6d592895ccc0fcad6106cd41800cd9d68e5384c418e53a2c3ff2ac8c8b15a33",
+			"urls": [
+				"Packages/gmp-6.2.0-13.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc"
+			]
+		},
+		{
+			"name": "grep",
+			"sha256": "10a41b66b1fbd6eb055178e22c37199e5b49b4852e77c806f7af7211044a4a55",
+			"urls": [
+				"Packages/grep-3.6-5.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"bash",
+				"glibc",
+				"libsigsegv",
+				"pcre"
+			]
+		},
+		{
+			"name": "groff-base",
+			"sha256": "f8f02725766bef0fdf3db124d7862848e692518ce04919fb1a583f013bbbabfb",
+			"urls": [
+				"Packages/groff-base-1.22.4-10.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"bash",
+				"glibc",
+				"libgcc",
+				"libstdc++"
+			]
+		},
+		{
+			"name": "gzip",
+			"sha256": "e8d7783c666a58ab870246b04eb0ea22965123fe284697d2c0e1e6dbf10ea861",
+			"urls": [
+				"Packages/gzip-1.12-1.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"bash",
+				"coreutils",
+				"glibc"
+			]
+		},
+		{
+			"name": "keyutils-libs",
+			"sha256": "aef982501694486a27411c68698886d76ec70c5cd10bfe619501e7e4c36f50a9",
+			"urls": [
+				"Packages/keyutils-libs-1.6.3-1.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc"
+			]
+		},
+		{
+			"name": "krb5-libs",
+			"sha256": "50edf4089d0480048aeba2bfd736b93aa89dc25735cd02e80bad57e562e1e001",
+			"urls": [
+				"Packages/krb5-libs-1.21.1-6.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"bash",
+				"coreutils",
+				"crypto-policies",
+				"gawk",
+				"glibc",
+				"grep",
+				"keyutils-libs",
+				"libcom_err",
+				"libselinux",
+				"libverto",
+				"openssl-libs",
+				"sed"
+			]
+		},
+		{
+			"name": "less",
+			"sha256": "46e11dfacb75a8d03047d82f44ae46b11d95da31e0ec1b3a8cc37a132b1c7cae",
+			"urls": [
+				"Packages/less-590-5.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"bash",
+				"glibc",
+				"ncurses-libs"
+			]
+		},
+		{
+			"name": "libacl",
+			"sha256": "60a3affaa1c387fd6f72dd65aa7ad619a1830947823abb4b29e7b9fcb4c9d27c",
+			"urls": [
+				"Packages/libacl-2.3.1-4.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"libattr"
+			]
+		},
+		{
+			"name": "libattr",
+			"sha256": "d4db095a015e84065f27a642ee7829cd1690041ba8c51501f908cc34760c9409",
+			"urls": [
+				"Packages/libattr-2.5.1-3.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc"
+			]
+		},
+		{
+			"name": "libblkid",
+			"sha256": "2433f8829f894c7c5ba0639eb37a18a92632d4f9383551c901434b4353f96fc4",
+			"urls": [
+				"Packages/libblkid-2.37.4-21.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"bash",
+				"coreutils",
+				"glibc",
+				"libuuid"
+			]
+		},
+		{
+			"name": "libcap",
+			"sha256": "7d07ec8a6a0975d84c66adf21c885c41a5571ecb631055959265c60fda314111",
+			"urls": [
+				"Packages/libcap-2.48-9.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"libgcc"
+			]
+		},
+		{
+			"name": "libcap-ng",
+			"sha256": "62429b788acfb40dbc9da9951690c11e907e230879c790d139f73d0e85dd76f4",
+			"urls": [
+				"Packages/libcap-ng-0.8.2-7.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc"
+			]
+		},
+		{
+			"name": "libcbor",
+			"sha256": "ecbb61df93e6816276712d02a3013c591a8b58a8ef50ece98d814564565980ab",
+			"urls": [
+				"Packages/libcbor-0.7.0-5.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc"
+			]
+		},
+		{
+			"name": "libcom_err",
+			"sha256": "d11e18dbfddd56538c476851d98bd96795f34045e14ebe7b3285f225c4b4b189",
+			"urls": [
+				"Packages/libcom_err-1.46.5-7.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc"
+			]
+		},
+		{
+			"name": "libcurl-minimal",
+			"sha256": "6438485e38465ee944e25abedcf4a1761564fe5202f05a02c71e4c880255b539",
+			"urls": [
+				"Packages/libcurl-minimal-7.76.1-31.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"krb5-libs",
+				"libcom_err",
+				"libnghttp2",
+				"openssl-libs",
+				"zlib"
+			]
+		},
+		{
+			"name": "libdb",
+			"sha256": "e28608db5eaa3ee38e8bc0d6be1831048da1e638920a6f16a8084e72e2ebf6c9",
+			"urls": [
+				"Packages/libdb-5.3.28-55.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc"
+			]
+		},
+		{
+			"name": "libeconf",
+			"sha256": "ed519cc2e9031e2bf03275b28c7cca6520ae916d0a7edbbc69f327c1b70ed6cc",
+			"urls": [
+				"Packages/libeconf-0.4.1-4.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc"
+			]
+		},
+		{
+			"name": "libedit",
+			"sha256": "bfa91ff96f312b284a16a91b2eabcdae9e43c2f9b698fee6eec94040eaef8f7e",
+			"urls": [
+				"Packages/libedit-3.1-38.20210216cvs.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"ncurses-libs"
+			]
+		},
+		{
+			"name": "libfdisk",
+			"sha256": "9a594c51e3bf09cb5016485ee2f143de6db960ff1c7e135c0097f59fa51b2edb",
+			"urls": [
+				"Packages/libfdisk-2.37.4-21.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"libblkid",
+				"libuuid"
+			]
+		},
+		{
+			"name": "libffi",
+			"sha256": "110d5008364a65b38b832949970886fdccb97762b0cdb257571cc0c84182d7d0",
+			"urls": [
+				"Packages/libffi-3.4.2-8.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc"
+			]
+		},
+		{
+			"name": "libfido2",
+			"sha256": "85c3a84335d833069f5758b34f4636313ffc0d5ca7f73d24e05fd566735c5cd6",
+			"urls": [
+				"Packages/libfido2-1.13.0-2.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"libcbor",
+				"openssl-libs",
+				"systemd-libs",
+				"zlib"
+			]
+		},
+		{
+			"name": "libgcc",
+			"sha256": "442c065a815212ac21760ff9f0bd93e9f5d5972925d9e987a421cbf6ebba41d2",
+			"urls": [
+				"Packages/libgcc-11.5.0-5.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": []
+		},
+		{
+			"name": "libgcrypt",
+			"sha256": "0323a74a5ad27bc3dc4ac4e9565825f37dc58b2a4800adbf33f767fa7a267c35",
+			"urls": [
+				"Packages/libgcrypt-1.10.0-11.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"libgpg-error"
+			]
+		},
+		{
+			"name": "libgpg-error",
+			"sha256": "a1883804c376f737109f4dff06077d1912b90150a732d11be7bc5b3b67e512fe",
+			"urls": [
+				"Packages/libgpg-error-1.42-5.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc"
+			]
+		},
+		{
+			"name": "libmount",
+			"sha256": "d8bfc70d1a9a594569c8c95bda682804a20bb4ee602db3efa7b6e76d289ecc66",
+			"urls": [
+				"Packages/libmount-2.37.4-21.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"libblkid",
+				"libselinux",
+				"libuuid"
+			]
+		},
+		{
+			"name": "libnghttp2",
+			"sha256": "fc1cadbc6cf37cbea60112b7ae6f92fabfd5a7f76fa526bb5a1ea82746455ec7",
+			"urls": [
+				"Packages/libnghttp2-1.43.0-6.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc"
+			]
+		},
+		{
+			"name": "libpwquality",
+			"sha256": "93f00e5efac1e3f1ecbc0d6a4c068772cb12912cd20c9ea58716d6c0cd004886",
+			"urls": [
+				"Packages/libpwquality-1.4.4-8.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"cracklib",
+				"cracklib-dicts",
+				"glibc",
+				"pam"
+			]
+		},
+		{
+			"name": "libselinux",
+			"sha256": "79abe72ea8dccb4134286fd1aae79827f10bde0cc1c35224886e93b293d282d1",
+			"urls": [
+				"Packages/libselinux-3.6-3.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"libsepol",
+				"pcre2"
+			]
+		},
+		{
+			"name": "libsemanage",
+			"sha256": "f8d235c4c3aedb484203472f164efd77cc9b55679556817a0afeb59dac4cc8b9",
+			"urls": [
+				"Packages/libsemanage-3.6-4.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"audit-libs",
+				"bzip2-libs",
+				"glibc",
+				"libselinux",
+				"libsepol"
+			]
+		},
+		{
+			"name": "libsepol",
+			"sha256": "7a1c10a4512624dfc1b76da45b7a0d15f8ecdddf20c9738b10ca12df7f488ae1",
+			"urls": [
+				"Packages/libsepol-3.6-2.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc"
+			]
+		},
+		{
+			"name": "libsigsegv",
+			"sha256": "931bd0ec7050e8c3b37a9bfb489e30af32486a3c77203f1e9113eeceaa3b0a3a",
+			"urls": [
+				"Packages/libsigsegv-2.13-4.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc"
+			]
+		},
+		{
+			"name": "libsmartcols",
+			"sha256": "30e2a071ad6f1939f14fc89c827d61ccb28a6cbf6e443db39e8019a18c7e18d4",
+			"urls": [
+				"Packages/libsmartcols-2.37.4-21.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc"
+			]
+		},
+		{
+			"name": "libstdc++",
+			"sha256": "6628a0027a113c8687d0cd52ed5725ee6cb1ee2a02897349289d683fc6453223",
+			"urls": [
+				"Packages/libstdc++-11.5.0-5.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"libgcc"
+			]
+		},
+		{
+			"name": "libtasn1",
+			"sha256": "addd155d4abc41529d7e8588f442e50a87db3a1314bd2162fbb4950d898a2e28",
+			"urls": [
+				"Packages/libtasn1-4.16.0-9.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc"
+			]
+		},
+		{
+			"name": "libutempter",
+			"sha256": "fab361a9cba04490fd8b5664049983d1e57ebf7c1080804726ba600708524125",
+			"urls": [
+				"Packages/libutempter-1.2.1-6.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"bash",
+				"glibc",
+				"shadow-utils"
+			]
+		},
+		{
+			"name": "libuuid",
+			"sha256": "be4793be5af11772206abe023746ec4021a8b7bc124fdc7e7cdb92b57c46d125",
+			"urls": [
+				"Packages/libuuid-2.37.4-21.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc"
+			]
+		},
+		{
+			"name": "libverto",
+			"sha256": "c55578b84f169c4ed79b2d50ea03fd1817007e35062c9fe7a58e6cad025f3b24",
+			"urls": [
+				"Packages/libverto-0.3.2-3.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc"
+			]
+		},
+		{
+			"name": "libxcrypt",
+			"sha256": "97e88678b420f619a44608fff30062086aa1dd6931ecbd54f21bba005ff1de1a",
+			"urls": [
+				"Packages/libxcrypt-4.4.18-3.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc"
+			]
+		},
+		{
+			"name": "libzstd",
+			"sha256": "3439a7437a4b47ef4b6efbcd8c5862180fb281dd956d70a4ffe3764fd8d997dd",
+			"urls": [
+				"Packages/libzstd-1.5.5-1.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc"
+			]
+		},
+		{
+			"name": "lz4-libs",
+			"sha256": "cba6a63054d070956a182e33269ee245bcfbe87e3e605c27816519db762a66ad",
+			"urls": [
+				"Packages/lz4-libs-1.9.3-5.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc"
+			]
+		},
+		{
+			"name": "mpfr",
+			"sha256": "179760104aa5a31ca463c586d0f21f380ba4d0eed212eee91bd1ca513e5d7a8d",
+			"urls": [
+				"Packages/mpfr-4.1.0-7.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"gmp"
+			]
+		},
+		{
+			"name": "ncurses",
+			"sha256": "45d743dcda5be230bae12ef3f883f75e87295993ee4a0f277c31f691022eac30",
+			"urls": [
+				"Packages/ncurses-6.2-10.20210508.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"ncurses-libs"
+			]
+		},
+		{
+			"name": "ncurses-base",
+			"sha256": "00ba56b28a3a85c3c03387bb7abeca92597c8a5fac7f53d48410ca2a20fd8065",
+			"urls": [
+				"Packages/ncurses-base-6.2-10.20210508.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": []
+		},
+		{
+			"name": "ncurses-libs",
+			"sha256": "f4ead70a508051ed338499b35605b5b2b5bccde19c9e83f7e4b948f171b542ff",
+			"urls": [
+				"Packages/ncurses-libs-6.2-10.20210508.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"ncurses-base"
+			]
+		},
+		{
+			"name": "openssh",
+			"sha256": "4f2c1a6290b3c0ad2afcb47d44b1d6e2523810fd0bfbc4b754682a27dbf2b6a3",
+			"urls": [
+				"Packages/openssh-8.7p1-45.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"audit-libs",
+				"bash",
+				"glibc",
+				"libselinux",
+				"libxcrypt",
+				"openssl-libs",
+				"util-linux",
+				"zlib"
+			]
+		},
+		{
+			"name": "openssh-clients",
+			"sha256": "4e93ea43133c9c10bbcccc8e55b4cba8e4b00b3c76597d64c3b1e54b4d3653ca",
+			"urls": [
+				"Packages/openssh-clients-8.7p1-45.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"bash",
+				"crypto-policies",
+				"glibc",
+				"krb5-libs",
+				"libedit",
+				"libfido2",
+				"libselinux",
+				"libxcrypt",
+				"openssh",
+				"openssl-libs",
+				"zlib"
+			]
+		},
+		{
+			"name": "openssl",
+			"sha256": "3018c5d2901213b6bdbe62301ef894008ec52b1122e270190eabb62ad282a46a",
+			"urls": [
+				"Packages/openssl-3.2.2-6.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"bash",
+				"coreutils",
+				"glibc",
+				"openssl-libs"
+			]
+		},
+		{
+			"name": "openssl-libs",
+			"sha256": "4a0a29a309f72ba65a2d0b2d4b51637253520f6a0a1bd4640f0a09f7d7555738",
+			"urls": [
+				"Packages/openssl-libs-3.2.2-6.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"ca-certificates",
+				"crypto-policies",
+				"glibc",
+				"zlib"
+			]
+		},
+		{
+			"name": "p11-kit",
+			"sha256": "2d02f32cdb62fac32563c70fad44c7252f0173552ccabc58d2b5161207c291a3",
+			"urls": [
+				"Packages/p11-kit-0.25.3-3.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"libffi",
+				"libtasn1"
+			]
+		},
+		{
+			"name": "p11-kit-trust",
+			"sha256": "f3b18cc69d79899e17d7c7514a4e350bdd6166a37e979fee5dcfbdc7921a02fa",
+			"urls": [
+				"Packages/p11-kit-trust-0.25.3-3.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"bash",
+				"glibc",
+				"libtasn1",
+				"p11-kit"
+			]
+		},
+		{
+			"name": "pam",
+			"sha256": "fba392096cbf59204549bca23d4060cdf8aaaa9ce35ade8194c111f519033e10",
+			"urls": [
+				"Packages/pam-1.5.1-23.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"audit-libs",
+				"bash",
+				"glibc",
+				"libdb",
+				"libeconf",
+				"libpwquality",
+				"libselinux",
+				"libxcrypt",
+				"openssl",
+				"openssl-libs"
+			]
+		},
+		{
+			"name": "pcre",
+			"sha256": "7d6be1d41cb4d0b159a764bfc7c8efecc0353224b46e5286cbbea7092b700690",
+			"urls": [
+				"Packages/pcre-8.44-4.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc"
+			]
+		},
+		{
+			"name": "pcre2",
+			"sha256": "bc1012f5417aab8393836d78ac8c5472b1a2d84a2f9fa2b00fff5f8ad3a5ec26",
+			"urls": [
+				"Packages/pcre2-10.40-6.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"pcre2-syntax"
+			]
+		},
+		{
+			"name": "pcre2-syntax",
+			"sha256": "be36a84f6e311a59190664d61a466471391ab01fb77bd1d2348e9a76414aded4",
+			"urls": [
+				"Packages/pcre2-syntax-10.40-6.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": []
+		},
+		{
+			"name": "perl-AutoLoader",
+			"sha256": "f0bcf4a04a62b163c6c80006d604117cf5a825756ce39ef1bd0818ae848aa2cf",
+			"urls": [
+				"Packages/perl-AutoLoader-5.74-481.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Carp",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-B",
+			"sha256": "df7b0c3048ffbe05d0ff6dafc45f0af7da189579204c3be8d2872a04a6794dff",
+			"urls": [
+				"Packages/perl-B-1.80-481.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"perl-Carp",
+				"perl-Data-Dumper",
+				"perl-Exporter",
+				"perl-libs",
+				"perl-overloading"
+			]
+		},
+		{
+			"name": "perl-Carp",
+			"sha256": "f1ca6aaa47ef96d6b47f20f3a2df2ce530228790f2c0330ece567cc77ddd5063",
+			"urls": [
+				"Packages/perl-Carp-1.50-460.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Exporter",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-Class-Struct",
+			"sha256": "74119bd904503f9c57cbc2c254b14e08406115a04c1253e2207372cab59be1ee",
+			"urls": [
+				"Packages/perl-Class-Struct-0.66-481.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Carp",
+				"perl-Exporter",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-Data-Dumper",
+			"sha256": "f979d2efed136001fe0d54632b626b53842c281f9354408e0f7c75bcfc408f67",
+			"urls": [
+				"Packages/perl-Data-Dumper-2.174-462.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"perl-B",
+				"perl-Carp",
+				"perl-Exporter",
+				"perl-Scalar-List-Utils",
+				"perl-constant",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-Digest",
+			"sha256": "de4b71c1cf818d48940ca0f68f5d3c520a321affe9e33b5afd7976c811f1d741",
+			"urls": [
+				"Packages/perl-Digest-1.19-4.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Carp",
+				"perl-Exporter",
+				"perl-MIME-Base64",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-Digest-MD5",
+			"sha256": "ec7e38c29105e1502a13e8e13f9bc1b1bc02a21babf02e95a6966b40a8d8cbaa",
+			"urls": [
+				"Packages/perl-Digest-MD5-2.58-4.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"perl-Digest",
+				"perl-Exporter",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-DynaLoader",
+			"sha256": "ed74238c99a8f69d799f31c60bb4faf07fa625080dbc7335962104ab63159a79",
+			"urls": [
+				"Packages/perl-DynaLoader-1.47-481.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-appstream",
+			"dependencies": [
+				"perl-Carp",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-Encode",
+			"sha256": "85db7859711b30f268305ad0b3cdab68c8072fdf6ba60725a49657d6ae001bea",
+			"urls": [
+				"Packages/perl-Encode-3.08-462.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"perl-Carp",
+				"perl-Exporter",
+				"perl-File-Basename",
+				"perl-Getopt-Long",
+				"perl-Getopt-Std",
+				"perl-MIME-Base64",
+				"perl-Storable",
+				"perl-constant",
+				"perl-interpreter",
+				"perl-libs",
+				"perl-overload",
+				"perl-parent",
+				"perl-vars"
+			]
+		},
+		{
+			"name": "perl-Errno",
+			"sha256": "8a770d19c48537606dd8ae50cd24c9a48f3ebe999ff9b6aa23f08602031c5ee3",
+			"urls": [
+				"Packages/perl-Errno-1.30-481.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Carp",
+				"perl-Exporter",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-Error",
+			"sha256": "4a81617ae4e3718fed9af76711d0d4ab4c3cea7c5f10b26b704dd2a15d6ca2d5",
+			"urls": [
+				"Packages/perl-Error-0.17029-7.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-appstream",
+			"dependencies": [
+				"perl-Carp",
+				"perl-Exporter",
+				"perl-Scalar-List-Utils",
+				"perl-libs",
+				"perl-overload",
+				"perl-vars"
+			]
+		},
+		{
+			"name": "perl-Exporter",
+			"sha256": "1fefc5a7bc8cd31a853c090cdaa0758344cacc56561532dfef20ab70bd30bcab",
+			"urls": [
+				"Packages/perl-Exporter-5.74-461.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Carp",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-Fcntl",
+			"sha256": "d2a8667eb4319d9c44aca8493c8fc84148eeb2d5e23aa22297210c1de1fd7846",
+			"urls": [
+				"Packages/perl-Fcntl-1.13-481.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"perl-Exporter",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-File-Basename",
+			"sha256": "c78ac06d4f6eb825091d3e3dae448a429cb4711b1ddf6c75fdf00946ec09fd7d",
+			"urls": [
+				"Packages/perl-File-Basename-2.85-481.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Carp",
+				"perl-Exporter",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-File-Find",
+			"sha256": "7ee4e0c4817b825be165e663bc03f1c8ee45e872b8fb6b8968355bae1622e61e",
+			"urls": [
+				"Packages/perl-File-Find-1.37-481.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-appstream",
+			"dependencies": [
+				"perl-Exporter",
+				"perl-File-Basename",
+				"perl-PathTools",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-File-Path",
+			"sha256": "74b7f75cf3c8bf7191a8e6d88689d7aca1b1f60d56c890ead7d558a704a4a4cc",
+			"urls": [
+				"Packages/perl-File-Path-2.18-4.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Carp",
+				"perl-Exporter",
+				"perl-File-Basename",
+				"perl-PathTools",
+				"perl-libs",
+				"perl-vars"
+			]
+		},
+		{
+			"name": "perl-File-Temp",
+			"sha256": "a1416670c051fdf7ea5e7ffac059d88e17b14a61cf75a95be6e3c6d2e730101b",
+			"urls": [
+				"Packages/perl-File-Temp-0.231.100-4.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Carp",
+				"perl-Errno",
+				"perl-Exporter",
+				"perl-Fcntl",
+				"perl-File-Path",
+				"perl-IO",
+				"perl-POSIX",
+				"perl-PathTools",
+				"perl-Scalar-List-Utils",
+				"perl-constant",
+				"perl-libs",
+				"perl-overload",
+				"perl-parent"
+			]
+		},
+		{
+			"name": "perl-File-stat",
+			"sha256": "93e3e03bd8bdf7df40657e591daa94671ff3576cd88954e054e47adc27032c8e",
+			"urls": [
+				"Packages/perl-File-stat-1.09-481.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Carp",
+				"perl-Class-Struct",
+				"perl-Exporter",
+				"perl-Fcntl",
+				"perl-Symbol",
+				"perl-constant",
+				"perl-libs",
+				"perl-overload"
+			]
+		},
+		{
+			"name": "perl-FileHandle",
+			"sha256": "8424b7cec06428cfbe888d9d9a68a752dfd78466dbcb4e86114469fb034584d0",
+			"urls": [
+				"Packages/perl-FileHandle-2.03-481.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Exporter",
+				"perl-IO",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-Getopt-Long",
+			"sha256": "0053d63a5eb0bc399e2e56a2599a1a09dca20c5bcac36f713a56fec46abac391",
+			"urls": [
+				"Packages/perl-Getopt-Long-2.52-4.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Exporter",
+				"perl-Pod-Usage",
+				"perl-Text-ParseWords",
+				"perl-constant",
+				"perl-libs",
+				"perl-overload",
+				"perl-vars"
+			]
+		},
+		{
+			"name": "perl-Getopt-Std",
+			"sha256": "6694398c32de4a6f27904be25c4b76536ed9f0c9781c946ad48a41d39f067a05",
+			"urls": [
+				"Packages/perl-Getopt-Std-1.12-481.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Exporter",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-Git",
+			"sha256": "cc185dd15a5b7787cb1a5f93456b3ebe271f9286f667579f33d76f13bc17f882",
+			"urls": [
+				"Packages/perl-Git-2.47.1-1.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-appstream",
+			"dependencies": [
+				"git",
+				"perl-Error",
+				"perl-Exporter",
+				"perl-constant",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-HTTP-Tiny",
+			"sha256": "8579bcd4112b973c3bd072db832e26c4d04eb984952892c01ef7119b18ccbf50",
+			"urls": [
+				"Packages/perl-HTTP-Tiny-0.076-462.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Carp",
+				"perl-Errno",
+				"perl-Fcntl",
+				"perl-IO",
+				"perl-IO-Socket-SSL",
+				"perl-MIME-Base64",
+				"perl-Mozilla-CA",
+				"perl-Net-SSLeay",
+				"perl-Socket",
+				"perl-Time-Local",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-IO",
+			"sha256": "127c53f8c005ee3098e52e197ae1c7ffbfc6c35373de7d43c1c042932f148d9b",
+			"urls": [
+				"Packages/perl-IO-1.43-481.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"perl-Carp",
+				"perl-Errno",
+				"perl-Exporter",
+				"perl-Fcntl",
+				"perl-File-stat",
+				"perl-PathTools",
+				"perl-SelectSaver",
+				"perl-Socket",
+				"perl-Symbol",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-IO-Socket-IP",
+			"sha256": "95babe1d96f2dfd85f161d3f82bb3ba4ad4a2591d0d90919132f1358377f53bf",
+			"urls": [
+				"Packages/perl-IO-Socket-IP-0.41-5.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Carp",
+				"perl-Errno",
+				"perl-IO",
+				"perl-POSIX",
+				"perl-Socket",
+				"perl-base",
+				"perl-constant",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-IO-Socket-SSL",
+			"sha256": "e52de538f131646122dccc4985b63d448ef1c641543fac2df066b31798e16131",
+			"urls": [
+				"Packages/perl-IO-Socket-SSL-2.073-2.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"openssl-libs",
+				"perl-Carp",
+				"perl-Errno",
+				"perl-Exporter",
+				"perl-HTTP-Tiny",
+				"perl-IO",
+				"perl-IO-Socket-IP",
+				"perl-Net-SSLeay",
+				"perl-Socket",
+				"perl-URI",
+				"perl-constant",
+				"perl-libs",
+				"perl-vars"
+			]
+		},
+		{
+			"name": "perl-IPC-Open3",
+			"sha256": "56f9cc438951140a1aa2662556c1259d9a2b4d80d8e11e756165e72e29d61cb3",
+			"urls": [
+				"Packages/perl-IPC-Open3-1.21-481.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Carp",
+				"perl-Exporter",
+				"perl-Fcntl",
+				"perl-IO",
+				"perl-POSIX",
+				"perl-Symbol",
+				"perl-constant",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-MIME-Base64",
+			"sha256": "ce4d4eeb8e4524212437ac964d9f0b6ba562c7064a7bf976bec5836e87e20cd2",
+			"urls": [
+				"Packages/perl-MIME-Base64-3.16-4.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"perl-Exporter",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-Mozilla-CA",
+			"sha256": "27dfc72f604506654c671d164852668094da5e817e84b8192f21e29429a59838",
+			"urls": [
+				"Packages/perl-Mozilla-CA-20200520-6.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"ca-certificates",
+				"perl-PathTools",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-Net-SSLeay",
+			"sha256": "d806dde5e3e7b6b3cacdf81c13f590c466b1ad003b18e62e1c0cbbfdd277198f",
+			"urls": [
+				"Packages/perl-Net-SSLeay-1.94-1.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"openssl-libs",
+				"perl-AutoLoader",
+				"perl-Carp",
+				"perl-Errno",
+				"perl-Exporter",
+				"perl-MIME-Base64",
+				"perl-Socket",
+				"perl-libs",
+				"perl-vars"
+			]
+		},
+		{
+			"name": "perl-POSIX",
+			"sha256": "d2e68e82c34d405f85e48609df07c6ae72cc65df181e2b3e0bc8139fe32a2c30",
+			"urls": [
+				"Packages/perl-POSIX-1.94-481.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"perl-Carp",
+				"perl-Exporter",
+				"perl-Fcntl",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-PathTools",
+			"sha256": "0ef613a8fe3d9e2355a7b063f1cd5d019772c837e2435c9efcd7ea925ad27024",
+			"urls": [
+				"Packages/perl-PathTools-3.78-461.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"perl-Carp",
+				"perl-Errno",
+				"perl-Exporter",
+				"perl-Scalar-List-Utils",
+				"perl-constant",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-Pod-Escapes",
+			"sha256": "c32ad4f02ecad264d2337837848706cc44f0502f39d978a6c055166fcf8ce917",
+			"urls": [
+				"Packages/perl-Pod-Escapes-1.07-460.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Exporter",
+				"perl-libs",
+				"perl-vars"
+			]
+		},
+		{
+			"name": "perl-Pod-Perldoc",
+			"sha256": "fb38583786c1d851fe160de0e436ae2bb332f60e072a6e58db02b2affb9aab6c",
+			"urls": [
+				"Packages/perl-Pod-Perldoc-3.28.01-461.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"groff-base",
+				"perl-Carp",
+				"perl-Encode",
+				"perl-Fcntl",
+				"perl-File-Basename",
+				"perl-File-Temp",
+				"perl-HTTP-Tiny",
+				"perl-IO",
+				"perl-IPC-Open3",
+				"perl-PathTools",
+				"perl-Pod-Simple",
+				"perl-Symbol",
+				"perl-Text-ParseWords",
+				"perl-interpreter",
+				"perl-libs",
+				"perl-parent",
+				"perl-podlators",
+				"perl-vars"
+			]
+		},
+		{
+			"name": "perl-Pod-Simple",
+			"sha256": "4b70575a9f0ebc0f0026681112532243b0699ca7dc5dcb165cef856adc1ec0d8",
+			"urls": [
+				"Packages/perl-Pod-Simple-3.42-4.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Carp",
+				"perl-Encode",
+				"perl-File-Basename",
+				"perl-Getopt-Long",
+				"perl-PathTools",
+				"perl-Pod-Escapes",
+				"perl-Symbol",
+				"perl-Text-Tabs+Wrap",
+				"perl-if",
+				"perl-libs",
+				"perl-overload",
+				"perl-vars"
+			]
+		},
+		{
+			"name": "perl-Pod-Usage",
+			"sha256": "2dded1efa254118c646affd59615237825f00e36b86a96a98fd59c8b6015612a",
+			"urls": [
+				"Packages/perl-Pod-Usage-2.01-4.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Carp",
+				"perl-Exporter",
+				"perl-Getopt-Long",
+				"perl-PathTools",
+				"perl-Pod-Perldoc",
+				"perl-interpreter",
+				"perl-libs",
+				"perl-podlators"
+			]
+		},
+		{
+			"name": "perl-Scalar-List-Utils",
+			"sha256": "e3a54464f1aebb25a2ab046307c3d6a032bbed64f493e4ece521d3801d1db48e",
+			"urls": [
+				"Packages/perl-Scalar-List-Utils-1.56-462.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"perl-Carp",
+				"perl-Exporter",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-SelectSaver",
+			"sha256": "49802d6bc0a5053f036f9df4b543d73d3184841303d7866d801879627aad32a4",
+			"urls": [
+				"Packages/perl-SelectSaver-1.02-481.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Carp",
+				"perl-Symbol",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-Socket",
+			"sha256": "356cc16228b97a64af8b2548661ab69277b32a30663da29727ee62a2503c3cec",
+			"urls": [
+				"Packages/perl-Socket-2.031-4.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"perl-Carp",
+				"perl-Exporter",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-Storable",
+			"sha256": "027c042137acf66ded0de52859610be36373ccd555dc30a865a31267c22c5579",
+			"urls": [
+				"Packages/perl-Storable-3.21-460.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"perl-Carp",
+				"perl-Exporter",
+				"perl-Fcntl",
+				"perl-IO",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-Symbol",
+			"sha256": "ae09bd7adc2d490c6d09ddc2ecc4a012e5e740f1d7785390af1e810cc2d0e41c",
+			"urls": [
+				"Packages/perl-Symbol-1.08-481.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Exporter",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-Term-ANSIColor",
+			"sha256": "d4e87c795780fa190baba5291c390e9af304e4f134e4aa4f2d03fc9b91ca5d60",
+			"urls": [
+				"Packages/perl-Term-ANSIColor-5.01-461.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Exporter",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-Term-Cap",
+			"sha256": "5c38c53e562f24cbdb395b11358efaaf6aee82ccd385055c5ffcf1843593d8da",
+			"urls": [
+				"Packages/perl-Term-Cap-1.17-460.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"ncurses",
+				"perl-Carp",
+				"perl-libs",
+				"perl-vars"
+			]
+		},
+		{
+			"name": "perl-TermReadKey",
+			"sha256": "187f79672b11692f5cd1fdddd07708856442818accfa120bee40be3e5b6b3cff",
+			"urls": [
+				"Packages/perl-TermReadKey-2.38-11.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-appstream",
+			"dependencies": [
+				"glibc",
+				"perl-DynaLoader",
+				"perl-Exporter",
+				"perl-libs",
+				"perl-vars"
+			]
+		},
+		{
+			"name": "perl-Text-ParseWords",
+			"sha256": "1264dd35d5deda51b4431955b2838cd18e0012dc27f0e0cb65061324216ff22c",
+			"urls": [
+				"Packages/perl-Text-ParseWords-3.30-460.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Carp",
+				"perl-Exporter",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-Text-Tabs+Wrap",
+			"sha256": "11966231d2834b2a9c2c0bf2af231e1257ce030da1cfecdd16d08a6a23222b24",
+			"urls": [
+				"Packages/perl-Text-Tabs+Wrap-2013.0523-460.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Exporter",
+				"perl-libs",
+				"perl-vars"
+			]
+		},
+		{
+			"name": "perl-Time-Local",
+			"sha256": "53f9616f9c60c8fb7befeff87f5b76c61ee75686a6c289f394c4793d3692de3b",
+			"urls": [
+				"Packages/perl-Time-Local-1.300-7.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Carp",
+				"perl-Exporter",
+				"perl-constant",
+				"perl-libs",
+				"perl-parent"
+			]
+		},
+		{
+			"name": "perl-URI",
+			"sha256": "745f84fc781c84763cad8001841711d6142eb13f50e55de928d3d051a0435ef2",
+			"urls": [
+				"Packages/perl-URI-5.09-3.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Carp",
+				"perl-Data-Dumper",
+				"perl-Encode",
+				"perl-Exporter",
+				"perl-MIME-Base64",
+				"perl-PathTools",
+				"perl-Scalar-List-Utils",
+				"perl-constant",
+				"perl-libnet",
+				"perl-libs",
+				"perl-overload",
+				"perl-parent"
+			]
+		},
+		{
+			"name": "perl-base",
+			"sha256": "7e9df641c5022b8247d85db7daddc45812d1bf70db0c7c5d2e88d83ee2fd15ac",
+			"urls": [
+				"Packages/perl-base-2.27-481.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Carp",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-constant",
+			"sha256": "6a25cfb9d83c69bd767be0e30de26dbc9ece902c9e848965c3378ef1405ceb6e",
+			"urls": [
+				"Packages/perl-constant-1.33-461.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Carp",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-if",
+			"sha256": "5dd5c42ecd5ac27e2a1652598cb9153788353cfb75541f58538a2590269ee7fc",
+			"urls": [
+				"Packages/perl-if-0.60.800-481.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-interpreter",
+			"sha256": "b40999c1ca1ab5b5f64370fa637e11fb16f8128aa8ba273e4f61847e4b83b2bd",
+			"urls": [
+				"Packages/perl-interpreter-5.32.1-481.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-lib",
+			"sha256": "51ad0ac921129ff109c7ee476bad6c52fedb8326ee3be78c3f1dba7b5f2ed6bb",
+			"urls": [
+				"Packages/perl-lib-0.65-481.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-appstream",
+			"dependencies": [
+				"perl-Carp",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-libnet",
+			"sha256": "b882c8742426d278d387432a65220bd63ffd1670737aea43084994d2b638e5d4",
+			"urls": [
+				"Packages/perl-libnet-3.13-4.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Carp",
+				"perl-Digest-MD5",
+				"perl-Errno",
+				"perl-Exporter",
+				"perl-Fcntl",
+				"perl-File-Basename",
+				"perl-FileHandle",
+				"perl-IO",
+				"perl-IO-Socket-IP",
+				"perl-POSIX",
+				"perl-Socket",
+				"perl-Symbol",
+				"perl-Time-Local",
+				"perl-constant",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-libs",
+			"sha256": "94dbe5048327048d2717eca240eb740b8ea1932e3802d865ae1dce8c4297a938",
+			"urls": [
+				"Packages/perl-libs-5.32.1-481.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"libxcrypt",
+				"perl-Carp",
+				"perl-Encode",
+				"perl-Exporter",
+				"perl-PathTools"
+			]
+		},
+		{
+			"name": "perl-mro",
+			"sha256": "5a6f47a06e17462e8950ef058b570acba679f3d2afda3f08a3e83fc86b9ff6c6",
+			"urls": [
+				"Packages/perl-mro-1.23-481.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-overload",
+			"sha256": "9831611e4c117f4aae928eca474f677f325300e32dd4f793d218bbb36c0f8dc5",
+			"urls": [
+				"Packages/perl-overload-1.31-481.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Scalar-List-Utils",
+				"perl-libs",
+				"perl-mro",
+				"perl-overloading"
+			]
+		},
+		{
+			"name": "perl-overloading",
+			"sha256": "50a627c576ff19b6dda692c92b421cad7a85157cd71d393752acc623f7f89580",
+			"urls": [
+				"Packages/perl-overloading-0.02-481.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Carp",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-parent",
+			"sha256": "342a7b84a44cd59bea045f679309ef6145a235897dedb8a9afd2d015bc17f72a",
+			"urls": [
+				"Packages/perl-parent-0.238-460.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-podlators",
+			"sha256": "aac9b4c1ccd942afaec19299880eb89e1889b4531e7cab751c3be6a66f9c5fa6",
+			"urls": [
+				"Packages/perl-podlators-4.14-460.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Carp",
+				"perl-Encode",
+				"perl-Exporter",
+				"perl-File-Basename",
+				"perl-Getopt-Long",
+				"perl-POSIX",
+				"perl-PathTools",
+				"perl-Pod-Simple",
+				"perl-Pod-Usage",
+				"perl-Term-ANSIColor",
+				"perl-Term-Cap",
+				"perl-interpreter",
+				"perl-libs",
+				"perl-subs",
+				"perl-vars"
+			]
+		},
+		{
+			"name": "perl-subs",
+			"sha256": "d7fc5bfd239714499eb2e492eeee2eb63e6173846efca39c2f42f85d2f3fa6d7",
+			"urls": [
+				"Packages/perl-subs-1.03-481.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-libs"
+			]
+		},
+		{
+			"name": "perl-vars",
+			"sha256": "36e5771fb53423efdd1875f034a4d7e08434a5780ab7be45fb6e32925e68b1ad",
+			"urls": [
+				"Packages/perl-vars-1.05-481.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"perl-Carp",
+				"perl-libs"
+			]
+		},
+		{
+			"name": "readline",
+			"sha256": "49945472925286ad89b0575657b43f9224777e36b442f0c88df67f0b61e26aee",
+			"urls": [
+				"Packages/readline-8.1-4.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"ncurses-libs"
+			]
+		},
+		{
+			"name": "sed",
+			"sha256": "a2c5d9a7f569abb5a592df1c3aaff0441bf827c9d0e2df0ab42b6c443dbc475f",
+			"urls": [
+				"Packages/sed-4.8-9.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc",
+				"libacl",
+				"libselinux"
+			]
+		},
+		{
+			"name": "setup",
+			"sha256": "42a1c5a415c44e3b55551f49595c087e2ba55f0fd9ece8056b791983601b76d2",
+			"urls": [
+				"Packages/setup-2.13.7-10.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"centos-stream-release"
+			]
+		},
+		{
+			"name": "shadow-utils",
+			"sha256": "23f14143a188cf9bf8a0315f930fbeeb0ad34c58357007a52d112c5f8b6029e0",
+			"urls": [
+				"Packages/shadow-utils-4.9-12.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"audit-libs",
+				"glibc",
+				"libacl",
+				"libattr",
+				"libselinux",
+				"libsemanage",
+				"libxcrypt",
+				"setup"
+			]
+		},
+		{
+			"name": "systemd-libs",
+			"sha256": "a9d02a16bbc778ad3a2b46b8740fa821df065cdacd6ba8570c3301dacad79f0f",
+			"urls": [
+				"Packages/systemd-libs-252-51.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"bash",
+				"coreutils",
+				"glibc",
+				"glibc-common",
+				"grep",
+				"libcap",
+				"libgcc",
+				"libgcrypt",
+				"libselinux",
+				"libxcrypt",
+				"libzstd",
+				"lz4-libs",
+				"openssl-libs",
+				"p11-kit",
+				"sed",
+				"xz-libs"
+			]
+		},
+		{
+			"name": "tzdata",
+			"sha256": "655945e6a0e95b960a422828bc1cb3bac2232fe9b76590e35ad00069097f087a",
+			"urls": [
+				"Packages/tzdata-2025a-1.el9.noarch.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": []
+		},
+		{
+			"name": "util-linux",
+			"sha256": "77f5aa59c85c1231bde7f64a7e348bb7b4675a04e385e219275abbd748037075",
+			"urls": [
+				"Packages/util-linux-2.37.4-21.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"audit-libs",
+				"bash",
+				"coreutils",
+				"glibc",
+				"libblkid",
+				"libcap-ng",
+				"libfdisk",
+				"libmount",
+				"libselinux",
+				"libsmartcols",
+				"libutempter",
+				"libuuid",
+				"libxcrypt",
+				"ncurses-libs",
+				"pam",
+				"readline",
+				"systemd-libs",
+				"util-linux-core",
+				"zlib"
+			]
+		},
+		{
+			"name": "util-linux-core",
+			"sha256": "1858fbea657a9edce414fd98b8260b37ef521769f06830fccc7831094ec04154",
+			"urls": [
+				"Packages/util-linux-core-2.37.4-21.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"bash",
+				"glibc",
+				"libblkid",
+				"libmount",
+				"libselinux",
+				"libsmartcols",
+				"libuuid",
+				"ncurses-libs",
+				"systemd-libs"
+			]
+		},
+		{
+			"name": "xz-libs",
+			"sha256": "ff3c88297d75c51a5f8e9d2d69f8ad1eaf8347e20920b4335a3e0fc53269ad28",
+			"urls": [
+				"Packages/xz-libs-5.2.5-8.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc"
+			]
+		},
+		{
+			"name": "zlib",
+			"sha256": "370951ea635bc16313f21ac2823ec815147ed1124b74865a34c54e94e4db9602",
+			"urls": [
+				"Packages/zlib-1.2.11-41.el9.x86_64.rpm"
+			],
+			"repository": "centos-stream-9-stable-baseos",
+			"dependencies": [
+				"glibc"
+			]
+		}
+	],
+	"targets": [
+		"git",
+		"glibc"
+	],
+	"ignored": [
+		"alternatives",
+		"basesystem"
+	]
+}
