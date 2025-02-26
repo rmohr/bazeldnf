@@ -153,8 +153,6 @@ jobs:
 
   e2e-bzlmod-toolchain-circular-dependencies:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
     steps:
     - uses: actions/checkout@v4
     - uses: bazel-contrib/setup-bazel@0.8.5
@@ -182,12 +180,4 @@ jobs:
           echo "::warning::Optional job failed."
           echo "optional_fail=true" >> "${GITHUB_OUTPUT}"
           echo "optional_fail_status=${status}" >> "${GITHUB_OUTPUT}"
-        fi;
-    - name: Add comment if optional job failed; delete otherwise
-      uses: thollander/actions-comment-pull-request@v3
-      with:
-        comment-tag: "circular-dependencies-optional-notice"
-        message: |
-          ### ⚠️ Optional job e2e-bzlmod-toolchain-circular-dependencies failed ⚠️
-            - exit status: ${{ steps.test.outputs.optional_fail_status }}
-        mode: ${{ steps.test.outputs.optional_fail == 'true' && 'upsert' || 'delete' }}
+        fi
