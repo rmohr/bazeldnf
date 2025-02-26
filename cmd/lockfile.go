@@ -50,6 +50,7 @@ func NewLockFileCmd() *cobra.Command {
 	}
 
 	addResolveHelperFlags(lockfileCmd)
+	repo.AddCacheHelperFlags(lockfileCmd)
 	lockfileCmd.Flags().StringArrayVarP(&lockfileopts.repofiles, "repofile", "r", []string{"repo.yaml"}, "repository information file. Can be specified multiple times. Will be used by default if no explicit inputs are provided.")
 	lockfileCmd.Flags().StringVar(&lockfileopts.configname, "configname", "rpms", "config name to use in lockfile")
 	lockfileCmd.Flags().StringVar(&lockfileopts.lockfile, "lockfile", "bazeldnf-lock.json", "lockfile to write to")
