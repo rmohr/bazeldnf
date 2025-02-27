@@ -59,7 +59,7 @@ func TestMissingProvider(t *testing.T) {
 			newPackageWithDeps("parent", "somedep"),
 		},
 		[]*api.Package{},
-		[]string{},
+		[]string{"parent"},
 		[]string{},
 	)
 
@@ -127,6 +127,7 @@ func TestConfigTransform(t *testing.T) {
 
 		expectedRepositories map[string][]string
 		expectedRPMs         []*bazeldnf.RPM
+		requested            []string
 	}{
 		{
 			name: "one installed",
@@ -261,6 +262,7 @@ func TestConfigTransform(t *testing.T) {
 				newSimpleRPM("package1", "package2"),
 				newSimpleRPM("package2"),
 			},
+			requested: []string{"package1"},
 		},
 		{
 			name: "three installed dep from first",
@@ -278,6 +280,7 @@ func TestConfigTransform(t *testing.T) {
 				newSimpleRPM("package2"),
 				newSimpleRPM("package3"),
 			},
+			requested: []string{"package1"},
 		},
 		{
 			name: "three installed dep from first sort deps",
@@ -295,6 +298,7 @@ func TestConfigTransform(t *testing.T) {
 				newSimpleRPM("package2"),
 				newSimpleRPM("package3"),
 			},
+			requested: []string{"package1"},
 		},
 		{
 			name: "three installed dep transitive",
@@ -308,10 +312,11 @@ func TestConfigTransform(t *testing.T) {
 				"repository": []string{},
 			},
 			expectedRPMs: []*bazeldnf.RPM{
-				newSimpleRPM("package1", "package2"),
-				newSimpleRPM("package2", "package3"),
+				newSimpleRPM("package1", "package2", "package3"),
+				newSimpleRPM("package2"),
 				newSimpleRPM("package3"),
 			},
+			requested: []string{"package1"},
 		},
 		{
 			name: "three installed dep overlap",
@@ -329,6 +334,7 @@ func TestConfigTransform(t *testing.T) {
 				newSimpleRPM("package2", "package3"),
 				newSimpleRPM("package3"),
 			},
+			requested: []string{"package1", "package2"},
 		},
 		{
 			name: "two installed require ignored",
@@ -382,6 +388,7 @@ func TestConfigTransform(t *testing.T) {
 				newSimpleRPM("package1", "package2"),
 				newSimpleRPM("package2"),
 			},
+			requested: []string{"package1"},
 		},
 		{
 			name: "file based deps ignored provider",
@@ -415,14 +422,14 @@ func TestConfigTransform(t *testing.T) {
 				Name:                 "",
 				Repositories:         tt.expectedRepositories,
 				RPMs:                 tt.expectedRPMs,
-				Targets:              []string{},
+				Targets:              tt.requested,
 				ForceIgnored:         forceIgnored,
 			}
 
 			cfg, err := toConfig(
 				tt.installed,
 				tt.ignored,
-				[]string{},
+				tt.requested,
 				[]string{},
 			)
 
