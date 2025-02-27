@@ -50,16 +50,26 @@ func toConfig(install, forceIgnored []*api.Package, targets []string, cmdline []
 	}
 
 	providers := collectProviders(forceIgnored, install)
-	packageNames := sortedKeys(allPackages)
-	sortedPackages := make([]*bazeldnf.RPM, 0, len(packageNames))
-	for _, name := range packageNames {
-		pkg := allPackages[name]
-		deps, err := collectDependencies(name, pkg.Dependencies, providers, ignored)
-		if err != nil {
-			return nil, err
-		}
+	slices.Sort(targets)
+	sortedPackages := make([]*bazeldnf.RPM, 0, len(allPackages))
 
-		pkg.SetDependencies(deps)
+	requested := make(map[string]bool)
+	for _, pkg := range targets {
+		requested[pkg] = true
+	}
+
+	for _, name := range sortedKeys(allPackages) {
+		pkg := allPackages[name]
+		if _, requested := requested[name]; requested {
+			deps, err := collectDependencies(name, pkg.Dependencies, providers, ignored, allPackages)
+			if err != nil {
+				return nil, err
+			}
+
+			pkg.SetDependencies(deps)
+		} else {
+			pkg.SetDependencies(nil)
+		}
 
 		sortedPackages = append(sortedPackages, pkg)
 	}
@@ -92,9 +102,19 @@ func collectProviders(pkgSets ...[]*api.Package) map[string]string {
 	return providers
 }
 
-func collectDependencies(pkg string, requires []string, providers map[string]string, ignored map[string]bool) ([]string, error) {
+func collectDependencies(pkg string, requires []string, providers map[string]string, ignored map[string]bool, allPackages map[string]*bazeldnf.RPM) ([]string, error) {
+	logrus.Debugf("Collecting dependencies for %s", pkg)
 	depSet := make(map[string]bool)
-	for _, req := range requires {
+	explored := make(map[string]bool)
+	for len(requires) > 0 {
+		req := requires[0]
+		requires = requires[1:]
+		logrus.Debugf("Processing dependency %s, pending %d", req, len(requires))
+		if explored[req] {
+			logrus.Debugf("Ignoring already explored %s", req)
+			continue
+		}
+		explored[req] = true
 		if ignored[req] {
 			logrus.Debugf("Ignoring dependency %s", req)
 			continue
@@ -104,28 +124,70 @@ func collectDependencies(pkg string, requires []string, providers map[string]str
 		if !ok {
 			return nil, fmt.Errorf("could not find provider for %s", req)
 		}
-		logrus.Debugf("Found provider %s for %s", provider, req)
 		if ignored[provider] {
-			logrus.Debugf("Ignoring provider %s for %s", provider, req)
+			logrus.Debugf("Ignoring provider %s", provider)
 			continue
 		}
 		depSet[provider] = true
+		requires = append(requires, allPackages[provider].Dependencies...)
+	}
+	return sortedKeys(depSet), nil
+}
+
+func removeCyclicDependencies(targets []string, allPackages []*bazeldnf.RPM) []*bazeldnf.RPM {
+	allPackagesMap := make(map[string]*bazeldnf.RPM)
+
+	for _, installPackage := range allPackages {
+		allPackagesMap[installPackage.Name] = installPackage
 	}
 
-	deps := sortedKeys(depSet)
+	visitedMap := make(map[string]bool)
+	recursionStack := make(map[string]bool)
 
-	found := map[string]bool{pkg: true}
+	for _, target := range targets {
+		if _, visited := visitedMap[target]; !visited {
+			removeCyclicDependenciesHelper(allPackagesMap, target, visitedMap, recursionStack)
+		}
+	}
 
-	// RPMs may have circular dependencies, even depend on themselves.
-	// we need to ignore such dependencies
-	nonCyclicDeps := make([]string, 0, len(deps))
-	for _, dep := range deps {
-		if found[dep] {
+	return allPackages
+}
+
+func removeCyclicDependenciesHelper(allPackages map[string]*bazeldnf.RPM, pkg string, visitedMap, recursionStack map[string]bool) bool {
+	/*
+	 * This is a recursive function that removes cyclic dependencies from the
+	 * dependency graph in the case cycles are found
+	 */
+	visitedMap[pkg] = true
+	recursionStack[pkg] = true
+
+	if _, ok := allPackages[pkg]; !ok {
+		return false
+	}
+
+	if allPackages[pkg].Dependencies == nil {
+		return false
+	}
+
+	cleanDependencies := make([]string, 0, len(allPackages[pkg].Dependencies))
+
+	for _, dep := range allPackages[pkg].Dependencies {
+		if _, visited := visitedMap[dep]; !visited {
+			if removeCyclicDependenciesHelper(allPackages, dep, visitedMap, recursionStack) {
+				// ignore cycle
+				logrus.Debugf("Ignoring cyclic dependency %s -> %s", pkg, dep)
+				continue
+			}
+		} else if _, recursed := recursionStack[dep]; recursed {
+			// ignore cycle
+			logrus.Debugf("Ignoring cyclic dependency in recursion stack %s -> %s", pkg, dep)
 			continue
 		}
-
-		nonCyclicDeps = append(nonCyclicDeps, dep)
+		cleanDependencies = append(cleanDependencies, dep)
 	}
 
-	return nonCyclicDeps, nil
+	recursionStack[pkg] = false
+	allPackages[pkg].SetDependencies(cleanDependencies)
+
+	return false
 }

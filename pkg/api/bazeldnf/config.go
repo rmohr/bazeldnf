@@ -5,7 +5,7 @@ type RPM struct {
 	Integrity    string   `json:"integrity"`
 	URLs         []string `json:"urls"`
 	Repository   string   `json:"repository"`
-	Dependencies []string `json:"dependencies"`
+	Dependencies []string `json:"dependencies,omitempty"`
 }
 
 func (i *RPM) SetDependencies(pkgs []string) {
