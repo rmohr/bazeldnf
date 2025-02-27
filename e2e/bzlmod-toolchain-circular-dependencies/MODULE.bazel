@@ -57,6 +57,7 @@ bazeldnf.config(
     excludes = [
         "alternatives",
         "basesystem",
+        "perl",
     ],
     ignore_deps = False,
     lock_file = "//:bazeldnf-lock.json",
