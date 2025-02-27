@@ -21,3 +21,10 @@ bzl_library(
         "@bazel_skylib//lib:shell",
     ],
 )
+
+bzl_library(
+    name = "resolved_bazeldnf_toolchain",
+    srcs = ["resolved_bazeldnf_toolchain.bzl"],
+    visibility = ["//bazeldnf:__subpackages__"],
+    deps = ["//bazeldnf:toolchain"],
+)

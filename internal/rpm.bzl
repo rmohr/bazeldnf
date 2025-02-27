@@ -96,8 +96,9 @@ _rpm_attrs = {
     "urls": attr.string_list(),
     "sha256": attr.string(),
     "integrity": attr.string(),
-    "dependencies": attr.string_list(
+    "dependencies": attr.label_list(
         mandatory = False,
+        providers = [RpmInfo],
     ),
 }
 
