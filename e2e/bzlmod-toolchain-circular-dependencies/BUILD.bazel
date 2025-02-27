@@ -8,7 +8,8 @@ bazeldnf(
 rpmtree(
     name = "something",
     rpms = [
-        "@bazeldnf_rpms//bash",
+        "@bazeldnf_rpms//git",
+        "@bazeldnf_rpms//glibc",
     ],
 )
 
