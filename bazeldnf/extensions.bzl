@@ -99,7 +99,9 @@ fail("Lock file hasn't been generated for this repository, please run `bazel run
 def _alias_repository_impl(repository_ctx):
     """Creates a repository that aliases other repositories."""
     repository_ctx.file("WORKSPACE", "")
+
     repository_ctx.watch(repository_ctx.attr.lock_file)
+
     lock_file_path = repository_ctx.attr.lock_file.name
 
     repofile = repository_ctx.attr.repofile.name if repository_ctx.attr.repofile else "invalid-repo.yaml"
@@ -170,6 +172,8 @@ def _handle_lock_file(config, module_ctx, registered_rpms = {}):
         "repository_prefix": config.rpm_repository_prefix,
         "nobest": config.nobest,
     }
+
+    module_ctx.watch(config.lock_file)
 
     if config.cache_dir:
         repository_args["cache_dir"] = config.cache_dir
