@@ -15,8 +15,6 @@ gazelle_binary(
 
 # gazelle:exclude .bazelbsp
 # gazelle:prefix github.com/rmohr/bazeldnf
-# gazelle:resolve go github.com/bazelbuild/buildtools/build @com_github_bazelbuild_buildtools//build:go_default_library
-# gazelle:resolve go github.com/bazelbuild/buildtools/edit @com_github_bazelbuild_buildtools//edit:go_default_library
 gazelle(
     name = "gazelle",
     args = [

@@ -7,6 +7,7 @@ import (
 
 	"github.com/rmohr/bazeldnf/pkg/api"
 	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
+	"github.com/sirupsen/logrus"
 )
 
 type RepoCache interface {
@@ -41,6 +42,7 @@ func (r RepoLoader) Load() (*packageInfo, error) {
 	}
 
 	for _, rpmrepo := range r.repoFiles {
+		logrus.Debugf("Loading %s\n", rpmrepo)
 		repoFile := &api.Repository{}
 		f, err := os.Open(rpmrepo)
 		if err != nil {
@@ -59,6 +61,7 @@ func (r RepoLoader) Load() (*packageInfo, error) {
 		}
 	}
 
+	logrus.Debug("loading primaries from cache")
 	cachedRepos, err := r.cacheHelper.CurrentPrimaries(r.repos, r.arch)
 	if err != nil {
 		return packageInfo, err
@@ -71,6 +74,10 @@ func (r RepoLoader) Load() (*packageInfo, error) {
 			packageInfo.packages = append(packageInfo.packages, rpmrepo.Packages[i])
 		}
 	}
+
+	logrus.Debugf("loaded %d packages", len(packageInfo.packages))
+
+	logrus.Debug("going to fix packages")
 
 	for i, _ := range packageInfo.packages {
 		FixPackages(&packageInfo.packages[i])

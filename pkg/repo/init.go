@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
+	"github.com/sirupsen/logrus"
 	"sigs.k8s.io/yaml"
 )
 
@@ -76,6 +77,7 @@ func LoadRepoFile(file string) (*bazeldnf.Repositories, error) {
 func LoadRepoFiles(files []string) (*bazeldnf.Repositories, error) {
 	repos := &bazeldnf.Repositories{}
 	for i, _ := range files {
+		logrus.Debugf("loading repo file: %s", files[i])
 		tmp, err := LoadRepoFile(files[i])
 		if err != nil {
 			return nil, err
