@@ -225,6 +225,16 @@ type Checksum struct {
 	Pkgid string `xml:"pkgid,attr"`
 }
 
+func (c Checksum) Integrity() (string, error) {
+	if c.Type == "sha" {
+		return fmt.Sprintf("sha1-%s", c.Text), nil
+	} else if c.Type == "sha512" || c.Type == "sha256" {
+		return fmt.Sprintf("%s-%s", c.Type, c.Text), nil
+	}
+
+	return "", fmt.Errorf("Invalid integrity type: %s", c.Type)
+}
+
 type Location struct {
 	Text string `xml:",chardata"`
 	Href string `xml:"href,attr"`
