@@ -1,6 +1,8 @@
 package api
 
 import (
+	"encoding/base64"
+	"encoding/hex"
 	"encoding/xml"
 	"fmt"
 
@@ -225,11 +227,28 @@ type Checksum struct {
 	Pkgid string `xml:"pkgid,attr"`
 }
 
+func (c Checksum) ToBase64() (string, error) {
+	hash, err := hex.DecodeString(c.Text)
+	if err != nil {
+		return "", err
+	}
+
+	return base64.StdEncoding.EncodeToString(hash), nil
+}
+
 func (c Checksum) Integrity() (string, error) {
 	if c.Type == "sha" {
-		return fmt.Sprintf("sha1-%s", c.Text), nil
+		s, err := c.ToBase64()
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("sha1-%s", s), nil
 	} else if c.Type == "sha512" || c.Type == "sha256" {
-		return fmt.Sprintf("%s-%s", c.Type, c.Text), nil
+		s, err := c.ToBase64()
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s-%s", c.Type, s), nil
 	}
 
 	return "", fmt.Errorf("Invalid integrity type: %s", c.Type)
