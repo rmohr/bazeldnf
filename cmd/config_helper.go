@@ -35,9 +35,14 @@ func toConfig(install, forceIgnored []*api.Package, targets []string, cmdline []
 
 		slices.Sort(deps)
 
+		integrity, err := installPackage.Checksum.Integrity()
+		if err != nil {
+			return nil, fmt.Errorf("Unable to read package %s integrity: %w", installPackage.Name, err)
+		}
+
 		allPackages[installPackage.Name] = &bazeldnf.RPM{
 			Name:         installPackage.Name,
-			SHA256:       installPackage.Checksum.Text,
+			Integrity:    integrity,
 			URLs:         []string{installPackage.Location.Href},
 			Repository:   installPackage.Repository.Name,
 			Dependencies: deps,

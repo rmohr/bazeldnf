@@ -270,7 +270,7 @@ func AddTar2Files(name string, rpmtree string, buildfile *build.File, files []st
 
 func AddTree(name, configname string, buildfile *build.File, pkgs []*api.Package, arch string, public bool) {
 	transform := func(n string) string {
-		return "@"+n+"//rpm"
+		return "@" + n + "//rpm"
 	}
 	if configname != "" {
 		transform = func(n string) string {
@@ -518,12 +518,17 @@ func AddConfigRPMs(config *bazeldnf.Config, pkgs []*api.Package, arch string) er
 			URLs = append(URLs, u.String())
 		}
 
+		integrity, err := pkg.Checksum.Integrity()
+		if err != nil {
+			return fmt.Errorf("Unable to load package %s integrity: %w", pkg.String(), err)
+		}
+
 		config.RPMs = append(
 			config.RPMs,
 			&bazeldnf.RPM{
-				Name:   sanitize(pkg.String() + "." + arch),
-				SHA256: pkg.Checksum.Text,
-				URLs:   URLs,
+				Name:      sanitize(pkg.String() + "." + arch),
+				Integrity: integrity,
+				URLs:      URLs,
 			},
 		)
 	}

@@ -32,7 +32,7 @@
 	"rpms": [
 		{
 			"name": "bash",
-			"sha256": "05dc1b806bd5456d40e3d7f882ead037aaf480c596e83fbfb6ab86be74a2d8d1",
+			"integrity": "sha256-BdwbgGvVRW1A49f4gurQN6r0gMWW6D+/tquGvnSi2NE=",
 			"urls": [
 				"bash-5.1.8-9.el9.x86_64.rpm"
 			],
@@ -43,7 +43,7 @@
 		},
 		{
 			"name": "ncurses-base",
-			"sha256": "d8307bfbd2428c8d08deffaff1ec61f7bc016ef03c77798b32ce021965e1bc65",
+			"integrity": "sha256-2DB7+9JCjI0I3v+v8exh97wBbvA8d3mLMs4CGWXhvGU=",
 			"urls": [
 				"ncurses-base-6.2-10.20210508.el9.noarch.rpm"
 			],
@@ -52,7 +52,7 @@
 		},
 		{
 			"name": "ncurses-libs",
-			"sha256": "d06b0e491481a345faf21a69666cbdc302d19b54fb29ae1aa78fa6b205f9e604",
+			"integrity": "sha256-0GsOSRSBo0X68hppZmy9wwLRm1T7Ka4ap4+msgX55gQ=",
 			"urls": [
 				"ncurses-libs-6.2-10.20210508.el9.x86_64.rpm"
 			],

@@ -2,7 +2,7 @@ package bazeldnf
 
 type RPM struct {
 	Name         string   `json:"name"`
-	SHA256       string   `json:"sha256"`
+	Integrity    string   `json:"integrity"`
 	URLs         []string `json:"urls"`
 	Repository   string   `json:"repository"`
 	Dependencies []string `json:"dependencies"`

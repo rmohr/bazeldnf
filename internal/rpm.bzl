@@ -90,7 +90,7 @@ def _rpm_impl(ctx):
             deps = ", ".join(["\"%s\"" % dep for dep in ctx.attr.dependencies]),
         ),
     )
-    return update_attrs(ctx.attr, _rpm_attrs.keys(), {"sha256": download_info.sha256})
+    return update_attrs(ctx.attr, _rpm_attrs.keys(), {"integrity": download_info.integrity})
 
 _rpm_attrs = {
     "urls": attr.string_list(),
