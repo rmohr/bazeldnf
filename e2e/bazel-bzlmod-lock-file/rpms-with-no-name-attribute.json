@@ -1,9 +1,9 @@
 {
     "rpms": [
         {
-            "sha256": "aac272a2ace134b5ef60a41e6624deb24331e79c76699ef6cef0dca22d94ac7e",
+            "integrity": "sha256-qsJyoqzhNLXvYKQeZiTeskMx55x2aZ72zvDcoi2UrH4=",
             "urls": [
-		"https://kojipkgs.fedoraproject.org/packages/libvirt/11.0.0/1.fc42/x86_64/libvirt-libs-11.0.0-1.fc42.x86_64.rpm"
+		"libvirt/11.0.0/1.fc42/x86_64/libvirt-libs-11.0.0-1.fc42.x86_64.rpm"
             ],
 	    "repository": "foo"
         }
