@@ -70,7 +70,7 @@ func TestMissingProvider(t *testing.T) {
 func newPackage(name, checksum, url, repository string, mirrors []string) *api.Package {
 	return &api.Package{
 		Name:     name,
-		Checksum: api.Checksum{Text: checksum},
+		Checksum: api.Checksum{Text: checksum, Type: "sha256"},
 		Location: api.Location{Href: url},
 		Repository: &bazeldnf.Repository{
 			Name:    repository,
@@ -114,6 +114,7 @@ func newSimpleRPM(name string, deps ...string) *bazeldnf.RPM {
 	return &bazeldnf.RPM{
 		Name:         name,
 		URLs:         []string{""},
+		Integrity:    "sha256-",
 		Repository:   "repository",
 		Dependencies: d,
 	}
@@ -132,7 +133,7 @@ func TestConfigTransform(t *testing.T) {
 			installed: []*api.Package{
 				newPackage(
 					"package0",
-					"mychecksum",
+					"f87b49c517aac9eb4890a4b5005bcc4a586748f2760ea1106382f3897129a60e",
 					"urlforrpm",
 					"repository",
 					[]string{"mirror0", "mirror1"},
@@ -145,7 +146,7 @@ func TestConfigTransform(t *testing.T) {
 			expectedRPMs: []*bazeldnf.RPM{
 				&bazeldnf.RPM{
 					Name:         "package0",
-					SHA256:       "mychecksum",
+					Integrity:    "sha256-+HtJxReqyetIkKS1AFvMSlhnSPJ2DqEQY4LziXEppg4=",
 					URLs:         []string{"urlforrpm"},
 					Repository:   "repository",
 					Dependencies: []string{},
@@ -157,14 +158,14 @@ func TestConfigTransform(t *testing.T) {
 			installed: []*api.Package{
 				newPackage(
 					"package0",
-					"mychecksum",
+					"f87b49c517aac9eb4890a4b5005bcc4a586748f2760ea1106382f3897129a60e",
 					"urlforrpm",
 					"repository",
 					[]string{"mirror0", "mirror1"},
 				),
 				newPackage(
 					"package1",
-					"mychecksum0",
+					"9146a02ed928ffca6ef0f1241d2d86e4e998e6f70aae875754601fda54951fbd",
 					"urlforrpm0",
 					"repository0",
 					[]string{},
@@ -178,14 +179,14 @@ func TestConfigTransform(t *testing.T) {
 			expectedRPMs: []*bazeldnf.RPM{
 				&bazeldnf.RPM{
 					Name:         "package0",
-					SHA256:       "mychecksum",
+					Integrity:    "sha256-+HtJxReqyetIkKS1AFvMSlhnSPJ2DqEQY4LziXEppg4=",
 					URLs:         []string{"urlforrpm"},
 					Repository:   "repository",
 					Dependencies: []string{},
 				},
 				&bazeldnf.RPM{
 					Name:         "package1",
-					SHA256:       "mychecksum0",
+					Integrity:    "sha256-kUagLtko/8pu8PEkHS2G5OmY5vcKrodXVGAf2lSVH70=",
 					URLs:         []string{"urlforrpm0"},
 					Repository:   "repository0",
 					Dependencies: []string{},
@@ -197,14 +198,14 @@ func TestConfigTransform(t *testing.T) {
 			installed: []*api.Package{
 				newPackage(
 					"package0",
-					"mychecksum",
+					"f87b49c517aac9eb4890a4b5005bcc4a586748f2760ea1106382f3897129a60e",
 					"urlforrpm",
 					"repository",
 					[]string{"mirror0", "mirror1"},
 				),
 				newPackage(
 					"package1",
-					"mychecksum0",
+					"9146a02ed928ffca6ef0f1241d2d86e4e998e6f70aae875754601fda54951fbd",
 					"urlforrpm0",
 					"repository",
 					[]string{},
@@ -217,14 +218,14 @@ func TestConfigTransform(t *testing.T) {
 			expectedRPMs: []*bazeldnf.RPM{
 				&bazeldnf.RPM{
 					Name:         "package0",
-					SHA256:       "mychecksum",
+					Integrity:    "sha256-+HtJxReqyetIkKS1AFvMSlhnSPJ2DqEQY4LziXEppg4=",
 					URLs:         []string{"urlforrpm"},
 					Repository:   "repository",
 					Dependencies: []string{},
 				},
 				&bazeldnf.RPM{
 					Name:         "package1",
-					SHA256:       "mychecksum0",
+					Integrity:    "sha256-kUagLtko/8pu8PEkHS2G5OmY5vcKrodXVGAf2lSVH70=",
 					URLs:         []string{"urlforrpm0"},
 					Repository:   "repository",
 					Dependencies: []string{},
