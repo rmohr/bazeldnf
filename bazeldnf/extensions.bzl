@@ -68,7 +68,7 @@ _ALIAS_TEMPLATE = """\
 alias(
     name = "{name}",
     actual = "@{actual_name}//rpm",
-    visibility = ["//visibility:public"],
+    visibility = ["{visibility}"],
 )
 """
 
@@ -120,6 +120,9 @@ def _alias_repository_impl(repository_ctx):
             architecture = repository_ctx.attr.architecture,
         ),
     )
+
+    requested = dict([[x, 1] for x in repository_ctx.attr.requested])
+
     for rpm in repository_ctx.attr.rpms:
         actual_name = rpm.repo_name
         name = rpm.repo_name
@@ -127,11 +130,17 @@ def _alias_repository_impl(repository_ctx):
         if repository_ctx.attr.repository_prefix:
             name = actual_name.split(repository_ctx.attr.repository_prefix, 1)[-1]
 
+        visibility = "//visibility:public"
+
+        if repository_ctx.attr.requested and name not in requested:
+            visibility = "//:__subpackages__"
+
         repository_ctx.file(
             "%s/BUILD.bazel" % name,
             _ALIAS_TEMPLATE.format(
                 name = name,
                 actual_name = actual_name,
+                visibility = visibility,
             ),
         )
 
@@ -147,15 +156,16 @@ def _alias_repository_impl(repository_ctx):
 _alias_repository = repository_rule(
     implementation = _alias_repository_impl,
     attrs = {
-        "rpms": attr.label_list(default = []),
-        "lock_file": attr.label(),
-        "rpms_to_install": attr.string_list(),
+        "architecture": attr.string(values = ["i686", "x86_64", "aarch64", ""]),
+        "cache_dir": attr.string(),
         "excludes": attr.string_list(),
+        "lock_file": attr.label(),
+        "nobest": attr.bool(default = False),
+        "requested": attr.string_list(),
         "repofile": attr.label(),
         "repository_prefix": attr.string(),
-        "nobest": attr.bool(default = False),
-        "cache_dir": attr.string(),
-        "architecture": attr.string(values = ["i686", "x86_64", "aarch64", ""]),
+        "rpms_to_install": attr.string_list(),
+        "rpms": attr.label_list(default = []),
     },
 )
 
@@ -235,6 +245,7 @@ def _handle_lock_file(config, module_ctx, registered_rpms = {}):
         registered_rpms[name] = 1
 
     repository_args["rpms"] = ["@@%s//rpm" % x for x in registered_rpms.keys()]
+    repository_args["requested"] = lock_file_json.get("targets", [])
 
     _alias_repository(
         **repository_args
@@ -278,6 +289,7 @@ def _bazeldnf_extension(module_ctx):
             _alias_repository(
                 name = name,
                 rpms = ["@@%s//rpm" % x for x in rpms],
+                requested = rpms,
             )
             repos.append(name)
 
