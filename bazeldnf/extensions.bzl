@@ -106,6 +106,8 @@ def _alias_repository_impl(repository_ctx):
 
     if repository_ctx.attr.lock_file.package:
         lock_file_path = repository_ctx.attr.lock_file.package + "/" + lock_file_path
+
+    if repository_ctx.attr.repofile.package:
         repofile = repository_ctx.attr.repofile.package + "/" + repofile
 
     repository_ctx.file(
