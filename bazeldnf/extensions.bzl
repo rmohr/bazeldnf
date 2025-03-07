@@ -68,7 +68,7 @@ _ALIAS_TEMPLATE = """\
 alias(
     name = "{name}",
     actual = "@{actual_name}//rpm",
-    visibility = ["//visibility:public"],
+    visibility = ["{visibility}"],
 )
 """
 
@@ -99,7 +99,9 @@ fail("Lock file hasn't been generated for this repository, please run `bazel run
 def _alias_repository_impl(repository_ctx):
     """Creates a repository that aliases other repositories."""
     repository_ctx.file("WORKSPACE", "")
+
     repository_ctx.watch(repository_ctx.attr.lock_file)
+
     lock_file_path = repository_ctx.attr.lock_file.name
 
     repofile = repository_ctx.attr.repofile.name if repository_ctx.attr.repofile else "invalid-repo.yaml"
@@ -121,6 +123,9 @@ def _alias_repository_impl(repository_ctx):
             nobest = "True" if repository_ctx.attr.nobest else "False",
         ),
     )
+
+    requested = dict([[x, 1] for x in repository_ctx.attr.requested])
+
     for rpm in repository_ctx.attr.rpms:
         actual_name = rpm.repo_name
         name = rpm.repo_name
@@ -128,11 +133,17 @@ def _alias_repository_impl(repository_ctx):
         if repository_ctx.attr.repository_prefix:
             name = actual_name.split(repository_ctx.attr.repository_prefix, 1)[-1]
 
+        visibility = "//visibility:public"
+
+        if repository_ctx.attr.requested and name not in requested:
+            visibility = "//:__subpackages__"
+
         repository_ctx.file(
             "%s/BUILD.bazel" % name,
             _ALIAS_TEMPLATE.format(
                 name = name,
                 actual_name = actual_name,
+                visibility = visibility,
             ),
         )
 
@@ -148,14 +159,15 @@ def _alias_repository_impl(repository_ctx):
 _alias_repository = repository_rule(
     implementation = _alias_repository_impl,
     attrs = {
-        "rpms": attr.label_list(default = []),
-        "lock_file": attr.label(),
-        "rpms_to_install": attr.string_list(),
+        "cache_dir": attr.string(),
         "excludes": attr.string_list(),
+        "lock_file": attr.label(),
+        "nobest": attr.bool(default = False),
+        "requested": attr.string_list(),
         "repofile": attr.label(),
         "repository_prefix": attr.string(),
-        "nobest": attr.bool(default = False),
-        "cache_dir": attr.string(),
+        "rpms_to_install": attr.string_list(),
+        "rpms": attr.label_list(default = []),
     },
 )
 
@@ -172,6 +184,8 @@ def _handle_lock_file(config, module_ctx, registered_rpms = {}):
         "repository_prefix": config.rpm_repository_prefix,
         "nobest": config.nobest,
     }
+
+    module_ctx.watch(config.lock_file)
 
     if config.cache_dir:
         repository_args["cache_dir"] = config.cache_dir
@@ -219,6 +233,7 @@ def _handle_lock_file(config, module_ctx, registered_rpms = {}):
         )
 
     repository_args["rpms"] = ["@@%s//rpm" % x for x in registered_rpms.keys()]
+    repository_args["requested"] = lock_file_json.get("targets", [])
 
     _alias_repository(
         **repository_args
@@ -262,6 +277,7 @@ def _bazeldnf_extension(module_ctx):
             _alias_repository(
                 name = name,
                 rpms = ["@@%s//rpm" % x for x in rpms],
+                requested = rpms,
             )
             repos.append(name)
 
