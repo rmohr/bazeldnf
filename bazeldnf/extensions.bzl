@@ -7,7 +7,7 @@ based on: https://github.com/bazel-contrib/rules-template/blob/0dadcb716f06f6728
 
 load("@bazel_features//:features.bzl", "bazel_features")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_jar")
-load("//internal:rpm.bzl", rpm_repository = "rpm", null_rpm_repository = "null_rpm")
+load("//internal:rpm.bzl", null_rpm_repository = "null_rpm", rpm_repository = "rpm")
 load(":repositories.bzl", "bazeldnf_register_toolchains")
 
 _DEFAULT_NAME = "bazeldnf"
