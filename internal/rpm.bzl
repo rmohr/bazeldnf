@@ -107,7 +107,7 @@ rpm = repository_rule(
     attrs = _rpm_attrs,
 )
 
-def _null_rpm_rule_impl(ctx):
+def _null_rpm_rule_impl(_):
     return [
         RpmInfo(
             file = "",
