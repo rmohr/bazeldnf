@@ -7,7 +7,7 @@ based on: https://github.com/bazel-contrib/rules-template/blob/0dadcb716f06f6728
 
 load("@bazel_features//:features.bzl", "bazel_features")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_jar")
-load("//internal:rpm.bzl", rpm_repository = "rpm")
+load("//internal:rpm.bzl", null_rpm_repository = "null_rpm", rpm_repository = "rpm")
 load(":repositories.bzl", "bazeldnf_register_toolchains")
 
 _DEFAULT_NAME = "bazeldnf"
@@ -159,6 +159,10 @@ _alias_repository = repository_rule(
     },
 )
 
+def _to_rpm_repo_name(prefix, rpm_name):
+    name = rpm_name.replace("+", "plus")
+    return "{}{}".format(prefix, name)
+
 def _handle_lock_file(config, module_ctx, registered_rpms = {}):
     if not config.lock_file:
         fail("No lock file provided for %s" % config.name)
@@ -200,8 +204,7 @@ def _handle_lock_file(config, module_ctx, registered_rpms = {}):
                 fail("invalid entry in %s for %s" % (config.lock_file, rpm_name))
             rpm_name = urls[0].rsplit("/", 1)[-1]
 
-        name = rpm_name.replace("+", "plus")
-        name = "{}{}".format(config.rpm_repository_prefix, name)
+        name = _to_rpm_repo_name(config.rpm_repository_prefix, rpm_name)
         if name in registered_rpms:
             continue
         registered_rpms[name] = 1
@@ -217,6 +220,16 @@ def _handle_lock_file(config, module_ctx, registered_rpms = {}):
             urls = urls,
             **rpm
         )
+
+    # if there's targets without matching RPMs we need to create a null target
+    # so that consumers have something consistent that they can depend on
+    for target in lock_file_json.get("targets", []):
+        name = _to_rpm_repo_name(config.rpm_repository_prefix, target)
+        if name in registered_rpms:
+            continue
+
+        null_rpm_repository(name = name)
+        registered_rpms[name] = 1
 
     repository_args["rpms"] = ["@@%s//rpm" % x for x in registered_rpms.keys()]
 
