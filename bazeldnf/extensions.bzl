@@ -177,6 +177,8 @@ def _handle_lock_file(config, module_ctx, registered_rpms = {}):
         "nobest": config.nobest,
     }
 
+    module_ctx.watch(config.lock_file)
+
     if config.cache_dir:
         repository_args["cache_dir"] = config.cache_dir
 
