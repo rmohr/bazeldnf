@@ -50,6 +50,7 @@ bazeldnf.config(
     excludes = [
         "alternatives",
         "basesystem",
+        "perl",
     ],
     ignore_deps = False,
     lock_file = "//:bazeldnf-lock.json",
@@ -63,3 +64,5 @@ use_repo(
     bazeldnf,
     "bazeldnf_rpms",
 )
+
+bazel_dep(name = "bazel_skylib", version = "1.7.1")
