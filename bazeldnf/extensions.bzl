@@ -89,6 +89,7 @@ update_lock_file(
     repofile = "{repofile}",
     nobest = {nobest},
     cache_dir = {cache_dir},
+    architecture = "{architecture}",
 )
 """
 
@@ -119,6 +120,7 @@ def _alias_repository_impl(repository_ctx):
             excludes = ", ".join(["'{}'".format(x) for x in repository_ctx.attr.excludes]),
             repofile = repofile,
             nobest = "True" if repository_ctx.attr.nobest else "False",
+            architecture = repository_ctx.attr.architecture,
         ),
     )
     for rpm in repository_ctx.attr.rpms:
@@ -156,6 +158,7 @@ _alias_repository = repository_rule(
         "repository_prefix": attr.string(),
         "nobest": attr.bool(default = False),
         "cache_dir": attr.string(),
+        "architecture": attr.string(values = ["i686", "x86_64", "aarch64", ""]),
     },
 )
 
@@ -175,6 +178,7 @@ def _handle_lock_file(config, module_ctx, registered_rpms = {}):
         "repofile": config.repofile,
         "repository_prefix": config.rpm_repository_prefix,
         "nobest": config.nobest,
+        "architecture": config.architecture,
     }
 
     module_ctx.watch(config.lock_file)
@@ -387,6 +391,10 @@ The lock file content is as:
         "ignore_deps": attr.bool(
             doc = "Don't include dependencies in resulting repositories",
             default = False,
+        ),
+        "architecture": attr.string(
+            doc = "Architectures to enable in addition to noarch",
+            values = ["i686", "x86_64", "aarch64", ""],
         ),
     },
 )
