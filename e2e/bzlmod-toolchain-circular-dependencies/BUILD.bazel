@@ -1,5 +1,6 @@
 load("@bazeldnf//bazeldnf:defs.bzl", "bazeldnf", "rpmtree", "tar2files")
 load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
+load(":test_suite.bzl", "bazeldnf_test_suite")
 
 bazeldnf(
     name = "bazeldnf",
@@ -8,7 +9,18 @@ bazeldnf(
 rpmtree(
     name = "something",
     rpms = [
+        "@bazeldnf_rpms//git",
+        "@bazeldnf_rpms//glibc",
+    ],
+)
+
+rpmtree(
+    name = "non-visibile-failure",
+    rpms = [
         "@bazeldnf_rpms//bash",
+    ],
+    tags = [
+        "manual",
     ],
 )
 
@@ -27,4 +39,8 @@ tar2files(
 pkg_tar(
     name = "whatever",
     deps = [":something"],
+)
+
+bazeldnf_test_suite(
+    name = "test-suite",
 )
