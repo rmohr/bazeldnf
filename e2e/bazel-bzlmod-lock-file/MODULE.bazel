@@ -9,17 +9,6 @@ local_path_override(
 )
 
 bazel_dep(name = "rules_pkg", version = "1.0.1")
-bazel_dep(name = "gazelle", version = "0.37.0")
-
-go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
-go_deps.archive_override(
-    path = "github.com/sassoftware/go-rpmutils",
-    sha256 = "41953067dcc570723f21296728aec19b4967567db0f8a1323aed9633ce37eb9a",
-    strip_prefix = "go-rpmutils-5acf7436c00dee9caf9367340b35d8c52961d240",
-    urls = [
-        "https://github.com/rmohr/go-rpmutils/archive/5acf7436c00dee9caf9367340b35d8c52961d240.tar.gz",
-    ],
-)
 
 bazeldnf = use_extension("@bazeldnf//bazeldnf:extensions.bzl", "bazeldnf")
 bazeldnf.config(
