@@ -49,7 +49,10 @@ def _rpm2tar_impl(ctx):
     all_rpms = []
 
     for target in ctx.attr.rpms:
-        for rpm in target[RpmInfo].deps.to_list():
+        if target[RpmInfo].file not in all_rpms:
+            all_rpms.append(target[RpmInfo].file)
+
+        for rpm in target[RpmInfo].deps:
             if rpm not in all_rpms:
                 all_rpms.append(rpm)
 

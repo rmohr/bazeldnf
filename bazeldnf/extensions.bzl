@@ -208,7 +208,7 @@ def _handle_lock_file(config, module_ctx, registered_rpms = {}):
             dependencies = []
         else:
             dependencies = [x.replace("+", "plus") for x in dependencies]
-            dependencies = ["@{}{}//rpm".format(config.rpm_repository_prefix, x) for x in dependencies]
+            dependencies = ["@{}{}//rpm:rpm-file".format(config.rpm_repository_prefix, x) for x in dependencies]
 
         rpm_name = rpm.pop("name", None)
         if not rpm_name:
