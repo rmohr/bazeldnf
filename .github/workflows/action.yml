@@ -169,5 +169,5 @@ jobs:
           import %workspace%/../../.github/workflows/ci.bazelrc
     - id: prepare
       run: |
-        cd e2e/bzlmod-toolchain-circular-dependencies
-        make test
+        (cd e2e/bzlmod-toolchain-circular-dependencies && make test)
+        (cd e2e/bzlmod-toolchain-circular-dependencies-fake && make test)
