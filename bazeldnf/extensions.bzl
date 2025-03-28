@@ -6,6 +6,7 @@ based on: https://github.com/bazel-contrib/rules-template/blob/0dadcb716f06f6728
 """
 
 load("@bazel_features//:features.bzl", "bazel_features")
+load("@bazel_skylib//lib:versions.bzl", "versions")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_jar")
 load("//internal:rpm.bzl", null_rpm_repository = "null_rpm", rpm_repository = "rpm")
 load(":repositories.bzl", "bazeldnf_register_toolchains")
@@ -201,6 +202,12 @@ def _handle_lock_file(config, module_ctx, registered_rpms = {}):
 
     content = module_ctx.read(config.lock_file)
     lock_file_json = json.decode(content)
+
+    if not config.ignore_deps:
+        if versions.is_at_least("7", versions.get()) and not versions.is_at_least("7.4.0", versions.get()):
+            fail("ignore_deps requires Bazel 7.4+ for Bazel 7")
+        if versions.is_at_least("8", versions.get()) and not versions.is_at_least("8.1.0", versions.get()):
+            fail("ignore_deps requires Bazel 8.1+ for Bazel 8")
 
     for rpm in lock_file_json.get("rpms", []):
         dependencies = rpm.pop("dependencies", [])
