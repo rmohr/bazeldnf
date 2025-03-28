@@ -58,21 +58,37 @@ func toConfig(install, forceIgnored []*api.Package, targets []string, cmdline []
 		requested[pkg] = true
 	}
 
+	// make sure all requested packages have their full dependency tree set
 	for _, name := range sortedKeys(allPackages) {
 		pkg := allPackages[name]
-		if _, requested := requested[name]; requested {
-			deps, err := collectDependencies(name, pkg.Dependencies, providers, ignored, allPackages)
-			if err != nil {
-				return nil, err
-			}
-
-			pkg.SetDependencies(deps)
-		} else {
-			pkg.SetDependencies(nil)
+		if _, requested := requested[name]; !requested {
+			continue
 		}
+		deps, err := collectDependencies(name, pkg.Dependencies, providers, ignored, allPackages)
+		if err != nil {
+			return nil, err
+		}
+
+		pkg.SetDependencies(deps)
 
 		sortedPackages = append(sortedPackages, pkg)
 	}
+
+	// now for non requested packages make sure we don't get cycles
+	for _, name := range sortedKeys(allPackages) {
+		pkg := allPackages[name]
+		if _, requested := requested[name]; requested {
+			continue
+		}
+
+		pkg.SetDependencies(nil)
+
+		sortedPackages = append(sortedPackages, pkg)
+	}
+
+	slices.SortFunc(sortedPackages, func(a, b *bazeldnf.RPM) int {
+		return cmp.Compare(a.Name, b.Name)
+	})
 
 	lockFile := bazeldnf.Config{
 		CommandLineArguments: cmdline,
@@ -141,13 +157,11 @@ func removeCyclicDependencies(targets []string, allPackages []*bazeldnf.RPM) []*
 		allPackagesMap[installPackage.Name] = installPackage
 	}
 
-	visitedMap := make(map[string]bool)
-	recursionStack := make(map[string]bool)
-
 	for _, target := range targets {
-		if _, visited := visitedMap[target]; !visited {
-			removeCyclicDependenciesHelper(allPackagesMap, target, visitedMap, recursionStack)
-		}
+		visitedMap := make(map[string]bool)
+		recursionStack := make(map[string]bool)
+
+		removeCyclicDependenciesHelper(allPackagesMap, target, visitedMap, recursionStack)
 	}
 
 	return allPackages
@@ -187,7 +201,10 @@ func removeCyclicDependenciesHelper(allPackages map[string]*bazeldnf.RPM, pkg st
 	}
 
 	recursionStack[pkg] = false
-	allPackages[pkg].SetDependencies(cleanDependencies)
+
+	newPkg := allPackages[pkg].Clone()
+	newPkg.SetDependencies(cleanDependencies)
+	allPackages[pkg] = newPkg
 
 	return false
 }

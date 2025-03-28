@@ -120,6 +120,73 @@ func newSimpleRPM(name string, deps ...string) *bazeldnf.RPM {
 	}
 }
 
+type testCaseConfiguration struct {
+	name                 string
+	installed, ignored   []*api.Package
+	expectedRepositories map[string][]string
+	expectedRPMs         []*bazeldnf.RPM
+	requested            []string
+}
+
+func testCase(config testCaseConfiguration, t *testing.T) {
+	t.Run(config.name, func(t *testing.T) {
+		g := NewGomegaWithT(t)
+
+		forceIgnored := []string{}
+		for _, pkg := range config.ignored {
+			forceIgnored = append(forceIgnored, pkg.Name)
+		}
+		slices.Sort(forceIgnored)
+
+		expected := &bazeldnf.Config{
+			CommandLineArguments: []string{},
+			Name:                 "",
+			Repositories:         config.expectedRepositories,
+			RPMs:                 config.expectedRPMs,
+			Targets:              config.requested,
+			ForceIgnored:         forceIgnored,
+		}
+
+		cfg, err := toConfig(
+			config.installed,
+			config.ignored,
+			config.requested,
+			[]string{},
+		)
+
+		g.Expect(err).Should(BeNil())
+		g.Expect(cfg).Should(Equal(expected))
+	})
+}
+
+func TestOneInstalled(t *testing.T) {
+	testCase(testCaseConfiguration{
+		name: "one installed",
+		installed: []*api.Package{
+			newPackage(
+				"package0",
+				"f87b49c517aac9eb4890a4b5005bcc4a586748f2760ea1106382f3897129a60e",
+				"urlforrpm",
+				"repository",
+				[]string{"mirror0", "mirror1"},
+			),
+		},
+		ignored: []*api.Package{},
+		expectedRepositories: map[string][]string{
+			"repository": []string{"mirror0", "mirror1"},
+		},
+		expectedRPMs: []*bazeldnf.RPM{
+			&bazeldnf.RPM{
+				Name:         "package0",
+				Integrity:    "sha256-+HtJxReqyetIkKS1AFvMSlhnSPJ2DqEQY4LziXEppg4=",
+				URLs:         []string{"urlforrpm"},
+				Repository:   "repository",
+				Dependencies: []string{},
+			},
+		},
+	}, t)
+}
+
 func TestConfigTransform(t *testing.T) {
 	tests := []struct {
 		name               string
@@ -404,6 +471,64 @@ func TestConfigTransform(t *testing.T) {
 			expectedRPMs: []*bazeldnf.RPM{
 				newSimpleRPM("package1"),
 			},
+		},
+		{
+			name: "circular dependencies",
+			installed: []*api.Package{
+				newPackageWithDeps("package1", "package2"),
+				newPackageWithDeps("package2", "package4"),
+				newPackageWithDeps("package3", "package2"),
+				newPackageWithDeps("package4"),
+			},
+			ignored: []*api.Package{},
+			expectedRepositories: map[string][]string{
+				"repository": []string{},
+			},
+			expectedRPMs: []*bazeldnf.RPM{
+				newSimpleRPM("package1", "package2", "package4"),
+				newSimpleRPM("package2", "package4"),
+				newSimpleRPM("package3", "package2", "package4"),
+				newSimpleRPM("package4"),
+			},
+			requested: []string{"package1", "package2", "package3"},
+		},
+		{
+			name: "transitive circular dependencies",
+			installed: []*api.Package{
+				newPackageWithDeps("package1", "package2"),
+				newPackageWithDeps("package2", "package4"),
+				newPackageWithDeps("package3", "package2"),
+				newPackageWithDeps("package4"),
+			},
+			ignored: []*api.Package{},
+			expectedRepositories: map[string][]string{
+				"repository": []string{},
+			},
+			expectedRPMs: []*bazeldnf.RPM{
+				newSimpleRPM("package1", "package2", "package4"),
+				newSimpleRPM("package2"),
+				newSimpleRPM("package3", "package2", "package4"),
+				newSimpleRPM("package4"),
+			},
+			requested: []string{"package1", "package3"},
+		},
+		{
+			name: "transitive circular dependencies with more than one cycle",
+			installed: []*api.Package{
+				newPackageWithDeps("package1", "package2"),
+				newPackageWithDeps("package2", "package3"),
+				newPackageWithDeps("package3", "package1"),
+			},
+			ignored: []*api.Package{},
+			expectedRepositories: map[string][]string{
+				"repository": []string{},
+			},
+			expectedRPMs: []*bazeldnf.RPM{
+				newSimpleRPM("package1", "package2", "package3"),
+				newSimpleRPM("package2", "package1", "package3"),
+				newSimpleRPM("package3", "package1", "package2"),
+			},
+			requested: []string{"package1", "package2", "package3"},
 		},
 	}
 
