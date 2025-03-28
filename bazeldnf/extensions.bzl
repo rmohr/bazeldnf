@@ -252,7 +252,7 @@ def _handle_lock_file(config, module_ctx, registered_rpms = {}):
         registered_rpms[name] = 1
 
     repository_args["rpms"] = ["@@%s//rpm" % x for x in registered_rpms.keys()]
-    repository_args["requested"] = lock_file_json.get("targets", [])
+    repository_args["requested"] = [x.replace("+", "plus") for x in lock_file_json.get("targets", [])]
 
     _alias_repository(
         **repository_args
