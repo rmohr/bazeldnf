@@ -5,7 +5,7 @@ import (
 	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 )
 
-func withRepository(packages []api.Package) []api.Package{
+func withRepository(packages []api.Package) []api.Package {
 	r := []api.Package{}
 	for _, p := range packages {
 		p.Repository = &bazeldnf.Repository{}

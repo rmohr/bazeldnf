@@ -14,14 +14,14 @@ import (
 )
 
 type rpmtreeOpts struct {
-	repofiles        []string
-	workspace        string
-	toMacro          string
-	buildfile        string
-	configname       string
-	lockfile         string
-	name             string
-	public           bool
+	repofiles  []string
+	workspace  string
+	toMacro    string
+	buildfile  string
+	configname string
+	lockfile   string
+	name       string
+	public     bool
 }
 
 var rpmtreeopts = rpmtreeOpts{}
