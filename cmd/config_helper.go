@@ -11,7 +11,7 @@ import (
 	"golang.org/x/exp/maps"
 )
 
-func keys[K cmp.Ordered, V any](m map[K]V) []K {
+func sortedKeys[K cmp.Ordered, V any](m map[K]V) []K {
 	keys := maps.Keys(m)
 	slices.Sort(keys)
 	return keys
@@ -50,7 +50,7 @@ func toConfig(install, forceIgnored []*api.Package, targets []string, cmdline []
 	}
 
 	providers := collectProviders(forceIgnored, install)
-	packageNames := keys(allPackages)
+	packageNames := sortedKeys(allPackages)
 	sortedPackages := make([]*bazeldnf.RPM, 0, len(packageNames))
 	for _, name := range packageNames {
 		pkg := allPackages[name]
@@ -66,7 +66,7 @@ func toConfig(install, forceIgnored []*api.Package, targets []string, cmdline []
 
 	lockFile := bazeldnf.Config{
 		CommandLineArguments: cmdline,
-		ForceIgnored:         keys(ignored),
+		ForceIgnored:         sortedKeys(ignored),
 		RPMs:                 sortedPackages,
 		Repositories:         repositories,
 		Targets:              targets,
@@ -112,7 +112,7 @@ func collectDependencies(pkg string, requires []string, providers map[string]str
 		depSet[provider] = true
 	}
 
-	deps := keys(depSet)
+	deps := sortedKeys(depSet)
 
 	found := map[string]bool{pkg: true}
 
