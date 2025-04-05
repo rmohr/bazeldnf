@@ -9,16 +9,43 @@ local_path_override(
 )
 
 bazel_dep(name = "rules_pkg", version = "1.0.1")
-bazel_dep(name = "gazelle", version = "0.37.0")
+bazel_dep(name = "rules_go", version = "0.53.0", repo_name = "rules_go")
+
+go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
+go_sdk.download(version = "1.24.1")
+
+bazel_dep(name = "gazelle", version = "0.42.0")
 
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
-go_deps.archive_override(
-    path = "github.com/sassoftware/go-rpmutils",
-    sha256 = "41953067dcc570723f21296728aec19b4967567db0f8a1323aed9633ce37eb9a",
-    strip_prefix = "go-rpmutils-5acf7436c00dee9caf9367340b35d8c52961d240",
-    urls = [
-        "https://github.com/rmohr/go-rpmutils/archive/5acf7436c00dee9caf9367340b35d8c52961d240.tar.gz",
-    ],
+go_deps.from_file(go_mod = "@bazeldnf//:go.mod")
+use_repo(
+    go_deps,
+    "com_github_adrg_xdg",
+    "com_github_bazelbuild_buildtools",
+    "com_github_crillab_gophersat",
+    "com_github_jdx_go_netrc",
+    "com_github_klauspost_compress",
+    "com_github_onsi_gomega",
+    "com_github_sassoftware_go_rpmutils",
+    "com_github_sirupsen_logrus",
+    "com_github_spf13_cobra",
+    "io_k8s_sigs_yaml",
+    "org_golang_x_crypto",
+    "org_golang_x_exp",
+)
+
+bazel_dep(name = "toolchains_protoc", version = "0.3.7")
+
+protoc = use_extension("@toolchains_protoc//protoc:extensions.bzl", "protoc")
+protoc.toolchain(
+    google_protobuf = "com_google_protobuf",
+    version = "v27.3",
+)
+use_repo(protoc, "com_google_protobuf", "toolchains_protoc_hub")
+
+register_toolchains(
+    "@toolchains_protoc_hub//:all",
+    dev_dependency = True,
 )
 
 bazeldnf = use_extension("@bazeldnf//bazeldnf:extensions.bzl", "bazeldnf")
