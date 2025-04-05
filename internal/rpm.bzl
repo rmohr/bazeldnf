@@ -73,7 +73,7 @@ rpm_rule(
 
 def _rpm_impl(ctx):
     if ctx.attr.urls:
-        downloaded_file_path = "downloaded"
+        downloaded_file_path = ctx.attr.urls[0].split("/")[-1]
         args = {}
         if ctx.attr.integrity:
             args["integrity"] = ctx.attr.integrity
