@@ -74,11 +74,15 @@ rpm_rule(
 def _rpm_impl(ctx):
     if ctx.attr.urls:
         downloaded_file_path = ctx.attr.urls[0].split("/")[-1]
-        download_info = ctx.download(
+        args = {}
+        if ctx.attr.integrity:
+            args["integrity"] = ctx.attr.integrity
+        if ctx.attr.sha256:
+            args["sha256"] = ctx.attr.sha256
+        ctx.download(
             url = ctx.attr.urls,
             output = "rpm/" + downloaded_file_path,
-            sha256 = ctx.attr.sha256,
-            integrity = ctx.attr.integrity,
+            **args
         )
     else:
         fail("urls must be specified")
@@ -90,7 +94,7 @@ def _rpm_impl(ctx):
             deps = ", ".join(["\"%s\"" % dep for dep in ctx.attr.dependencies]),
         ),
     )
-    return update_attrs(ctx.attr, _rpm_attrs.keys(), {"integrity": download_info.integrity})
+    return update_attrs(ctx.attr, _rpm_attrs.keys(), args)
 
 _rpm_attrs = {
     "urls": attr.string_list(),

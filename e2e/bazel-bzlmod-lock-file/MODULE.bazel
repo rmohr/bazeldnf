@@ -47,3 +47,5 @@ use_repo(
     "bazeldnf-others",
     "bazeldnf-rpms",
 )
+
+bazel_dep(name = "rules_cc", version = "0.1.1", dev_dependency = True)
