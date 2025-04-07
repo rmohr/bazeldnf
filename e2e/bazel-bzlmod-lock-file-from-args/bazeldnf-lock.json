@@ -20,43 +20,63 @@
 		"alternatives",
 		"--force-ignore-with-dependencies",
 		"audit-libs",
+		"--force-ignore-with-dependencies",
+		"fedora-release-common",
 		"bash",
 		"--ignore-missing"
 	],
 	"name": "",
 	"repositories": {
-		"Abuild-eos-trunk": [
-			"http://buildpack/Abuild/eos-trunk/x86_64_el9/40494756/RPMS/"
+		"40-x86_64-primary-repo": [
+			"https://mirror.i3d.net/pub/fedora/linux/releases/40/Everything/x86_64/os/",
+			"https://ask4.mm.fcix.net/fedora/linux/releases/40/Everything/x86_64/os/",
+			"https://fedora.ip-connect.info/linux/releases/40/Everything/x86_64/os/",
+			"https://distrohub.kyiv.ua/fedora/fedora/linux/releases/40/Everything/x86_64/os/"
+		],
+		"40-x86_64-update-repo": [
+			"https://ftp.halifax.rwth-aachen.de/fedora/linux/updates/40/Everything/x86_64/",
+			"https://fr2.rpmfind.net/linux/fedora/linux/updates/40/Everything/x86_64/",
+			"https://ftp-stud.hs-esslingen.de/pub/fedora/linux/updates/40/Everything/x86_64/",
+			"https://mirror.datacenter.by/pub/fedoraproject.org/linux/updates/40/Everything/x86_64/"
 		]
 	},
 	"rpms": [
 		{
 			"name": "bash",
-			"integrity": "sha256-BdwbgGvVRW1A49f4gurQN6r0gMWW6D+/tquGvnSi2NE=",
+			"integrity": "sha256-FW4HMwjLKKWmmdb/r8ccvShIdij9BUceGXjkuaXHqAI=",
 			"urls": [
-				"bash-5.1.8-9.el9.x86_64.rpm"
+				"Packages/b/bash-5.2.26-3.fc40.x86_64.rpm"
 			],
-			"repository": "Abuild-eos-trunk",
+			"repository": "40-x86_64-primary-repo",
 			"dependencies": [
 				"ncurses-libs"
 			]
 		},
 		{
-			"name": "ncurses-base",
-			"integrity": "sha256-2DB7+9JCjI0I3v+v8exh97wBbvA8d3mLMs4CGWXhvGU=",
+			"name": "fedora-release-container",
+			"integrity": "sha256-TQccXscGmgySaJ6kKutIHmgswOLfYSYNcDwqNRu8Q88=",
 			"urls": [
-				"ncurses-base-6.2-10.20210508.el9.noarch.rpm"
+				"Packages/f/fedora-release-container-40-40.noarch.rpm"
 			],
-			"repository": "Abuild-eos-trunk",
+			"repository": "40-x86_64-update-repo",
+			"dependencies": []
+		},
+		{
+			"name": "ncurses-base",
+			"integrity": "sha256-ipM3bOdCO9GmSaE/S1EF8nC0YD9c87PiML29p/Jd14g=",
+			"urls": [
+				"Packages/n/ncurses-base-6.4-12.20240127.fc40.noarch.rpm"
+			],
+			"repository": "40-x86_64-primary-repo",
 			"dependencies": []
 		},
 		{
 			"name": "ncurses-libs",
-			"integrity": "sha256-0GsOSRSBo0X68hppZmy9wwLRm1T7Ka4ap4+msgX55gQ=",
+			"integrity": "sha256-oY7fMuia79RTmY1dDsOqHqGT2sQ/gLmdsZWr1+jPGgQ=",
 			"urls": [
-				"ncurses-libs-6.2-10.20210508.el9.x86_64.rpm"
+				"Packages/n/ncurses-libs-6.4-12.20240127.fc40.x86_64.rpm"
 			],
-			"repository": "Abuild-eos-trunk",
+			"repository": "40-x86_64-primary-repo",
 			"dependencies": [
 				"ncurses-base"
 			]
@@ -66,6 +86,7 @@
 		"bash"
 	],
 	"ignored": [
+		"fedora-release-common",
 		"filesystem",
 		"glibc"
 	]
