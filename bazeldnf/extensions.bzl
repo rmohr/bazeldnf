@@ -101,15 +101,12 @@ def _alias_repository_impl(repository_ctx):
     """Creates a repository that aliases other repositories."""
     repository_ctx.file("WORKSPACE", "")
     repository_ctx.watch(repository_ctx.attr.lock_file)
-    lock_file_path = repository_ctx.attr.lock_file.name
 
-    repofile = repository_ctx.attr.repofile.name if repository_ctx.attr.repofile else "invalid-repo.yaml"
+    repofile = "invalid-repo.yaml"
+    if repository_ctx.attr.repofile:
+        repofile = repository_ctx.path(repository_ctx.attr.repofile)
 
-    if repository_ctx.attr.lock_file.package:
-        lock_file_path = repository_ctx.attr.lock_file.package + "/" + lock_file_path
-
-    if repository_ctx.attr.repofile and repository_ctx.attr.repofile.package:
-        repofile = repository_ctx.attr.repofile.package + "/" + repofile
+    lock_file_path = repository_ctx.path(repository_ctx.attr.lock_file)
 
     repository_ctx.file(
         "BUILD.bazel",
