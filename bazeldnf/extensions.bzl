@@ -79,6 +79,7 @@ fetch_dnf_repo(
     name = "fetch-repo",
     repofile = "{repofile}",
     cache_dir = {cache_dir},
+    visibility = ["//visibility:public"],
 )
 
 update_lock_file(
@@ -90,6 +91,7 @@ update_lock_file(
     nobest = {nobest},
     cache_dir = {cache_dir},
     architecture = "{architecture}",
+    visibility = ["//visibility:public"],
 )
 """
 
