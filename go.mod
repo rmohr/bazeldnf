@@ -20,6 +20,8 @@ require (
 	github.com/jdx/go-netrc v1.0.0
 )
 
+require github.com/ulikunitz/xz v0.5.12
+
 require (
 	github.com/adrg/xdg v0.5.3
 	github.com/golang/protobuf v1.5.4 // indirect
