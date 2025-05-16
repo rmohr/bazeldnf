@@ -69,13 +69,23 @@ e2e-bzlmod-toolchain-circular-dependencies:
 		) \
 	done
 
+e2e-bzlmod-toolchain-circular-dependencies-fake:
+	@for version in 7.x 8.x; do \
+		( \
+			cd e2e/bzlmod-toolchain-circular-dependencies-fake && \
+			echo "Testing $$version bzlmod lock file from args" > /dev/stderr && \
+			USE_BAZEL_VERSION=$$version bazelisk --batch build //...  \
+		) \
+	done
+
 
 e2e: e2e-workspace \
 	e2e-bzlmod \
 	e2e-bzlmod-build-toolchain \
 	e2e-bazel-bzlmod-lock-file \
 	e2e-bazel-bzlmod-lock-file-from-args \
-	e2e-bzlmod-toolchain-circular-dependencies
+	e2e-bzlmod-toolchain-circular-dependencies \
+	e2e-bzlmod-toolchain-circular-dependencies-fake
 
 fmt: gofmt buildifier
 

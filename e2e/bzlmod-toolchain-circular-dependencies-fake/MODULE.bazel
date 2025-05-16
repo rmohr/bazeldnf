@@ -1,7 +1,5 @@
 "example MODULE.bazel to test bzlmod integration for bazeldnf without a prebuilt toolchain"
 
-module(name = "example-bazeldnf-bzlmod-issues-with-ignore-flag")
-
 bazel_dep(name = "bazeldnf", dev_dependency = True)
 local_path_override(
     module_name = "bazeldnf",
@@ -52,22 +50,16 @@ bazeldnf_toolchain.register(disable = True)
 
 bazeldnf = use_extension("@bazeldnf//bazeldnf:extensions.bzl", "bazeldnf")
 bazeldnf.config(
-    name = "bazeldnf_rpms",
-    cache_dir = "./.bazeldnf-test-issues-with-ignore-flag",
-    excludes = [
-        "alternatives",
-        "basesystem",
-        "perl",
-    ],
+    name = "rpms-circular-triplet",
     ignore_deps = False,
-    lock_file = "//:bazeldnf-lock.json",
-    repofile = "//:repos.yaml",
+    lock_file = "//:rpms-circular-triplet.json",
     rpms = [
-        "git",
-        "glibc",
+        "package1",
+        "package2",
+        "package3",
     ],
 )
 use_repo(
     bazeldnf,
-    "bazeldnf_rpms",
+    "rpms-circular-triplet",
 )
