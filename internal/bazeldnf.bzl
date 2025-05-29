@@ -4,7 +4,7 @@ load("@bazel_skylib//lib:shell.bzl", "shell")
 load("//bazeldnf:toolchain.bzl", "BAZELDNF_TOOLCHAIN")
 
 def _bazeldnf_impl(ctx):
-    transitive_dependencies = []
+    transitive_dependencies = depset([])
     out_file = ctx.actions.declare_file(ctx.label.name + ".bash")
     args = []
     if ctx.attr.command:
@@ -15,7 +15,7 @@ def _bazeldnf_impl(ctx):
         args.extend(["--rpmtree", ctx.attr.rpmtree])
     if ctx.file.tar:
         args.extend(["--input", ctx.file.tar.path])
-        transitive_dependencies.extend(ctx.attr.tar.files)
+        transitive_dependencies = ctx.attr.tar.files
     args.extend(ctx.attr.libs)
 
     toolchain = ctx.toolchains[BAZELDNF_TOOLCHAIN]
@@ -32,7 +32,7 @@ def _bazeldnf_impl(ctx):
     )
     runfiles = ctx.runfiles(
         files = [toolchain._tool],
-        transitive_files = depset([], transitive = transitive_dependencies),
+        transitive_files = depset([], transitive = [transitive_dependencies]),
     )
     return [DefaultInfo(
         files = depset([out_file]),
