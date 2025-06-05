@@ -3,10 +3,12 @@ package main
 import (
 	"archive/tar"
 	"os"
+	"path/filepath"
 	"strings"
 
-	"github.com/rmohr/bazeldnf/pkg/xattr"
 	"github.com/spf13/cobra"
+
+	"github.com/rmohr/bazeldnf/pkg/xattr"
 )
 
 type xattrOpts struct {
@@ -29,12 +31,12 @@ func NewXATTRCmd() *cobra.Command {
 			for file, caps := range xattropts.capabilities {
 				split := strings.Split(caps, ":")
 				if len(split) > 0 {
-					capabilityMap["./"+strings.TrimPrefix(file, "/")] = split
+					capabilityMap[filepath.Clean(strings.TrimPrefix(file, "/"))] = split
 				}
 			}
 			labelMap := map[string]string{}
 			for file, label := range xattropts.selinuxLabels {
-				labelMap["./"+strings.TrimPrefix(file, "/")] = label
+				labelMap[filepath.Clean(strings.TrimPrefix(file, "/"))] = label
 			}
 
 			streamInput := os.Stdin
