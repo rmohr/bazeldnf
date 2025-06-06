@@ -4,6 +4,8 @@ import (
 	"archive/tar"
 	"fmt"
 	"io"
+	"path/filepath"
+	"strings"
 )
 
 const (
@@ -71,13 +73,14 @@ func enrichEntry(entry *tar.Header, capabilties map[string][]string, labels map[
 	if entry.PAXRecords == nil {
 		entry.PAXRecords = map[string]string{}
 	}
+	fileName := filepath.Clean(strings.TrimPrefix(entry.Name, "/"))
 
-	if caps, exists := capabilties[entry.Name]; exists {
+	if caps, exists := capabilties[fileName]; exists {
 		if err := AddCapabilities(entry.PAXRecords, caps); err != nil {
 			return err
 		}
 	}
-	if l, exists := labels[entry.Name]; exists {
+	if l, exists := labels[fileName]; exists {
 		if err := SetSELinuxLabel(entry.PAXRecords, l); err != nil {
 			return err
 		}
