@@ -19,6 +19,7 @@ import (
 	"strings"
 	"sync"
 
+	retryablehttp "github.com/hashicorp/go-retryablehttp"
 	"github.com/jdx/go-netrc"
 	"github.com/rmohr/bazeldnf/pkg/api"
 	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
@@ -222,7 +223,9 @@ type Getter interface {
 	Get(url string) (resp *http.Response, err error)
 }
 
-type getterImpl struct{}
+type getterImpl struct {
+	client *retryablehttp.Client
+}
 
 func fileGet(filename string) (*http.Response, error) {
 	fp, err := os.Open(filename)
@@ -285,7 +288,7 @@ func getNetrc() (*netrc.Netrc, error) {
 	return nil, nil
 }
 
-func addAuthHeader(r *http.Request) error {
+func addAuthHeader(r *retryablehttp.Request) error {
 	netrc, err := getNetrc()
 	if err != nil {
 		return fmt.Errorf("getting netrc: %w", err)
@@ -302,8 +305,9 @@ func addAuthHeader(r *http.Request) error {
 	return nil
 }
 
-func httpGet(rawUrl string) (*http.Response, error) {
-	req, err := http.NewRequest("GET", rawUrl, nil)
+func (g *getterImpl) httpGet(rawUrl string) (*http.Response, error) {
+	req, err := retryablehttp.NewRequest("GET", rawUrl, nil)
+
 	if err != nil {
 		return nil, err
 	}
@@ -311,10 +315,14 @@ func httpGet(rawUrl string) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	return http.DefaultClient.Do(req)
+	client := g.client
+	if client == nil {
+		client = retryablehttp.NewClient()
+	}
+	return client.Do(req)
 }
 
-func (*getterImpl) Get(rawURL string) (*http.Response, error) {
+func (g *getterImpl) Get(rawURL string) (*http.Response, error) {
 	u, err := url.Parse(rawURL)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to parse URL: %w", err)
@@ -322,7 +330,7 @@ func (*getterImpl) Get(rawURL string) (*http.Response, error) {
 	if u.Scheme == "file" {
 		return fileGet(u.Path)
 	}
-	return httpGet(rawURL)
+	return g.httpGet(rawURL)
 }
 
 func toHex(hasher hash.Hash) string {

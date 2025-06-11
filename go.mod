@@ -7,6 +7,7 @@ toolchain go1.24.1
 require (
 	github.com/bazelbuild/buildtools v0.0.0-20250312151547-737aaf84facd
 	github.com/crillab/gophersat v1.4.0
+	github.com/hashicorp/go-retryablehttp v0.7.7
 	github.com/onsi/gomega v1.36.2
 	github.com/sassoftware/go-rpmutils v0.2.0
 	github.com/sirupsen/logrus v1.9.3
@@ -26,6 +27,7 @@ require (
 	github.com/adrg/xdg v0.5.3
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
+	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/klauspost/compress v1.18.0
 	github.com/spf13/pflag v1.0.6 // indirect
