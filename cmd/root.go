@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -31,7 +33,41 @@ func setLogLevel(logLevel string) {
 	logrus.SetLevel(level)
 }
 
+func expandParamFileArgs(args []string) []string {
+	if len(args) == 1 && strings.HasPrefix(args[0], "@") {
+		// bazeldnf commands can be invoked using the bazel "use_param_file"
+		// approach. The parameters file, prefixed with an "@" character, is
+		// expected to be the sole argument provided.
+		paramFile := strings.TrimPrefix(args[0], "@")
+		return readArgsFromFile(paramFile)
+	}
+	return args
+}
+
+func readArgsFromFile(path string) []string {
+	f, err := os.Open(path)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed to read params file: %v\n", err)
+		os.Exit(1)
+	}
+	defer f.Close()
+
+	var contents []string
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		line := scanner.Text()
+		contents = append(contents, line)
+	}
+	if err := scanner.Err(); err != nil {
+		fmt.Fprintf(os.Stderr, "error reading params file: %v\n", err)
+		os.Exit(1)
+	}
+	return contents
+}
+
 func Execute() {
+	args := expandParamFileArgs(os.Args[1:])
+	rootCmd.SetArgs(args)
 	rootCmd.PersistentFlags().StringVarP(&rootopts.logLevel, "log-level", "l", "", "log level")
 
 	cobra.OnInitialize(initRootCmd)
