@@ -10,7 +10,34 @@ import (
 	"os"
 	"path"
 	"testing"
+	"time"
+
+	"github.com/hashicorp/go-retryablehttp"
 )
+
+const retryAttempts = 5
+
+func assertURLContent(t *testing.T, url string, content []byte) {
+	t.Helper()
+	client := retryablehttp.NewClient()
+	client.RetryWaitMin = time.Microsecond
+	client.RetryWaitMax = time.Microsecond
+	client.RetryMax = retryAttempts
+
+	t.Logf("Getter.Get %v", url)
+	resp, err := Getter(&getterImpl{client: client}).Get(url)
+	if err != nil {
+		t.Fatalf("Get %v: %v", url, err)
+	}
+	defer resp.Body.Close()
+	recv, err := io.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatalf("Read response failed: %v", err)
+	}
+	if !bytes.Equal(recv, content) {
+		t.Fatalf("Read wrong content, %q instead of %q", string(recv), string(content))
+	}
+}
 
 func TestGetter(t *testing.T) {
 	content := []byte("my file contents\n")
@@ -47,20 +74,37 @@ func TestGetter(t *testing.T) {
 		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			t.Logf("Getter.Get %v", tc.url)
-			resp, err := Getter(&getterImpl{}).Get(tc.url)
-			if err != nil {
-				t.Fatalf("Get %v: %v", tc.url, err)
-			}
-			defer resp.Body.Close()
-			recv, err := io.ReadAll(resp.Body)
-			if err != nil {
-				t.Fatalf("Read response failed: %v", err)
-			}
-			if !bytes.Equal(recv, content) {
-				t.Fatalf("Read wrong content, %v instead of %v", recv, content)
-			}
+			assertURLContent(t, tc.url, content)
 		})
+	}
+}
+
+func TestGetterRetry(t *testing.T) {
+	count := 0
+	retries := retryAttempts
+	content := []byte("my file contents\n")
+	s := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		count += 1
+
+		if count < retries {
+			t.Log("sending error response", http.StatusInternalServerError)
+			rw.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprint(rw, "hopefully this is just temporary")
+		} else {
+			n, err := rw.Write(content)
+			if err != nil {
+				t.Fatal("write content: ", err)
+			}
+			if n != len(content) {
+				t.Fatalf("short write, %v instead of %v", n, len(content))
+			}
+		}
+	}))
+	defer s.Close()
+
+	assertURLContent(t, s.URL, content)
+	if count != retries {
+		t.Fatalf("expected to attempt request %v times instead of %v", retries, count)
 	}
 }
 
