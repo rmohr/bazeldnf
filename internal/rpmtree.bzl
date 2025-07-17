@@ -72,7 +72,8 @@ def _expand_path(files):
 
 def _tar2files_impl(ctx):
     args = ctx.actions.args()
-
+    args.set_param_file_format("multiline")
+    args.use_param_file("@%s")
     args.add_all(["tar2files", "--file-prefix", ctx.attr.prefix, "--input", ctx.files.tar[0]])
     args.add_all([ctx.outputs.out], map_each = _expand_path)
 
