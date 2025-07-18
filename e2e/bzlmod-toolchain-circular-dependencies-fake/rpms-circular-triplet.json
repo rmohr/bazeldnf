@@ -1,0 +1,44 @@
+{
+    "cli-arguments": [],
+    "name": "",
+    "repositories": {
+        "fake-repository": [
+            "https://mirror.stream.centos.org/9-stream/BaseOS/x86_64/os"
+        ]
+    },
+    "rpms": [
+        {
+            "name": "package1",
+            "urls": [
+                "Packages/audit-libs-3.1.5-4.el9.x86_64.rpm"
+            ],
+            "repository": "fake-repository",
+            "dependencies": [
+                "package2",
+                "package3"
+            ]
+        },
+        {
+            "name": "package2",
+            "urls": [
+                "Packages/bash-5.1.8-9.el9.x86_64.rpm"
+            ],
+            "repository": "fake-repository",
+            "dependencies": [
+                "package1",
+                "package3"
+            ]
+        },
+        {
+            "name": "package3",
+            "urls": [
+                "Packages/bzip2-libs-1.0.8-10.el9.x86_64.rpm"
+            ],
+            "repository": "fake-repository",
+            "dependencies": [
+                "package1",
+                "package2"
+            ]
+        }
+    ]
+}

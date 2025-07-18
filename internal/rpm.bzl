@@ -24,7 +24,7 @@ RpmInfo = provider(
         other rules like rpmtree
     """,
     fields = {
-        "deps": "depset of other dependencies",
+        "deps": "label of the RPM dependencies",
         "file": "label of the RPM file",
     },
 )
@@ -42,22 +42,18 @@ def _rpm_rule_impl(ctx):
     Implementation for the rpm rule
 
     Allows to pass information about an RPM file to other rules
-    like rpmtree, keeping track of the dependency tree
+    like rpmtree, keeping track of target rpm plus it's entire
+    dependency list
     """
-    deps_list = []
-
-    for dep in ctx.attr.deps:
-        deps_list.append(dep[RpmInfo].deps)
-
     rpm_info = RpmInfo(
         file = ctx.file.file,
-        deps = depset(direct = [ctx.file.file], transitive = deps_list),
+        deps = ctx.files.deps,
     )
 
     return [
         rpm_info,
         DefaultInfo(
-            files = depset(direct = [ctx.file.file], transitive = deps_list),
+            files = depset(direct = [ctx.file.file] + ctx.files.deps),
         ),
     ]
 
@@ -65,13 +61,19 @@ rpm_rule = rule(
     implementation = _rpm_rule_impl,
     attrs = {
         "file": attr.label(allow_single_file = True, mandatory = True),
-        "deps": attr.label_list(providers = [RpmInfo]),
+        "deps": attr.label_list(allow_files = True, mandatory = False),
     },
 )
 
 _HTTP_FILE_BUILD = """
 load("@bazeldnf//internal:rpm.bzl", "rpm_rule")
 package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "rpm-file",
+    srcs = ["{downloaded_file_path}"],
+)
+
 rpm_rule(
     name = "rpm",
     file = "{downloaded_file_path}",
@@ -111,7 +113,6 @@ _rpm_attrs = {
     "integrity": attr.string(),
     "dependencies": attr.label_list(
         mandatory = False,
-        providers = [RpmInfo],
     ),
     "auth_patterns": attr.string_dict(),
 }
@@ -125,7 +126,7 @@ def _null_rpm_rule_impl(_):
     return [
         RpmInfo(
             file = "",
-            deps = depset(),
+            deps = [],
         ),
         DefaultInfo(files = depset()),
     ]
