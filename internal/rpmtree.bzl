@@ -78,9 +78,12 @@ def _tar2files_impl(ctx):
     args.use_param_file("@%s")
     args.add_all([
         "tar2files",
-        "--file-prefix", ctx.attr.prefix,
-        "--strip-prefix", strip_prefix,
-        "--input", ctx.files.tar[0],
+        "--file-prefix",
+        ctx.attr.prefix,
+        "--strip-prefix",
+        strip_prefix,
+        "--input",
+        ctx.files.tar[0],
     ])
     args.add_all([ctx.outputs.out], map_each = _expand_path)
 
