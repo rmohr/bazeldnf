@@ -10,7 +10,7 @@ import (
 )
 
 type resolveOpts struct {
-	repofiles        []string
+	repofiles []string
 }
 
 var resolveopts = resolveOpts{}

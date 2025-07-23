@@ -10,9 +10,9 @@ import (
 )
 
 type lockfileOpts struct {
-	repofiles      []string
-	configname     string
-	lockfile       string
+	repofiles  []string
+	configname string
+	lockfile   string
 }
 
 var lockfileopts = lockfileOpts{}
@@ -22,7 +22,7 @@ func NewLockFileCmd() *cobra.Command {
 	lockfileCmd := &cobra.Command{
 		Use:   "lockfile",
 		Short: "Manage bazeldnf lock file",
-		Long: `Keep the bazeldnf lock file up to date using a set of dependencies`,
+		Long:  `Keep the bazeldnf lock file up to date using a set of dependencies`,
 		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, required []string) error {
 			repos, err := repo.LoadRepoFiles(lockfileopts.repofiles)

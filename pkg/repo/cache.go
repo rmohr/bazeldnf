@@ -17,7 +17,23 @@ import (
 	"github.com/rmohr/bazeldnf/pkg/rpm"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/ulikunitz/xz"
 )
+
+// this provides a shim around xz.Reader to simulate a ReadCloser
+// as the available xz implementation that doesn't require cgo
+// doesn't support this
+type XzReadCloser struct {
+	reader *xz.Reader
+}
+
+func (r *XzReadCloser) Read(p []byte) (n int, err error) {
+	return r.reader.Read(p)
+}
+
+func (r *XzReadCloser) Close() error {
+	return nil
+}
 
 type cacheHelperOpts struct {
 	cacheDir string
@@ -108,6 +124,14 @@ func (r *CacheHelper) getCompressFileReader(filename string, stream io.Reader) (
 			return nil, err
 		}
 		return rc.IOReadCloser(), nil
+	}
+
+	if strings.HasSuffix(filename, ".xz") {
+		rc, err := xz.NewReader(stream)
+		if err != nil {
+			return nil, err
+		}
+		return &XzReadCloser{reader: rc}, nil
 	}
 
 	return nil, fmt.Errorf("file format not supported: %s", filepath.Ext(filename))

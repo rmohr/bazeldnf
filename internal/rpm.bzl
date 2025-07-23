@@ -14,7 +14,7 @@
 
 "Exposes rpm files to a Bazel workspace"
 
-load("@bazel_tools//tools/build_defs/repo:utils.bzl", "update_attrs")
+load("@bazel_tools//tools/build_defs/repo:utils.bzl", "read_netrc", "read_user_netrc", "update_attrs", "use_netrc")
 
 RpmInfo = provider(
     doc = """\
@@ -28,6 +28,14 @@ RpmInfo = provider(
         "file": "label of the RPM file",
     },
 )
+
+def _get_auth(ctx, urls):
+    """Given the list of URLs obtain the correct auth dict."""
+    if "NETRC" in ctx.os.environ:
+        netrc = read_netrc(ctx, ctx.os.environ["NETRC"])
+    else:
+        netrc = read_user_netrc(ctx)
+    return use_netrc(netrc, urls, ctx.attr.auth_patterns)
 
 def _rpm_rule_impl(ctx):
     """\
@@ -82,6 +90,7 @@ def _rpm_impl(ctx):
         ctx.download(
             url = ctx.attr.urls,
             output = "rpm/" + downloaded_file_path,
+            auth = _get_auth(ctx, ctx.attr.urls),
             **args
         )
     else:
@@ -104,6 +113,7 @@ _rpm_attrs = {
         mandatory = False,
         providers = [RpmInfo],
     ),
+    "auth_patterns": attr.string_dict(),
 }
 
 rpm = repository_rule(

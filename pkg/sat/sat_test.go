@@ -1354,9 +1354,9 @@ func TestNewResolver(t *testing.T) {
 			"testa",
 		},
 			ignoreRegex: []string{"testb.*"},
-			install: []string{"testa-0:1", "testc-0:1"},
-			exclude: []string{},
-			solvable: true,
+			install:     []string{"testa-0:1", "testc-0:1"},
+			exclude:     []string{},
+			solvable:    true,
 		},
 		{name: "only allow package", packages: []*api.Package{
 			newPkg("testa", "1", []string{}, []string{"b", "c"}, []string{}),
@@ -1366,9 +1366,9 @@ func TestNewResolver(t *testing.T) {
 			"testa",
 		},
 			allowRegex: []string{"testa.*"},
-			install: []string{"testa-0:1"},
-			exclude: []string{},
-			solvable: true,
+			install:    []string{"testa-0:1"},
+			exclude:    []string{},
+			solvable:   true,
 		},
 		// TODO: Add test cases.
 	}

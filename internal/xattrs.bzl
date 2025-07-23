@@ -23,7 +23,7 @@ def _xattrs_impl(ctx):
     if ctx.attr.capabilities:
         capabilities = []
         for k, v in ctx.attr.capabilities.items():
-            capabilities.append([k + "=" + ":".join(v)])
+            capabilities.append(k + "=" + ":".join(v))
         args += ["--capabilities", ",".join(capabilities)]
 
     if ctx.attr.selinux_labels:
