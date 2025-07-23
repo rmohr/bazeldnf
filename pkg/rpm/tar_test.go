@@ -193,7 +193,7 @@ func TestTar2Files(t *testing.T) {
 				files = append(files, filepath.Join(tmpdir, file))
 			}
 
-			err = PrefixFilter(tt.prefix, tar.NewReader(pipeReader), files)
+			err = PrefixFilter(tt.prefix, tmpdir, tar.NewReader(pipeReader), files)
 			g.Expect(err).ToNot(HaveOccurred())
 
 			discoveredHeaders, err := collectFileInfo(tmpdir)

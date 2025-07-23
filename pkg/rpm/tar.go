@@ -49,16 +49,26 @@ func RPMToCPIO(rpmReader io.Reader) (*cpio.CpioStream, error) {
 	return cpio.NewCpioStream(payloadReader), nil
 }
 
-func PrefixFilter(prefix string, reader *tar.Reader, files []string) error {
+func PrefixFilter(prefix, strip string, reader *tar.Reader, files []string) error {
 	prefix = strings.TrimPrefix(prefix, ".")
 
 	fileMap := map[string]string{}
 	for _, file := range files {
-		prefixIdx := strings.Index(file, prefix)
-		if prefixIdx == -1 {
-			return fmt.Errorf("prefix %s is not found in %s", prefix, file)
+		suffix, ok := strings.CutPrefix(file, strip)
+		if !ok {
+			return fmt.Errorf("strip prefix %s is not found in %s", strip, file)
 		}
-		fileMap[file[prefixIdx:]] = file
+
+		key := suffix
+		if idx := strings.Index(key, prefix); idx == -1 {
+			key = filepath.Join(prefix, key)
+		}
+
+		if !strings.HasPrefix(key, "/") {
+			key = "/" + key
+		}
+
+		fileMap[key] = file
 	}
 
 	for {
