@@ -72,7 +72,7 @@ def _expand_path(files):
 
 def _tar2files_impl(ctx):
     args = ctx.actions.args()
-    strip_prefix = ctx.bin_dir.path + "/" + ctx.label.package + "/" + ctx.label.name
+    strip_prefix = ctx.bin_dir.path + ctx.label.package + "/" + ctx.label.name
 
     args.set_param_file_format("multiline")
     args.use_param_file("@%s")
