@@ -22,7 +22,10 @@ bzl_library(
     name = "rpmtree",
     srcs = ["rpmtree.bzl"],
     visibility = ["//:__subpackages__"],
-    deps = ["//bazeldnf:toolchain"],
+    deps = [
+        "//bazeldnf:toolchain",
+        "@bazel_skylib//lib:paths",
+    ],
 )
 
 bzl_library(
