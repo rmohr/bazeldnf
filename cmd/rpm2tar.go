@@ -4,12 +4,14 @@ import (
 	"archive/tar"
 	"fmt"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 
+	"github.com/spf13/cobra"
+
 	"github.com/rmohr/bazeldnf/pkg/order"
 	"github.com/rmohr/bazeldnf/pkg/rpm"
-	"github.com/spf13/cobra"
 )
 
 type rpm2tarOpts struct {
@@ -55,12 +57,12 @@ func NewRpm2TarCmd() *cobra.Command {
 				}
 				for _, k := range rpm2taropts.sortedSymlinks {
 					v := rpm2taropts.symlinks[k]
-					// If an absolute path is given let's add a `.` in front. This is
-					// not strictly necessary but adds a more correct tar path
-					// which aligns with the usual rpm entries which start with `./`
-					if strings.HasPrefix(k, "/") {
-						k = "." + k
+					// prefix link paths with `./` which aligns with the usual rpm entries which start with `./`.
+					if !strings.HasPrefix(k, "./") {
+						k = "./" + strings.TrimPrefix(filepath.Clean(k), "/")
 					}
+					// Add normalized symlink to created paths to avoid recreation when merging RPMs
+					collector.AddPath(k)
 					directoryTree.Add(
 						[]tar.Header{
 							{
