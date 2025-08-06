@@ -78,7 +78,7 @@ type Resolver struct {
 	// useful for creating soft clauses
 	packages map[string][]*Var
 	// pkgProvides allows accessing all variables which get pulled in if a specific package get's pulled in
-	pkgProvides map[VarContext][]*Var
+	pkgProvides map[string][]*Var
 	// vars contain as key an exact identifier for a provided resource and the actual SAT variable as value
 	vars map[string]*Var
 
@@ -102,7 +102,7 @@ func NewResolver(nobest bool) *Resolver {
 		provides:                    map[string][]*Var{},
 		packages:                    map[string][]*Var{},
 		vars:                        map[string]*Var{},
-		pkgProvides:                 map[VarContext][]*Var{},
+		pkgProvides:                 map[string][]*Var{},
 		nobest:                      nobest,
 		bestPackages:                map[string]*api.Package{},
 		forceIgnoreWithDependencies: map[string]*api.Package{},
@@ -193,7 +193,7 @@ func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, ignoreRegex []s
 	for _, pkg := range packages {
 		pkgVar, resourceVars := r.explodePackageToVars(pkg)
 		r.packages[pkg.Name] = append(r.packages[pkg.Name], pkgVar)
-		r.pkgProvides[pkgVar.Context] = resourceVars
+		r.pkgProvides[pkg.Name] = resourceVars
 		for _, v := range resourceVars {
 			r.provides[v.Context.Provides] = append(r.provides[v.Context.Provides], v)
 			r.vars[v.satVarName] = v
@@ -211,26 +211,19 @@ func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, ignoreRegex []s
 
 	logrus.Infof("Loaded %v packages.", len(r.pkgProvides))
 
-	pkgProvideKeys := maps.Keys(r.pkgProvides)
-	slices.SortFunc(pkgProvideKeys, varContextSort)
-
-	// Generate imply rules
-	for _, provided := range pkgProvideKeys {
-		// Create imply rules for every package and add them to the formula
-		// one provided dependency implies all dependencies from that package
-		resourceVars := r.pkgProvides[provided]
-		bfVar := bf.And(toBFVars(resourceVars)...)
+	for _, pkgVars := range r.packages {
 		var ands []bf.Formula
-		for _, res := range resourceVars {
-			ands = append(ands, bf.Implies(bf.Var(res.satVarName), bfVar))
-		}
-		pkgVar := resourceVars[len(resourceVars)-1]
-		ands = append(ands, bf.Implies(bf.Var(pkgVar.satVarName), r.explodePackageRequires(pkgVar)))
-		if conflicts := r.explodePackageConflicts(pkgVar); conflicts != nil {
-			ands = append(ands, bf.Implies(bf.Var(pkgVar.satVarName), bf.Not(conflicts)))
+		for _, pkgVar := range pkgVars {
+			if requires := r.explodePackageRequires(pkgVar); requires != nil {
+				ands = append(ands, bf.Implies(bf.Var(pkgVar.satVarName), requires))
+			}
+			if conflicts := r.explodePackageConflicts(pkgVar); conflicts != nil {
+				ands = append(ands, bf.Implies(bf.Var(pkgVar.satVarName), bf.Not(conflicts)))
+			}
 		}
 		r.ands = append(r.ands, ands...)
 	}
+
 	logrus.Infof("Generated %v variables.", len(r.vars))
 	return nil
 }
@@ -442,7 +435,7 @@ func (r *Resolver) explodePackageToVars(pkg *api.Package) (pkgVar *Var, resource
 }
 
 func (r *Resolver) explodePackageRequires(pkgVar *Var) bf.Formula {
-	var bfunique = bf.Var(pkgVar.satVarName)
+	requiredVars := []bf.Formula{}
 	for _, req := range pkgVar.Package.Format.Requires.Entries {
 		satisfies, err := r.explodeSingleRequires(req, r.provides[req.Name])
 		if err != nil {
@@ -452,15 +445,19 @@ func (r *Resolver) explodePackageRequires(pkgVar *Var) bf.Formula {
 				Requirement: req,
 				Candidates:  r.provides[req.Name],
 			})
-			return bf.Not(bfunique)
+			return bf.Not(bf.Var(pkgVar.satVarName))
 		}
-		uniqueVars := []string{}
+		satisfiers := []bf.Formula{}
 		for _, s := range satisfies {
-			uniqueVars = append(uniqueVars, s.satVarName)
+			satisfiers = append(satisfiers, bf.Var(s.satVarName))
 		}
-		bfunique = bf.And(bf.Unique(uniqueVars...), bfunique)
+		requiredVars = append(requiredVars, bf.Or(satisfiers...))
 	}
-	return bfunique
+	if len(requiredVars) == 0 {
+		return nil
+	} else {
+		return bf.And(requiredVars...)
+	}
 }
 
 func (r *Resolver) explodePackageConflicts(pkgVar *Var) bf.Formula {
@@ -571,8 +568,9 @@ func (r *Resolver) explodeSingleRequires(entry api.Entry, provides []*Var) (acce
 			return nil, err
 		}
 		if len(acceptsFromPkg) > 0 {
-			// just pick one to avoid excluding each  other
-			accepts = append(accepts, acceptsFromPkg[0])
+			for _, provVar := range acceptsFromPkg {
+				accepts = append(accepts, r.packages[provVar.Context.Package]...)
+			}
 		}
 	}
 
