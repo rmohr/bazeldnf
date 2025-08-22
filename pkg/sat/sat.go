@@ -239,6 +239,20 @@ func (r *Resolver) ConstructRequirements(packages []string) error {
 	return nil
 }
 
+func (r *Resolver) resolveNewest(pkgName string) (*Var, error) {
+	pkgs := r.provides[pkgName]
+	if len(pkgs) == 0 {
+		return nil, fmt.Errorf("package %s does not exist", pkgName)
+	}
+	newest := pkgs[0]
+	for _, p := range pkgs {
+		if rpm.Compare(p.Package.Version, newest.Package.Version) == 1 {
+			newest = p
+		}
+	}
+	return newest, nil
+}
+
 func (res *Resolver) Resolve() (install []*api.Package, excluded []*api.Package, forceIgnoredWithDependencies []*api.Package, err error) {
 	logrus.WithField("bf", bf.And(res.ands...)).Debug("Formula to solve")
 
@@ -460,20 +474,6 @@ func (r *Resolver) explodePackageConflicts(pkgVar *Var) bf.Formula {
 		return nil
 	}
 	return bf.Or(conflictingVars...)
-}
-
-func (r *Resolver) resolveNewest(pkgName string) (*Var, error) {
-	pkgs := r.provides[pkgName]
-	if len(pkgs) == 0 {
-		return nil, fmt.Errorf("package %s does not exist", pkgName)
-	}
-	newest := pkgs[0]
-	for _, p := range pkgs {
-		if rpm.Compare(p.Package.Version, newest.Package.Version) == 1 {
-			newest = p
-		}
-	}
-	return newest, nil
 }
 
 func compareRequires(entryVer api.Version, flag string, provides []*Var) (accepts []*Var, err error) {
