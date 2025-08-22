@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"github.com/crillab/gophersat/bf"
-	"github.com/crillab/gophersat/explain"
 	"github.com/crillab/gophersat/maxsat"
 	"github.com/rmohr/bazeldnf/pkg/api"
 	"github.com/rmohr/bazeldnf/pkg/reducer"
@@ -54,13 +53,6 @@ type Var struct {
 
 func (v Var) String() string {
 	return fmt.Sprintf("%s(%s)", v.Package.String(), v.Context.Provides)
-}
-
-func VarsString(vars []*Var) (desc []string) {
-	for _, v := range vars {
-		desc = append(desc, v.String())
-	}
-	return
 }
 
 func toBFVars(vars []*Var) (bfvars []bf.Formula) {
@@ -368,25 +360,6 @@ func (res *Resolver) Resolve() (install []*api.Package, excluded []*api.Package,
 	}
 	logrus.Info("No solution found.")
 	return nil, nil, nil, fmt.Errorf("no solution found")
-}
-
-func (res *Resolver) MUS() (mus *explain.Problem, err error) {
-	logrus.Info("No solution found.")
-	r, w := io.Pipe()
-
-	err = bf.Dimacs(bf.And(res.ands...), w)
-	if err != nil {
-		return nil, err
-	}
-	problem, err := explain.ParseCNF(r)
-	if err != nil {
-		return nil, err
-	}
-	mus, err = problem.MUSInsertion()
-	if err != nil {
-		return nil, err
-	}
-	return mus, nil
 }
 
 func (r *Resolver) explodePackageToVars(pkg *api.Package) (pkgVar *Var, resourceVars []*Var) {
