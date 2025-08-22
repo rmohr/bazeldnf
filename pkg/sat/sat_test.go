@@ -22,12 +22,12 @@ func TestRecursive(t *testing.T) {
 	for _, pkg := range repo.Packages {
 		t.Run(fmt.Sprintf("find solution for %s", pkg.Name), func(t *testing.T) {
 			g := NewGomegaWithT(t)
-			resolver := NewResolver(false)
+			resolver := NewResolver()
 			packages := []*api.Package{}
 			for i, _ := range repo.Packages {
 				packages = append(packages, &repo.Packages[i])
 			}
-			err = resolver.LoadInvolvedPackages(packages, nil, nil)
+			err = resolver.LoadInvolvedPackages(packages, nil, nil, false)
 			g.Expect(err).ToNot(HaveOccurred())
 			err = resolver.ConstructRequirements([]string{pkg.Name})
 			g.Expect(err).ToNot(HaveOccurred())
@@ -1224,12 +1224,12 @@ func Test(t *testing.T) {
 			err = xml.NewDecoder(f).Decode(repo)
 			g.Expect(err).ToNot(HaveOccurred())
 
-			resolver := NewResolver(tt.nobest)
+			resolver := NewResolver()
 			packages := []*api.Package{}
 			for i, _ := range repo.Packages {
 				packages = append(packages, &repo.Packages[i])
 			}
-			err = resolver.LoadInvolvedPackages(packages, nil, nil)
+			err = resolver.LoadInvolvedPackages(packages, nil, nil, tt.nobest)
 			g.Expect(err).ToNot(HaveOccurred())
 			err = resolver.ConstructRequirements(tt.requires)
 			g.Expect(err).ToNot(HaveOccurred())
@@ -1384,8 +1384,8 @@ func TestNewResolver(t *testing.T) {
 			continue
 		}
 		t.Run(tt.name, func(t *testing.T) {
-			resolver := NewResolver(tt.nobest)
-			err := resolver.LoadInvolvedPackages(tt.packages, tt.ignoreRegex, tt.allowRegex)
+			resolver := NewResolver()
+			err := resolver.LoadInvolvedPackages(tt.packages, tt.ignoreRegex, tt.allowRegex, tt.nobest)
 			if err != nil {
 				t.Fail()
 			}
