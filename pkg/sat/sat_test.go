@@ -27,11 +27,11 @@ func TestRecursive(t *testing.T) {
 			for i, _ := range repo.Packages {
 				packages = append(packages, &repo.Packages[i])
 			}
-			err = resolver.LoadInvolvedPackages(packages, nil, nil, false)
+			model, err := resolver.LoadInvolvedPackages(packages, nil, nil, false)
 			g.Expect(err).ToNot(HaveOccurred())
-			err = resolver.ConstructRequirements([]string{pkg.Name})
+			err = resolver.ConstructRequirements(model, []string{pkg.Name})
 			g.Expect(err).ToNot(HaveOccurred())
-			_, _, _, err := resolver.Resolve()
+			_, _, _, err = resolver.Resolve(model)
 			if err != nil {
 				t.Fatalf("Failed to solve %s\n", pkg.Name)
 			}
@@ -1229,11 +1229,11 @@ func Test(t *testing.T) {
 			for i, _ := range repo.Packages {
 				packages = append(packages, &repo.Packages[i])
 			}
-			err = resolver.LoadInvolvedPackages(packages, nil, nil, tt.nobest)
+			model, err := resolver.LoadInvolvedPackages(packages, nil, nil, tt.nobest)
 			g.Expect(err).ToNot(HaveOccurred())
-			err = resolver.ConstructRequirements(tt.requires)
+			err = resolver.ConstructRequirements(model, tt.requires)
 			g.Expect(err).ToNot(HaveOccurred())
-			install, _, _, err := resolver.Resolve()
+			install, _, _, err := resolver.Resolve(model)
 			g.Expect(err).ToNot(HaveOccurred())
 			g.Expect(pkgToString(install)).To(ConsistOf(tt.installs))
 		})
@@ -1385,16 +1385,16 @@ func TestNewResolver(t *testing.T) {
 		}
 		t.Run(tt.name, func(t *testing.T) {
 			resolver := NewResolver()
-			err := resolver.LoadInvolvedPackages(tt.packages, tt.ignoreRegex, tt.allowRegex, tt.nobest)
+			model, err := resolver.LoadInvolvedPackages(tt.packages, tt.ignoreRegex, tt.allowRegex, tt.nobest)
 			if err != nil {
 				t.Fail()
 			}
-			err = resolver.ConstructRequirements(tt.requires)
+			err = resolver.ConstructRequirements(model, tt.requires)
 			if err != nil {
 				fmt.Println(err)
 				t.Fail()
 			}
-			install, exclude, _, err := resolver.Resolve()
+			install, exclude, _, err := resolver.Resolve(model)
 			g := NewGomegaWithT(t)
 			if tt.solvable {
 				g.Expect(err).ToNot(HaveOccurred())

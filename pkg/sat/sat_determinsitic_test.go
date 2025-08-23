@@ -65,11 +65,11 @@ func TestDeterministicOutput(t *testing.T) {
 			for i, _ := range repo.Packages {
 				packages = append(packages, &repo.Packages[i])
 			}
-			err = resolver.LoadInvolvedPackages(packages, nil, nil, false)
+			model, err := resolver.LoadInvolvedPackages(packages, nil, nil, false)
 			g.Expect(err).ToNot(HaveOccurred())
-			err = resolver.ConstructRequirements(tt.requires)
+			err = resolver.ConstructRequirements(model, tt.requires)
 			g.Expect(err).ToNot(HaveOccurred())
-			install, _, _, err := resolver.Resolve()
+			install, _, _, err := resolver.Resolve(model)
 			g.Expect(err).ToNot(HaveOccurred())
 			g.Expect(installToString(install)).To(ConsistOf(tt.installs))
 		})
