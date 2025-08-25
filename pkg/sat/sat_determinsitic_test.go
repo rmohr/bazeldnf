@@ -69,8 +69,7 @@ func TestDeterministicOutput(t *testing.T) {
 			model, err := loader.Load(packages, tt.requires, nil, nil, false)
 			g.Expect(err).ToNot(HaveOccurred())
 
-			resolver := NewResolver()
-			install, _, _, err := resolver.Resolve(model)
+			install, _, _, err := Resolve(model)
 			g.Expect(err).ToNot(HaveOccurred())
 			g.Expect(installToString(install)).To(ConsistOf(tt.installs))
 		})

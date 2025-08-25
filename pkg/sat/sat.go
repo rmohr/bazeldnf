@@ -402,13 +402,7 @@ func (loader *Loader) resolveNewest(pkgName string) (*Var, error) {
 	return newest, nil
 }
 
-type Resolver struct{}
-
-func NewResolver() *Resolver {
-	return &Resolver{}
-}
-
-func (res *Resolver) Resolve(model *Model) (install []*api.Package, excluded []*api.Package, forceIgnoredWithDependencies []*api.Package, err error) {
+func Resolve(model *Model) (install []*api.Package, excluded []*api.Package, forceIgnoredWithDependencies []*api.Package, err error) {
 	logrus.WithField("bf", model.Ands()).Debug("Formula to solve")
 
 	satReader, satWriter := io.Pipe()

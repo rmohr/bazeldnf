@@ -31,8 +31,7 @@ func TestRecursive(t *testing.T) {
 			model, err := loader.Load(packages, []string{pkg.Name}, nil, nil, false)
 			g.Expect(err).ToNot(HaveOccurred())
 
-			resolver := NewResolver()
-			_, _, _, err = resolver.Resolve(model)
+			_, _, _, err = Resolve(model)
 			if err != nil {
 				t.Fatalf("Failed to solve %s\n", pkg.Name)
 			}
@@ -1234,8 +1233,7 @@ func Test(t *testing.T) {
 			model, err := loader.Load(packages, tt.requires, nil, nil, tt.nobest)
 			g.Expect(err).ToNot(HaveOccurred())
 
-			resolver := NewResolver()
-			install, _, _, err := resolver.Resolve(model)
+			install, _, _, err := Resolve(model)
 			g.Expect(err).ToNot(HaveOccurred())
 			g.Expect(pkgToString(install)).To(ConsistOf(tt.installs))
 		})
@@ -1392,8 +1390,7 @@ func TestNewResolver(t *testing.T) {
 				t.Fail()
 			}
 
-			resolver := NewResolver()
-			install, exclude, _, err := resolver.Resolve(model)
+			install, exclude, _, err := Resolve(model)
 			g := NewGomegaWithT(t)
 			if tt.solvable {
 				g.Expect(err).ToNot(HaveOccurred())

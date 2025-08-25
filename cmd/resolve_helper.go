@@ -40,8 +40,7 @@ func resolve(repos *bazeldnf.Repositories, required []string) ([]*api.Package, [
 	}
 
 	logrus.Info("Solving.")
-	solver := sat.NewResolver()
-	install, _, forceIgnored, err := solver.Resolve(model)
+	install, _, forceIgnored, err := sat.Resolve(model)
 	return install, forceIgnored, err
 }
 
