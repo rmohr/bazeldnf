@@ -103,6 +103,25 @@ type Loader struct {
 	varsCount int
 }
 
+func NewLoader() *Loader {
+	return &Loader{
+		m: &Model{
+			packages:                    map[string][]*Var{},
+			vars:                        map[string]*Var{},
+			bestPackages:                map[string]*api.Package{},
+			forceIgnoreWithDependencies: map[string]*api.Package{},
+		},
+		provides:  map[string][]*Var{},
+		varsCount: 0,
+	}
+}
+
+// Load takes a list of all involved packages to install, a list of regular
+// expressions which denote packages which should be taken into account for
+// solving the problem, but they should then be ignored together with their
+// requirements in the provided list of installed packages, and also a list
+// of regular expressions that may be used to limit the selection to matching
+// packages.
 func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowRegex []string, nobest bool) (*Model, error) {
 	// Deduplicate and detect excludes
 	deduplicated := map[string]*api.Package{}
@@ -221,7 +240,7 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 	}
 	logrus.Infof("Generated %v variables.", len(loader.m.vars))
 
-	return loader.m, loader.constructRequirements(matched)
+	return loader.constructRequirements(matched)
 }
 
 func (loader *Loader) explodePackageToVars(pkg *api.Package) (pkgVar *Var, resourceVars []*Var) {
@@ -355,18 +374,18 @@ func (loader *Loader) ticket() string {
 	return "x" + strconv.Itoa(loader.varsCount)
 }
 
-func (loader *Loader) constructRequirements(packages []string) error {
+func (loader *Loader) constructRequirements(packages []string) (*Model, error) {
 	logrus.Info("Adding required packages to the resolver.")
 
 	for _, pkgName := range packages {
 		req, err := loader.resolveNewest(pkgName)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		logrus.Infof("Selecting %s: %v", pkgName, req.Package)
 		loader.m.ands = append(loader.m.ands, bf.Var(req.satVarName))
 	}
-	return nil
+	return loader.m, nil
 }
 
 func (loader *Loader) resolveNewest(pkgName string) (*Var, error) {
@@ -383,31 +402,10 @@ func (loader *Loader) resolveNewest(pkgName string) (*Var, error) {
 	return newest, nil
 }
 
-type Resolver struct {
-	loader *Loader
-}
+type Resolver struct{}
 
 func NewResolver() *Resolver {
-	return &Resolver{
-		loader: &Loader{
-			m: &Model{
-				packages:                    map[string][]*Var{},
-				vars:                        map[string]*Var{},
-				bestPackages:                map[string]*api.Package{},
-				forceIgnoreWithDependencies: map[string]*api.Package{},
-			},
-			provides:  map[string][]*Var{},
-			varsCount: 0,
-		},
-	}
-}
-
-// LoadInvolvedPackages takes a list of all involved packages to install, a list of regular expressions
-// which denote packages which should be taken into account for solving the problem, but they should
-// then be ignored together with their requirements in the provided list of installed packages, and also
-// a list of regular expressions that may be used to limit the selection to matching packages.
-func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, matched, ignoreRegex, allowRegex []string, nobest bool) (*Model, error) {
-	return r.loader.Load(packages, matched, ignoreRegex, allowRegex, nobest)
+	return &Resolver{}
 }
 
 func (res *Resolver) Resolve(model *Model) (install []*api.Package, excluded []*api.Package, forceIgnoredWithDependencies []*api.Package, err error) {

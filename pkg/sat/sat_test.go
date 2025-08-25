@@ -22,13 +22,16 @@ func TestRecursive(t *testing.T) {
 	for _, pkg := range repo.Packages {
 		t.Run(fmt.Sprintf("find solution for %s", pkg.Name), func(t *testing.T) {
 			g := NewGomegaWithT(t)
-			resolver := NewResolver()
 			packages := []*api.Package{}
 			for i, _ := range repo.Packages {
 				packages = append(packages, &repo.Packages[i])
 			}
-			model, err := resolver.LoadInvolvedPackages(packages, []string{pkg.Name}, nil, nil, false)
+
+			loader := NewLoader()
+			model, err := loader.Load(packages, []string{pkg.Name}, nil, nil, false)
 			g.Expect(err).ToNot(HaveOccurred())
+
+			resolver := NewResolver()
 			_, _, _, err = resolver.Resolve(model)
 			if err != nil {
 				t.Fatalf("Failed to solve %s\n", pkg.Name)
@@ -1222,13 +1225,16 @@ func Test(t *testing.T) {
 			err = xml.NewDecoder(f).Decode(repo)
 			g.Expect(err).ToNot(HaveOccurred())
 
-			resolver := NewResolver()
 			packages := []*api.Package{}
 			for i, _ := range repo.Packages {
 				packages = append(packages, &repo.Packages[i])
 			}
-			model, err := resolver.LoadInvolvedPackages(packages, tt.requires, nil, nil, tt.nobest)
+
+			loader := NewLoader()
+			model, err := loader.Load(packages, tt.requires, nil, nil, tt.nobest)
 			g.Expect(err).ToNot(HaveOccurred())
+
+			resolver := NewResolver()
 			install, _, _, err := resolver.Resolve(model)
 			g.Expect(err).ToNot(HaveOccurred())
 			g.Expect(pkgToString(install)).To(ConsistOf(tt.installs))
@@ -1380,11 +1386,13 @@ func TestNewResolver(t *testing.T) {
 			continue
 		}
 		t.Run(tt.name, func(t *testing.T) {
-			resolver := NewResolver()
-			model, err := resolver.LoadInvolvedPackages(tt.packages, tt.requires, tt.ignoreRegex, tt.allowRegex, tt.nobest)
+			loader := NewLoader()
+			model, err := loader.Load(tt.packages, tt.requires, tt.ignoreRegex, tt.allowRegex, tt.nobest)
 			if err != nil {
 				t.Fail()
 			}
+
+			resolver := NewResolver()
 			install, exclude, _, err := resolver.Resolve(model)
 			g := NewGomegaWithT(t)
 			if tt.solvable {
