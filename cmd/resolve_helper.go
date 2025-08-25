@@ -33,12 +33,7 @@ func resolve(repos *bazeldnf.Repositories, required []string) ([]*api.Package, [
 
 	solver := sat.NewResolver()
 	logrus.Info("Loading involved packages into the resolver.")
-	model, err := solver.LoadInvolvedPackages(involved, resolvehelperopts.forceIgnoreRegex, resolvehelperopts.onlyAllowRegex, resolvehelperopts.nobest)
-	if err != nil {
-		return nil, nil, err
-	}
-	logrus.Info("Adding required packages to the resolver.")
-	err = solver.ConstructRequirements(model, matched)
+	model, err := solver.LoadInvolvedPackages(involved, matched, resolvehelperopts.forceIgnoreRegex, resolvehelperopts.onlyAllowRegex, resolvehelperopts.nobest)
 	if err != nil {
 		return nil, nil, err
 	}

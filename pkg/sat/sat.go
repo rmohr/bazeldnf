@@ -103,7 +103,7 @@ type Loader struct {
 	varsCount int
 }
 
-func (loader *Loader) Load(packages []*api.Package, ignoreRegex []string, allowRegex []string, nobest bool) (*Model, error) {
+func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowRegex []string, nobest bool) (*Model, error) {
 	// Deduplicate and detect excludes
 	deduplicated := map[string]*api.Package{}
 	for i, pkg := range packages {
@@ -220,7 +220,8 @@ func (loader *Loader) Load(packages []*api.Package, ignoreRegex []string, allowR
 		loader.m.ands = append(loader.m.ands, ands...)
 	}
 	logrus.Infof("Generated %v variables.", len(loader.m.vars))
-	return loader.m, nil
+
+	return loader.m, loader.constructRequirements(matched)
 }
 
 func (loader *Loader) explodePackageToVars(pkg *api.Package) (pkgVar *Var, resourceVars []*Var) {
@@ -354,7 +355,9 @@ func (loader *Loader) ticket() string {
 	return "x" + strconv.Itoa(loader.varsCount)
 }
 
-func (loader *Loader) ConstructRequirements(packages []string) error {
+func (loader *Loader) constructRequirements(packages []string) error {
+	logrus.Info("Adding required packages to the resolver.")
+
 	for _, pkgName := range packages {
 		req, err := loader.resolveNewest(pkgName)
 		if err != nil {
@@ -403,12 +406,8 @@ func NewResolver() *Resolver {
 // which denote packages which should be taken into account for solving the problem, but they should
 // then be ignored together with their requirements in the provided list of installed packages, and also
 // a list of regular expressions that may be used to limit the selection to matching packages.
-func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, ignoreRegex []string, allowRegex []string, nobest bool) (*Model, error) {
-	return r.loader.Load(packages, ignoreRegex, allowRegex, nobest)
-}
-
-func (r *Resolver) ConstructRequirements(model *Model, packages []string) error {
-	return r.loader.ConstructRequirements(packages)
+func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, matched, ignoreRegex, allowRegex []string, nobest bool) (*Model, error) {
+	return r.loader.Load(packages, matched, ignoreRegex, allowRegex, nobest)
 }
 
 func (res *Resolver) Resolve(model *Model) (install []*api.Package, excluded []*api.Package, forceIgnoredWithDependencies []*api.Package, err error) {

@@ -27,9 +27,7 @@ func TestRecursive(t *testing.T) {
 			for i, _ := range repo.Packages {
 				packages = append(packages, &repo.Packages[i])
 			}
-			model, err := resolver.LoadInvolvedPackages(packages, nil, nil, false)
-			g.Expect(err).ToNot(HaveOccurred())
-			err = resolver.ConstructRequirements(model, []string{pkg.Name})
+			model, err := resolver.LoadInvolvedPackages(packages, []string{pkg.Name}, nil, nil, false)
 			g.Expect(err).ToNot(HaveOccurred())
 			_, _, _, err = resolver.Resolve(model)
 			if err != nil {
@@ -1229,9 +1227,7 @@ func Test(t *testing.T) {
 			for i, _ := range repo.Packages {
 				packages = append(packages, &repo.Packages[i])
 			}
-			model, err := resolver.LoadInvolvedPackages(packages, nil, nil, tt.nobest)
-			g.Expect(err).ToNot(HaveOccurred())
-			err = resolver.ConstructRequirements(model, tt.requires)
+			model, err := resolver.LoadInvolvedPackages(packages, tt.requires, nil, nil, tt.nobest)
 			g.Expect(err).ToNot(HaveOccurred())
 			install, _, _, err := resolver.Resolve(model)
 			g.Expect(err).ToNot(HaveOccurred())
@@ -1385,13 +1381,8 @@ func TestNewResolver(t *testing.T) {
 		}
 		t.Run(tt.name, func(t *testing.T) {
 			resolver := NewResolver()
-			model, err := resolver.LoadInvolvedPackages(tt.packages, tt.ignoreRegex, tt.allowRegex, tt.nobest)
+			model, err := resolver.LoadInvolvedPackages(tt.packages, tt.requires, tt.ignoreRegex, tt.allowRegex, tt.nobest)
 			if err != nil {
-				t.Fail()
-			}
-			err = resolver.ConstructRequirements(model, tt.requires)
-			if err != nil {
-				fmt.Println(err)
 				t.Fail()
 			}
 			install, exclude, _, err := resolver.Resolve(model)
