@@ -2,7 +2,10 @@ load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "sat",
-    srcs = ["sat.go"],
+    srcs = [
+        "loader.go",
+        "sat.go",
+    ],
     importpath = "github.com/rmohr/bazeldnf/pkg/sat",
     visibility = ["//visibility:public"],
     deps = [
