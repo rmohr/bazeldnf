@@ -24,6 +24,11 @@ require (
 require github.com/ulikunitz/xz v0.5.12
 
 require (
+	github.com/segmentio/fasthash v1.0.3 // indirect
+	github.com/zyedidia/generic v1.2.1 // indirect
+)
+
+require (
 	github.com/adrg/xdg v0.5.3
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect

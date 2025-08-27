@@ -43,3 +43,16 @@ go_test(
         "@com_github_onsi_gomega//:gomega",
     ],
 )
+
+go_test(
+    name = "loader_test",
+    srcs = ["loader_test.go"],
+    data = glob(["testdata/**"]),
+    embed = [":sat"],
+    deps = [
+        "//pkg/api",
+        "@com_github_crillab_gophersat//bf",
+        "@com_github_onsi_gomega//:gomega",
+        "@com_github_zyedidia_generic//set",
+    ],
+)
