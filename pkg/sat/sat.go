@@ -211,7 +211,8 @@ func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, ignoreRegex []s
 
 	logrus.Infof("Loaded %v packages.", len(r.pkgProvides))
 
-	for _, pkgVars := range r.packages {
+	for _, key := range packagesKeys {
+		pkgVars := r.packages[key]
 		var ands []bf.Formula
 		for _, pkgVar := range pkgVars {
 			if requires := r.explodePackageRequires(pkgVar); requires != nil {
