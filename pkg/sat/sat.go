@@ -563,7 +563,11 @@ func (r *Resolver) explodeSingleRequires(entry api.Entry, provides []*Var) (acce
 		provPerPkg[prov.Context] = append(provPerPkg[prov.Context], prov)
 	}
 
-	for _, pkgProv := range provPerPkg {
+	provPkgKeys := maps.Keys(provPerPkg)
+	slices.SortFunc(provPkgKeys, varContextSort)
+
+	for _, pkgContext := range provPkgKeys {
+		pkgProv := provPerPkg[pkgContext]
 		acceptsFromPkg, err := compareRequires(entryVer, entry.Flags, pkgProv)
 		if err != nil {
 			return nil, err
