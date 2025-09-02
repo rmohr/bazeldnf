@@ -10,7 +10,6 @@ go_library(
         "//pkg/reducer",
         "//pkg/rpm",
         "@com_github_crillab_gophersat//bf",
-        "@com_github_crillab_gophersat//explain",
         "@com_github_crillab_gophersat//maxsat",
         "@com_github_sirupsen_logrus//:logrus",
         "@org_golang_x_exp//maps",

@@ -31,9 +31,9 @@ func resolve(repos *bazeldnf.Repositories, required []string) ([]*api.Package, [
 		return nil, nil, nil
 	}
 
-	solver := sat.NewResolver(resolvehelperopts.nobest)
+	solver := sat.NewResolver()
 	logrus.Info("Loading involved packages into the resolver.")
-	err = solver.LoadInvolvedPackages(involved, resolvehelperopts.forceIgnoreRegex, resolvehelperopts.onlyAllowRegex)
+	err = solver.LoadInvolvedPackages(involved, resolvehelperopts.forceIgnoreRegex, resolvehelperopts.onlyAllowRegex, resolvehelperopts.nobest)
 	if err != nil {
 		return nil, nil, err
 	}

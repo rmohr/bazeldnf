@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"github.com/crillab/gophersat/bf"
-	"github.com/crillab/gophersat/explain"
 	"github.com/crillab/gophersat/maxsat"
 	"github.com/rmohr/bazeldnf/pkg/api"
 	"github.com/rmohr/bazeldnf/pkg/reducer"
@@ -56,13 +55,6 @@ func (v Var) String() string {
 	return fmt.Sprintf("%s(%s)", v.Package.String(), v.Context.Provides)
 }
 
-func VarsString(vars []*Var) (desc []string) {
-	for _, v := range vars {
-		desc = append(desc, v.String())
-	}
-	return
-}
-
 func toBFVars(vars []*Var) (bfvars []bf.Formula) {
 	for _, v := range vars {
 		bfvars = append(bfvars, bf.Var(v.satVarName))
@@ -77,33 +69,22 @@ type Resolver struct {
 	// packages contains a map which contains all pkg vars which can be looked up by package name
 	// useful for creating soft clauses
 	packages map[string][]*Var
-	// pkgProvides allows accessing all variables which get pulled in if a specific package get's pulled in
-	pkgProvides map[VarContext][]*Var
+
 	// vars contain as key an exact identifier for a provided resource and the actual SAT variable as value
 	vars map[string]*Var
 
 	bestPackages map[string]*api.Package
 
 	ands                        []bf.Formula
-	unresolvable                []unresolvable
 	forceIgnoreWithDependencies map[string]*api.Package
-	nobest                      bool
 }
 
-type unresolvable struct {
-	Package     *api.Package
-	Requirement api.Entry
-	Candidates  []*Var
-}
-
-func NewResolver(nobest bool) *Resolver {
+func NewResolver() *Resolver {
 	return &Resolver{
 		varsCount:                   0,
 		provides:                    map[string][]*Var{},
 		packages:                    map[string][]*Var{},
 		vars:                        map[string]*Var{},
-		pkgProvides:                 map[VarContext][]*Var{},
-		nobest:                      nobest,
 		bestPackages:                map[string]*api.Package{},
 		forceIgnoreWithDependencies: map[string]*api.Package{},
 	}
@@ -118,7 +99,7 @@ func (r *Resolver) ticket() string {
 // which denote packages which should be taken into account for solving the problem, but they should
 // then be ignored together with their requirements in the provided list of installed packages, and also
 // a list of regular expressions that may be used to limit the selection to matching packages.
-func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, ignoreRegex []string, allowRegex []string) error {
+func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, ignoreRegex []string, allowRegex []string, nobest bool) error {
 	// Deduplicate and detect excludes
 	deduplicated := map[string]*api.Package{}
 	for i, pkg := range packages {
@@ -181,7 +162,7 @@ func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, ignoreRegex []s
 		}
 	}
 
-	if !r.nobest {
+	if !nobest {
 		packages = nil
 		bestPackagesKeys := maps.Keys(r.bestPackages)
 		slices.Sort(bestPackagesKeys)
@@ -189,11 +170,14 @@ func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, ignoreRegex []s
 			packages = append(packages, r.bestPackages[v])
 		}
 	}
+
+	pkgProvides := map[VarContext][]*Var{}
+
 	// Generate variables
 	for _, pkg := range packages {
 		pkgVar, resourceVars := r.explodePackageToVars(pkg)
 		r.packages[pkg.Name] = append(r.packages[pkg.Name], pkgVar)
-		r.pkgProvides[pkgVar.Context] = resourceVars
+		pkgProvides[pkgVar.Context] = resourceVars
 		for _, v := range resourceVars {
 			r.provides[v.Context.Provides] = append(r.provides[v.Context.Provides], v)
 			r.vars[v.satVarName] = v
@@ -209,16 +193,16 @@ func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, ignoreRegex []s
 		})
 	}
 
-	logrus.Infof("Loaded %v packages.", len(r.pkgProvides))
+	logrus.Infof("Loaded %v packages.", len(pkgProvides))
 
-	pkgProvideKeys := maps.Keys(r.pkgProvides)
+	pkgProvideKeys := maps.Keys(pkgProvides)
 	slices.SortFunc(pkgProvideKeys, varContextSort)
 
 	// Generate imply rules
 	for _, provided := range pkgProvideKeys {
 		// Create imply rules for every package and add them to the formula
 		// one provided dependency implies all dependencies from that package
-		resourceVars := r.pkgProvides[provided]
+		resourceVars := pkgProvides[provided]
 		bfVar := bf.And(toBFVars(resourceVars)...)
 		var ands []bf.Formula
 		for _, res := range resourceVars {
@@ -245,6 +229,20 @@ func (r *Resolver) ConstructRequirements(packages []string) error {
 		r.ands = append(r.ands, bf.Var(req.satVarName))
 	}
 	return nil
+}
+
+func (r *Resolver) resolveNewest(pkgName string) (*Var, error) {
+	pkgs := r.provides[pkgName]
+	if len(pkgs) == 0 {
+		return nil, fmt.Errorf("package %s does not exist", pkgName)
+	}
+	newest := pkgs[0]
+	for _, p := range pkgs {
+		if rpm.Compare(p.Package.Version, newest.Package.Version) == 1 {
+			newest = p
+		}
+	}
+	return newest, nil
 }
 
 func (res *Resolver) Resolve() (install []*api.Package, excluded []*api.Package, forceIgnoredWithDependencies []*api.Package, err error) {
@@ -370,25 +368,6 @@ func (res *Resolver) Resolve() (install []*api.Package, excluded []*api.Package,
 	return nil, nil, nil, fmt.Errorf("no solution found")
 }
 
-func (res *Resolver) MUS() (mus *explain.Problem, err error) {
-	logrus.Info("No solution found.")
-	r, w := io.Pipe()
-
-	err = bf.Dimacs(bf.And(res.ands...), w)
-	if err != nil {
-		return nil, err
-	}
-	problem, err := explain.ParseCNF(r)
-	if err != nil {
-		return nil, err
-	}
-	mus, err = problem.MUSInsertion()
-	if err != nil {
-		return nil, err
-	}
-	return mus, nil
-}
-
 func (r *Resolver) explodePackageToVars(pkg *api.Package) (pkgVar *Var, resourceVars []*Var) {
 	for _, p := range pkg.Format.Provides.Entries {
 		if p.Name == pkg.Name {
@@ -447,11 +426,6 @@ func (r *Resolver) explodePackageRequires(pkgVar *Var) bf.Formula {
 		satisfies, err := r.explodeSingleRequires(req, r.provides[req.Name])
 		if err != nil {
 			logrus.Warnf("Package %s requires %s, but only got %+v", pkgVar.Package, req, r.provides[req.Name])
-			r.unresolvable = append(r.unresolvable, unresolvable{
-				Package:     pkgVar.Package,
-				Requirement: req,
-				Candidates:  r.provides[req.Name],
-			})
 			return bf.Not(bfunique)
 		}
 		uniqueVars := []string{}
@@ -487,20 +461,6 @@ func (r *Resolver) explodePackageConflicts(pkgVar *Var) bf.Formula {
 		return nil
 	}
 	return bf.Or(conflictingVars...)
-}
-
-func (r *Resolver) resolveNewest(pkgName string) (*Var, error) {
-	pkgs := r.provides[pkgName]
-	if len(pkgs) == 0 {
-		return nil, fmt.Errorf("package %s does not exist", pkgName)
-	}
-	newest := pkgs[0]
-	for _, p := range pkgs {
-		if rpm.Compare(p.Package.Version, newest.Package.Version) == 1 {
-			newest = p
-		}
-	}
-	return newest, nil
 }
 
 func compareRequires(entryVer api.Version, flag string, provides []*Var) (accepts []*Var, err error) {
