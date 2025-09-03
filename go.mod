@@ -21,12 +21,12 @@ require (
 	github.com/jdx/go-netrc v1.0.0
 )
 
-require github.com/ulikunitz/xz v0.5.12
-
 require (
-	github.com/segmentio/fasthash v1.0.3 // indirect
-	github.com/zyedidia/generic v1.2.1 // indirect
+	github.com/ulikunitz/xz v0.5.12
+	github.com/zyedidia/generic v1.2.1
 )
+
+require github.com/segmentio/fasthash v1.0.3 // indirect
 
 require (
 	github.com/adrg/xdg v0.5.3
