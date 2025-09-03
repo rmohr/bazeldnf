@@ -60,16 +60,16 @@ func TestDeterministicOutput(t *testing.T) {
 			err = xml.NewDecoder(f).Decode(repo)
 			g.Expect(err).ToNot(HaveOccurred())
 
-			resolver := NewResolver()
 			packages := []*api.Package{}
 			for i, _ := range repo.Packages {
 				packages = append(packages, &repo.Packages[i])
 			}
-			err = resolver.LoadInvolvedPackages(packages, nil, nil, false)
+
+			loader := NewLoader()
+			model, err := loader.Load(packages, tt.requires, nil, nil, false)
 			g.Expect(err).ToNot(HaveOccurred())
-			err = resolver.ConstructRequirements(tt.requires)
-			g.Expect(err).ToNot(HaveOccurred())
-			install, _, _, err := resolver.Resolve()
+
+			install, _, _, err := Resolve(model)
 			g.Expect(err).ToNot(HaveOccurred())
 			g.Expect(installToString(install)).To(ConsistOf(tt.installs))
 		})

@@ -62,10 +62,7 @@ func toBFVars(vars []*Var) (bfvars []bf.Formula) {
 	return
 }
 
-type Resolver struct {
-	varsCount int
-	// provides allows accessing variables which can resolve unversioned requirement to build proper clauses
-	provides map[string][]*Var
+type Model struct {
 	// packages contains a map which contains all pkg vars which can be looked up by package name
 	// useful for creating soft clauses
 	packages map[string][]*Var
@@ -79,27 +76,53 @@ type Resolver struct {
 	forceIgnoreWithDependencies map[string]*api.Package
 }
 
-func NewResolver() *Resolver {
-	return &Resolver{
-		varsCount:                   0,
-		provides:                    map[string][]*Var{},
-		packages:                    map[string][]*Var{},
-		vars:                        map[string]*Var{},
-		bestPackages:                map[string]*api.Package{},
-		forceIgnoreWithDependencies: map[string]*api.Package{},
+func (m *Model) Packages() map[string][]*Var {
+	return m.packages
+}
+
+func (m *Model) Var(v string) *Var {
+	return m.vars[v]
+}
+
+func (m *Model) BestPackage(p string) *api.Package {
+	return m.bestPackages[p]
+}
+
+func (m *Model) Ands() bf.Formula {
+	return bf.And(m.ands...)
+}
+
+func (m *Model) ShouldIgnore(p string) bool {
+	_, exists := m.forceIgnoreWithDependencies[p]
+	return exists
+}
+
+type Loader struct {
+	m         *Model
+	provides  map[string][]*Var
+	varsCount int
+}
+
+func NewLoader() *Loader {
+	return &Loader{
+		m: &Model{
+			packages:                    map[string][]*Var{},
+			vars:                        map[string]*Var{},
+			bestPackages:                map[string]*api.Package{},
+			forceIgnoreWithDependencies: map[string]*api.Package{},
+		},
+		provides:  map[string][]*Var{},
+		varsCount: 0,
 	}
 }
 
-func (r *Resolver) ticket() string {
-	r.varsCount++
-	return "x" + strconv.Itoa(r.varsCount)
-}
-
-// LoadInvolvedPackages takes a list of all involved packages to install, a list of regular expressions
-// which denote packages which should be taken into account for solving the problem, but they should
-// then be ignored together with their requirements in the provided list of installed packages, and also
-// a list of regular expressions that may be used to limit the selection to matching packages.
-func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, ignoreRegex []string, allowRegex []string, nobest bool) error {
+// Load takes a list of all involved packages to install, a list of regular
+// expressions which denote packages which should be taken into account for
+// solving the problem, but they should then be ignored together with their
+// requirements in the provided list of installed packages, and also a list
+// of regular expressions that may be used to limit the selection to matching
+// packages.
+func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowRegex []string, nobest bool) (*Model, error) {
 	// Deduplicate and detect excludes
 	deduplicated := map[string]*api.Package{}
 	for i, pkg := range packages {
@@ -111,7 +134,7 @@ func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, ignoreRegex []s
 			allowed := len(allowRegex) == 0
 			for _, rex := range allowRegex {
 				if match, err := regexp.MatchString(rex, fullName); err != nil {
-					return fmt.Errorf("failed to match package with regex '%v': %v", rex, err)
+					return nil, fmt.Errorf("failed to match package with regex '%v': %v", rex, err)
 				} else if match {
 					allowed = true
 					break
@@ -122,7 +145,7 @@ func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, ignoreRegex []s
 			if allowed {
 				for _, rex := range ignoreRegex {
 					if match, err := regexp.MatchString(rex, fullName); err != nil {
-						return fmt.Errorf("failed to match package with regex '%v': %v", rex, err)
+						return nil, fmt.Errorf("failed to match package with regex '%v': %v", rex, err)
 					} else if match {
 						logrus.Warnf("Package %v is forcefully ignored by regex '%v'.", pkg.String(), rex)
 						ignored = true
@@ -137,7 +160,7 @@ func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, ignoreRegex []s
 
 			if !allowed || ignored {
 				packages[i].Format.Requires.Entries = nil
-				r.forceIgnoreWithDependencies[pkg.String()] = packages[i]
+				loader.m.forceIgnoreWithDependencies[pkg.String()] = packages[i]
 			}
 
 			deduplicated[pkg.String()] = packages[i]
@@ -155,19 +178,19 @@ func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, ignoreRegex []s
 
 	// Create an index to pick the best candidates
 	for _, pkg := range packages {
-		if r.bestPackages[pkg.Name] == nil {
-			r.bestPackages[pkg.Name] = pkg
-		} else if rpm.Compare(pkg.Version, r.bestPackages[pkg.Name].Version) == 1 {
-			r.bestPackages[pkg.Name] = pkg
+		if loader.m.bestPackages[pkg.Name] == nil {
+			loader.m.bestPackages[pkg.Name] = pkg
+		} else if rpm.Compare(pkg.Version, loader.m.bestPackages[pkg.Name].Version) == 1 {
+			loader.m.bestPackages[pkg.Name] = pkg
 		}
 	}
 
 	if !nobest {
 		packages = nil
-		bestPackagesKeys := maps.Keys(r.bestPackages)
+		bestPackagesKeys := maps.Keys(loader.m.bestPackages)
 		slices.Sort(bestPackagesKeys)
 		for _, v := range bestPackagesKeys {
-			packages = append(packages, r.bestPackages[v])
+			packages = append(packages, loader.m.bestPackages[v])
 		}
 	}
 
@@ -175,21 +198,21 @@ func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, ignoreRegex []s
 
 	// Generate variables
 	for _, pkg := range packages {
-		pkgVar, resourceVars := r.explodePackageToVars(pkg)
-		r.packages[pkg.Name] = append(r.packages[pkg.Name], pkgVar)
+		pkgVar, resourceVars := loader.explodePackageToVars(pkg)
+		loader.m.packages[pkg.Name] = append(loader.m.packages[pkg.Name], pkgVar)
 		pkgProvides[pkgVar.Context] = resourceVars
 		for _, v := range resourceVars {
-			r.provides[v.Context.Provides] = append(r.provides[v.Context.Provides], v)
-			r.vars[v.satVarName] = v
+			loader.provides[v.Context.Provides] = append(loader.provides[v.Context.Provides], v)
+			loader.m.vars[v.satVarName] = v
 		}
 	}
 
-	packagesKeys := maps.Keys(r.packages)
+	packagesKeys := maps.Keys(loader.m.packages)
 	slices.Sort(packagesKeys)
 
 	for _, x := range packagesKeys {
-		sort.SliceStable(r.packages[x], func(i, j int) bool {
-			return rpm.Compare(r.packages[x][i].Package.Version, r.packages[x][j].Package.Version) < 0
+		sort.SliceStable(loader.m.packages[x], func(i, j int) bool {
+			return rpm.Compare(loader.m.packages[x][i].Package.Version, loader.m.packages[x][j].Package.Version) < 0
 		})
 	}
 
@@ -209,30 +232,164 @@ func (r *Resolver) LoadInvolvedPackages(packages []*api.Package, ignoreRegex []s
 			ands = append(ands, bf.Implies(bf.Var(res.satVarName), bfVar))
 		}
 		pkgVar := resourceVars[len(resourceVars)-1]
-		ands = append(ands, bf.Implies(bf.Var(pkgVar.satVarName), r.explodePackageRequires(pkgVar)))
-		if conflicts := r.explodePackageConflicts(pkgVar); conflicts != nil {
+		ands = append(ands, bf.Implies(bf.Var(pkgVar.satVarName), loader.explodePackageRequires(pkgVar)))
+		if conflicts := loader.explodePackageConflicts(pkgVar); conflicts != nil {
 			ands = append(ands, bf.Implies(bf.Var(pkgVar.satVarName), bf.Not(conflicts)))
 		}
-		r.ands = append(r.ands, ands...)
+		loader.m.ands = append(loader.m.ands, ands...)
 	}
-	logrus.Infof("Generated %v variables.", len(r.vars))
-	return nil
+	logrus.Infof("Generated %v variables.", len(loader.m.vars))
+
+	return loader.constructRequirements(matched)
 }
 
-func (r *Resolver) ConstructRequirements(packages []string) error {
-	for _, pkgName := range packages {
-		req, err := r.resolveNewest(pkgName)
+func (loader *Loader) explodePackageToVars(pkg *api.Package) (pkgVar *Var, resourceVars []*Var) {
+	for _, p := range pkg.Format.Provides.Entries {
+		if p.Name == pkg.Name {
+			pkgVar = &Var{
+				satVarName: loader.ticket(),
+				varType:    VarTypePackage,
+				Context: VarContext{
+					Package:  pkg.Name,
+					Provides: pkg.Name,
+					Version:  pkg.Version,
+				},
+				Package:         pkg,
+				ResourceVersion: &pkg.Version,
+			}
+			resourceVars = append(resourceVars, pkgVar)
+		} else {
+			resVar := &Var{
+				satVarName: loader.ticket(),
+				varType:    VarTypeResource,
+				Context: VarContext{
+					Package:  pkg.Name,
+					Provides: p.Name,
+					Version:  pkg.Version,
+				},
+				ResourceVersion: &api.Version{
+					Rel:   p.Rel,
+					Ver:   p.Ver,
+					Epoch: p.Epoch,
+				},
+				Package: pkg,
+			}
+			resourceVars = append(resourceVars, resVar)
+		}
+	}
+
+	for _, f := range pkg.Format.Files {
+		resVar := &Var{
+			satVarName: loader.ticket(),
+			varType:    VarTypeFile,
+			Context: VarContext{
+				Package:  pkg.Name,
+				Provides: f.Text,
+				Version:  pkg.Version,
+			},
+			Package:         pkg,
+			ResourceVersion: &api.Version{},
+		}
+		resourceVars = append(resourceVars, resVar)
+	}
+	return pkgVar, resourceVars
+}
+
+func (loader *Loader) explodePackageRequires(pkgVar *Var) bf.Formula {
+	var bfunique = bf.Var(pkgVar.satVarName)
+	for _, req := range pkgVar.Package.Format.Requires.Entries {
+		satisfies, err := loader.explodeSingleRequires(req, loader.provides[req.Name])
 		if err != nil {
-			return err
+			logrus.Warnf("Package %s requires %s, but only got %+v", pkgVar.Package, req, loader.provides[req.Name])
+			return bf.Not(bfunique)
+		}
+		uniqueVars := []string{}
+		for _, s := range satisfies {
+			uniqueVars = append(uniqueVars, s.satVarName)
+		}
+		bfunique = bf.And(bf.Unique(uniqueVars...), bfunique)
+	}
+	return bfunique
+}
+
+func (loader *Loader) explodePackageConflicts(pkgVar *Var) bf.Formula {
+	conflictingVars := []bf.Formula{}
+	for _, req := range pkgVar.Package.Format.Conflicts.Entries {
+		conflicts, err := loader.explodeSingleRequires(req, loader.provides[req.Name])
+		if err != nil {
+			// if a conflicting resource does not exist, we don't care
+			continue
+		}
+		for _, s := range conflicts {
+			if s.Package == pkgVar.Package {
+				// don't conflict with yourself
+				//logrus.Infof("%s does not conflict with %s", s.Package.String(), pkgVar.Package.String())
+				continue
+			}
+			if !strings.HasPrefix(s.Package.Name, "fedora-release") && !strings.HasPrefix(pkgVar.Package.String(), "fedora-release") {
+				logrus.Infof("%s conflicts with %s", s.Package.String(), pkgVar.Package.String())
+			}
+			conflictingVars = append(conflictingVars, bf.Var(s.satVarName))
+		}
+	}
+	if len(conflictingVars) == 0 {
+		return nil
+	}
+	return bf.Or(conflictingVars...)
+}
+
+func (loader *Loader) explodeSingleRequires(entry api.Entry, provides []*Var) (accepts []*Var, err error) {
+	entryVer := api.Version{
+		Text:  entry.Text,
+		Epoch: entry.Epoch,
+		Ver:   entry.Ver,
+		Rel:   entry.Rel,
+	}
+
+	provPerPkg := map[VarContext][]*Var{}
+	for _, prov := range provides {
+		provPerPkg[prov.Context] = append(provPerPkg[prov.Context], prov)
+	}
+
+	for _, pkgProv := range provPerPkg {
+		acceptsFromPkg, err := compareRequires(entryVer, entry.Flags, pkgProv)
+		if err != nil {
+			return nil, err
+		}
+		if len(acceptsFromPkg) > 0 {
+			// just pick one to avoid excluding each  other
+			accepts = append(accepts, acceptsFromPkg[0])
+		}
+	}
+
+	if len(accepts) == 0 {
+		return nil, fmt.Errorf("Nothing can satisfy %s", entry.Name)
+	}
+
+	return accepts, nil
+}
+
+func (loader *Loader) ticket() string {
+	loader.varsCount++
+	return "x" + strconv.Itoa(loader.varsCount)
+}
+
+func (loader *Loader) constructRequirements(packages []string) (*Model, error) {
+	logrus.Info("Adding required packages to the resolver.")
+
+	for _, pkgName := range packages {
+		req, err := loader.resolveNewest(pkgName)
+		if err != nil {
+			return nil, err
 		}
 		logrus.Infof("Selecting %s: %v", pkgName, req.Package)
-		r.ands = append(r.ands, bf.Var(req.satVarName))
+		loader.m.ands = append(loader.m.ands, bf.Var(req.satVarName))
 	}
-	return nil
+	return loader.m, nil
 }
 
-func (r *Resolver) resolveNewest(pkgName string) (*Var, error) {
-	pkgs := r.provides[pkgName]
+func (loader *Loader) resolveNewest(pkgName string) (*Var, error) {
+	pkgs := loader.provides[pkgName]
 	if len(pkgs) == 0 {
 		return nil, fmt.Errorf("package %s does not exist", pkgName)
 	}
@@ -245,8 +402,8 @@ func (r *Resolver) resolveNewest(pkgName string) (*Var, error) {
 	return newest, nil
 }
 
-func (res *Resolver) Resolve() (install []*api.Package, excluded []*api.Package, forceIgnoredWithDependencies []*api.Package, err error) {
-	logrus.WithField("bf", bf.And(res.ands...)).Debug("Formula to solve")
+func Resolve(model *Model) (install []*api.Package, excluded []*api.Package, forceIgnoredWithDependencies []*api.Package, err error) {
+	logrus.WithField("bf", model.Ands()).Debug("Formula to solve")
 
 	satReader, satWriter := io.Pipe()
 	pwMaxSatReader, pwMaxSatWriter := io.Pipe()
@@ -258,7 +415,7 @@ func (res *Resolver) Resolve() (install []*api.Package, excluded []*api.Package,
 	go func() {
 		defer close(satErrChan)
 		defer satWriter.Close()
-		satErrChan <- bf.Dimacs(bf.And(res.ands...), satWriter)
+		satErrChan <- bf.Dimacs(model.Ands(), satWriter)
 	}()
 
 	go func() {
@@ -279,7 +436,7 @@ func (res *Resolver) Resolve() (install []*api.Package, excluded []*api.Package,
 					satVar := match[2]
 					vars.satToPkg[satVar] = pkgVar
 					vars.pkgToSat[pkgVar] = satVar
-					if _, err := fmt.Fprintf(pwMaxSatWriter, "c %s -> %s\n", res.vars[pkgVar].Package.String(), res.vars[pkgVar].Context.Provides); err != nil {
+					if _, err := fmt.Fprintf(pwMaxSatWriter, "c %s -> %s\n", model.Var(pkgVar).Package.String(), model.Var(pkgVar).Context.Provides); err != nil {
 						pwMaxSatErrChan <- err
 						return
 					}
@@ -295,7 +452,7 @@ func (res *Resolver) Resolve() (install []*api.Package, excluded []*api.Package,
 			}
 		}
 		// write soft rules. We don't want to install any package
-		for _, pkgs := range res.packages {
+		for _, pkgs := range model.Packages() {
 			weight := 1901
 			fmt.Fprintf(pwMaxSatWriter, "c prefer %s\n", pkgs[len(pkgs)-1].Package.String())
 			if len(pkgs) > 1 {
@@ -336,10 +493,10 @@ func (res *Resolver) Resolve() (install []*api.Package, excluded []*api.Package,
 		forceIgnoreMap := map[VarContext]*api.Package{}
 		for k, v := range solution.Model {
 			// Offset of `1`. The model index starts with 0, but the variable sequence starts with 1, since 0 is not allowed
-			resVar := res.vars[satVars.satToPkg[strconv.Itoa(k+1)]]
+			resVar := model.Var(satVars.satToPkg[strconv.Itoa(k+1)])
 			if resVar != nil && resVar.varType == VarTypePackage {
 				if v {
-					if _, exists := res.forceIgnoreWithDependencies[resVar.Package.String()]; !exists {
+					if exists := model.ShouldIgnore(resVar.Package.String()); !exists {
 						installMap[resVar.Context] = resVar.Package
 					} else {
 						forceIgnoreMap[resVar.Context] = resVar.Package
@@ -350,8 +507,8 @@ func (res *Resolver) Resolve() (install []*api.Package, excluded []*api.Package,
 			}
 		}
 		for _, v := range installMap {
-			if rpm.Compare(res.bestPackages[v.Name].Version, v.Version) != 0 {
-				logrus.Infof("Picking %v instead of best candiate %v", v, res.bestPackages[v.Name])
+			if rpm.Compare(model.BestPackage(v.Name).Version, v.Version) != 0 {
+				logrus.Infof("Picking %v instead of best candiate %v", v, model.BestPackage(v.Name))
 			}
 			install = append(install, v)
 		}
@@ -366,101 +523,6 @@ func (res *Resolver) Resolve() (install []*api.Package, excluded []*api.Package,
 	}
 	logrus.Info("No solution found.")
 	return nil, nil, nil, fmt.Errorf("no solution found")
-}
-
-func (r *Resolver) explodePackageToVars(pkg *api.Package) (pkgVar *Var, resourceVars []*Var) {
-	for _, p := range pkg.Format.Provides.Entries {
-		if p.Name == pkg.Name {
-			pkgVar = &Var{
-				satVarName: r.ticket(),
-				varType:    VarTypePackage,
-				Context: VarContext{
-					Package:  pkg.Name,
-					Provides: pkg.Name,
-					Version:  pkg.Version,
-				},
-				Package:         pkg,
-				ResourceVersion: &pkg.Version,
-			}
-			resourceVars = append(resourceVars, pkgVar)
-		} else {
-			resVar := &Var{
-				satVarName: r.ticket(),
-				varType:    VarTypeResource,
-				Context: VarContext{
-					Package:  pkg.Name,
-					Provides: p.Name,
-					Version:  pkg.Version,
-				},
-				ResourceVersion: &api.Version{
-					Rel:   p.Rel,
-					Ver:   p.Ver,
-					Epoch: p.Epoch,
-				},
-				Package: pkg,
-			}
-			resourceVars = append(resourceVars, resVar)
-		}
-	}
-
-	for _, f := range pkg.Format.Files {
-		resVar := &Var{
-			satVarName: r.ticket(),
-			varType:    VarTypeFile,
-			Context: VarContext{
-				Package:  pkg.Name,
-				Provides: f.Text,
-				Version:  pkg.Version,
-			},
-			Package:         pkg,
-			ResourceVersion: &api.Version{},
-		}
-		resourceVars = append(resourceVars, resVar)
-	}
-	return pkgVar, resourceVars
-}
-
-func (r *Resolver) explodePackageRequires(pkgVar *Var) bf.Formula {
-	var bfunique = bf.Var(pkgVar.satVarName)
-	for _, req := range pkgVar.Package.Format.Requires.Entries {
-		satisfies, err := r.explodeSingleRequires(req, r.provides[req.Name])
-		if err != nil {
-			logrus.Warnf("Package %s requires %s, but only got %+v", pkgVar.Package, req, r.provides[req.Name])
-			return bf.Not(bfunique)
-		}
-		uniqueVars := []string{}
-		for _, s := range satisfies {
-			uniqueVars = append(uniqueVars, s.satVarName)
-		}
-		bfunique = bf.And(bf.Unique(uniqueVars...), bfunique)
-	}
-	return bfunique
-}
-
-func (r *Resolver) explodePackageConflicts(pkgVar *Var) bf.Formula {
-	conflictingVars := []bf.Formula{}
-	for _, req := range pkgVar.Package.Format.Conflicts.Entries {
-		conflicts, err := r.explodeSingleRequires(req, r.provides[req.Name])
-		if err != nil {
-			// if a conflicting resource does not exist, we don't care
-			continue
-		}
-		for _, s := range conflicts {
-			if s.Package == pkgVar.Package {
-				// don't conflict with yourself
-				//logrus.Infof("%s does not conflict with %s", s.Package.String(), pkgVar.Package.String())
-				continue
-			}
-			if !strings.HasPrefix(s.Package.Name, "fedora-release") && !strings.HasPrefix(pkgVar.Package.String(), "fedora-release") {
-				logrus.Infof("%s conflicts with %s", s.Package.String(), pkgVar.Package.String())
-			}
-			conflictingVars = append(conflictingVars, bf.Var(s.satVarName))
-		}
-	}
-	if len(conflictingVars) == 0 {
-		return nil
-	}
-	return bf.Or(conflictingVars...)
 }
 
 func compareRequires(entryVer api.Version, flag string, provides []*Var) (accepts []*Var, err error) {
@@ -509,37 +571,6 @@ func compareRequires(entryVer api.Version, flag string, provides []*Var) (accept
 			accepts = append(accepts, dep)
 		}
 	}
-	return accepts, nil
-}
-
-func (r *Resolver) explodeSingleRequires(entry api.Entry, provides []*Var) (accepts []*Var, err error) {
-	entryVer := api.Version{
-		Text:  entry.Text,
-		Epoch: entry.Epoch,
-		Ver:   entry.Ver,
-		Rel:   entry.Rel,
-	}
-
-	provPerPkg := map[VarContext][]*Var{}
-	for _, prov := range provides {
-		provPerPkg[prov.Context] = append(provPerPkg[prov.Context], prov)
-	}
-
-	for _, pkgProv := range provPerPkg {
-		acceptsFromPkg, err := compareRequires(entryVer, entry.Flags, pkgProv)
-		if err != nil {
-			return nil, err
-		}
-		if len(acceptsFromPkg) > 0 {
-			// just pick one to avoid excluding each  other
-			accepts = append(accepts, acceptsFromPkg[0])
-		}
-	}
-
-	if len(accepts) == 0 {
-		return nil, fmt.Errorf("Nothing can satisfy %s", entry.Name)
-	}
-
 	return accepts, nil
 }
 

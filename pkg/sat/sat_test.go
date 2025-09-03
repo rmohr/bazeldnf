@@ -22,16 +22,16 @@ func TestRecursive(t *testing.T) {
 	for _, pkg := range repo.Packages {
 		t.Run(fmt.Sprintf("find solution for %s", pkg.Name), func(t *testing.T) {
 			g := NewGomegaWithT(t)
-			resolver := NewResolver()
 			packages := []*api.Package{}
 			for i, _ := range repo.Packages {
 				packages = append(packages, &repo.Packages[i])
 			}
-			err = resolver.LoadInvolvedPackages(packages, nil, nil, false)
+
+			loader := NewLoader()
+			model, err := loader.Load(packages, []string{pkg.Name}, nil, nil, false)
 			g.Expect(err).ToNot(HaveOccurred())
-			err = resolver.ConstructRequirements([]string{pkg.Name})
-			g.Expect(err).ToNot(HaveOccurred())
-			_, _, _, err := resolver.Resolve()
+
+			_, _, _, err = Resolve(model)
 			if err != nil {
 				t.Fatalf("Failed to solve %s\n", pkg.Name)
 			}
@@ -1224,16 +1224,16 @@ func Test(t *testing.T) {
 			err = xml.NewDecoder(f).Decode(repo)
 			g.Expect(err).ToNot(HaveOccurred())
 
-			resolver := NewResolver()
 			packages := []*api.Package{}
 			for i, _ := range repo.Packages {
 				packages = append(packages, &repo.Packages[i])
 			}
-			err = resolver.LoadInvolvedPackages(packages, nil, nil, tt.nobest)
+
+			loader := NewLoader()
+			model, err := loader.Load(packages, tt.requires, nil, nil, tt.nobest)
 			g.Expect(err).ToNot(HaveOccurred())
-			err = resolver.ConstructRequirements(tt.requires)
-			g.Expect(err).ToNot(HaveOccurred())
-			install, _, _, err := resolver.Resolve()
+
+			install, _, _, err := Resolve(model)
 			g.Expect(err).ToNot(HaveOccurred())
 			g.Expect(pkgToString(install)).To(ConsistOf(tt.installs))
 		})
@@ -1384,17 +1384,13 @@ func TestNewResolver(t *testing.T) {
 			continue
 		}
 		t.Run(tt.name, func(t *testing.T) {
-			resolver := NewResolver()
-			err := resolver.LoadInvolvedPackages(tt.packages, tt.ignoreRegex, tt.allowRegex, tt.nobest)
+			loader := NewLoader()
+			model, err := loader.Load(tt.packages, tt.requires, tt.ignoreRegex, tt.allowRegex, tt.nobest)
 			if err != nil {
 				t.Fail()
 			}
-			err = resolver.ConstructRequirements(tt.requires)
-			if err != nil {
-				fmt.Println(err)
-				t.Fail()
-			}
-			install, exclude, _, err := resolver.Resolve()
+
+			install, exclude, _, err := Resolve(model)
 			g := NewGomegaWithT(t)
 			if tt.solvable {
 				g.Expect(err).ToNot(HaveOccurred())
