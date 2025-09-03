@@ -9,6 +9,7 @@ import (
 	"github.com/crillab/gophersat/bf"
 	. "github.com/onsi/gomega"
 	"github.com/rmohr/bazeldnf/pkg/api"
+	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 )
 
 func expectedVars(g *WithT, m *Model, vars ...string) {
@@ -114,8 +115,9 @@ func newPackage(
 	requires, provides, conflicts, files []string,
 ) *api.Package {
 	pkg := &api.Package{
-		Name:    name,
-		Version: newVersion(versionStr),
+		Name:       name,
+		Repository: &bazeldnf.Repository{},
+		Version:    newVersion(versionStr),
 	}
 
 	// Every package provides itself with a specific version
@@ -420,7 +422,7 @@ func TestLoader_Load(t *testing.T) {
 				bf.Or(bf.Not(x2), bf.And(x1, x2)),
 				bf.Or(bf.Not(x2), x2),
 				bf.Or(bf.Not(x3), bf.And(x3)),
-				bf.Or(bf.Not(x3), bf.And(bf.And(bf.Or(x5, x2), bf.Or(bf.Not(x5), bf.Not(x2))), x3)),
+				bf.Or(bf.Not(x3), bf.And(bf.And(bf.Or(x2, x5), bf.Or(bf.Not(x2), bf.Not(x5))), x3)),
 				bf.Or(bf.Not(x4), bf.And(x4, x5)),
 				bf.Or(bf.Not(x5), bf.And(x4, x5)),
 				bf.Or(bf.Not(x5), x5),
@@ -542,6 +544,58 @@ func TestLoader_Load(t *testing.T) {
 			g.Expect(err.Error()).To(Equal("package non-existent does not exist"))
 			g.Expect(model).To(BeNil())
 		})
+	})
+
+	t.Run("Repo priority comparison", func(t *testing.T) {
+		testCases := []struct {
+			constraint   string
+			pkgAVersion  string
+			pkgAPriority int
+			pkgBVersion  string
+			pkgBPriority int
+			selected     string
+		}{
+			{"same version, same repo priority", "1.0", 1, "1.0", 1, "A"},
+			{"same version, lower repo priority", "1.0", 2, "1.0", 1, "B"},
+			{"same version, higher repo priority", "1.0", 1, "1.0", 2, "A"},
+			{"higher version, same repo priority", "2.0", 1, "1.0", 1, "A"},
+			{"higher version, lower repo priority", "2.0", 2, "1.0", 1, "B"},
+			{"higher version, lower repo priority 2", "2.0", 5, "1.0", 1, "B"},
+			{"higher version, higher repo priority", "2.0", 1, "1.0", 2, "A"},
+			{"lower version, same repo priority", "1.0", 1, "2.0", 1, "B"},
+			{"lower version, lower repo priority", "1.0", 2, "2.0", 1, "B"},
+			{"lower version, higher repo priority", "1.0", 1, "2.0", 2, "A"},
+			{"lower version, higher repo priority 2", "1.0", 1, "2.0", 3, "A"},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.constraint, func(t *testing.T) {
+				pkgA := newSimplePackage("X", tc.pkgAVersion)
+				pkgA.Repository.Priority = tc.pkgAPriority
+				pkgB := newSimplePackage("X", tc.pkgBVersion)
+				pkgB.Repository.Priority = tc.pkgBPriority
+				model, _ := doSimpleLoad([]*api.Package{pkgA, pkgB}, false)
+
+				both := map[string]*api.Package{
+					"A": pkgA,
+					"B": pkgB,
+				}
+
+				selectedVersion := both[tc.selected].Version.String()
+				expectedPackages(g, model, map[string][]string{
+					"X": []string{selectedVersion},
+				})
+				expectedVars(g, model, "X-"+selectedVersion+"(X)")
+				expectedBest(g, model, map[string]string{
+					"X": selectedVersion,
+				})
+				expectedIgnores(g, model)
+				expectedAnds(g, model,
+					bf.Or(bf.Not(x1), bf.And(x1)),
+					bf.Or(bf.Not(x1), x1),
+				)
+			})
+		}
 	})
 
 	t.Run("Version Comparison Operators", func(t *testing.T) {
