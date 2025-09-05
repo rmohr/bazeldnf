@@ -8,6 +8,7 @@ import (
 
 	. "github.com/onsi/gomega"
 	"github.com/rmohr/bazeldnf/pkg/api"
+	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 )
 
 func TestDeterministicOutput(t *testing.T) {
@@ -62,7 +63,9 @@ func TestDeterministicOutput(t *testing.T) {
 
 			packages := []*api.Package{}
 			for i, _ := range repo.Packages {
-				packages = append(packages, &repo.Packages[i])
+				pkg := &repo.Packages[i]
+				pkg.Repository = &bazeldnf.Repository{}
+				packages = append(packages, pkg)
 			}
 
 			loader := NewLoader()
