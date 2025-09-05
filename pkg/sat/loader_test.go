@@ -2,14 +2,12 @@ package sat
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
 	"testing"
 
 	"github.com/crillab/gophersat/bf"
 	. "github.com/onsi/gomega"
 	"github.com/rmohr/bazeldnf/pkg/api"
-	"github.com/zyedidia/generic/set"
 )
 
 func expectedVars(g *WithT, m *Model, vars ...string) {
@@ -48,6 +46,10 @@ func expectedIgnores(g *WithT, m *Model, pkgNames... string) {
 	for _, name := range pkgNames {
 		g.Expect(m.forceIgnoreWithDependencies[name].String()).To(Equal(name))
 	}
+}
+
+func expectedAnds(g *WithT, m *Model, ands ...bf.Formula) {
+	g.Expect(bf.And(m.ands...).String()).To(Equal(bf.And(ands...).String()))
 }
 
 func newVersion(versionStr string) api.Version {
@@ -126,53 +128,6 @@ func newWithDepPackage(name, versionStr, dep string) *api.Package {
 	return newPackage(name, versionStr, []string{dep}, nil, nil, nil)
 }
 
-func findVarByName(m *Model, name, version string) *Var {
-	for _, v := range m.vars {
-		if v.Package.Name == name &&
-			v.Package.Version.String() == version &&
-			v.varType == VarTypePackage {
-			return v
-		}
-	}
-	return nil
-}
-
-func findFileVarByName(m *Model, path string) *Var {
-	for _, v := range m.vars {
-		if v.Context.Provides == path && v.varType == VarTypeFile {
-			return v
-		}
-	}
-	return nil
-}
-
-// hasUniqueConstraint checks if a model's formula contains a Unique constraint.
-func hasUniqueConstraint(m *Model, varNames ...string) bool {
-	// This regex finds bf.Unique clauses
-	re := regexp.MustCompile(`and\(and\(or\(.*\), or\(.*\)\)\)`)
-
-	// This regex matches the variables in bf.Unique clauses
-	varRE := regexp.MustCompile(`x[0-9]+(, x[0-9]+)+`)
-
-	// Create a set of the variable names we expect to find
-	expected := set.NewMapset[string](varNames...)
-
-	for _, formula := range m.ands {
-		for _, match := range re.FindAllStringSubmatch(formula.String(), -1) {
-			varMatches := varRE.FindAllStringSubmatch(match[0], -1)
-			actual := set.NewMapset[string](strings.Split(varMatches[0][0], ", ")...)
-
-			// Check if all of the actual and expected variables are the same
-			if actual.Size() == expected.Size() &&
-				expected.Difference(actual).Size() == 0 {
-				return true
-			}
-		}
-	}
-
-	return false
-}
-
 func TestLoader_Load(t *testing.T) {
 	g := NewGomegaWithT(t)
 
@@ -191,6 +146,12 @@ func TestLoader_Load(t *testing.T) {
 	doSimpleLoad := func(packages []*api.Package, nobest bool) (*Model, *Loader) {
 		return doLoad(packages, nil, nil, nil, nobest)
 	}
+
+	x1 := bf.Var("x1")
+	x2 := bf.Var("x2")
+	x3 := bf.Var("x3")
+	x4 := bf.Var("x4")
+	x5 := bf.Var("x5")
 
 	t.Run("Trivial Loading", func(t *testing.T) {
 		model, _ := doSimpleLoad([]*api.Package{}, false)
@@ -213,6 +174,10 @@ func TestLoader_Load(t *testing.T) {
 			expectedVars(g, model, "A-0:1.0-1(A)")
 			expectedBest(g, model, map[string]string{"A": "0:1.0-1"})
 			expectedIgnores(g, model)
+			expectedAnds(g, model,
+				bf.Or(bf.Not(x1), bf.And(x1)),
+				bf.Or(bf.Not(x1), x1),
+			)
 		})
 
 		t.Run("only newest package with nobest=false", func(t *testing.T) {
@@ -226,6 +191,10 @@ func TestLoader_Load(t *testing.T) {
 			expectedVars(g, model, "A-0:2.0-1(A)")
 			expectedBest(g, model, map[string]string{"A": "0:2.0-1"})
 			expectedIgnores(g, model)
+			expectedAnds(g, model,
+				bf.Or(bf.Not(x1), bf.And(x1)),
+				bf.Or(bf.Not(x1), x1),
+			)
 		})
 
 		t.Run("all packages with nobest=true", func(t *testing.T) {
@@ -239,6 +208,12 @@ func TestLoader_Load(t *testing.T) {
 			expectedVars(g, model, "A-0:1.0-1(A)", "A-0:2.0-1(A)")
 			expectedBest(g, model, map[string]string{"A": "0:2.0-1"})
 			expectedIgnores(g, model)
+			expectedAnds(g, model,
+				bf.Or(bf.Not(x1), bf.And(x1)),
+				bf.Or(bf.Not(x1), x1),
+				bf.Or(bf.Not(x2), bf.And(x2)),
+				bf.Or(bf.Not(x2), x2),
+			)
 		})
 	})
 
@@ -270,10 +245,19 @@ func TestLoader_Load(t *testing.T) {
 		t.Run("filter with allowRegex only", func(t *testing.T) {
 			packages := []*api.Package{pkgA, pkgB, pkgC}
 
-			model, _ := doLoad(packages, nil, nil, []string{"^pkg-[ab]"}, false)
+			model, _ := doLoad(packages, []string{"pkg-a"}, nil, []string{"^pkg-[ab]"}, false)
 
 			basicExpectations(model)
 			expectedIgnores(g, model, "pkg-c-0:1.0")
+			expectedAnds(g, model,
+				bf.Or(bf.Not(x1), bf.And(x1)),
+				bf.Or(bf.Not(x1), bf.Not(x1)),
+				bf.Or(bf.Not(x2), bf.And(x2)),
+				bf.Or(bf.Not(x2), bf.Not(x2)),
+				bf.Or(bf.Not(x3), bf.And(x3)),
+				bf.Or(bf.Not(x3), x3),
+				x1,
+			)
 
 			// verify side effect
 			g.Expect(packages[2].Format.Requires.Entries).To(BeNil())
@@ -286,6 +270,14 @@ func TestLoader_Load(t *testing.T) {
 
 			basicExpectations(model)
 			expectedIgnores(g, model, "pkg-b-0:1.0")
+			expectedAnds(g, model,
+				bf.Or(bf.Not(x1), bf.And(x1)),
+				bf.Or(bf.Not(x1), bf.Not(x1)),
+				bf.Or(bf.Not(x2), bf.And(x2)),
+				bf.Or(bf.Not(x2), x2),
+				bf.Or(bf.Not(x3), bf.And(x3)),
+				bf.Or(bf.Not(x3), x3),
+			)
 
 			// verify side effect
 			g.Expect(packages[2].Format.Requires.Entries).To(BeNil())
@@ -299,6 +291,14 @@ func TestLoader_Load(t *testing.T) {
 
 			basicExpectations(model)
 			expectedIgnores(g, model, "pkg-b-0:1.0")
+			expectedAnds(g, model,
+				bf.Or(bf.Not(x1), bf.And(x1)),
+				bf.Or(bf.Not(x1), bf.Not(x1)),
+				bf.Or(bf.Not(x2), bf.And(x2)),
+				bf.Or(bf.Not(x2), x2),
+				bf.Or(bf.Not(x3), bf.And(x3)),
+				bf.Or(bf.Not(x3), bf.Not(x3)),
+			)
 
 			// verify side effect
 			g.Expect(packages[1].Format.Requires.Entries).To(BeNil())
@@ -312,6 +312,14 @@ func TestLoader_Load(t *testing.T) {
 
 			basicExpectations(model)
 			expectedIgnores(g, model, "pkg-b-0:1.0", "pkg-c-0:1.0")
+			expectedAnds(g, model,
+				bf.Or(bf.Not(x1), bf.And(x1)),
+				bf.Or(bf.Not(x1), bf.Not(x1)),
+				bf.Or(bf.Not(x2), bf.And(x2)),
+				bf.Or(bf.Not(x2), x2),
+				bf.Or(bf.Not(x3), bf.And(x3)),
+				bf.Or(bf.Not(x3), x3),
+			)
 
 			// verify side effect
 			g.Expect(packages[1].Format.Requires.Entries).To(BeNil())
@@ -324,6 +332,14 @@ func TestLoader_Load(t *testing.T) {
 			model, _ := doLoad(packages, nil, []string{"^pkg-b"}, []string{"^pkg-[ab]"}, false)
 			basicExpectations(model)
 			expectedIgnores(g, model, "pkg-b-0:1.0", "pkg-c-0:1.0")
+			expectedAnds(g, model,
+				bf.Or(bf.Not(x1), bf.And(x1)),
+				bf.Or(bf.Not(x1), bf.Not(x1)),
+				bf.Or(bf.Not(x2), bf.And(x2)),
+				bf.Or(bf.Not(x2), x2),
+				bf.Or(bf.Not(x3), bf.And(x3)),
+				bf.Or(bf.Not(x3), x3),
+			)
 		})
 	})
 
@@ -350,19 +366,21 @@ func TestLoader_Load(t *testing.T) {
 				"toolkit": "0:2.0",
 			})
 			expectedIgnores(g, model)
-
-			varApp := findVarByName(model, "app", "0:1.0")
-			varFile := findFileVarByName(model, "/usr/bin/tool")
-			g.Expect(varFile).ToNot(BeNil())
-			expectedRule := bf.Implies(bf.Var(varApp.satVarName), bf.And(bf.Unique(varFile.satVarName), bf.Var(varApp.satVarName)))
-			g.Expect(model.ands).To(ContainElement(expectedRule))
+			expectedAnds(g, model,
+				bf.Or(bf.Not(x1), bf.And(x1)),
+				bf.Or(bf.Not(x1), bf.And(bf.And(bf.Or(x3)), x1)),
+				bf.Or(bf.Not(x2), bf.And(x2, x3)),
+				bf.Or(bf.Not(x3), bf.And(x2, x3)),
+				bf.Or(bf.Not(x3), x3),
+				x1,
+			)
 		})
 
 		t.Run("handle ambiguous providers", func(t *testing.T) {
 			pkgApp := newWithDepPackage("app", "1.0", "webserver")
 			pkgApache := newPackage("apache", "2.4", nil, []string{"webserver"}, nil, nil)
 			pkgNginx := newPackage("nginx", "1.2", nil, []string{"webserver"}, nil, nil)
-			model, loader := doLoad([]*api.Package{pkgApp, pkgApache, pkgNginx}, []string{"app"}, nil, nil, false)
+			model, _ := doLoad([]*api.Package{pkgApp, pkgApache, pkgNginx}, []string{"app"}, nil, nil, false)
 
 			expectedPackages(g, model, map[string][]string{
 				"app":    []string{"0:1.0"},
@@ -385,9 +403,17 @@ func TestLoader_Load(t *testing.T) {
 				"nginx": "0:1.2",
 			})
 			expectedIgnores(g, model)
-			apacheVar := loader.provides["webserver"][0]
-			nginxVar := loader.provides["webserver"][1]
-			g.Expect(hasUniqueConstraint(model, apacheVar.satVarName, nginxVar.satVarName)).To(BeTrue())
+			expectedAnds(g, model,
+				bf.Or(bf.Not(x1), bf.And(x1, x2)),
+				bf.Or(bf.Not(x2), bf.And(x1, x2)),
+				bf.Or(bf.Not(x2), x2),
+				bf.Or(bf.Not(x3), bf.And(x3)),
+				bf.Or(bf.Not(x3), bf.And(bf.And(bf.Or(x5, x2), bf.Or(bf.Not(x5), bf.Not(x2))), x3)),
+				bf.Or(bf.Not(x4), bf.And(x4, x5)),
+				bf.Or(bf.Not(x5), bf.And(x4, x5)),
+				bf.Or(bf.Not(x5), x5),
+				x3,
+			)
 		})
 
 		t.Run("should handle transitive dependencies", func(t *testing.T) {
@@ -408,17 +434,14 @@ func TestLoader_Load(t *testing.T) {
 				"B": "0:1.0",
 				"C": "0:1.0",
 			})
-			varA := findVarByName(model, "A", "0:1.0")
-			varB := findVarByName(model, "B", "0:1.0")
-			varC := findVarByName(model, "C", "0:1.0")
-			g.Expect(model.ands).To(ContainElement(bf.Implies(
-				bf.Var(varA.satVarName),
-				bf.And(bf.Unique(varB.satVarName), bf.Var(varA.satVarName)),
-			)))
-			g.Expect(model.ands).To(ContainElement(bf.Implies(
-				bf.Var(varB.satVarName),
-				bf.And(bf.Unique(varC.satVarName), bf.Var(varB.satVarName)),
-			)))
+			expectedAnds(g, model,
+				bf.Or(bf.Not(x1), bf.And(x1)),
+				bf.Or(bf.Not(x1), bf.And(bf.And(bf.Or(x2)), x1)),
+				bf.Or(bf.Not(x2), bf.And(x2)),
+				bf.Or(bf.Not(x2), bf.And(bf.And(bf.Or(x3)), x2)),
+				bf.Or(bf.Not(x3), bf.And(x3)),
+				bf.Or(bf.Not(x3), x3),
+			)
 		})
 	})
 
@@ -442,6 +465,11 @@ func TestLoader_Load(t *testing.T) {
 				map[string]string{"platform-python": "0:3.6"},
 			)
 			expectedIgnores(g, model)
+			expectedAnds(g, model,
+				bf.Or(bf.Not(x1), bf.And(x1, x2)),
+				bf.Or(bf.Not(x2), bf.And(x1, x2)),
+				bf.Or(bf.Not(x2), x2),
+			)
 
 			// verify side effect
 			g.Expect(pkg.Format.Requires.Entries).To(BeEmpty())
@@ -460,6 +488,10 @@ func TestLoader_Load(t *testing.T) {
 			})
 			expectedVars(g, model, "A-5:1.0-2(A)")
 			expectedBest(g, model, map[string]string{"A": "5:1.0-2"})
+			expectedAnds(g, model,
+				bf.Or(bf.Not(x1), bf.And(x1)),
+				bf.Or(bf.Not(x1), x1),
+			)
 		})
 
 		t.Run("should ignore self-conflicts", func(t *testing.T) {
@@ -467,21 +499,10 @@ func TestLoader_Load(t *testing.T) {
 			model, _ := doLoad([]*api.Package{pkgA}, nil, nil, nil, false)
 
 			expectedVars(g, model, "A-0:1.0(A)")
-			varA := findVarByName(model, "A", "0:1.0")
-
-			// The goal is to ensure NO conflict rule is generated for a package against itself.
-			// A conflict rule has the string structure: "Implies(var, Not(Or(...)))"
-			foundSelfConflict := false
-			for _, formula := range model.ands {
-				// Convert formula to its public string representation
-				formulaStr := formula.String()
-				// Check if a formula starts with an implication from our variable and contains a negation.
-				if strings.HasPrefix(formulaStr, "and("+varA.satVarName) && strings.Contains(formulaStr, "not(or") {
-					foundSelfConflict = true
-					break
-				}
-			}
-			g.Expect(foundSelfConflict).To(BeFalse(), "A conflict rule should not be generated for a self-conflicting package")
+			expectedAnds(g, model,
+				bf.Or(bf.Not(x1), bf.And(x1)),
+				bf.Or(bf.Not(x1), x1),
+			)
 		})
 	})
 
@@ -494,9 +515,10 @@ func TestLoader_Load(t *testing.T) {
 				"A": []string{"0:1.0-1"},
 			})
 			expectedVars(g, model, "A-0:1.0-1(A)")
-			varA := findVarByName(model, "A", "0:1.0-1")
-			expectedRule := bf.Implies(bf.Var(varA.satVarName), bf.Not(bf.Var(varA.satVarName)))
-			g.Expect(model.ands).To(ContainElement(expectedRule))
+			expectedAnds(g, model,
+				bf.Or(bf.Not(x1), bf.And(x1)),
+				bf.Or(bf.Not(x1), bf.Not(x1)),
+			)
 		})
 
 		t.Run("should handle missing matched packages", func(t *testing.T) {
@@ -516,16 +538,77 @@ func TestLoader_Load(t *testing.T) {
 			allB = append(allB, newSimplePackage("B", v))
 		}
 
+		eqExpectedAnds := []bf.Formula{
+			bf.Or(bf.Not(x1), bf.And(x1)),
+			bf.Or(bf.Not(x1), bf.And(bf.And(bf.Or(x4)), x1)),
+			bf.Or(bf.Not(x2), bf.And(x2)),
+			bf.Or(bf.Not(x2), x2),
+			bf.Or(bf.Not(x3), bf.And(x3)),
+			bf.Or(bf.Not(x3), x3),
+			bf.Or(bf.Not(x4), bf.And(x4)),
+			bf.Or(bf.Not(x4), x4),
+			bf.Or(bf.Not(x5), bf.And(x5)),
+			bf.Or(bf.Not(x5), x5),
+		}
+
+		gtExpectedAnds := []bf.Formula{
+			bf.Or(bf.Not(x1), bf.And(x1)),
+			bf.Or(bf.Not(x1), bf.And(bf.And(bf.Or(x5)), x1)),
+			bf.Or(bf.Not(x2), bf.And(x2)),
+			bf.Or(bf.Not(x2), x2),
+			bf.Or(bf.Not(x3), bf.And(x3)),
+			bf.Or(bf.Not(x3), x3),
+			bf.Or(bf.Not(x4), bf.And(x4)),
+			bf.Or(bf.Not(x4), x4),
+			bf.Or(bf.Not(x5), bf.And(x5)),
+			bf.Or(bf.Not(x5), x5),
+		}
+		ltExpectedAnds := []bf.Formula{
+			bf.Or(bf.Not(x1), bf.And(x1)),
+			bf.Or(bf.Not(x1), bf.And(bf.And(bf.Or(x2, x3), bf.Or(bf.Not(x2), bf.Not(x3))), x1)),
+			bf.Or(bf.Not(x2), bf.And(x2)),
+			bf.Or(bf.Not(x2), x2),
+			bf.Or(bf.Not(x3), bf.And(x3)),
+			bf.Or(bf.Not(x3), x3),
+			bf.Or(bf.Not(x4), bf.And(x4)),
+			bf.Or(bf.Not(x4), x4),
+			bf.Or(bf.Not(x5), bf.And(x5)),
+			bf.Or(bf.Not(x5), x5),
+		}
+		geExpectedAnds := []bf.Formula{
+			bf.Or(bf.Not(x1), bf.And(x1)),
+			bf.Or(bf.Not(x1), bf.And(bf.And(bf.Or(x4, x5), bf.Or(bf.Not(x4), bf.Not(x5))), x1)),
+			bf.Or(bf.Not(x2), bf.And(x2)),
+			bf.Or(bf.Not(x2), x2),
+			bf.Or(bf.Not(x3), bf.And(x3)),
+			bf.Or(bf.Not(x3), x3),
+			bf.Or(bf.Not(x4), bf.And(x4)),
+			bf.Or(bf.Not(x4), x4),
+			bf.Or(bf.Not(x5), bf.And(x5)),
+			bf.Or(bf.Not(x5), x5),
+		}
+		leExpectedAnds := []bf.Formula{
+			bf.Or(bf.Not(x1), bf.And(x1)),
+			bf.Or(bf.Not(x1), bf.And(bf.And(bf.Or(x2, x3, x4), bf.Or(bf.Not(x2), bf.Not(x3)), bf.Or(bf.Not(x2), bf.Not(x4)), bf.Or(bf.Not(x3), bf.Not(x4))), x1)),
+			bf.Or(bf.Not(x2), bf.And(x2)),
+			bf.Or(bf.Not(x2), x2),
+			bf.Or(bf.Not(x3), bf.And(x3)),
+			bf.Or(bf.Not(x3), x3),
+			bf.Or(bf.Not(x4), bf.And(x4)),
+			bf.Or(bf.Not(x4), x4),
+			bf.Or(bf.Not(x5), bf.And(x5)),
+			bf.Or(bf.Not(x5), x5),
+		}
+
 		testCases := []struct {
-			constraint string
-			satisfiers []*api.Package
-			rejects    []*api.Package
+			constraint   string
+			expectedAnds []bf.Formula
 		}{
-			{"EQ", []*api.Package{allB[2]}, []*api.Package{allB[0], allB[1], allB[3]}},
-			{"GT", []*api.Package{allB[3]}, []*api.Package{allB[0], allB[1], allB[2]}},
-			{"LT", []*api.Package{allB[0], allB[1]}, []*api.Package{allB[2], allB[3]}},
-			{"GE", []*api.Package{allB[2], allB[3]}, []*api.Package{allB[0], allB[1]}},
-			{"LE", []*api.Package{allB[0], allB[1], allB[2]}, []*api.Package{allB[3]}},
+			{"EQ", eqExpectedAnds},
+			{"GT", gtExpectedAnds},
+			{"LT", ltExpectedAnds},
+			{"GE", geExpectedAnds},
+			{"LE", leExpectedAnds},
 		}
 
 		for _, tc := range testCases {
@@ -533,36 +616,7 @@ func TestLoader_Load(t *testing.T) {
 				req := "B " + tc.constraint + " 2.0-2"
 				pkgA := newWithDepPackage("A", "1.0-1", req)
 				model, _ := doLoad(append(allB, pkgA), []string{"A"}, nil, nil, true)
-
-				// --- Verification Logic ---
-				// 1. Find the specific dependency formula for package A
-				//    A dependency rule "A -> B" is represented as "or(not(A), B)".
-				varA := findVarByName(model, "A", "0:1.0-1")
-				g.Expect(varA).ToNot(BeNil())
-				var dependencyFormulaStr string
-
-				for _, formula := range model.ands {
-					if strings.HasPrefix(formula.String(), "or(not("+varA.satVarName+")") &&
-						strings.Contains(formula.String(), "and(and(") {
-						dependencyFormulaStr = formula.String()
-						break
-					}
-				}
-
-				g.Expect(dependencyFormulaStr).ToNot(BeEmpty(), "Could not find the dependency formula for package A")
-				// 2. Verify that expected packages are present
-				for _, pkg := range tc.satisfiers {
-					v := findVarByName(model, pkg.Name, pkg.Version.String())
-					g.Expect(v).ToNot(BeNil())
-					g.Expect(dependencyFormulaStr).To(ContainSubstring(v.satVarName))
-				}
-
-				// 3. Verify that packages were rejected
-				for _, pkg := range tc.rejects {
-					v := findVarByName(model, pkg.Name, pkg.Version.String())
-					g.Expect(v).ToNot(BeNil())
-					g.Expect(dependencyFormulaStr).ToNot(ContainSubstring(v.satVarName))
-				}
+				expectedAnds(g, model, append(tc.expectedAnds, x1)...)
 			})
 		}
 	})

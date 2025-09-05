@@ -53,6 +53,5 @@ go_test(
         "//pkg/api",
         "@com_github_crillab_gophersat//bf",
         "@com_github_onsi_gomega//:gomega",
-        "@com_github_zyedidia_generic//set",
     ],
 )
