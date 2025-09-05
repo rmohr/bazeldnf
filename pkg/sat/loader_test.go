@@ -2,6 +2,7 @@ package sat
 
 import (
 	"fmt"
+	"math"
 	"strings"
 	"testing"
 
@@ -40,7 +41,7 @@ func expectedBest(g *WithT, m *Model, pkgVersions map[string]string) {
 	}
 }
 
-func expectedIgnores(g *WithT, m *Model, pkgNames... string) {
+func expectedIgnores(g *WithT, m *Model, pkgNames ...string) {
 	g.Expect(m.forceIgnoreWithDependencies).To(HaveLen(len(pkgNames)))
 
 	for _, name := range pkgNames {
@@ -49,7 +50,18 @@ func expectedIgnores(g *WithT, m *Model, pkgNames... string) {
 }
 
 func expectedAnds(g *WithT, m *Model, ands ...bf.Formula) {
-	g.Expect(bf.And(m.ands...).String()).To(Equal(bf.And(ands...).String()))
+	n := len(ands)
+	permutations := int(math.Pow(2, float64(n)))
+
+	for i := 0; i < permutations; i++ {
+		c := make(map[string]bool)
+		for j := 0; j < n; j++ {
+			v := fmt.Sprintf("x%d", n-j)
+			c[v] = (i>>j)&1 == 1
+		}
+
+		g.Expect(bf.And(m.ands...).Eval(c)).To(Equal(bf.And(ands...).Eval(c)))
+	}
 }
 
 func newVersion(versionStr string) api.Version {
@@ -362,7 +374,7 @@ func TestLoader_Load(t *testing.T) {
 				"toolkit-0:2.0(/usr/bin/tool)",
 			)
 			expectedBest(g, model, map[string]string{
-				"app": "0:1.0",
+				"app":     "0:1.0",
 				"toolkit": "0:2.0",
 			})
 			expectedIgnores(g, model)
@@ -398,9 +410,9 @@ func TestLoader_Load(t *testing.T) {
 				"nginx-0:1.2(webserver)",
 			)
 			expectedBest(g, model, map[string]string{
-				"app": "0:1.0",
+				"app":    "0:1.0",
 				"apache": "0:2.4",
-				"nginx": "0:1.2",
+				"nginx":  "0:1.2",
 			})
 			expectedIgnores(g, model)
 			expectedAnds(g, model,
