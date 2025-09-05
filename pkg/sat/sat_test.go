@@ -8,6 +8,7 @@ import (
 
 	. "github.com/onsi/gomega"
 	"github.com/rmohr/bazeldnf/pkg/api"
+	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 )
 
 func TestRecursive(t *testing.T) {
@@ -24,7 +25,9 @@ func TestRecursive(t *testing.T) {
 			g := NewGomegaWithT(t)
 			packages := []*api.Package{}
 			for i, _ := range repo.Packages {
-				packages = append(packages, &repo.Packages[i])
+				pkg := &repo.Packages[i]
+				pkg.Repository = &bazeldnf.Repository{}
+				packages = append(packages, pkg)
 			}
 
 			loader := NewLoader()
@@ -1226,7 +1229,9 @@ func Test(t *testing.T) {
 
 			packages := []*api.Package{}
 			for i, _ := range repo.Packages {
-				packages = append(packages, &repo.Packages[i])
+				pkg := &repo.Packages[i]
+				pkg.Repository = &bazeldnf.Repository{}
+				packages = append(packages, pkg)
 			}
 
 			loader := NewLoader()
@@ -1422,6 +1427,8 @@ func newPkg(name string, version string, provides []string, requires []string, c
 	for _, req := range conflicts {
 		pkg.Format.Conflicts.Entries = append(pkg.Format.Conflicts.Entries, api.Entry{Name: req})
 	}
+
+	pkg.Repository = &bazeldnf.Repository{}
 
 	return pkg
 }
