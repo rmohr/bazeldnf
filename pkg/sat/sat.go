@@ -209,55 +209,6 @@ func Resolve(model *Model) (install []*api.Package, excluded []*api.Package, for
 	return nil, nil, nil, fmt.Errorf("no solution found")
 }
 
-func compareRequires(entryVer api.Version, flag string, provides []*Var) (accepts []*Var, err error) {
-	for _, dep := range provides {
-
-		// Requirement "EQ 2.14" matches 2.14-5.fc33
-		depVer := *dep.ResourceVersion
-		if entryVer.Rel == "" {
-			depVer.Rel = ""
-		}
-
-		works := false
-		if depVer.Epoch == "" && depVer.Ver == "" && depVer.Rel == "" {
-			works = true
-		} else {
-			cmp := rpm.Compare(depVer, entryVer)
-			switch flag {
-			case "EQ":
-				if cmp == 0 {
-					works = true
-				}
-				cmp = 0
-			case "LE":
-				if cmp <= 0 {
-					works = true
-				}
-			case "GE":
-				if cmp >= 0 {
-					works = true
-				}
-			case "LT":
-				if cmp == -1 {
-					works = true
-				}
-			case "GT":
-				if cmp == 1 {
-					works = true
-				}
-			case "":
-				return provides, nil
-			default:
-				return nil, fmt.Errorf("can't interprate flags value %s", flag)
-			}
-		}
-		if works {
-			accepts = append(accepts, dep)
-		}
-	}
-	return accepts, nil
-}
-
 type ConversionVars struct {
 	satToPkg map[string]string
 	pkgToSat map[string]string
