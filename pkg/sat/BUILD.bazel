@@ -2,7 +2,10 @@ load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "sat",
-    srcs = ["sat.go"],
+    srcs = [
+        "loader.go",
+        "sat.go",
+    ],
     importpath = "github.com/rmohr/bazeldnf/pkg/sat",
     visibility = ["//visibility:public"],
     deps = [
@@ -37,6 +40,18 @@ go_test(
     embed = [":sat"],
     deps = [
         "//pkg/api",
+        "@com_github_onsi_gomega//:gomega",
+    ],
+)
+
+go_test(
+    name = "loader_test",
+    srcs = ["loader_test.go"],
+    data = glob(["testdata/**"]),
+    embed = [":sat"],
+    deps = [
+        "//pkg/api",
+        "@com_github_crillab_gophersat//bf",
         "@com_github_onsi_gomega//:gomega",
     ],
 )
