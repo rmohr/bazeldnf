@@ -99,7 +99,7 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 	for _, pkg := range packages {
 		if loader.m.bestPackages[pkg.Name] == nil {
 			loader.m.bestPackages[pkg.Name] = pkg
-		} else if rpm.Compare(pkg.Version, loader.m.bestPackages[pkg.Name].Version) == 1 {
+		} else if rpm.ComparePackage(pkg, loader.m.bestPackages[pkg.Name]) > 0 {
 			loader.m.bestPackages[pkg.Name] = pkg
 		}
 	}
@@ -131,7 +131,7 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 
 	for _, x := range packagesKeys {
 		sort.SliceStable(loader.m.packages[x], func(i, j int) bool {
-			return rpm.Compare(loader.m.packages[x][i].Package.Version, loader.m.packages[x][j].Package.Version) < 0
+			return rpm.ComparePackage(loader.m.packages[x][i].Package, loader.m.packages[x][j].Package) < 0
 		})
 	}
 
@@ -314,7 +314,7 @@ func (loader *Loader) resolveNewest(pkgName string) (*Var, error) {
 	}
 	newest := pkgs[0]
 	for _, p := range pkgs {
-		if rpm.Compare(p.Package.Version, newest.Package.Version) == 1 {
+		if rpm.ComparePackage(p.Package, newest.Package) > 0 {
 			newest = p
 		}
 	}

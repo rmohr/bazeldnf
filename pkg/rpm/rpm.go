@@ -8,6 +8,14 @@ import (
 	"github.com/rmohr/bazeldnf/pkg/api"
 )
 
+func ComparePackage(a *api.Package, b *api.Package) int {
+	if a.Repository.Priority == b.Repository.Priority {
+		return Compare(a.Version, b.Version)
+	}
+
+	return b.Repository.Priority - a.Repository.Priority
+}
+
 func Compare(a api.Version, b api.Version) int {
 	return cmp.Or(
 		compare(a.Epoch, b.Epoch),

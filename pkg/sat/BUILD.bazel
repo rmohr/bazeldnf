@@ -29,6 +29,7 @@ go_test(
     embed = [":sat"],
     deps = [
         "//pkg/api",
+        "//pkg/api/bazeldnf",
         "@com_github_onsi_gomega//:gomega",
     ],
 )
@@ -40,6 +41,7 @@ go_test(
     embed = [":sat"],
     deps = [
         "//pkg/api",
+        "//pkg/api/bazeldnf",
         "@com_github_onsi_gomega//:gomega",
     ],
 )
@@ -51,6 +53,7 @@ go_test(
     embed = [":sat"],
     deps = [
         "//pkg/api",
+        "//pkg/api/bazeldnf",
         "@com_github_crillab_gophersat//bf",
         "@com_github_onsi_gomega//:gomega",
     ],
