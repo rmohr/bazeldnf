@@ -258,20 +258,13 @@ func (loader *Loader) explodePackageConflicts(pkgVar *Var) bf.Formula {
 }
 
 func (loader *Loader) explodeSingleRequires(entry api.Entry, provides []*Var) (accepts []*Var, err error) {
-	entryVer := api.Version{
-		Text:  entry.Text,
-		Epoch: entry.Epoch,
-		Ver:   entry.Ver,
-		Rel:   entry.Rel,
-	}
-
 	provPerPkg := map[VarContext][]*Var{}
 	for _, prov := range provides {
 		provPerPkg[prov.Context] = append(provPerPkg[prov.Context], prov)
 	}
 
 	for _, pkgProv := range provPerPkg {
-		acceptsFromPkg, err := compareRequires(entryVer, entry.Flags, pkgProv)
+		acceptsFromPkg, err := compareRequires(entry, pkgProv)
 		if err != nil {
 			return nil, err
 		}
@@ -328,8 +321,14 @@ func toBFVars(vars []*Var) (bfvars []bf.Formula) {
 	return
 }
 
-func compareRequires(entryVer api.Version, flag string, provides []*Var) (accepts []*Var, err error) {
+func compareRequires(entry api.Entry, provides []*Var) (accepts []*Var, err error) {
 	for _, dep := range provides {
+		entryVer := api.Version{
+			Text:  entry.Text,
+			Epoch: entry.Epoch,
+			Ver:   entry.Ver,
+			Rel:   entry.Rel,
+		}
 
 		// Requirement "EQ 2.14" matches 2.14-5.fc33
 		depVer := *dep.ResourceVersion
@@ -337,12 +336,17 @@ func compareRequires(entryVer api.Version, flag string, provides []*Var) (accept
 			depVer.Rel = ""
 		}
 
+		// Provide "EQ 2.14" matches "2.14-5.fc33"
+		if depVer.Rel == "" {
+			entryVer.Rel = ""
+		}
+
 		works := false
 		if depVer.Epoch == "" && depVer.Ver == "" && depVer.Rel == "" {
 			works = true
 		} else {
 			cmp := rpm.Compare(depVer, entryVer)
-			switch flag {
+			switch entry.Flags {
 			case "EQ":
 				if cmp == 0 {
 					works = true
@@ -367,7 +371,7 @@ func compareRequires(entryVer api.Version, flag string, provides []*Var) (accept
 			case "":
 				return provides, nil
 			default:
-				return nil, fmt.Errorf("can't interprate flags value %s", flag)
+				return nil, fmt.Errorf("can't interprate flags value %s", entry.Flags)
 			}
 		}
 		if works {

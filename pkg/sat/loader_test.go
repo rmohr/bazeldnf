@@ -166,6 +166,7 @@ func TestLoader_Load(t *testing.T) {
 	x3 := bf.Var("x3")
 	x4 := bf.Var("x4")
 	x5 := bf.Var("x5")
+	x6 := bf.Var("x6")
 
 	t.Run("Trivial Loading", func(t *testing.T) {
 		model, _ := doSimpleLoad([]*api.Package{}, false)
@@ -506,6 +507,49 @@ func TestLoader_Load(t *testing.T) {
 				bf.Or(bf.Not(x1), bf.And(x1)),
 				bf.Or(bf.Not(x1), x1),
 			)
+		})
+
+		t.Run("should handle empty rel provides", func(t *testing.T) {
+			pkg0 := newPackage("pkgX", "1.0", []string{"gcc", "gcc EQ 11.0-xyz"}, nil, nil, nil)
+			pkg1 := newPackage("gcc", "11.0", []string{"gcc11 EQ 11.0"}, []string{"gcc EQ 11.0-xyz"}, nil, nil)
+			pkg2 := newPackage("gcc11", "11.0", nil, []string{"gcc EQ 11.0", "gcc11 EQ 11.0"}, nil, nil)
+			allPkgs := []*api.Package{pkg0, pkg1, pkg2}
+			model, _ := doLoad(allPkgs, []string{"pkgX"}, nil, nil, false)
+
+			expectedPackages(g, model, map[string][]string{
+				"pkgX":  []string{"0:1.0"},
+				"gcc":   []string{"0:11.0"},
+				"gcc11": []string{"0:11.0"},
+			})
+			expectedVars(
+				g,
+				model,
+				"gcc-0:11.0(gcc)",     // x1
+				"gcc-0:11.0(gcc)",     // x2
+				"gcc11-0:11.0(gcc11)", // x3
+				"gcc11-0:11.0(gcc)",   // x4
+				"gcc11-0:11.0(gcc11)", // x5
+				"pkgX-0:1.0(pkgX)",    // x6
+			)
+			expectedBest(g, model, map[string]string{
+				"gcc":  "0:11.0",
+				"gcc11":  "0:11.0",
+				"pkgX":   "0:1.0",
+			})
+
+			expectedAnds(g, model,
+				bf.Or(bf.Not(x1), bf.And(x1, x2)),
+				bf.Or(bf.Not(x2), bf.And(x1, x2)),
+				bf.Or(bf.Not(x2), bf.And(bf.And(bf.Or(x3)), x2)),
+				bf.Or(bf.Not(x3), bf.And(x3, x4, x5)),
+				bf.Or(bf.Not(x4), bf.And(x3, x4, x5)),
+				bf.Or(bf.Not(x5), bf.And(x3, x4, x5)),
+				bf.Or(bf.Not(x5), x5),
+				bf.Or(bf.Not(x6), bf.And(x6)),
+				bf.Or(bf.Not(x6), bf.And(bf.And(bf.Or(x1, x4), bf.Or(bf.Not(x1), bf.Not(x4))), bf.And(bf.And(bf.Or(x1, x4), bf.Or(bf.Not(x1), bf.Not(x4))), x6))),
+				x6,
+			)
+
 		})
 
 		t.Run("should ignore self-conflicts", func(t *testing.T) {
