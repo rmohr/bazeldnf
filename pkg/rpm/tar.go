@@ -53,7 +53,6 @@ func PrefixFilter(prefix, strip string, reader *tar.Reader, files []string) erro
 	prefix = strings.TrimPrefix(prefix, ".")
 
 	fileMap := map[string]string{}
-	allMappedFiles := map[string]string{}
 	for _, file := range files {
 		suffix, ok := strings.CutPrefix(file, strip)
 		if !ok {
@@ -71,10 +70,8 @@ func PrefixFilter(prefix, strip string, reader *tar.Reader, files []string) erro
 
 		log.Tracef("Mapped file %v -> %v", key, file)
 		fileMap[key] = file
-		allMappedFiles[key] = file
 	}
 
-	hardLinks := map[string]string{}
 	for {
 		entry, err := reader.Next()
 		if err == io.EOF {
@@ -112,29 +109,16 @@ func PrefixFilter(prefix, strip string, reader *tar.Reader, files []string) erro
 			if err != nil {
 				return err
 			}
-		case tar.TypeSymlink:
+		case tar.TypeSymlink, tar.TypeLink:
 			linkname := strings.TrimPrefix(entry.Linkname, ".")
 			err = os.Symlink(linkname, fileMap[name])
 			if err != nil {
 				return err
 			}
-		case tar.TypeLink:
-			linkname := strings.TrimPrefix(entry.Linkname, ".")
-			target, ok := allMappedFiles[linkname]
-			if !ok {
-				return fmt.Errorf("%v is a link, but the link target %v is not included in the filtered output", name, linkname)
-			}
-			hardLinks[fileMap[name]] = target
 		default:
 			return fmt.Errorf("can't extract %v with type %v: only links, symlinks and files can be specified", fileMap[name], entry.Typeflag)
 		}
 		delete(fileMap, name)
-	}
-
-	for name, linkname := range hardLinks {
-		if err := os.Link(linkname, name); err != nil {
-			return fmt.Errorf("could not link %v to %v: %w", name, linkname, err)
-		}
 	}
 
 	if len(fileMap) > 0 {

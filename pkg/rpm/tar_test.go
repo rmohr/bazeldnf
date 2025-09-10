@@ -109,7 +109,6 @@ func TestTar2Files(t *testing.T) {
 		rpm      string
 		files    []string
 		expected []fileInfo
-		wantErr  string
 		prefix   string
 	}{
 		{
@@ -175,7 +174,7 @@ func TestTar2Files(t *testing.T) {
 			expected: []fileInfo{
 				{Name: "usr", Children: []fileInfo{
 					{Name: "include", Children: []fileInfo{
-						{Name: "com_err.h", Size: 2118},
+						{Name: "com_err.h", Size: 25},
 						{Name: "et", Children: []fileInfo{
 							{Name: "com_err.h", Size: 2118},
 						}},
@@ -185,11 +184,17 @@ func TestTar2Files(t *testing.T) {
 			prefix: "./usr/include/",
 		},
 		{
-			name:    "missing link target from a tar archive",
-			rpm:     libComErrDevelRpm,
-			files:   []string{"/usr/include/com_err.h"},
-			wantErr: "/usr/include/com_err.h is a link, but the link target /usr/include/et/com_err.h is not included in the filtered output",
-			prefix:  "./usr/include/",
+			name:  "missing link target from a tar archive",
+			rpm:   libComErrDevelRpm,
+			files: []string{"/usr/include/com_err.h"},
+			expected: []fileInfo{
+				{Name: "usr", Children: []fileInfo{
+					{Name: "include", Children: []fileInfo{
+						{Name: "com_err.h", Size: 25},
+					}},
+				}},
+			},
+			prefix: "./usr/include/",
 		}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -221,10 +226,6 @@ func TestTar2Files(t *testing.T) {
 			}
 
 			err = PrefixFilter(tt.prefix, tmpdir, tar.NewReader(pipeReader), files)
-			if tt.wantErr != "" {
-				g.Expect(err).To(MatchError(ContainSubstring(tt.wantErr)))
-				return
-			}
 			g.Expect(err).ToNot(HaveOccurred())
 			discoveredHeaders, err := collectFileInfo(tmpdir)
 			g.Expect(err).ToNot(HaveOccurred())
