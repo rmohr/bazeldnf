@@ -118,7 +118,7 @@ func TestTar2Files(t *testing.T) {
 			expected: []fileInfo{
 				{Name: "usr", Children: []fileInfo{
 					{Name: "lib64", Children: []fileInfo{
-						{Name: "libvirt.so.0", Size: 20},
+						{Name: "libvirt.so.0", Link: "libvirt.so.0.11000.0", Size: 20},
 					}},
 				}},
 			},
@@ -174,7 +174,7 @@ func TestTar2Files(t *testing.T) {
 			expected: []fileInfo{
 				{Name: "usr", Children: []fileInfo{
 					{Name: "include", Children: []fileInfo{
-						{Name: "com_err.h", Size: 25},
+						{Name: "com_err.h", Size: 12, Link: "et/com_err.h"},
 						{Name: "et", Children: []fileInfo{
 							{Name: "com_err.h", Size: 2118},
 						}},
@@ -190,7 +190,7 @@ func TestTar2Files(t *testing.T) {
 			expected: []fileInfo{
 				{Name: "usr", Children: []fileInfo{
 					{Name: "include", Children: []fileInfo{
-						{Name: "com_err.h", Size: 25},
+						{Name: "com_err.h", Size: 12, Link: "et/com_err.h"},
 					}},
 				}},
 			},
@@ -255,6 +255,12 @@ func collectFileInfo(dirName string) ([]fileInfo, error) {
 			fileInfo.Children = children
 		} else {
 			fileInfo.Size = file.Size()
+			if file.Mode()&os.ModeSymlink != 0 {
+				symlink := filepath.Join(dirName, file.Name())
+				if target, err := os.Readlink(symlink); err == nil {
+					fileInfo.Link = target
+				}
+			}
 		}
 
 		r = append(r, fileInfo)
@@ -266,5 +272,6 @@ func collectFileInfo(dirName string) ([]fileInfo, error) {
 type fileInfo struct {
 	Name     string
 	Size     int64
+	Link     string
 	Children []fileInfo
 }

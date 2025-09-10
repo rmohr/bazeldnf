@@ -109,10 +109,22 @@ func PrefixFilter(prefix, strip string, reader *tar.Reader, files []string) erro
 			if err != nil {
 				return err
 			}
-		case tar.TypeSymlink, tar.TypeLink:
+		case tar.TypeSymlink:
 			linkname := strings.TrimPrefix(entry.Linkname, ".")
 			err = os.Symlink(linkname, fileMap[name])
 			if err != nil {
+				return err
+			}
+		case tar.TypeLink:
+			// In the hard link case, entry.Name will be something like ./usr/include/foo.h, so we
+			// just want to get a relative path to the target (entry.Linkname) unlike the symlink case
+			// where we just reproduce the entry.Linkname verbatim.
+			rel, err := filepath.Rel(filepath.Dir(entry.Name), entry.Linkname)
+			if err != nil {
+				return err
+			}
+			log.Tracef("Replacing hard link %v -> %v with relative symlink %v", entry.Name, entry.Linkname, rel)
+			if err := os.Symlink(rel, fileMap[name]); err != nil {
 				return err
 			}
 		default:
