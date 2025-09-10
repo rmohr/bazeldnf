@@ -26,12 +26,14 @@ go_test(
     ],
     data = [
         "@bazeldnf_internal_abseil-cpp-devel//rpm",
+        "@bazeldnf_internal_libcom_err-devel//rpm",
         "@bazeldnf_internal_libvirt-devel//rpm",
         "@bazeldnf_internal_libvirt-libs//rpm",
     ],
     embed = [":rpm"],
     env = {
         "CPP_DEVEL": "$(rlocationpath @bazeldnf_internal_abseil-cpp-devel//rpm)",
+        "LIBCOM_ERR_DEVEL": "$(rlocationpath @bazeldnf_internal_libcom_err-devel//rpm)",
         "LIBVIRT_DEVEL": "$(rlocationpath @bazeldnf_internal_libvirt-devel//rpm)",
         "LIBVIRT_LIBS": "$(rlocationpath @bazeldnf_internal_libvirt-libs//rpm)",
     },
