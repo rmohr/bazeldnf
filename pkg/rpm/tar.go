@@ -68,6 +68,7 @@ func PrefixFilter(prefix, strip string, reader *tar.Reader, files []string) erro
 			key = "/" + key
 		}
 
+		log.Tracef("Mapped file %v -> %v", key, file)
 		fileMap[key] = file
 	}
 
@@ -87,10 +88,13 @@ func PrefixFilter(prefix, strip string, reader *tar.Reader, files []string) erro
 		}
 
 		if _, exists := fileMap[name]; !exists {
+			log.Tracef("File %v does not exist in file map", name)
 			continue
 		}
 
-		if entry.Typeflag == tar.TypeReg {
+		log.Tracef("Processing file %v with type %v", fileMap[name], entry.Typeflag)
+		switch entry.Typeflag {
+		case tar.TypeReg:
 			err := func() error {
 				writer, err := os.Create(fileMap[name])
 				if err != nil {
@@ -105,17 +109,28 @@ func PrefixFilter(prefix, strip string, reader *tar.Reader, files []string) erro
 			if err != nil {
 				return err
 			}
-			delete(fileMap, name)
-		} else if entry.Typeflag == tar.TypeSymlink {
+		case tar.TypeSymlink:
 			linkname := strings.TrimPrefix(entry.Linkname, ".")
 			err = os.Symlink(linkname, fileMap[name])
 			if err != nil {
 				return err
 			}
-			delete(fileMap, name)
-		} else {
-			return fmt.Errorf("can't extract %s, only symlinks and files can be specified", fileMap[name])
+		case tar.TypeLink:
+			// In the hard link case, entry.Name will be something like ./usr/include/foo.h, so we
+			// just want to get a relative path to the target (entry.Linkname) unlike the symlink case
+			// where we just reproduce the entry.Linkname verbatim.
+			rel, err := filepath.Rel(filepath.Dir(entry.Name), entry.Linkname)
+			if err != nil {
+				return err
+			}
+			log.Tracef("Replacing hard link %v -> %v with relative symlink %v", entry.Name, entry.Linkname, rel)
+			if err := os.Symlink(rel, fileMap[name]); err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("can't extract %v with type %v: only links, symlinks and files can be specified", fileMap[name], entry.Typeflag)
 		}
+		delete(fileMap, name)
 	}
 
 	if len(fileMap) > 0 {

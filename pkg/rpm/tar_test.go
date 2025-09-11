@@ -91,12 +91,17 @@ func TestRPMToTar(t *testing.T) {
 func TestTar2Files(t *testing.T) {
 	abseilCppDevelRpm, err := runfiles.Rlocation(os.Getenv("CPP_DEVEL"))
 	if err != nil {
-		panic(err)
+		t.Fatal(err)
+	}
+
+	libComErrDevelRpm, err := runfiles.Rlocation(os.Getenv("LIBCOM_ERR_DEVEL"))
+	if err != nil {
+		t.Fatal(err)
 	}
 
 	libvirtLibsRpm, err := runfiles.Rlocation(os.Getenv("LIBVIRT_LIBS"))
 	if err != nil {
-		panic(err)
+		t.Fatal(err)
 	}
 
 	tests := []struct {
@@ -104,27 +109,24 @@ func TestTar2Files(t *testing.T) {
 		rpm      string
 		files    []string
 		expected []fileInfo
-		wantErr  bool
 		prefix   string
 	}{
 		{
-			name:    "should extract a symlink from a tar archive",
-			rpm:     libvirtLibsRpm,
-			wantErr: false,
-			files:   []string{"/usr/lib64/libvirt.so.0"},
+			name:  "should extract a symlink from a tar archive",
+			rpm:   libvirtLibsRpm,
+			files: []string{"/usr/lib64/libvirt.so.0"},
 			expected: []fileInfo{
 				{Name: "usr", Children: []fileInfo{
 					{Name: "lib64", Children: []fileInfo{
-						{Name: "libvirt.so.0", Size: 20},
+						{Name: "libvirt.so.0", Link: "libvirt.so.0.11000.0", Size: 20},
 					}},
 				}},
 			},
 			prefix: "./usr/lib64",
 		},
 		{
-			name:    "should extract multiple files from a tar archive",
-			rpm:     libvirtLibsRpm,
-			wantErr: false,
+			name: "should extract multiple files from a tar archive",
+			rpm:  libvirtLibsRpm,
 			files: []string{
 				"/etc/libvirt/libvirt-admin.conf",
 				"/etc/libvirt/libvirt.conf",
@@ -140,9 +142,8 @@ func TestTar2Files(t *testing.T) {
 			prefix: "./etc/libvirt/",
 		},
 		{
-			name:    "should extract multiple files with the same name from a tar archive",
-			rpm:     abseilCppDevelRpm,
-			wantErr: false,
+			name: "should extract multiple files with the same name from a tar archive",
+			rpm:  abseilCppDevelRpm,
 			files: []string{
 				"/usr/include/absl/log/globals.h",
 				"/usr/include/absl/log/internal/globals.h",
@@ -163,7 +164,38 @@ func TestTar2Files(t *testing.T) {
 			},
 			prefix: "./usr/include/",
 		},
-	}
+		{
+			name: "should extract link from a tar archive",
+			rpm:  libComErrDevelRpm,
+			files: []string{
+				"/usr/include/com_err.h",
+				"/usr/include/et/com_err.h",
+			},
+			expected: []fileInfo{
+				{Name: "usr", Children: []fileInfo{
+					{Name: "include", Children: []fileInfo{
+						{Name: "com_err.h", Size: 12, Link: "et/com_err.h"},
+						{Name: "et", Children: []fileInfo{
+							{Name: "com_err.h", Size: 2118},
+						}},
+					}},
+				}},
+			},
+			prefix: "./usr/include/",
+		},
+		{
+			name:  "missing link target from a tar archive",
+			rpm:   libComErrDevelRpm,
+			files: []string{"/usr/include/com_err.h"},
+			expected: []fileInfo{
+				{Name: "usr", Children: []fileInfo{
+					{Name: "include", Children: []fileInfo{
+						{Name: "com_err.h", Size: 12, Link: "et/com_err.h"},
+					}},
+				}},
+			},
+			prefix: "./usr/include/",
+		}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			g := NewGomegaWithT(t)
@@ -195,7 +227,6 @@ func TestTar2Files(t *testing.T) {
 
 			err = PrefixFilter(tt.prefix, tmpdir, tar.NewReader(pipeReader), files)
 			g.Expect(err).ToNot(HaveOccurred())
-
 			discoveredHeaders, err := collectFileInfo(tmpdir)
 			g.Expect(err).ToNot(HaveOccurred())
 			g.Expect(discoveredHeaders).To(ConsistOf(tt.expected))
@@ -224,6 +255,12 @@ func collectFileInfo(dirName string) ([]fileInfo, error) {
 			fileInfo.Children = children
 		} else {
 			fileInfo.Size = file.Size()
+			if file.Mode()&os.ModeSymlink != 0 {
+				symlink := filepath.Join(dirName, file.Name())
+				if target, err := os.Readlink(symlink); err == nil {
+					fileInfo.Link = target
+				}
+			}
 		}
 
 		r = append(r, fileInfo)
@@ -235,5 +272,6 @@ func collectFileInfo(dirName string) ([]fileInfo, error) {
 type fileInfo struct {
 	Name     string
 	Size     int64
+	Link     string
 	Children []fileInfo
 }
