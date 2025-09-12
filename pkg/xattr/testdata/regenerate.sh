@@ -10,7 +10,7 @@ touch ${TMPDIR}/cap_net_raw
 touch ${TMPDIR}/cap_chown
 touch ${TMPDIR}/cap_sys_ptrace
 touch ${TMPDIR}/cap_all
-sudo chcon -t user_home_t ${TMPDIR}/selinux
+sudo chcon unconfined_u:object_r:user_home_t:s0 ${TMPDIR}/selinux
 
 sudo setcap 'cap_net_bind_service=+ep' ${TMPDIR}/cap_net_bind_service
 sudo setcap 'cap_net_admin=+ep' ${TMPDIR}/cap_net_admin
