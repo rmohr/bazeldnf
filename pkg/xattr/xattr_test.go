@@ -61,6 +61,16 @@ func Test_Capabilities(t *testing.T) {
 			capabilities: []string{"cap_net_bind_service"},
 		},
 		{
+			name:         "should set cap_net_admin",
+			entry:        "./cap_net_admin", 
+			capabilities: []string{"cap_net_admin"},
+		},
+		{
+			name:         "should set cap_net_raw",
+			entry:        "./cap_net_raw",
+			capabilities: []string{"cap_net_raw"},
+		},
+		{
 			name:         "should set cap_sys_ptrace",
 			entry:        "./cap_sys_ptrace",
 			capabilities: []string{"cap_sys_ptrace"},
@@ -68,7 +78,7 @@ func Test_Capabilities(t *testing.T) {
 		{
 			name:         "should set all implemented capabilities",
 			entry:        "./cap_all",
-			capabilities: []string{"cap_chown", "cap_net_bind_service", "cap_sys_ptrace"},
+			capabilities: []string{"cap_net_bind_service", "cap_net_admin", "cap_net_raw", "cap_chown", "cap_sys_ptrace"},
 		},
 	}
 	for _, tt := range tests {
