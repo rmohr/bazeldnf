@@ -15,14 +15,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type VarType string
-
-const (
-	VarTypePackage  = "Package"
-	VarTypeResource = "Resource"
-	VarTypeFile     = "File"
-)
-
 // VarContext contains all information to create a unique identifyable hash key which can be traced back to a package
 // for every resource in a yum repo
 type VarContext struct {
@@ -30,26 +22,19 @@ type VarContext struct {
 	Provides   string
 }
 
-func varContextSort(a VarContext, b VarContext) int {
-	return rpm.ComparePackageKey(a.PackageKey, b.PackageKey)
-}
-
 type Var struct {
-	satVarName      string
-	varType         VarType
-	Context         VarContext
-	Package         *api.Package
-	ResourceVersion *api.Version
+	satVarName string
+	Package    *api.Package
 }
 
 func (v Var) String() string {
-	return fmt.Sprintf("%s(%s)", v.Package.String(), v.Context.Provides)
+	return v.Package.String()
 }
 
 type Model struct {
 	// packages contains a map which contains all pkg vars which can be looked up by package name
 	// useful for creating soft clauses
-	packages map[string][]*Var
+	packages map[string][]*Var // ordered by priority (affects solution cost)
 
 	// vars contain as key an exact identifier for a provided resource and the actual SAT variable as value
 	vars map[string]*Var
@@ -115,7 +100,7 @@ func Resolve(model *Model) (install []*api.Package, excluded []*api.Package, for
 					satVar := match[2]
 					vars.satToPkg[satVar] = pkgVar
 					vars.pkgToSat[pkgVar] = satVar
-					if _, err := fmt.Fprintf(pwMaxSatWriter, "c %s -> %s\n", model.Var(pkgVar).Package.String(), model.Var(pkgVar).Context.Provides); err != nil {
+					if _, err := fmt.Fprintf(pwMaxSatWriter, "c %s\n", model.Var(pkgVar).Package.String()); err != nil {
 						pwMaxSatErrChan <- err
 						return
 					}
@@ -167,37 +152,38 @@ func Resolve(model *Model) (install []*api.Package, excluded []*api.Package, for
 
 	if solution.Status.String() == "SAT" {
 		logrus.Infof("Solution with weight %v found.", solution.Weight)
-		installMap := map[VarContext]*api.Package{}
-		excludedMap := map[VarContext]*api.Package{}
-		forceIgnoreMap := map[VarContext]*api.Package{}
-		for k, v := range solution.Model {
+		for _, pkgVar := range model.vars {
+			pkg := pkgVar.Package
+			satVarName, exists := satVars.pkgToSat[pkgVar.satVarName]
+			if !exists {
+				// A package might have not been used in the SAT formula (e.g. not requested, no requirements, conflicts, etc.)
+				// In such case we assume it's just not selected for installation.
+				excluded = append(excluded, pkg)
+				continue
+			}
+			modelVarId, err := strconv.Atoi(satVarName)
+			if err != nil {
+				logrus.Errorf("Invalid satVarName", satVarName)
+				continue
+			}
+
 			// Offset of `1`. The model index starts with 0, but the variable sequence starts with 1, since 0 is not allowed
-			resVar := model.Var(satVars.satToPkg[strconv.Itoa(k+1)])
-			if resVar != nil && resVar.varType == VarTypePackage {
-				if v {
-					if exists := model.ShouldIgnore(resVar.Package.Key()); !exists {
-						installMap[resVar.Context] = resVar.Package
-					} else {
-						forceIgnoreMap[resVar.Context] = resVar.Package
-					}
+			if solution.Model[modelVarId-1] {
+				if exists := model.ShouldIgnore(pkg.Key()); !exists {
+					install = append(install, pkg)
 				} else {
-					excludedMap[resVar.Context] = resVar.Package
+					forceIgnoredWithDependencies = append(forceIgnoredWithDependencies, pkg)
 				}
+			} else {
+				excluded = append(excluded, pkg)
 			}
 		}
-		for _, v := range installMap {
+		for _, v := range install {
 			if rpm.Compare(model.BestPackage(v.Name).Version, v.Version) != 0 {
 				logrus.Infof("Picking %v instead of best candiate %v", v, model.BestPackage(v.Name))
 			}
-			install = append(install, v)
 		}
 
-		for _, v := range excludedMap {
-			excluded = append(excluded, v)
-		}
-		for _, v := range forceIgnoreMap {
-			forceIgnoredWithDependencies = append(forceIgnoredWithDependencies, v)
-		}
 		return install, excluded, forceIgnoredWithDependencies, nil
 	}
 	logrus.Info("No solution found.")
