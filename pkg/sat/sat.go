@@ -14,13 +14,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type VarType string
-
-const (
-	VarTypePackage  = "Package"
-	VarTypeResource = "Resource" // includes files
-)
-
 // VarContext contains all information to create a unique identifyable hash key which can be traced back to a package
 // for every resource in a yum repo
 type VarContext struct {
@@ -30,7 +23,6 @@ type VarContext struct {
 
 type Var struct {
 	satVarName string
-	varType    VarType
 	Package    *api.Package
 }
 
@@ -162,16 +154,12 @@ func Resolve(model *Model) (install []*api.Package, excluded []*api.Package, for
 		installSet := map[*api.Package]struct{}{}
 		excludedSet := map[*api.Package]struct{}{}
 		forceIgnoreSet := map[*api.Package]struct{}{}
-		for _, resVar := range model.vars {
-			if resVar.varType != VarTypePackage {
-				continue
-			}
-
-			satVarName, exists := satVars.pkgToSat[resVar.satVarName]
+		for _, pkgVar := range model.vars {
+			satVarName, exists := satVars.pkgToSat[pkgVar.satVarName]
 			if !exists {
 				// A package might have not been used in the SAT formula (e.g. not requested, no requirements, conflicts, etc.)
 				// In such case we assume it's just not selected for installation.
-				excludedSet[resVar.Package] = struct{}{}
+				excludedSet[pkgVar.Package] = struct{}{}
 				continue
 			}
 			modelVarId, err := strconv.Atoi(satVarName)
@@ -181,13 +169,13 @@ func Resolve(model *Model) (install []*api.Package, excluded []*api.Package, for
 			}
 			// Offset of `1`. The model index starts with 0, but the variable sequence starts with 1, since 0 is not allowed
 			if solution.Model[modelVarId-1] {
-				if exists := model.ShouldIgnore(resVar.Package.Key()); !exists {
-					installSet[resVar.Package] = struct{}{}
+				if exists := model.ShouldIgnore(pkgVar.Package.Key()); !exists {
+					installSet[pkgVar.Package] = struct{}{}
 				} else {
-					forceIgnoreSet[resVar.Package] = struct{}{}
+					forceIgnoreSet[pkgVar.Package] = struct{}{}
 				}
 			} else {
-				excludedSet[resVar.Package] = struct{}{}
+				excludedSet[pkgVar.Package] = struct{}{}
 			}
 		}
 		for v := range installSet {

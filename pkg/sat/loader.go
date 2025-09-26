@@ -4,7 +4,6 @@ import (
 	"cmp"
 	"fmt"
 	"regexp"
-	"sort"
 	"strconv"
 	"strings"
 
@@ -149,40 +148,28 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 		}
 	}
 
-	pkgProvides := [][]*ResourceVar{}
+	pkgVars := []*Var{}
 
 	// Generate variables
 	for _, pkg := range packages {
-		providedResources := loader.explodeProvidedResources(pkg)
-		pkgVar, resourceVars := loader.explodePackageToVars(pkg, providedResources)
+		// Single variable for SAT formula (whether to pick that package or not):
+		pkgVar := &Var{satVarName: loader.ticket(), Package: pkg}
 		loader.m.packages[pkg.Name] = append(loader.m.packages[pkg.Name], pkgVar)
-		pkgProvides = append(pkgProvides, resourceVars)
-		for _, v := range resourceVars {
-			loader.provides[v.Resource.Name] = append(loader.provides[v.Resource.Name], v)
-			loader.m.vars[v.Var.satVarName] = v.Var
+		loader.m.vars[pkgVar.satVarName] = pkgVar
+		pkgVars = append(pkgVars, pkgVar)
+
+		// Links between packages (individual resources), only for the loader:
+		for _, resource := range loader.explodeProvidedResources(pkgVar.Package) {
+			prVar := &ResourceVar{Var: pkgVar, Resource: *resource}
+			loader.provides[resource.Name] = append(loader.provides[resource.Name], prVar)
 		}
 	}
 
-	packagesKeys := maps.Keys(loader.m.packages)
-	slices.Sort(packagesKeys)
-
-	for _, x := range packagesKeys {
-		sort.SliceStable(loader.m.packages[x], func(i, j int) bool {
-			return rpm.ComparePackage(loader.m.packages[x][i].Package, loader.m.packages[x][j].Package, archOrder) < 0
-		})
-	}
-
-	logrus.Infof("Loaded %v packages.", len(pkgProvides))
+	logrus.Infof("Loaded %v packages.", len(pkgVars))
 
 	// Generate imply rules
-	for _, resourceVars := range pkgProvides {
+	for _, pkgVar := range pkgVars {
 		var ands []bf.Formula
-
-		// Synchronize all the variables for a given package to the same value.
-		pkgVar := resourceVars[len(resourceVars)-1].Var
-		for _, res := range resourceVars {
-			ands = append(ands, bf.Eq(bf.Var(pkgVar.satVarName), bf.Var(res.Var.satVarName)))
-		}
 
 		ands = append(ands, bf.Implies(bf.Var(pkgVar.satVarName), loader.explodePackageRequires(pkgVar)))
 		if conflicts := loader.explodePackageConflicts(pkgVar); conflicts != nil {
@@ -217,24 +204,6 @@ func (loader *Loader) explodeProvidedResources(pkg *api.Package) (provided []*Re
 	}
 
 	return
-}
-
-func (loader *Loader) explodePackageToVars(pkg *api.Package, resources []*Resource) (pkgVar *Var, resourceVars []*ResourceVar) {
-	for _, res := range resources {
-		newVar := &Var{
-			satVarName: loader.ticket(),
-			varType:    VarTypeResource,
-			Package:    pkg,
-		}
-
-		if res.Name == pkg.Name {
-			newVar.varType = VarTypePackage
-			pkgVar = newVar
-		}
-		resourceVars = append(resourceVars, &ResourceVar{Var: newVar, Resource: *res})
-	}
-
-	return pkgVar, resourceVars
 }
 
 // explodePackageRequires builds a formula that could be a right hand side operand to implication.
