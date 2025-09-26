@@ -33,9 +33,13 @@ func (r *RepoReducer) PackageCount() int {
 // There are various possible matching methods:
 // - <package name>
 // - <package name>-<version> (version could be also any, possibly empty prefix of package's version)
+// - <package name>.<arch>
+// - <package name>-<version>.<arch> (needs full version)
 func packageMatchesString(pkg *api.Package, req string) bool {
 	return req == pkg.Name ||
-		strings.HasPrefix(fmt.Sprintf("%s-%s", pkg.Name, pkg.Version.String()), req) && len(req) > len(pkg.Name)
+		strings.HasPrefix(fmt.Sprintf("%s-%s", pkg.Name, pkg.Version.String()), req) && len(req) > len(pkg.Name) ||
+		req == fmt.Sprintf("%s.%s", pkg.Name, pkg.Arch) ||
+		req == fmt.Sprintf("%s.%s-%s", pkg.Name, pkg.Arch, pkg.Version.String())
 }
 
 func (r *RepoReducer) Resolve(packages []string, ignoreMissing bool) (matched []string, involved []*api.Package, err error) {

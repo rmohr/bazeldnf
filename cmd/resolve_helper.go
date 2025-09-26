@@ -34,7 +34,7 @@ func resolve(repos *bazeldnf.Repositories, required []string) ([]*api.Package, [
 	loader := sat.NewLoader()
 
 	logrus.Info("Loading involved packages into the resolver.")
-	model, err := loader.Load(involved, matched, resolvehelperopts.forceIgnoreRegex, resolvehelperopts.onlyAllowRegex, resolvehelperopts.nobest)
+	model, err := loader.Load(involved, matched, resolvehelperopts.forceIgnoreRegex, resolvehelperopts.onlyAllowRegex, resolvehelperopts.nobest, []string{resolvehelperopts.arch, "noarch"})
 	if err != nil {
 		return nil, nil, err
 	}

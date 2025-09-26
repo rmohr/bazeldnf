@@ -41,7 +41,7 @@ func NewLoader() *Loader {
 // requirements in the provided list of installed packages, and also a list
 // of regular expressions that may be used to limit the selection to matching
 // packages.
-func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowRegex []string, nobest bool) (*Model, error) {
+func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowRegex []string, nobest bool, archOrder []string) (*Model, error) {
 	// Deduplicate and detect excludes
 	deduplicated := map[api.PackageKey]*api.Package{}
 	for i, pkg := range packages {
@@ -99,7 +99,7 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 	for _, pkg := range packages {
 		if loader.m.bestPackages[pkg.Name] == nil {
 			loader.m.bestPackages[pkg.Name] = pkg
-		} else if rpm.ComparePackage(pkg, loader.m.bestPackages[pkg.Name]) > 0 {
+		} else if rpm.ComparePackage(pkg, loader.m.bestPackages[pkg.Name], archOrder) > 0 {
 			loader.m.bestPackages[pkg.Name] = pkg
 		}
 	}
@@ -131,7 +131,7 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 
 	for _, x := range packagesKeys {
 		sort.SliceStable(loader.m.packages[x], func(i, j int) bool {
-			return rpm.ComparePackage(loader.m.packages[x][i].Package, loader.m.packages[x][j].Package) < 0
+			return rpm.ComparePackage(loader.m.packages[x][i].Package, loader.m.packages[x][j].Package, archOrder) < 0
 		})
 	}
 
@@ -159,7 +159,7 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 	}
 	logrus.Infof("Generated %v variables.", len(loader.m.vars))
 
-	return loader.constructRequirements(matched)
+	return loader.constructRequirements(matched, archOrder)
 }
 
 func (loader *Loader) explodePackageToVars(pkg *api.Package) (pkgVar *Var, resourceVars []*Var) {
@@ -283,11 +283,11 @@ func (loader *Loader) ticket() string {
 	return "x" + strconv.Itoa(loader.varsCount)
 }
 
-func (loader *Loader) constructRequirements(packages []string) (*Model, error) {
+func (loader *Loader) constructRequirements(packages []string, archOrder []string) (*Model, error) {
 	logrus.Info("Adding required packages to the resolver.")
 
 	for _, pkgName := range packages {
-		req, err := loader.resolveNewest(pkgName)
+		req, err := loader.resolveNewest(pkgName, archOrder)
 		if err != nil {
 			return nil, err
 		}
@@ -297,14 +297,14 @@ func (loader *Loader) constructRequirements(packages []string) (*Model, error) {
 	return loader.m, nil
 }
 
-func (loader *Loader) resolveNewest(pkgName string) (*Var, error) {
+func (loader *Loader) resolveNewest(pkgName string, archOrder []string) (*Var, error) {
 	pkgs := loader.provides[pkgName]
 	if len(pkgs) == 0 {
 		return nil, fmt.Errorf("package %s does not exist", pkgName)
 	}
 	newest := pkgs[0]
 	for _, p := range pkgs {
-		if rpm.ComparePackage(p.Package, newest.Package) > 0 {
+		if rpm.ComparePackage(p.Package, newest.Package, archOrder) > 0 {
 			newest = p
 		}
 	}

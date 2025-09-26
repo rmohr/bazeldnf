@@ -69,7 +69,7 @@ func TestDeterministicOutput(t *testing.T) {
 			}
 
 			loader := NewLoader()
-			model, err := loader.Load(packages, tt.requires, nil, nil, false)
+			model, err := loader.Load(packages, tt.requires, nil, nil, false, []string{"x86_64", "noarch"})
 			g.Expect(err).ToNot(HaveOccurred())
 
 			install, _, _, err := Resolve(model)

@@ -31,7 +31,7 @@ func TestRecursive(t *testing.T) {
 			}
 
 			loader := NewLoader()
-			model, err := loader.Load(packages, []string{pkg.Name}, nil, nil, false)
+			model, err := loader.Load(packages, []string{pkg.Name}, nil, nil, false, []string{"x86_64", "noarch"})
 			g.Expect(err).ToNot(HaveOccurred())
 
 			_, _, _, err = Resolve(model)
@@ -1235,7 +1235,7 @@ func Test(t *testing.T) {
 			}
 
 			loader := NewLoader()
-			model, err := loader.Load(packages, tt.requires, nil, nil, tt.nobest)
+			model, err := loader.Load(packages, tt.requires, nil, nil, tt.nobest, []string{"x86_64", "noarch"})
 			g.Expect(err).ToNot(HaveOccurred())
 
 			install, _, _, err := Resolve(model)
@@ -1375,6 +1375,70 @@ func TestNewResolver(t *testing.T) {
 			exclude:    []string{},
 			solvable:   true,
 		},
+
+		// Multi-arch:
+		{name: "prioritize top-level: best arch & version", packages: []*api.Package{
+			newPkgAP("testa", "2", "x86_64", 3, []string{}, []string{}, []string{}),
+			newPkgAP("testa", "1", "x86_64", 3, []string{}, []string{}, []string{}),
+			newPkgAP("testa", "3", "noarch", 1, []string{}, []string{}, []string{}),
+			newPkgAP("testa", "5", "noarch", 2, []string{}, []string{}, []string{}),
+			newPkgAP("testa", "4", "noarch", 3, []string{}, []string{}, []string{}),
+		}, requires: []string{
+			"testa",
+		},
+			install:  []string{"testa-0:2.x86_64"},
+			exclude:  []string{},
+			solvable: true,
+		},
+		{name: "prioritize dependency: best arch & version", packages: []*api.Package{
+			newPkgAP("testa", "1", "noarch", 5, []string{}, []string{"testb"}, []string{}),
+			newPkgAP("testb", "2", "x86_64", 3, []string{}, []string{}, []string{}),
+			newPkgAP("testb", "1", "x86_64", 3, []string{}, []string{}, []string{}),
+			newPkgAP("testb", "3", "noarch", 1, []string{}, []string{}, []string{}),
+			newPkgAP("testb", "5", "noarch", 2, []string{}, []string{}, []string{}),
+			newPkgAP("testb", "4", "noarch", 3, []string{}, []string{}, []string{}),
+		}, requires: []string{
+			"testa",
+		},
+			install:  []string{"testa-0:1.noarch", "testb-0:2.x86_64"},
+			exclude:  []string{},
+			solvable: true,
+		},
+		{name: "cross-arch dependency (by name and by resource)", packages: []*api.Package{
+			newPkgAP("testa", "1", "x86_64", 1, []string{}, []string{"testb", "/bin/x.py"}, []string{}),
+			newPkgAP("testb", "1", "noarch", 1, []string{}, []string{}, []string{}),
+			newPkgAP("testc", "1", "noarch", 1, []string{"/bin/x.py"}, []string{}, []string{}),
+		}, requires: []string{
+			"testa",
+		},
+			install:  []string{"testa-0:1.x86_64", "testb-0:1.noarch", "testc-0:1.noarch"},
+			solvable: true,
+		},
+		{name: "cross-arch dependency (by resource) – non-best arch & non-top priority", packages: []*api.Package{
+			newPkgAP("testa", "1", "noarch", 1, []string{}, []string{"/bin/b.py"}, []string{}),
+			newPkgAP("testb", "1", "x86_64", 1, []string{"/bin/b"}, []string{}, []string{}),
+			newPkgAP("testb", "1", "noarch", 2, []string{"/bin/b.py"}, []string{}, []string{}),
+		}, requires: []string{
+			"testa",
+		},
+			install:  []string{"testa-0:1.noarch", "testb-0:1.noarch"},
+			exclude:  []string{"testb-0:1.x86_64"},
+			nobest:   true,
+			solvable: true,
+		},
+		{name: "parallel circular dependency", packages: []*api.Package{
+			newPkgAP("testa", "1", "x86_64", 3, []string{}, []string{"testb"}, []string{}),
+			newPkgAP("testa", "1", "noarch", 3, []string{}, []string{"testb"}, []string{}),
+			newPkgAP("testb", "1", "x86_64", 3, []string{}, []string{"testa"}, []string{}),
+			newPkgAP("testb", "1", "noarch", 3, []string{}, []string{"testa"}, []string{}),
+		}, requires: []string{
+			"testa",
+		},
+			install:  []string{"testa-0:1.x86_64", "testb-0:1.x86_64"},
+			exclude:  []string{},
+			solvable: true,
+		},
+
 		// TODO: Add test cases.
 	}
 	focus := false
@@ -1390,7 +1454,7 @@ func TestNewResolver(t *testing.T) {
 		}
 		t.Run(tt.name, func(t *testing.T) {
 			loader := NewLoader()
-			model, err := loader.Load(tt.packages, tt.requires, tt.ignoreRegex, tt.allowRegex, tt.nobest)
+			model, err := loader.Load(tt.packages, tt.requires, tt.ignoreRegex, tt.allowRegex, tt.nobest, []string{"x86_64", "noarch"})
 			if err != nil {
 				t.Fail()
 			}
@@ -1409,9 +1473,10 @@ func TestNewResolver(t *testing.T) {
 	}
 }
 
-func newPkg(name string, version string, provides []string, requires []string, conflicts []string) *api.Package {
+func newPkgAP(name string, version string, arch string, priority int, provides []string, requires []string, conflicts []string) *api.Package {
 	pkg := &api.Package{}
 	pkg.Name = name
+	pkg.Arch = arch
 	pkg.Version = api.Version{Ver: version}
 	for _, req := range requires {
 		pkg.Format.Requires.Entries = append(pkg.Format.Requires.Entries, api.Entry{Name: req})
@@ -1428,9 +1493,16 @@ func newPkg(name string, version string, provides []string, requires []string, c
 		pkg.Format.Conflicts.Entries = append(pkg.Format.Conflicts.Entries, api.Entry{Name: req})
 	}
 
-	pkg.Repository = &bazeldnf.Repository{}
+	pkg.Repository = &bazeldnf.Repository{
+		Arch:     arch,
+		Priority: priority,
+	}
 
 	return pkg
+}
+
+func newPkg(name string, version string, provides []string, requires []string, conflicts []string) *api.Package {
+	return newPkgAP(name, version, "", 99, provides, requires, conflicts)
 }
 
 func strToPkg(wanted []string, given []*api.Package) (resolved []*api.Package) {

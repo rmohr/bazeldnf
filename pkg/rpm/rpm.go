@@ -8,12 +8,25 @@ import (
 	"github.com/rmohr/bazeldnf/pkg/api"
 )
 
-func ComparePackage(a *api.Package, b *api.Package) int {
-	if a.Repository.Priority == b.Repository.Priority {
-		return Compare(a.Version, b.Version)
-	}
+func ComparePackage(a *api.Package, b *api.Package, archOrder []string) int {
+	return cmp.Or(
+		CompareArch(a.Arch, b.Arch, archOrder),
+		b.Repository.Priority-a.Repository.Priority,
+		Compare(a.Version, b.Version),
+	)
+}
 
-	return b.Repository.Priority - a.Repository.Priority
+func CompareArch(a, b string, archOrder []string) int {
+	return ArchPriority(a, archOrder) - ArchPriority(b, archOrder)
+}
+
+func ArchPriority(arch string, archOrder []string) int {
+	for i, a := range archOrder {
+		if a == arch {
+			return len(archOrder) - i
+		}
+	}
+	return 0
 }
 
 func ComparePackageKey(a, b api.PackageKey) int {

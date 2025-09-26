@@ -143,7 +143,7 @@ func newWithDepPackage(name, versionStr, dep string) *api.Package {
 }
 
 func pkgKey(name, versionStr string) api.PackageKey {
-	return api.PackageKey{Name: name, Version: newVersion(versionStr)}
+	return api.PackageKey{Name: name, Version: newVersion(versionStr), Arch: ""}
 }
 
 func TestLoader_Load(t *testing.T) {
@@ -156,7 +156,7 @@ func TestLoader_Load(t *testing.T) {
 	) (*Model, *Loader) {
 		loader := NewLoader()
 		model, err := loader.Load(
-			packages, matched, ignoreRegex, allowRegex, nobest)
+			packages, matched, ignoreRegex, allowRegex, nobest, []string{"x86_64", "noarch"})
 		g.Expect(err).ToNot(HaveOccurred())
 		return model, loader
 	}
@@ -586,7 +586,7 @@ func TestLoader_Load(t *testing.T) {
 		t.Run("should handle missing matched packages", func(t *testing.T) {
 			pkgA := newSimplePackage("A", "1.0")
 			loader := NewLoader()
-			model, err := loader.Load([]*api.Package{pkgA}, []string{"non-existent"}, nil, nil, false)
+			model, err := loader.Load([]*api.Package{pkgA}, []string{"non-existent"}, nil, nil, false, []string{"x86_64", "noarch"})
 
 			g.Expect(err).To(HaveOccurred())
 			g.Expect(err.Error()).To(Equal("package non-existent does not exist"))

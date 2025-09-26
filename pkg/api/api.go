@@ -308,7 +308,11 @@ type Package struct {
 // MatchableString provides string representation of a Package that user may match with regular expression,
 // e.g. to ignore specific package.
 func (p *Package) MatchableString() string {
-	return p.Name + "-" + p.Version.String()
+	s := p.Name + "-" + p.Version.String()
+	if p.Arch != "" {
+		s += "." + p.Arch
+	}
+	return s
 }
 
 // Package string representation for logging purposes.
@@ -330,10 +334,11 @@ func (p *Package) String() string {
 type PackageKey struct {
 	Name    string
 	Version Version
+	Arch    string
 }
 
 func (p *Package) Key() PackageKey {
-	return PackageKey{p.Name, p.Version}
+	return PackageKey{p.Name, p.Version, p.Arch}
 }
 
 type Repository struct {
