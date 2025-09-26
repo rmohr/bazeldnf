@@ -143,7 +143,7 @@ func (r *RepoReducer) requires(p *api.Package) (wants []*api.Package) {
 	return wants
 }
 
-func NewRepoReducer(repos *bazeldnf.Repositories, repoFiles []string, baseSystem string, arch string, cacheHelper *repo.CacheHelper) *RepoReducer {
+func NewRepoReducer(repos *bazeldnf.Repositories, repoFiles []string, baseSystem string, architectures []string, cacheHelper *repo.CacheHelper) *RepoReducer {
 	implicitRequires := make([]string, 0, 1)
 	if baseSystem != "" {
 		implicitRequires = append(implicitRequires, baseSystem)
@@ -153,15 +153,15 @@ func NewRepoReducer(repos *bazeldnf.Repositories, repoFiles []string, baseSystem
 		implicitRequires: implicitRequires,
 		loader: RepoLoader{
 			repoFiles:     repoFiles,
-			architectures: []string{"noarch", arch},
+			architectures: architectures,
 			repos:         repos,
 			cacheHelper:   cacheHelper,
 		},
 	}
 }
 
-func Resolve(repos *bazeldnf.Repositories, repoFiles []string, baseSystem, arch string, packages []string, ignoreMissing bool) (matched []string, involved []*api.Package, err error) {
-	repoReducer := NewRepoReducer(repos, repoFiles, baseSystem, arch, repo.NewCacheHelper())
+func Resolve(repos *bazeldnf.Repositories, repoFiles []string, baseSystem string, architectures []string, packages []string, ignoreMissing bool) (matched []string, involved []*api.Package, err error) {
+	repoReducer := NewRepoReducer(repos, repoFiles, baseSystem, architectures, repo.NewCacheHelper())
 	logrus.Info("Loading packages.")
 	if err := repoReducer.Load(); err != nil {
 		return nil, nil, err

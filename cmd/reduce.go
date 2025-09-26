@@ -19,7 +19,7 @@ type reduceOpts struct {
 	out           string
 	nobest        bool
 	ignoreMissing bool
-	arch          string
+	architectures []string
 	baseSystem    string
 }
 
@@ -43,7 +43,7 @@ which allow reducing huge rpm repos to a smaller problem set for debugging, remo
 					return err
 				}
 			}
-			_, involved, err := reducer.Resolve(repos, reduceopts.in, reduceopts.baseSystem, reduceopts.arch, required, reduceopts.ignoreMissing)
+			_, involved, err := reducer.Resolve(repos, reduceopts.in, reduceopts.baseSystem, EffectiveArchitectures(reduceopts.architectures), required, reduceopts.ignoreMissing)
 			if err != nil {
 				return err
 			}
@@ -67,7 +67,7 @@ which allow reducing huge rpm repos to a smaller problem set for debugging, remo
 	reduceCmd.Flags().StringArrayVarP(&reduceopts.in, "input", "i", nil, "primary.xml of the repository")
 	reduceCmd.Flags().StringVarP(&reduceopts.out, "output", "o", "debug.xml", "where to write the repository file")
 	reduceCmd.Flags().StringVar(&reduceopts.baseSystem, "basesystem", "fedora-release-container", "base system to use (e.g. fedora-release-server, centos-stream-release, ...)")
-	reduceCmd.Flags().StringVarP(&reduceopts.arch, "arch", "a", "x86_64", "target architecture")
+	reduceCmd.Flags().StringSliceVarP(&reduceopts.architectures, "arch", "a", []string{"x86_64"}, "target architectures; `noarch` will be automatically added")
 	reduceCmd.Flags().BoolVarP(&reduceopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
 	reduceCmd.Flags().BoolVar(&reduceopts.ignoreMissing, "ignore-missing", false, "ignore missing packages")
 	reduceCmd.Flags().StringArrayVarP(&reduceopts.repofiles, "repofile", "r", []string{"repo.yaml"}, "repository information file. Can be specified multiple times. Will be used by default if no explicit inputs are provided.")

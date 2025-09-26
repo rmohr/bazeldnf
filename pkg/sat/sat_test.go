@@ -1247,16 +1247,17 @@ func Test(t *testing.T) {
 
 func TestNewResolver(t *testing.T) {
 	tests := []struct {
-		name        string
-		packages    []*api.Package
-		requires    []string
-		ignoreRegex []string
-		allowRegex  []string
-		install     []string
-		exclude     []string
-		solvable    bool
-		focus       bool
-		nobest      bool
+		name          string
+		packages      []*api.Package
+		requires      []string
+		ignoreRegex   []string
+		allowRegex    []string
+		install       []string
+		exclude       []string
+		architectures []string
+		solvable      bool
+		focus         bool
+		nobest        bool
 	}{
 		{name: "with indirect dependency", packages: []*api.Package{
 			newPkg("testa", "1", []string{"testa", "a", "b"}, []string{"d", "g"}, []string{}),
@@ -1415,16 +1416,17 @@ func TestNewResolver(t *testing.T) {
 			solvable: true,
 		},
 		{name: "cross-arch dependency (by resource) – non-best arch & non-top priority", packages: []*api.Package{
-			newPkgAP("testa", "1", "noarch", 1, []string{}, []string{"/bin/b.py"}, []string{}),
-			newPkgAP("testb", "1", "x86_64", 1, []string{"/bin/b"}, []string{}, []string{}),
-			newPkgAP("testb", "1", "noarch", 2, []string{"/bin/b.py"}, []string{}, []string{}),
+			newPkgAP("testa", "1", "i686", 1, []string{}, []string{"/bin/b(32-bit)"}, []string{}),
+			newPkgAP("testb", "1", "x86_64", 1, []string{"/bin/b(64-bit)"}, []string{}, []string{}),
+			newPkgAP("testb", "1", "i686", 2, []string{"/bin/b(32-bit)"}, []string{}, []string{}),
 		}, requires: []string{
 			"testa",
 		},
-			install:  []string{"testa-0:1.noarch", "testb-0:1.noarch"},
-			exclude:  []string{"testb-0:1.x86_64"},
-			nobest:   true,
-			solvable: true,
+			architectures: []string{"x86_64", "i686"},
+			install:       []string{"testa-0:1.i686", "testb-0:1.i686"},
+			exclude:       []string{"testb-0:1.x86_64"},
+			nobest:        true,
+			solvable:      true,
 		},
 		{name: "parallel circular dependency", packages: []*api.Package{
 			newPkgAP("testa", "1", "x86_64", 3, []string{}, []string{"testb"}, []string{}),
@@ -1454,7 +1456,11 @@ func TestNewResolver(t *testing.T) {
 		}
 		t.Run(tt.name, func(t *testing.T) {
 			loader := NewLoader()
-			model, err := loader.Load(tt.packages, tt.requires, tt.ignoreRegex, tt.allowRegex, tt.nobest, []string{"x86_64", "noarch"})
+			architectures := tt.architectures
+			if len(architectures) == 0 {
+				architectures = []string{"x86_64", "noarch"}
+			}
+			model, err := loader.Load(tt.packages, tt.requires, tt.ignoreRegex, tt.allowRegex, tt.nobest, architectures)
 			if err != nil {
 				t.Fail()
 			}
