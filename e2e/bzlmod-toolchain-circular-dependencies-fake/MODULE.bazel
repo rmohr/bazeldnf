@@ -1,7 +1,5 @@
 "example MODULE.bazel to test bzlmod integration for bazeldnf without a prebuilt toolchain"
 
-module(name = "example-bazeldnf-bzlmod-issues-with-ignore-flag")
-
 bazel_dep(name = "bazeldnf", dev_dependency = True)
 local_path_override(
     module_name = "bazeldnf",
@@ -36,14 +34,12 @@ use_repo(
     "com_github_adrg_xdg",
     "com_github_bazelbuild_buildtools",
     "com_github_crillab_gophersat",
-    "com_github_hashicorp_go_retryablehttp",
     "com_github_jdx_go_netrc",
     "com_github_klauspost_compress",
     "com_github_onsi_gomega",
     "com_github_sassoftware_go_rpmutils",
     "com_github_sirupsen_logrus",
     "com_github_spf13_cobra",
-    "com_github_ulikunitz_xz",
     "io_k8s_sigs_yaml",
     "org_golang_x_crypto",
     "org_golang_x_exp",
@@ -54,22 +50,16 @@ bazeldnf_toolchain.register(disable = True)
 
 bazeldnf = use_extension("@bazeldnf//bazeldnf:extensions.bzl", "bazeldnf")
 bazeldnf.config(
-    name = "bazeldnf_rpms",
-    cache_dir = "./.bazeldnf-test-issues-with-ignore-flag",
-    excludes = [
-        "alternatives",
-        "basesystem",
-        "perl",
-    ],
+    name = "rpms-circular-triplet",
     ignore_deps = False,
-    lock_file = "//:bazeldnf-lock.json",
-    repofile = "//:repos.yaml",
+    lock_file = "//:rpms-circular-triplet.json",
     rpms = [
-        "git",
-        "glibc",
+        "package1",
+        "package2",
+        "package3",
     ],
 )
 use_repo(
     bazeldnf,
-    "bazeldnf_rpms",
+    "rpms-circular-triplet",
 )

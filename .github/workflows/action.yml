@@ -169,15 +169,5 @@ jobs:
           import %workspace%/../../.github/workflows/ci.bazelrc
     - id: prepare
       run: |
-        cd e2e/bzlmod-toolchain-circular-dependencies
-        bazelisk run @bazeldnf_rpms//:fetch-repo
-        bazelisk run @bazeldnf_rpms//:update-lock-file
-    - id: test
-      run: |
-        cd e2e/bzlmod-toolchain-circular-dependencies
-        bazelisk build //... || status=$?
-        if [ ${status} -ne 0 ]; then
-          echo "::warning::Optional job failed."
-          echo "optional_fail=true" >> "${GITHUB_OUTPUT}"
-          echo "optional_fail_status=${status}" >> "${GITHUB_OUTPUT}"
-        fi
+        (cd e2e/bzlmod-toolchain-circular-dependencies && make test)
+        (cd e2e/bzlmod-toolchain-circular-dependencies-fake && make test)
