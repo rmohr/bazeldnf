@@ -124,7 +124,7 @@ func AddWorkspaceRPMs(workspace *build.File, pkgs []*api.Package, arch string) e
 	}
 
 	for _, pkg := range pkgs {
-		pkgName := sanitize(pkg.String() + "." + arch)
+		pkgName := pkgName(pkg, arch)
 		rule := rpms[pkgName]
 		if rule == nil {
 			call := &build.CallExpr{X: &build.Ident{Name: "rpm"}}
@@ -178,7 +178,7 @@ func AddBzlfileRPMs(bzlfile *build.File, defName string, pkgs []*api.Package, ar
 	}
 
 	for _, pkg := range pkgs {
-		pkgName := sanitize(pkg.String() + "." + arch)
+		pkgName := pkgName(pkg, arch)
 		rule := rpms[pkgName]
 		if rule == nil {
 			call := &build.CallExpr{X: &build.Ident{Name: "rpm"}, ForceMultiLine: true}
@@ -287,7 +287,7 @@ func AddTree(name, configname string, buildfile *build.File, pkgs []*api.Package
 
 	rpms := []string{}
 	for _, pkg := range pkgs {
-		pkgName := sanitize(pkg.String() + "." + arch)
+		pkgName := pkgName(pkg, arch)
 		rpms = append(rpms, transform(pkgName))
 	}
 	sort.SliceStable(rpms, func(i, j int) bool {
@@ -526,7 +526,7 @@ func AddConfigRPMs(config *bazeldnf.Config, pkgs []*api.Package, arch string) er
 		config.RPMs = append(
 			config.RPMs,
 			&bazeldnf.RPM{
-				Name:      sanitize(pkg.String() + "." + arch),
+				Name:      pkgName(pkg, arch),
 				Integrity: integrity,
 				URLs:      URLs,
 			},
@@ -534,6 +534,10 @@ func AddConfigRPMs(config *bazeldnf.Config, pkgs []*api.Package, arch string) er
 	}
 
 	return nil
+}
+
+func pkgName(pkg *api.Package, arch string) string {
+	return sanitize(pkg.String() + "." + arch)
 }
 
 func sanitize(name string) string {
