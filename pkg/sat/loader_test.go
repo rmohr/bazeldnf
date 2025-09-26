@@ -42,11 +42,11 @@ func expectedBest(g *WithT, m *Model, pkgVersions map[string]string) {
 	}
 }
 
-func expectedIgnores(g *WithT, m *Model, pkgNames ...string) {
-	g.Expect(m.forceIgnoreWithDependencies).To(HaveLen(len(pkgNames)))
+func expectedIgnores(g *WithT, m *Model, pkgKeys ...api.PackageKey) {
+	g.Expect(m.forceIgnoreWithDependencies).To(HaveLen(len(pkgKeys)))
 
-	for _, name := range pkgNames {
-		g.Expect(m.forceIgnoreWithDependencies[name].String()).To(Equal(name))
+	for _, key := range pkgKeys {
+		g.Expect(m.forceIgnoreWithDependencies).To(HaveKey(key))
 	}
 }
 
@@ -140,6 +140,10 @@ func newSimplePackage(name, versionStr string) *api.Package {
 
 func newWithDepPackage(name, versionStr, dep string) *api.Package {
 	return newPackage(name, versionStr, []string{dep}, nil, nil, nil)
+}
+
+func pkgKey(name, versionStr string) api.PackageKey {
+	return api.PackageKey{Name: name, Version: newVersion(versionStr)}
 }
 
 func TestLoader_Load(t *testing.T) {
@@ -263,7 +267,7 @@ func TestLoader_Load(t *testing.T) {
 			model, _ := doLoad(packages, []string{"pkg-a"}, nil, []string{"^pkg-[ab]"}, false)
 
 			basicExpectations(model)
-			expectedIgnores(g, model, "pkg-c-0:1.0")
+			expectedIgnores(g, model, pkgKey("pkg-c", "0:1.0"))
 			expectedAnds(g, model,
 				bf.Or(bf.Not(x1), bf.And(x1)),
 				bf.Or(bf.Not(x1), bf.Not(x1)),
@@ -284,7 +288,7 @@ func TestLoader_Load(t *testing.T) {
 			model, _ := doLoad(packages, nil, nil, []string{"^pkg-a", "^pkg-c"}, false)
 
 			basicExpectations(model)
-			expectedIgnores(g, model, "pkg-b-0:1.0")
+			expectedIgnores(g, model, pkgKey("pkg-b", "0:1.0"))
 			expectedAnds(g, model,
 				bf.Or(bf.Not(x1), bf.And(x1)),
 				bf.Or(bf.Not(x1), bf.Not(x1)),
@@ -305,7 +309,7 @@ func TestLoader_Load(t *testing.T) {
 			model, _ := doLoad(packages, nil, []string{"^pkg-b", "^pkg-x"}, nil, false)
 
 			basicExpectations(model)
-			expectedIgnores(g, model, "pkg-b-0:1.0")
+			expectedIgnores(g, model, pkgKey("pkg-b", "0:1.0"))
 			expectedAnds(g, model,
 				bf.Or(bf.Not(x1), bf.And(x1)),
 				bf.Or(bf.Not(x1), bf.Not(x1)),
@@ -326,7 +330,7 @@ func TestLoader_Load(t *testing.T) {
 			model, _ := doLoad(packages, nil, []string{"^pkg-b", "^pkg-c"}, nil, false)
 
 			basicExpectations(model)
-			expectedIgnores(g, model, "pkg-b-0:1.0", "pkg-c-0:1.0")
+			expectedIgnores(g, model, pkgKey("pkg-b", "0:1.0"), pkgKey("pkg-c", "0:1.0"))
 			expectedAnds(g, model,
 				bf.Or(bf.Not(x1), bf.And(x1)),
 				bf.Or(bf.Not(x1), bf.Not(x1)),
@@ -346,7 +350,7 @@ func TestLoader_Load(t *testing.T) {
 
 			model, _ := doLoad(packages, nil, []string{"^pkg-b"}, []string{"^pkg-[ab]"}, false)
 			basicExpectations(model)
-			expectedIgnores(g, model, "pkg-b-0:1.0", "pkg-c-0:1.0")
+			expectedIgnores(g, model, pkgKey("pkg-b", "0:1.0"), pkgKey("pkg-c", "0:1.0"))
 			expectedAnds(g, model,
 				bf.Or(bf.Not(x1), bf.And(x1)),
 				bf.Or(bf.Not(x1), bf.Not(x1)),
@@ -532,9 +536,9 @@ func TestLoader_Load(t *testing.T) {
 				"pkgX-0:1.0(pkgX)",    // x6
 			)
 			expectedBest(g, model, map[string]string{
-				"gcc":  "0:11.0",
-				"gcc11":  "0:11.0",
-				"pkgX":   "0:1.0",
+				"gcc":   "0:11.0",
+				"gcc11": "0:11.0",
+				"pkgX":  "0:1.0",
 			})
 
 			expectedAnds(g, model,

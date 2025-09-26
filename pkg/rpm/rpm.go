@@ -16,6 +16,11 @@ func ComparePackage(a *api.Package, b *api.Package) int {
 	return b.Repository.Priority - a.Repository.Priority
 }
 
+func ComparePackageKey(a, b api.PackageKey) int {
+	return cmp.Or(
+		cmp.Compare(a.Name, b.Name), Compare(a.Version, b.Version))
+}
+
 func Compare(a api.Version, b api.Version) int {
 	return cmp.Or(
 		compare(a.Epoch, b.Epoch),

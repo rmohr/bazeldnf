@@ -537,7 +537,7 @@ func AddConfigRPMs(config *bazeldnf.Config, pkgs []*api.Package, arch string) er
 }
 
 func pkgName(pkg *api.Package, arch string) string {
-	return sanitize(pkg.String() + "." + arch)
+	return sanitize(fmt.Sprintf("%s-%s.%s", pkg.Name, pkg.Version.String(), arch))
 }
 
 func sanitize(name string) string {

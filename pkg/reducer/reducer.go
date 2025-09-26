@@ -29,24 +29,31 @@ func (r *RepoReducer) PackageCount() int {
 	return len(r.packageInfo.packages)
 }
 
+// Checks if user-provided string requesting top-level package matches given package.
+// There are various possible matching methods:
+// - <package name>
+// - <package name>-<version> (version could be also any, possibly empty prefix of package's version)
+func packageMatchesString(pkg *api.Package, req string) bool {
+	return req == pkg.Name ||
+		strings.HasPrefix(fmt.Sprintf("%s-%s", pkg.Name, pkg.Version.String()), req) && len(req) > len(pkg.Name)
+}
+
 func (r *RepoReducer) Resolve(packages []string, ignoreMissing bool) (matched []string, involved []*api.Package, err error) {
 	packages = append(packages, r.implicitRequires...)
-	discovered := map[string]*api.Package{}
+	discovered := map[api.PackageKey]*api.Package{}
 	pinned := map[string]*api.Package{}
 	for _, req := range packages {
 		found := false
 		name := ""
 		var candidates []*api.Package
 		for i, p := range r.packageInfo.packages {
-			if strings.HasPrefix(p.String(), req) {
-				if strings.HasPrefix(req, p.Name) {
-					if !found || len(p.Name) < len(name) {
-						candidates = []*api.Package{&r.packageInfo.packages[i]}
-						name = p.Name
-						found = true
-					} else if p.Name == name {
-						candidates = append(candidates, &r.packageInfo.packages[i])
-					}
+			if packageMatchesString(&p, req) {
+				if !found || len(p.Name) < len(name) {
+					candidates = []*api.Package{&r.packageInfo.packages[i]}
+					name = p.Name
+					found = true
+				} else if p.Name == name {
+					candidates = append(candidates, &r.packageInfo.packages[i])
 				}
 			}
 		}
@@ -55,11 +62,11 @@ func (r *RepoReducer) Resolve(packages []string, ignoreMissing bool) (matched []
 		}
 
 		for i, p := range candidates {
-			if selected, ok := discovered[p.String()]; !ok {
-				discovered[p.String()] = candidates[i]
+			if selected, ok := discovered[p.Key()]; !ok {
+				discovered[p.Key()] = candidates[i]
 			} else {
 				if selected.Repository.Priority > p.Repository.Priority {
-					discovered[p.String()] = candidates[i]
+					discovered[p.Key()] = candidates[i]
 				}
 			}
 		}
@@ -74,15 +81,15 @@ func (r *RepoReducer) Resolve(packages []string, ignoreMissing bool) (matched []
 	}
 
 	for {
-		current := []string{}
+		current := []api.PackageKey{}
 		for k := range discovered {
 			current = append(current, k)
 		}
 		for _, p := range current {
 			for _, newFound := range r.requires(discovered[p]) {
-				if _, exists := discovered[newFound.String()]; !exists {
+				if _, exists := discovered[newFound.Key()]; !exists {
 					if _, exists := pinned[newFound.Name]; !exists {
-						discovered[newFound.String()] = newFound
+						discovered[newFound.Key()] = newFound
 					} else {
 						logrus.Debugf("excluding %s because of pinned dependency %s", newFound.String(), pinned[newFound.Name].String())
 					}

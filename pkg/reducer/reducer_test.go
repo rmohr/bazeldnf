@@ -302,3 +302,20 @@ func TestRepositoryPriorityWithVersion(t *testing.T) {
 	g.Expect(matched).Should(ConsistOf("bar"))
 	g.Expect(involved).Should(ConsistOf(&packages[1], &packages[2]))
 }
+
+func TestSpecifyVersion(t *testing.T) {
+	g := NewGomegaWithT(t)
+	packages := withRepository(newPackageList("foo", "foo", "foo", "bar", "baz", "baz"))
+	packages[0].Version = api.Version{Epoch: "1", Ver: "3", Rel: "4"}
+	packages[1].Version = api.Version{Epoch: "2", Ver: "3", Rel: "4"}
+	packages[2].Version = api.Version{Epoch: "2", Ver: "3", Rel: "5"}
+	packages[3].Version = api.Version{Epoch: "1", Ver: "9", Rel: "8"}
+	packages[4].Version = api.Version{Epoch: "1", Ver: "1.13", Rel: "1"}
+	packages[5].Version = api.Version{Epoch: "1", Ver: "1.14", Rel: "6"}
+	packageInfo := packageInfo{packages: packages}
+
+	matched, involved, err := resolve(&packageInfo, []string{"foo-2:3", "bar-2", "baz-1:1.13-1"}, []string{}, true)
+	g.Expect(err).Should(BeNil())
+	g.Expect(matched).Should(ConsistOf("foo", "baz"))
+	g.Expect(involved).Should(ConsistOf(&packages[1], &packages[2], &packages[4]))
+}
