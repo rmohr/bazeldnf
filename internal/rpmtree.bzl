@@ -75,6 +75,7 @@ def _tar2files_impl(ctx):
     args = ctx.actions.args()
     strip_prefix = paths.join(
         ctx.bin_dir.path,
+        ctx.label.workspace_root,
         ctx.label.package,
         ctx.label.name,
     )
