@@ -115,7 +115,7 @@ func GetBzlfileRPMs(bzlfile *build.File, defName string) (rpms []*RPMRule) {
 	return
 }
 
-func AddWorkspaceRPMs(workspace *build.File, pkgs []*api.Package, arch string) error {
+func AddWorkspaceRPMs(workspace *build.File, pkgs []*api.Package) error {
 
 	rpms := map[string]*RPMRule{}
 
@@ -124,7 +124,7 @@ func AddWorkspaceRPMs(workspace *build.File, pkgs []*api.Package, arch string) e
 	}
 
 	for _, pkg := range pkgs {
-		pkgName := pkgName(pkg, arch)
+		pkgName := pkgName(pkg)
 		rule := rpms[pkgName]
 		if rule == nil {
 			call := &build.CallExpr{X: &build.Ident{Name: "rpm"}}
@@ -162,7 +162,7 @@ func AddWorkspaceRPMs(workspace *build.File, pkgs []*api.Package, arch string) e
 	return nil
 }
 
-func AddBzlfileRPMs(bzlfile *build.File, defName string, pkgs []*api.Package, arch string) error {
+func AddBzlfileRPMs(bzlfile *build.File, defName string, pkgs []*api.Package) error {
 	defStmt, err := findDefStmt(bzlfile.Stmt, defName)
 	if err != nil {
 		// statement not found, create it
@@ -178,7 +178,7 @@ func AddBzlfileRPMs(bzlfile *build.File, defName string, pkgs []*api.Package, ar
 	}
 
 	for _, pkg := range pkgs {
-		pkgName := pkgName(pkg, arch)
+		pkgName := pkgName(pkg)
 		rule := rpms[pkgName]
 		if rule == nil {
 			call := &build.CallExpr{X: &build.Ident{Name: "rpm"}, ForceMultiLine: true}
@@ -268,7 +268,7 @@ func AddTar2Files(name string, rpmtree string, buildfile *build.File, files []st
 	}
 }
 
-func AddTree(name, configname string, buildfile *build.File, pkgs []*api.Package, arch string, public bool) {
+func AddTree(name, configname string, buildfile *build.File, pkgs []*api.Package, public bool) {
 	transform := func(n string) string {
 		return "@" + n + "//rpm"
 	}
@@ -287,7 +287,7 @@ func AddTree(name, configname string, buildfile *build.File, pkgs []*api.Package
 
 	rpms := []string{}
 	for _, pkg := range pkgs {
-		pkgName := pkgName(pkg, arch)
+		pkgName := pkgName(pkg)
 		rpms = append(rpms, transform(pkgName))
 	}
 	sort.SliceStable(rpms, func(i, j int) bool {
@@ -505,7 +505,7 @@ func (r *tar2Files) SetFiles(dirs []string, fileMap map[string][]string) {
 	r.Rule.SetAttr("files", filesMapExpr)
 }
 
-func AddConfigRPMs(config *bazeldnf.Config, pkgs []*api.Package, arch string) error {
+func AddConfigRPMs(config *bazeldnf.Config, pkgs []*api.Package) error {
 	for _, pkg := range pkgs {
 		URLs := []string{}
 
@@ -526,7 +526,7 @@ func AddConfigRPMs(config *bazeldnf.Config, pkgs []*api.Package, arch string) er
 		config.RPMs = append(
 			config.RPMs,
 			&bazeldnf.RPM{
-				Name:      pkgName(pkg, arch),
+				Name:      pkgName(pkg),
 				Integrity: integrity,
 				URLs:      URLs,
 			},
@@ -536,8 +536,8 @@ func AddConfigRPMs(config *bazeldnf.Config, pkgs []*api.Package, arch string) er
 	return nil
 }
 
-func pkgName(pkg *api.Package, arch string) string {
-	return sanitize(fmt.Sprintf("%s-%s.%s", pkg.Name, pkg.Version.String(), arch))
+func pkgName(pkg *api.Package) string {
+	return sanitize(fmt.Sprintf("%s-%s.%s", pkg.Name, pkg.Version.String(), pkg.Arch))
 }
 
 func sanitize(name string) string {

@@ -27,7 +27,7 @@ type rpmtreeOpts struct {
 var rpmtreeopts = rpmtreeOpts{}
 
 type Handler interface {
-	Process(pkgs []*api.Package, arch string, buildfile *build.File) error
+	Process(pkgs []*api.Package, buildfile *build.File) error
 	Write() error
 }
 
@@ -55,8 +55,8 @@ func NewMacroHandler(toMacro string) (Handler, error) {
 	}, nil
 }
 
-func (h *MacroHandler) Process(pkgs []*api.Package, arch string, buildfile *build.File) error {
-	if err := bazel.AddBzlfileRPMs(h.bzlfile, h.defName, pkgs, arch); err != nil {
+func (h *MacroHandler) Process(pkgs []*api.Package, buildfile *build.File) error {
+	if err := bazel.AddBzlfileRPMs(h.bzlfile, h.defName, pkgs); err != nil {
 		return err
 	}
 
@@ -85,8 +85,8 @@ func NewWorkspaceHandler(workspace string) (Handler, error) {
 	}, nil
 }
 
-func (h *WorkspaceHandler) Process(pkgs []*api.Package, arch string, buildfile *build.File) error {
-	if err := bazel.AddWorkspaceRPMs(h.workspacefile, pkgs, arch); err != nil {
+func (h *WorkspaceHandler) Process(pkgs []*api.Package, buildfile *build.File) error {
+	if err := bazel.AddWorkspaceRPMs(h.workspacefile, pkgs); err != nil {
 		return err
 	}
 
@@ -113,8 +113,8 @@ func NewLockFileHandler(configname, filename string) (Handler, error) {
 	}, nil
 }
 
-func (h *LockFileHandler) Process(pkgs []*api.Package, arch string, buildfile *build.File) error {
-	return bazel.AddConfigRPMs(h.config, pkgs, arch)
+func (h *LockFileHandler) Process(pkgs []*api.Package, buildfile *build.File) error {
+	return bazel.AddConfigRPMs(h.config, pkgs)
 }
 
 func (h *LockFileHandler) Write() error {
@@ -162,9 +162,9 @@ func NewRpmTreeCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			bazel.AddTree(rpmtreeopts.name, configname, build, install, resolvehelperopts.arch, rpmtreeopts.public)
+			bazel.AddTree(rpmtreeopts.name, configname, build, install, rpmtreeopts.public)
 
-			if err := handler.Process(install, resolvehelperopts.arch, build); err != nil {
+			if err := handler.Process(install, build); err != nil {
 				return err
 			}
 

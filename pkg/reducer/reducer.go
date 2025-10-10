@@ -154,7 +154,6 @@ func NewRepoReducer(repos *bazeldnf.Repositories, repoFiles []string, baseSystem
 		loader: RepoLoader{
 			repoFiles:     repoFiles,
 			architectures: []string{"noarch", arch},
-			arch:          arch,
 			repos:         repos,
 			cacheHelper:   cacheHelper,
 		},

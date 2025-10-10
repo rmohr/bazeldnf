@@ -16,7 +16,7 @@ type ErrorCacheHelper struct {
 	err error
 }
 
-func (h ErrorCacheHelper) CurrentPrimaries(_ *bazeldnf.Repositories, _ string) (primaries []*api.Repository, err error) {
+func (h ErrorCacheHelper) CurrentPrimaries(_ *bazeldnf.Repositories, _ []string) (primaries []*api.Repository, err error) {
 	return nil, h.err
 }
 
@@ -24,7 +24,7 @@ type MockCacheHelper struct {
 	repos []*api.Repository
 }
 
-func (h MockCacheHelper) CurrentPrimaries(_ *bazeldnf.Repositories, _ string) (primaries []*api.Repository, err error) {
+func (h MockCacheHelper) CurrentPrimaries(_ *bazeldnf.Repositories, _ []string) (primaries []*api.Repository, err error) {
 	return h.repos, nil
 }
 
