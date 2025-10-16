@@ -12,6 +12,7 @@ rpmtree(
         "@libvirt-libs-11.0.0-1.fc42.x86_64.rpm//rpm",
         "@libvirt-devel-11.0.0-1.fc42.x86_64.rpm//rpm",
     ],
+    visibility = ["//visibility:public"],
 )
 
 tar2files(
@@ -43,4 +44,12 @@ sh_binary(
     env = {
         "BAZELDNF_PATH": "$(location :bazeldnf)",
     },
+)
+
+filegroup(
+    name = "extracted_in_external_repo",
+    srcs = [
+        "@repo1//:something_libs/usr/lib64/libvirt.so.0",
+        "@repo1//:something_libs/usr/lib64/libvirt.so.0.11000.0",
+    ],
 )
