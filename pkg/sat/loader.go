@@ -28,7 +28,7 @@ func NewLoader() *Loader {
 			packages:                    map[string][]*Var{},
 			vars:                        map[string]*Var{},
 			bestPackages:                map[string]*api.Package{},
-			forceIgnoreWithDependencies: map[string]*api.Package{},
+			forceIgnoreWithDependencies: map[api.PackageKey]*api.Package{},
 		},
 		provides:  map[string][]*Var{},
 		varsCount: 0,
@@ -41,15 +41,15 @@ func NewLoader() *Loader {
 // requirements in the provided list of installed packages, and also a list
 // of regular expressions that may be used to limit the selection to matching
 // packages.
-func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowRegex []string, nobest bool) (*Model, error) {
+func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowRegex []string, nobest bool, archOrder []string) (*Model, error) {
 	// Deduplicate and detect excludes
-	deduplicated := map[string]*api.Package{}
+	deduplicated := map[api.PackageKey]*api.Package{}
 	for i, pkg := range packages {
-		if _, exists := deduplicated[pkg.String()]; exists {
+		if _, exists := deduplicated[pkg.Key()]; exists {
 			logrus.Infof("Removing duplicate of  %v.", pkg.String())
 		}
-		fullName := pkg.String()
-		if _, exists := deduplicated[fullName]; !exists {
+		fullName := pkg.MatchableString()
+		if _, exists := deduplicated[pkg.Key()]; !exists {
 			allowed := len(allowRegex) == 0
 			for _, rex := range allowRegex {
 				if match, err := regexp.MatchString(rex, fullName); err != nil {
@@ -79,15 +79,15 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 
 			if !allowed || ignored {
 				packages[i].Format.Requires.Entries = nil
-				loader.m.forceIgnoreWithDependencies[pkg.String()] = packages[i]
+				loader.m.forceIgnoreWithDependencies[pkg.Key()] = packages[i]
 			}
 
-			deduplicated[pkg.String()] = packages[i]
+			deduplicated[pkg.Key()] = packages[i]
 		}
 	}
 
 	deduplicatedKeys := maps.Keys(deduplicated)
-	slices.Sort(deduplicatedKeys)
+	slices.SortFunc(deduplicatedKeys, rpm.ComparePackageKey)
 
 	packages = nil
 	for _, k := range deduplicatedKeys {
@@ -99,7 +99,7 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 	for _, pkg := range packages {
 		if loader.m.bestPackages[pkg.Name] == nil {
 			loader.m.bestPackages[pkg.Name] = pkg
-		} else if rpm.ComparePackage(pkg, loader.m.bestPackages[pkg.Name]) > 0 {
+		} else if rpm.ComparePackage(pkg, loader.m.bestPackages[pkg.Name], archOrder) > 0 {
 			loader.m.bestPackages[pkg.Name] = pkg
 		}
 	}
@@ -131,7 +131,7 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 
 	for _, x := range packagesKeys {
 		sort.SliceStable(loader.m.packages[x], func(i, j int) bool {
-			return rpm.ComparePackage(loader.m.packages[x][i].Package, loader.m.packages[x][j].Package) < 0
+			return rpm.ComparePackage(loader.m.packages[x][i].Package, loader.m.packages[x][j].Package, archOrder) < 0
 		})
 	}
 
@@ -159,7 +159,7 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 	}
 	logrus.Infof("Generated %v variables.", len(loader.m.vars))
 
-	return loader.constructRequirements(matched)
+	return loader.constructRequirements(matched, archOrder)
 }
 
 func (loader *Loader) explodePackageToVars(pkg *api.Package) (pkgVar *Var, resourceVars []*Var) {
@@ -169,9 +169,8 @@ func (loader *Loader) explodePackageToVars(pkg *api.Package) (pkgVar *Var, resou
 				satVarName: loader.ticket(),
 				varType:    VarTypePackage,
 				Context: VarContext{
-					Package:  pkg.Name,
-					Provides: pkg.Name,
-					Version:  pkg.Version,
+					PackageKey: pkg.Key(),
+					Provides:   pkg.Name,
 				},
 				Package:         pkg,
 				ResourceVersion: &pkg.Version,
@@ -182,9 +181,8 @@ func (loader *Loader) explodePackageToVars(pkg *api.Package) (pkgVar *Var, resou
 				satVarName: loader.ticket(),
 				varType:    VarTypeResource,
 				Context: VarContext{
-					Package:  pkg.Name,
-					Provides: p.Name,
-					Version:  pkg.Version,
+					PackageKey: pkg.Key(),
+					Provides:   p.Name,
 				},
 				ResourceVersion: &api.Version{
 					Rel:   p.Rel,
@@ -202,9 +200,8 @@ func (loader *Loader) explodePackageToVars(pkg *api.Package) (pkgVar *Var, resou
 			satVarName: loader.ticket(),
 			varType:    VarTypeFile,
 			Context: VarContext{
-				Package:  pkg.Name,
-				Provides: f.Text,
-				Version:  pkg.Version,
+				PackageKey: pkg.Key(),
+				Provides:   f.Text,
 			},
 			Package:         pkg,
 			ResourceVersion: &api.Version{},
@@ -245,7 +242,7 @@ func (loader *Loader) explodePackageConflicts(pkgVar *Var) bf.Formula {
 				//logrus.Infof("%s does not conflict with %s", s.Package.String(), pkgVar.Package.String())
 				continue
 			}
-			if !strings.HasPrefix(s.Package.Name, "fedora-release") && !strings.HasPrefix(pkgVar.Package.String(), "fedora-release") {
+			if !strings.HasPrefix(s.Package.Name, "fedora-release") && !strings.HasPrefix(pkgVar.Package.Name, "fedora-release") {
 				logrus.Infof("%s conflicts with %s", s.Package.String(), pkgVar.Package.String())
 			}
 			conflictingVars = append(conflictingVars, bf.Var(s.satVarName))
@@ -286,11 +283,11 @@ func (loader *Loader) ticket() string {
 	return "x" + strconv.Itoa(loader.varsCount)
 }
 
-func (loader *Loader) constructRequirements(packages []string) (*Model, error) {
+func (loader *Loader) constructRequirements(packages []string, archOrder []string) (*Model, error) {
 	logrus.Info("Adding required packages to the resolver.")
 
 	for _, pkgName := range packages {
-		req, err := loader.resolveNewest(pkgName)
+		req, err := loader.resolveNewest(pkgName, archOrder)
 		if err != nil {
 			return nil, err
 		}
@@ -300,14 +297,14 @@ func (loader *Loader) constructRequirements(packages []string) (*Model, error) {
 	return loader.m, nil
 }
 
-func (loader *Loader) resolveNewest(pkgName string) (*Var, error) {
+func (loader *Loader) resolveNewest(pkgName string, archOrder []string) (*Var, error) {
 	pkgs := loader.provides[pkgName]
 	if len(pkgs) == 0 {
 		return nil, fmt.Errorf("package %s does not exist", pkgName)
 	}
 	newest := pkgs[0]
 	for _, p := range pkgs {
-		if rpm.ComparePackage(p.Package, newest.Package) > 0 {
+		if rpm.ComparePackage(p.Package, newest.Package, archOrder) > 0 {
 			newest = p
 		}
 	}

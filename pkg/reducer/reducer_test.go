@@ -302,3 +302,39 @@ func TestRepositoryPriorityWithVersion(t *testing.T) {
 	g.Expect(matched).Should(ConsistOf("bar"))
 	g.Expect(involved).Should(ConsistOf(&packages[1], &packages[2]))
 }
+
+func TestSpecifyVersion(t *testing.T) {
+	g := NewGomegaWithT(t)
+	packages := withRepository(newPackageList("foo", "foo", "foo", "bar", "baz", "baz"))
+	packages[0].Version = api.Version{Epoch: "1", Ver: "3", Rel: "4"}
+	packages[1].Version = api.Version{Epoch: "2", Ver: "3", Rel: "4"}
+	packages[2].Version = api.Version{Epoch: "2", Ver: "3", Rel: "5"}
+	packages[3].Version = api.Version{Epoch: "1", Ver: "9", Rel: "8"}
+	packages[4].Version = api.Version{Epoch: "1", Ver: "1.13", Rel: "1"}
+	packages[5].Version = api.Version{Epoch: "1", Ver: "1.14", Rel: "6"}
+	packageInfo := packageInfo{packages: packages}
+
+	matched, involved, err := resolve(&packageInfo, []string{"foo-2:3", "bar-2", "baz-1:1.13-1"}, []string{}, true)
+	g.Expect(err).Should(BeNil())
+	g.Expect(matched).Should(ConsistOf("foo", "baz"))
+	g.Expect(involved).Should(ConsistOf(&packages[1], &packages[2], &packages[4]))
+}
+
+func TestSpecifyArch(t *testing.T) {
+	g := NewGomegaWithT(t)
+	packages := withRepository(newPackageList("foo", "foo", "bar", "bar", "bar"))
+	packages[0].Arch = "ppc"
+	packages[1].Arch = "sparcv9"
+	packages[2].Arch = "x86_64"
+	packages[2].Version = api.Version{Epoch: "0", Ver: "14.6", Rel: "1"}
+	packages[3].Arch = "ia64"
+	packages[3].Version = api.Version{Epoch: "0", Ver: "14.6", Rel: "1"}
+	packages[4].Arch = "ia64"
+	packages[4].Version = api.Version{Epoch: "0", Ver: "14.6", Rel: "10"}
+	packageInfo := packageInfo{packages: packages}
+
+	matched, involved, err := resolve(&packageInfo, []string{"foo.ppc", "bar.ia64-0:14.6-1"}, []string{}, true)
+	g.Expect(err).Should(BeNil())
+	g.Expect(matched).Should(ConsistOf("foo", "bar"))
+	g.Expect(involved).Should(ConsistOf(&packages[0], &packages[3]))
+}

@@ -2,7 +2,6 @@ package sat
 
 import (
 	"bufio"
-	"cmp"
 	"fmt"
 	"io"
 	"regexp"
@@ -27,16 +26,12 @@ const (
 // VarContext contains all information to create a unique identifyable hash key which can be traced back to a package
 // for every resource in a yum repo
 type VarContext struct {
-	Package  string
-	Provides string
-	Version  api.Version
+	PackageKey api.PackageKey
+	Provides   string
 }
 
 func varContextSort(a VarContext, b VarContext) int {
-	return cmp.Or(
-		cmp.Compare(a.Package, b.Package),
-		rpm.Compare(a.Version, b.Version),
-	)
+	return rpm.ComparePackageKey(a.PackageKey, b.PackageKey)
 }
 
 type Var struct {
@@ -62,7 +57,7 @@ type Model struct {
 	bestPackages map[string]*api.Package
 
 	ands                        []bf.Formula
-	forceIgnoreWithDependencies map[string]*api.Package
+	forceIgnoreWithDependencies map[api.PackageKey]*api.Package
 }
 
 func (m *Model) Packages() map[string][]*Var {
@@ -81,7 +76,7 @@ func (m *Model) Ands() bf.Formula {
 	return bf.And(m.ands...)
 }
 
-func (m *Model) ShouldIgnore(p string) bool {
+func (m *Model) ShouldIgnore(p api.PackageKey) bool {
 	_, exists := m.forceIgnoreWithDependencies[p]
 	return exists
 }
@@ -180,7 +175,7 @@ func Resolve(model *Model) (install []*api.Package, excluded []*api.Package, for
 			resVar := model.Var(satVars.satToPkg[strconv.Itoa(k+1)])
 			if resVar != nil && resVar.varType == VarTypePackage {
 				if v {
-					if exists := model.ShouldIgnore(resVar.Package.String()); !exists {
+					if exists := model.ShouldIgnore(resVar.Package.Key()); !exists {
 						installMap[resVar.Context] = resVar.Package
 					} else {
 						forceIgnoreMap[resVar.Context] = resVar.Package

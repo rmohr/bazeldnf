@@ -37,7 +37,7 @@ func TestWorkspaceWithRPMs(t *testing.T) {
 			defer os.Remove(tmpFile.Name())
 			file, err := LoadWorkspace(tt.orig)
 			g.Expect(err).ToNot(HaveOccurred())
-			AddWorkspaceRPMs(file, tt.pkgs, "myarch")
+			AddWorkspaceRPMs(file, tt.pkgs)
 			err = WriteWorkspace(false, file, tmpFile.Name())
 			g.Expect(err).ToNot(HaveOccurred())
 
@@ -76,7 +76,7 @@ func TestBzlfileWithRPMs(t *testing.T) {
 			defer os.Remove(tmpFile.Name())
 			file, err := LoadWorkspace(tt.orig)
 			g.Expect(err).ToNot(HaveOccurred())
-			AddBzlfileRPMs(file, "rpms", tt.pkgs, "myarch")
+			AddBzlfileRPMs(file, "rpms", tt.pkgs)
 			err = WriteWorkspace(false, file, tmpFile.Name())
 			g.Expect(err).ToNot(HaveOccurred())
 
@@ -115,7 +115,7 @@ func TestBuildfileWithRPMs(t *testing.T) {
 			defer os.Remove(tmpFile.Name())
 			file, err := LoadBuild(tt.orig)
 			g.Expect(err).ToNot(HaveOccurred())
-			AddTree("mytree", "", file, tt.pkgs, "myarch", false)
+			AddTree("mytree", "", file, tt.pkgs, false)
 			err = WriteBuild(false, file, tmpFile.Name())
 			g.Expect(err).ToNot(HaveOccurred())
 
@@ -132,6 +132,7 @@ func TestBuildfileWithRPMs(t *testing.T) {
 func newPkg(name string, version string, repository *bazeldnf.Repository) *api.Package {
 	pkg := &api.Package{}
 	pkg.Name = name
+	pkg.Arch = "myarch"
 	pkg.Checksum = api.Checksum{Text: "1234"}
 	pkg.Version = api.Version{Ver: version}
 	pkg.Repository = repository

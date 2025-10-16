@@ -1,6 +1,8 @@
 package main
 
 import (
+	"slices"
+
 	"github.com/rmohr/bazeldnf/pkg/api"
 	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 	"github.com/rmohr/bazeldnf/pkg/reducer"
@@ -12,7 +14,7 @@ import (
 type resolveHelperOpts struct {
 	in               []string
 	baseSystem       string
-	arch             string
+	arch             []string
 	nobest           bool
 	ignoreMissing    bool
 	forceIgnoreRegex []string
@@ -21,8 +23,15 @@ type resolveHelperOpts struct {
 
 var resolvehelperopts = resolveHelperOpts{}
 
+func EffectiveArchitectures(architectures []string) []string {
+	if !slices.Contains(architectures, "noarch") {
+		architectures = append(architectures, "noarch")
+	}
+	return architectures
+}
+
 func resolve(repos *bazeldnf.Repositories, required []string) ([]*api.Package, []*api.Package, error) {
-	matched, involved, err := reducer.Resolve(repos, resolvehelperopts.in, resolvehelperopts.baseSystem, resolvehelperopts.arch, required, resolvehelperopts.ignoreMissing)
+	matched, involved, err := reducer.Resolve(repos, resolvehelperopts.in, resolvehelperopts.baseSystem, EffectiveArchitectures(resolvehelperopts.arch), required, resolvehelperopts.ignoreMissing)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -34,7 +43,7 @@ func resolve(repos *bazeldnf.Repositories, required []string) ([]*api.Package, [
 	loader := sat.NewLoader()
 
 	logrus.Info("Loading involved packages into the resolver.")
-	model, err := loader.Load(involved, matched, resolvehelperopts.forceIgnoreRegex, resolvehelperopts.onlyAllowRegex, resolvehelperopts.nobest)
+	model, err := loader.Load(involved, matched, resolvehelperopts.forceIgnoreRegex, resolvehelperopts.onlyAllowRegex, resolvehelperopts.nobest, EffectiveArchitectures(resolvehelperopts.arch))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -47,7 +56,7 @@ func resolve(repos *bazeldnf.Repositories, required []string) ([]*api.Package, [
 func addResolveHelperFlags(cmd *cobra.Command) {
 	cmd.Flags().StringArrayVarP(&resolvehelperopts.in, "input", "i", nil, "primary.xml of the repository")
 	cmd.Flags().StringVar(&resolvehelperopts.baseSystem, "basesystem", "fedora-release-container", "base system to use (e.g. fedora-release-server, centos-stream-release, ...)")
-	cmd.Flags().StringVarP(&resolvehelperopts.arch, "arch", "a", "x86_64", "target architecture")
+	cmd.Flags().StringSliceVarP(&resolvehelperopts.arch, "arch", "a", []string{"x86_64"}, "target architectures; `noarch` will be automatically added")
 	cmd.Flags().BoolVarP(&resolvehelperopts.nobest, "nobest", "n", false, "allow picking versions which are not the newest")
 	cmd.Flags().BoolVar(&resolvehelperopts.ignoreMissing, "ignore-missing", false, "ignore missing packages")
 	cmd.Flags().StringArrayVar(&resolvehelperopts.forceIgnoreRegex, "force-ignore-with-dependencies", []string{}, "Packages matching these regex patterns will not be installed. Allows force-removing unwanted dependencies. Be careful, this can lead to hidden missing dependencies.")

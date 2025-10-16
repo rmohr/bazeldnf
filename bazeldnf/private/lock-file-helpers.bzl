@@ -21,8 +21,8 @@ def _collect_lockfile_args(ctx):
     if ctx.attr.cache_dir:
         lockfile_args.extend(["--cache-dir", ctx.attr.cache_dir])
 
-    if ctx.attr.architecture:
-        lockfile_args.extend(["--arch", ctx.attr.architecture])
+    if ctx.attr.architectures:
+        lockfile_args.extend(["--arch", ",".join(ctx.attr.architectures)])
 
     lockfile_args.append("--ignore-missing")
 
@@ -70,7 +70,7 @@ update_lock_file = rule(
         "repofile": attr.string(),
         "nobest": attr.bool(default = False),
         "cache_dir": attr.string(),
-        "architecture": attr.string(values = ["i686", "x86_64", "aarch64", ""]),
+        "architectures": attr.string_list(),
         "_runner": attr.label(allow_single_file = True, default = Label("//bazeldnf/private:update-lock-file.sh")),
     },
     toolchains = [

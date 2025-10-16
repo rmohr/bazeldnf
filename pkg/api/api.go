@@ -305,8 +305,40 @@ type Package struct {
 	Repository *bazeldnf.Repository `xml:"-"`
 }
 
+// MatchableString provides string representation of a Package that user may match with regular expression,
+// e.g. to ignore specific package.
+func (p *Package) MatchableString() string {
+	s := p.Name + "-" + p.Version.String()
+	if p.Arch != "" {
+		s += "." + p.Arch
+	}
+	return s
+}
+
+// Package string representation for logging purposes.
+// It should allow to identify particular Package in case some debugging is needed.
 func (p *Package) String() string {
-	return p.Name + "-" + p.Version.String()
+	s := p.Name + "-" + p.Version.String()
+	if p.Arch != "" {
+		s += "." + p.Arch
+	}
+	if p.Repository != nil && p.Repository.Name != "" {
+		s += " (" + p.Repository.Name + ")"
+	}
+	return s
+}
+
+// PackageKey identifies a package and can be used as a map key.
+// It should be equal iff. we believe two packages are the same, and would have the same effect once installed.
+// (e.g. the same package version in multiple repositories)
+type PackageKey struct {
+	Name    string
+	Version Version
+	Arch    string
+}
+
+func (p *Package) Key() PackageKey {
+	return PackageKey{p.Name, p.Version, p.Arch}
 }
 
 type Repository struct {

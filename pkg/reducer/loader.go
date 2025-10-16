@@ -10,7 +10,7 @@ import (
 )
 
 type RepoCache interface {
-	CurrentPrimaries(repos *bazeldnf.Repositories, arch string) (primaries []*api.Repository, err error)
+	CurrentPrimaries(repos *bazeldnf.Repositories, architectures []string) (primaries []*api.Repository, err error)
 }
 
 type ReducerPackageLoader interface {
@@ -28,7 +28,6 @@ type packageInfo struct {
 
 type RepoLoader struct {
 	repoFiles     []string
-	arch          string
 	architectures []string
 	repos         *bazeldnf.Repositories
 	cacheHelper   RepoCache
@@ -59,7 +58,7 @@ func (r RepoLoader) Load() (*packageInfo, error) {
 		}
 	}
 
-	cachedRepos, err := r.cacheHelper.CurrentPrimaries(r.repos, r.arch)
+	cachedRepos, err := r.cacheHelper.CurrentPrimaries(r.repos, r.architectures)
 	if err != nil {
 		return packageInfo, err
 	}

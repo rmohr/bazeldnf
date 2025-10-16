@@ -90,7 +90,7 @@ update_lock_file(
     repofile = "{repofile}",
     nobest = {nobest},
     cache_dir = {cache_dir},
-    architecture = "{architecture}",
+    architectures = {architectures},
     visibility = ["//visibility:public"],
 )
 """
@@ -119,7 +119,7 @@ def _alias_repository_impl(repository_ctx):
             excludes = ", ".join(["'{}'".format(x) for x in repository_ctx.attr.excludes]),
             repofile = repofile,
             nobest = "True" if repository_ctx.attr.nobest else "False",
-            architecture = repository_ctx.attr.architecture,
+            architectures = repr(repository_ctx.attr.architectures),
         ),
     )
     for rpm in repository_ctx.attr.rpms:
@@ -157,13 +157,19 @@ _alias_repository = repository_rule(
         "repository_prefix": attr.string(),
         "nobest": attr.bool(default = False),
         "cache_dir": attr.string(),
-        "architecture": attr.string(values = ["i686", "x86_64", "aarch64", ""]),
+        "architectures": attr.string_list(),
     },
 )
 
 def _to_rpm_repo_name(prefix, rpm_name):
     name = rpm_name.replace("+", "plus")
     return "{}{}".format(prefix, name)
+
+def _get_architectures(architecture, architectures):
+    """ Create effective list of architectures based on user input """
+    if architecture and architectures:
+        fail("Can't combine `architecture` and `architectures`")
+    return architectures or [(architecture or "x86_64")]
 
 def _handle_lock_file(config, module_ctx, registered_rpms = {}):
     if not config.lock_file:
@@ -177,7 +183,7 @@ def _handle_lock_file(config, module_ctx, registered_rpms = {}):
         "repofile": config.repofile,
         "repository_prefix": config.rpm_repository_prefix,
         "nobest": config.nobest,
-        "architecture": config.architecture,
+        "architectures": _get_architectures(config.architecture, config.architectures),
     }
 
     module_ctx.watch(config.lock_file)
@@ -392,8 +398,14 @@ The lock file content is as:
             default = False,
         ),
         "architecture": attr.string(
-            doc = "Architectures to enable in addition to noarch",
-            values = ["i686", "x86_64", "aarch64", ""],
+            doc = "Single architecture to enable in addition to noarch",
+        ),
+        "architectures": attr.string_list(
+            doc = """Custom list of architectures (can't be used with `architecture`).
+
+                Can use more than one. The list defines architectures priority –
+                with the first one having the highest priority.
+                `noarch` is implicitly added at the end (if not present on the list).""",
         ),
     },
 )
