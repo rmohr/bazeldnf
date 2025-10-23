@@ -211,21 +211,43 @@ func (loader *Loader) explodePackageToVars(pkg *api.Package) (pkgVar *Var, resou
 	return pkgVar, resourceVars
 }
 
+// explodePackageRequires builds a formula that could be a right hand side operand to implication.
+// It consists of all direct requirements of a given package, exploded to resources that can satisfy these requirements.
+// Special cases include:
+// - no requirements: returning `bf.True`
+// - can't satisfy requirements (because of lack of providers): returning `bf.False`
+// Both are safe to use in an implication.
 func (loader *Loader) explodePackageRequires(pkgVar *Var) bf.Formula {
-	var bfunique = bf.Var(pkgVar.satVarName)
+	var requirements [][]*Var
+	ok := true
 	for _, req := range pkgVar.Package.Format.Requires.Entries {
 		satisfies, err := loader.explodeSingleRequires(req, loader.provides[req.Name])
 		if err != nil {
 			logrus.Warnf("Package %s requires %s, but only got %+v", pkgVar.Package, req, loader.provides[req.Name])
-			return bf.Not(bfunique)
+			ok = false
+			continue
 		}
+		requirements = append(requirements, satisfies)
+	}
+
+	if !ok {
+		return bf.False
+	}
+
+	var uniqueRequirements []bf.Formula
+	for _, satisfies := range requirements {
 		uniqueVars := []string{}
 		for _, s := range satisfies {
 			uniqueVars = append(uniqueVars, s.satVarName)
 		}
-		bfunique = bf.And(bf.Unique(uniqueVars...), bfunique)
+		uniqueRequirements = append(uniqueRequirements, bf.Unique(uniqueVars...))
 	}
-	return bfunique
+
+	if uniqueRequirements == nil {
+		// empty `bf.And` doesn't work as expected, hence this special case:
+		return bf.True
+	}
+	return bf.And(uniqueRequirements...)
 }
 
 func (loader *Loader) explodePackageConflicts(pkgVar *Var) bf.Formula {
