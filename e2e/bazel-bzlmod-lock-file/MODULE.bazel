@@ -71,8 +71,19 @@ bazeldnf.config(
     name = "bazeldnf-others",
     lock_file = "//:rpms-with-no-name-attribute.json",
 )
+bazeldnf.config(
+    name = "bazeldnf-no-lockfile",
+    ignore_missing_lockfile = True,
+    lock_file = "//:does-not-exist.json",
+    repofile = "//:repo.yaml",
+    rpm_repository_prefix = "no-lockfile",
+    rpms = [
+        "bash",
+    ],
+)
 use_repo(
     bazeldnf,
+    "bazeldnf-no-lockfile",
     "bazeldnf-others",
     "bazeldnf-rpms",
 )

@@ -205,6 +205,9 @@ def _handle_lock_file(config, module_ctx, registered_rpms = {}):
         # so that consumers have something consistent that they can depend on
         for target in lock_file_json.get("targets", []):
             ensure_rpm_repository[target] = True
+    elif config.ignore_missing_lockfile:
+        for target in config.rpms:
+            ensure_rpm_repository[target] = True
 
     for target in ensure_rpm_repository:
         _add_null_rpm_repository(config, target, registered_rpms)
@@ -383,6 +386,12 @@ The lock file content is as:
 ```
 """,
             allow_single_file = [".json"],
+        ),
+        "ignore_missing_lockfile": attr.bool(
+            doc = """In case lockfile does not exist, create null rpm targets so that clients can still depend on them.
+
+            One won't be prompted with "please run `bazel run @{repo}//:update-lock-file` first".""",
+            default = False,
         ),
         "rpm_repository_prefix": attr.string(
             doc = "A prefix to add to all generated rpm repositories",
