@@ -394,7 +394,6 @@ func TestLoader_Load(t *testing.T) {
 				bf.Implies(x3, bf.Or(x1, x4)), // Requirement: app => apache or nginx
 				bf.Eq(x1, x2),                 // Equivalence (apache)
 				bf.Eq(x4, x5),                 // Equivalence (nginx)
-				bf.Not(bf.And(x1, x4)),        // No more than one provider of `webserver`
 			)
 		})
 
@@ -504,7 +503,6 @@ func TestLoader_Load(t *testing.T) {
 				bf.Eq(x1, x2),                 // Equivalence (gcc)
 				bf.Eq(x3, x4),                 // Equivalence (gcc11)
 				bf.Eq(x3, x5),                 // Equivalence (gcc11)
-				bf.Not(bf.And(x1, x3)),        // No more than one provider of `gcc`
 			)
 
 		})

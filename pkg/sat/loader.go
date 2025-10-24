@@ -238,20 +238,20 @@ func (loader *Loader) explodePackageRequires(pkgVar *Var) bf.Formula {
 		return bf.False
 	}
 
-	var uniqueRequirements []bf.Formula
+	var orRequirements []bf.Formula
 	for _, satisfies := range requirements {
-		uniqueVars := []string{}
+		vars := []bf.Formula{}
 		for _, s := range satisfies {
-			uniqueVars = append(uniqueVars, s.satVarName)
+			vars = append(vars, bf.Var(s.satVarName))
 		}
-		uniqueRequirements = append(uniqueRequirements, bf.Unique(uniqueVars...))
+		orRequirements = append(orRequirements, bf.Or(vars...))
 	}
 
-	if uniqueRequirements == nil {
+	if orRequirements == nil {
 		// empty `bf.And` doesn't work as expected, hence this special case:
 		return bf.True
 	}
-	return bf.And(uniqueRequirements...)
+	return bf.And(orRequirements...)
 }
 
 func (loader *Loader) explodePackageConflicts(pkgVar *Var) bf.Formula {
