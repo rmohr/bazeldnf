@@ -191,21 +191,22 @@ def _handle_lock_file(config, module_ctx, registered_rpms = {}):
     if config.cache_dir:
         repository_args["cache_dir"] = config.cache_dir
 
-    if not module_ctx.path(config.lock_file).exists:
-        _alias_repository(
-            **repository_args
-        )
-        return config.name
+    # List of repositories & aliases we want to have created, even if they didn't resolve to existing RPMs
+    ensure_rpm_repository = {}
 
-    content = module_ctx.read(config.lock_file)
-    lock_file_json = json.decode(content)
+    if module_ctx.path(config.lock_file).exists:
+        content = module_ctx.read(config.lock_file)
+        lock_file_json = json.decode(content)
 
-    for rpm in lock_file_json.get("rpms", []):
-        _add_rpm_repository(config, rpm, lock_file_json, registered_rpms)
+        for rpm in lock_file_json.get("rpms", []):
+            _add_rpm_repository(config, rpm, lock_file_json, registered_rpms)
 
-    # if there's targets without matching RPMs we need to create a null target
-    # so that consumers have something consistent that they can depend on
-    for target in lock_file_json.get("targets", []):
+        # if there's targets without matching RPMs we need to create a null target
+        # so that consumers have something consistent that they can depend on
+        for target in lock_file_json.get("targets", []):
+            ensure_rpm_repository[target] = True
+
+    for target in ensure_rpm_repository:
         _add_null_rpm_repository(config, target, registered_rpms)
 
     repository_args["rpms"] = ["@@%s//rpm" % x for x in registered_rpms.keys()]
