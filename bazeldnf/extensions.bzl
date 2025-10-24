@@ -201,46 +201,12 @@ def _handle_lock_file(config, module_ctx, registered_rpms = {}):
     lock_file_json = json.decode(content)
 
     for rpm in lock_file_json.get("rpms", []):
-        dependencies = rpm.pop("dependencies", [])
-        if config.ignore_deps:
-            dependencies = []
-        else:
-            dependencies = [x.replace("+", "plus") for x in dependencies]
-            dependencies = ["@{}{}//rpm".format(config.rpm_repository_prefix, x) for x in dependencies]
-
-        rpm_name = rpm.pop("name", None)
-        if not rpm_name:
-            urls = rpm.get("urls", [])
-            if len(urls) < 1:
-                fail("invalid entry in %s for %s" % (config.lock_file, rpm_name))
-            rpm_name = urls[0].rsplit("/", 1)[-1]
-
-        name = _to_rpm_repo_name(config.rpm_repository_prefix, rpm_name)
-        if name in registered_rpms:
-            continue
-        registered_rpms[name] = 1
-        repository = rpm.pop("repository")
-        mirrors = lock_file_json.get("repositories", {}).get(repository, None)
-        if mirrors == None:
-            fail("couldn't resolve %s in %s" % (repository, lock_file_json["repositories"]))
-        href = rpm.pop("urls")[0]
-        urls = ["%s/%s" % (x, href) for x in mirrors]
-        rpm_repository(
-            name = name,
-            dependencies = dependencies,
-            urls = urls,
-            **rpm
-        )
+        _add_rpm_repository(config, rpm, lock_file_json, registered_rpms)
 
     # if there's targets without matching RPMs we need to create a null target
     # so that consumers have something consistent that they can depend on
     for target in lock_file_json.get("targets", []):
-        name = _to_rpm_repo_name(config.rpm_repository_prefix, target)
-        if name in registered_rpms:
-            continue
-
-        null_rpm_repository(name = name)
-        registered_rpms[name] = 1
+        _add_null_rpm_repository(config, target, registered_rpms)
 
     repository_args["rpms"] = ["@@%s//rpm" % x for x in registered_rpms.keys()]
 
@@ -249,6 +215,48 @@ def _handle_lock_file(config, module_ctx, registered_rpms = {}):
     )
 
     return config.name
+
+def _add_rpm_repository(config, rpm, lock_file_json, registered_rpms):
+    dependencies = rpm.pop("dependencies", [])
+    if config.ignore_deps:
+        dependencies = []
+    else:
+        dependencies = [x.replace("+", "plus") for x in dependencies]
+        dependencies = ["@{}{}//rpm".format(config.rpm_repository_prefix, x) for x in dependencies]
+
+    rpm_name = rpm.pop("name", None)
+    if not rpm_name:
+        urls = rpm.get("urls", [])
+        if len(urls) < 1:
+            fail("invalid entry in %s for %s" % (config.lock_file, rpm_name))
+        rpm_name = urls[0].rsplit("/", 1)[-1]
+
+    name = _to_rpm_repo_name(config.rpm_repository_prefix, rpm_name)
+    if name in registered_rpms:
+        return False
+    registered_rpms[name] = 1
+    repository = rpm.pop("repository")
+    mirrors = lock_file_json.get("repositories", {}).get(repository, None)
+    if mirrors == None:
+        fail("couldn't resolve %s in %s" % (repository, lock_file_json["repositories"]))
+    href = rpm.pop("urls")[0]
+    urls = ["%s/%s" % (x, href) for x in mirrors]
+    rpm_repository(
+        name = name,
+        dependencies = dependencies,
+        urls = urls,
+        **rpm
+    )
+    return True
+
+def _add_null_rpm_repository(config, target, registered_rpms):
+    name = _to_rpm_repo_name(config.rpm_repository_prefix, target)
+    if name in registered_rpms:
+        return False
+
+    null_rpm_repository(name = name)
+    registered_rpms[name] = 1
+    return True
 
 def _bazeldnf_extension(module_ctx):
     # make sure all our dependencies are registered as those may be needed when those
