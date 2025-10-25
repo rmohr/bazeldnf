@@ -36,3 +36,10 @@ cc_library(
     name = "bar",
     srcs = ["//:something_libs/usr/lib64"],
 )
+
+filegroup(
+    name = "test-no-lockfile",
+    srcs = [
+        "@bazeldnf-no-lockfile//bash",
+    ],
+)
