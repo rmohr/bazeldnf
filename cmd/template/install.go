@@ -3,6 +3,7 @@ package template
 import (
 	"fmt"
 	"io"
+	"sort"
 	"text/tabwriter"
 
 	"github.com/rmohr/bazeldnf/pkg/api"
@@ -19,13 +20,20 @@ func Render(writer io.Writer, installed []*api.Package, forceIgnored []*api.Pack
 	if _, err := fmt.Fprintln(tabWriter, "Installing:\t\t\t"); err != nil {
 		return fmt.Errorf("failed to write header: %v", err)
 	}
-	for _, pkg := range installed {
+
+	sortedInstalled := make([]*api.Package, len(installed))
+	copy(sortedInstalled, installed)
+	sort.Slice(sortedInstalled, func(i, j int) bool {
+		return sortedInstalled[i].Name < sortedInstalled[j].Name
+	})
+	for _, pkg := range sortedInstalled {
 		totalInstallSize += pkg.Size.Archive
 		totalDownloadSize += pkg.Size.Package
 		if _, err := fmt.Fprintf(tabWriter, " %v\t%v\t%s\t%s\n", pkg.Name, pkg.Version.String(), toReadableQuantity(pkg.Size.Archive), toReadableQuantity(pkg.Size.Package)); err != nil {
 			return fmt.Errorf("failed to write entry: %v", err)
 		}
 	}
+
 	if _, err := fmt.Fprintln(tabWriter, "Ignoring:\t\t\t"); err != nil {
 		return fmt.Errorf("failed to write header: %v", err)
 	}
