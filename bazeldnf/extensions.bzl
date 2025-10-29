@@ -7,7 +7,7 @@ based on: https://github.com/bazel-contrib/rules-template/blob/0dadcb716f06f6728
 
 load("@bazel_features//:features.bzl", "bazel_features")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_jar")
-load("//internal:rpm.bzl", null_rpm_repository = "null_rpm", rpm_repository = "rpm")
+load("//internal:rpm.bzl", rpm_repository = "rpm")
 load(":repositories.bzl", "bazeldnf_register_toolchains")
 
 _DEFAULT_NAME = "bazeldnf"
@@ -65,10 +65,11 @@ bazeldnf_toolchain = module_extension(
 )
 
 _ALIAS_TEMPLATE = """\
-alias(
+load("@bazeldnf//bazeldnf:alias_macros.bzl", aliases="default")
+
+aliases(
     name = "{name}",
-    actual = "@{actual_name}//rpm",
-    visibility = ["//visibility:public"],
+    rpms = {data},
 )
 """
 
@@ -122,22 +123,17 @@ def _alias_repository_impl(repository_ctx):
             architectures = repr(repository_ctx.attr.architectures),
         ),
     )
-    for rpm in repository_ctx.attr.rpms:
-        actual_name = rpm.repo_name
-        name = rpm.repo_name
 
-        if repository_ctx.attr.repository_prefix:
-            name = actual_name.split(repository_ctx.attr.repository_prefix, 1)[-1]
-
+    for name, metadata in repository_ctx.attr.packages_metadata.items():
         repository_ctx.file(
             "%s/BUILD.bazel" % name,
             _ALIAS_TEMPLATE.format(
                 name = name,
-                actual_name = actual_name,
+                data = metadata,
             ),
         )
 
-    if not repository_ctx.attr.rpms:
+    if not repository_ctx.attr.packages_metadata:
         for rpm in repository_ctx.attr.rpms_to_install:
             repository_ctx.file(
                 "%s/BUILD.bazel" % rpm,
@@ -149,7 +145,7 @@ def _alias_repository_impl(repository_ctx):
 _alias_repository = repository_rule(
     implementation = _alias_repository_impl,
     attrs = {
-        "rpms": attr.label_list(default = []),
+        "packages_metadata": attr.string_dict(),
         "lock_file": attr.label(),
         "rpms_to_install": attr.string_list(),
         "excludes": attr.string_list(),
@@ -191,28 +187,32 @@ def _handle_lock_file(config, module_ctx, registered_rpms = {}):
     if config.cache_dir:
         repository_args["cache_dir"] = config.cache_dir
 
-    # List of repositories & aliases we want to have created, even if they didn't resolve to existing RPMs
-    ensure_rpm_repository = {}
+    # Data for generating alias repository
+    # Keyed with a Bazel package name in the root of the alias repository (usually just a RPM package name),
+    # Values are a list of resolved RPMs in a form of a dict, containing:
+    # - package – just an RPM package name (optional – lock file may be missing it)
+    # - id – some unique identifier for the config
+    # - repo_name – apparent repo name where the .rpm file is downloaded to
+    packages_metadata = {}
 
     if module_ctx.path(config.lock_file).exists:
         content = module_ctx.read(config.lock_file)
         lock_file_json = json.decode(content)
 
         for rpm in lock_file_json.get("rpms", []):
-            _add_rpm_repository(config, rpm, lock_file_json, registered_rpms)
+            repo_info = _add_rpm_repository(config, rpm, lock_file_json, registered_rpms)
+            packages_metadata.setdefault(repo_info.get("package", repo_info["id"]), []).append(repo_info)
 
         # if there's targets without matching RPMs we need to create a null target
         # so that consumers have something consistent that they can depend on
         for target in lock_file_json.get("targets", []):
-            ensure_rpm_repository[target] = True
+            packages_metadata.setdefault(target, [])
     elif config.ignore_missing_lockfile:
         for target in config.rpms:
-            ensure_rpm_repository[target] = True
+            packages_metadata.setdefault(target, [])
 
-    for target in ensure_rpm_repository:
-        _add_null_rpm_repository(config, target, registered_rpms)
-
-    repository_args["rpms"] = ["@@%s//rpm" % x for x in registered_rpms.keys()]
+    # Encode aliases metadata in a form that could be passed with one of the `attr`-allowed types:
+    repository_args["packages_metadata"] = {package: json.encode(metadata) for package, metadata in packages_metadata.items()}
 
     _alias_repository(
         **repository_args
@@ -230,7 +230,8 @@ def _add_rpm_repository(config, rpm, lock_file_json, registered_rpms):
 
     # Older lockfiles may not have `id` field.
     # Name was the equivalent. We need to pop both.
-    id = rpm.pop("id", rpm.pop("name", None))
+    package = rpm.pop("name", None)
+    id = rpm.pop("id", package)
     if not id:
         urls = rpm.get("urls", [])
         if len(urls) < 1:
@@ -239,8 +240,8 @@ def _add_rpm_repository(config, rpm, lock_file_json, registered_rpms):
 
     name = _to_rpm_repo_name(config.rpm_repository_prefix, id)
     if name in registered_rpms:
-        return False
-    registered_rpms[name] = 1
+        return registered_rpms[name]
+
     repository = rpm.pop("repository")
     mirrors = lock_file_json.get("repositories", {}).get(repository, None)
     if mirrors == None:
@@ -253,16 +254,15 @@ def _add_rpm_repository(config, rpm, lock_file_json, registered_rpms):
         urls = urls,
         **rpm
     )
-    return True
 
-def _add_null_rpm_repository(config, target, registered_rpms):
-    name = _to_rpm_repo_name(config.rpm_repository_prefix, target)
-    if name in registered_rpms:
-        return False
-
-    null_rpm_repository(name = name)
-    registered_rpms[name] = 1
-    return True
+    metadata = {
+        "repo_name": name,
+        "id": id,
+    }
+    if package:
+        metadata["package"] = package
+    registered_rpms[name] = metadata
+    return metadata
 
 def _bazeldnf_extension(module_ctx):
     # make sure all our dependencies are registered as those may be needed when those
