@@ -105,6 +105,16 @@ func newPackageWithFiles(name string, files ...string) *api.Package {
 	return p
 }
 
+func newPackageWithProvides(name string, provides ...string) *api.Package {
+	p := newSimplePackage(name)
+	p.Format.Provides.Entries = []api.Entry{{Name: name}}
+	for _, provide := range provides {
+		p.Format.Provides.Entries = append(p.Format.Provides.Entries, api.Entry{Name: provide})
+	}
+
+	return p
+}
+
 func newSimpleRPM(name string, deps ...string) *bazeldnf.RPM {
 	d := []string{}
 	if len(deps) > 0 {
@@ -396,6 +406,22 @@ func TestConfigTransform(t *testing.T) {
 			},
 			expectedRPMs: []*bazeldnf.RPM{
 				newSimpleRPM("package1"),
+			},
+		},
+		{
+			name: "multiple providers",
+			installed: []*api.Package{
+				newPackageWithDeps("package1", "webserver"),
+				newPackageWithProvides("apache", "webserver"),
+				newPackageWithProvides("nginx", "webserver"),
+			},
+			expectedRepositories: map[string][]string{
+				"repository": []string{},
+			},
+			expectedRPMs: []*bazeldnf.RPM{
+				newSimpleRPM("apache"),
+				newSimpleRPM("nginx"),
+				newSimpleRPM("package1", "apache", "nginx"),
 			},
 		},
 	}
