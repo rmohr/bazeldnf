@@ -237,6 +237,7 @@ def _add_rpm_repository(config, rpm, lock_file_json, registered_rpms):
         if len(urls) < 1:
             fail("invalid entry in %s: %s" % (config.lock_file, rpm))
         id = urls[0].rsplit("/", 1)[-1]
+    rpm.pop("arch", None)  # unused for now
 
     name = _to_rpm_repo_name(config.rpm_repository_prefix, id)
     if name in registered_rpms:
