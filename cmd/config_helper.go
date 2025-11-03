@@ -11,19 +11,34 @@ import (
 	"golang.org/x/exp/maps"
 )
 
+// makeId creates an opaque, deterministic string identifier, unique for each package present in the config.
+func makeId(pkg *api.Package) string {
+	return pkg.Name
+}
+
 func sortedKeys[K cmp.Ordered, V any](m map[K]V) []K {
 	keys := maps.Keys(m)
 	slices.Sort(keys)
 	return keys
 }
 
+func sortedPackages(pkgs []*api.Package) []*api.Package {
+	return slices.SortedFunc(slices.Values(pkgs), func(p1, p2 *api.Package) int {
+		return cmp.Or(
+			cmp.Compare(p1.Name, p2.Name),
+		)
+	})
+}
+
 func toConfig(install, forceIgnored []*api.Package, targets []string, cmdline []string) (*bazeldnf.Config, error) {
-	ignored := make(map[string]bool)
+	ignored := make(map[*api.Package]bool)
+	ignoredNames := make(map[string]bool)
 	for _, forceIgnoredPackage := range forceIgnored {
-		ignored[forceIgnoredPackage.Name] = true
+		ignored[forceIgnoredPackage] = true
+		ignoredNames[forceIgnoredPackage.Name] = true
 	}
 
-	allPackages := make(map[string]*bazeldnf.RPM)
+	allPackages := make(map[*api.Package]*bazeldnf.RPM)
 	repositories := make(map[string][]string)
 	for _, installPackage := range install {
 		repositories[installPackage.Repository.Name] = installPackage.Repository.Mirrors
@@ -40,7 +55,7 @@ func toConfig(install, forceIgnored []*api.Package, targets []string, cmdline []
 			return nil, fmt.Errorf("Unable to read package %s integrity: %w", installPackage.Name, err)
 		}
 
-		allPackages[installPackage.Name] = &bazeldnf.RPM{
+		allPackages[installPackage] = &bazeldnf.RPM{
 			Name:         installPackage.Name,
 			Integrity:    integrity,
 			URLs:         []string{installPackage.Location.Href},
@@ -50,7 +65,7 @@ func toConfig(install, forceIgnored []*api.Package, targets []string, cmdline []
 	}
 
 	providers := collectProviders(forceIgnored, install)
-	packageNames := sortedKeys(allPackages)
+	packageNames := sortedPackages(maps.Keys(allPackages))
 	sortedPackages := make([]*bazeldnf.RPM, 0, len(packageNames))
 	for _, name := range packageNames {
 		pkg := allPackages[name]
@@ -59,14 +74,17 @@ func toConfig(install, forceIgnored []*api.Package, targets []string, cmdline []
 			return nil, err
 		}
 
-		pkg.Dependencies = deps
+		pkg.Dependencies = make([]string, len(deps))
+		for i, dep := range deps {
+			pkg.Dependencies[i] = makeId(dep)
+		}
 
 		sortedPackages = append(sortedPackages, pkg)
 	}
 
 	lockFile := bazeldnf.Config{
 		CommandLineArguments: cmdline,
-		ForceIgnored:         sortedKeys(ignored),
+		ForceIgnored:         sortedKeys(ignoredNames),
 		RPMs:                 sortedPackages,
 		Repositories:         repositories,
 		Targets:              targets,
@@ -75,16 +93,16 @@ func toConfig(install, forceIgnored []*api.Package, targets []string, cmdline []
 	return &lockFile, nil
 }
 
-func collectProviders(pkgSets ...[]*api.Package) map[string][]string {
-	providers := map[string][]string{}
+func collectProviders(pkgSets ...[]*api.Package) map[string][]*api.Package {
+	providers := map[string][]*api.Package{}
 	for _, pkgSet := range pkgSets {
 		for _, pkg := range pkgSet {
 			for _, entry := range pkg.Format.Provides.Entries {
-				providers[entry.Name] = append(providers[entry.Name], pkg.Name)
+				providers[entry.Name] = append(providers[entry.Name], pkg)
 			}
 
 			for _, entry := range pkg.Format.Files {
-				providers[entry.Text] = append(providers[entry.Text], pkg.Name)
+				providers[entry.Text] = append(providers[entry.Text], pkg)
 			}
 		}
 	}
@@ -92,9 +110,9 @@ func collectProviders(pkgSets ...[]*api.Package) map[string][]string {
 	return providers
 }
 
-func collectDependencies(pkg string, requires []string, providers map[string][]string, ignored map[string]bool) ([]string, error) {
+func collectDependencies(pkg *api.Package, requires []string, providers map[string][]*api.Package, ignored map[*api.Package]bool) ([]*api.Package, error) {
 	logrus.Debugf("Collecting dependencies for %s", pkg)
-	depSet := make(map[string]bool)
+	depSet := make(map[*api.Package]bool)
 	for _, req := range requires {
 		logrus.Debugf("Resolving dependency %s", req)
 		resolvedProviders, ok := providers[req]
@@ -111,13 +129,13 @@ func collectDependencies(pkg string, requires []string, providers map[string][]s
 		}
 	}
 
-	deps := sortedKeys(depSet)
+	deps := sortedPackages(maps.Keys(depSet))
 
-	found := map[string]bool{pkg: true}
+	found := map[*api.Package]bool{pkg: true}
 
 	// RPMs may have circular dependencies, even depend on themselves.
 	// we need to ignore such dependencies
-	nonCyclicDeps := make([]string, 0, len(deps))
+	nonCyclicDeps := make([]*api.Package, 0, len(deps))
 	for _, dep := range deps {
 		if found[dep] {
 			continue
