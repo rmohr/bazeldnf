@@ -45,4 +45,10 @@ PLATFORMS = {
             "@platforms//cpu:s390x",
         ],
     ),
+    "linux-riscv64": struct(
+        compatible_with = [
+            "@platforms//os:linux",
+            "@platforms//cpu:riscv64",
+        ],
+    ),
 }
