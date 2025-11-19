@@ -14,7 +14,7 @@ func Render(writer io.Writer, installed []*api.Package, forceIgnored []*api.Pack
 	totalInstallSize := 0
 
 	tabWriter := tabwriter.NewWriter(writer, 0, 8, 1, '\t', 0)
-	if _, err := fmt.Fprintln(tabWriter, "Package\tVersion\tSize\tDownload Size"); err != nil {
+	if _, err := fmt.Fprintln(tabWriter, "Package\tArch\tVersion\tRepo\tSize\tDownload Size"); err != nil {
 		return fmt.Errorf("failed to write header: %v", err)
 	}
 	if _, err := fmt.Fprintln(tabWriter, "Installing:\t\t\t"); err != nil {
@@ -29,7 +29,7 @@ func Render(writer io.Writer, installed []*api.Package, forceIgnored []*api.Pack
 	for _, pkg := range sortedInstalled {
 		totalInstallSize += pkg.Size.Archive
 		totalDownloadSize += pkg.Size.Package
-		if _, err := fmt.Fprintf(tabWriter, " %v\t%v\t%s\t%s\n", pkg.Name, pkg.Version.String(), toReadableQuantity(pkg.Size.Archive), toReadableQuantity(pkg.Size.Package)); err != nil {
+		if _, err := fmt.Fprintf(tabWriter, " %v\t%v\t%v\t%v\t%s\t%s\n", pkg.Name, pkg.Arch, pkg.Version.String(), pkg.Repository.Name, toReadableQuantity(pkg.Size.Archive), toReadableQuantity(pkg.Size.Package)); err != nil {
 			return fmt.Errorf("failed to write entry: %v", err)
 		}
 	}
