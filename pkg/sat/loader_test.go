@@ -51,7 +51,7 @@ func expectedIgnores(g *WithT, m *Model, pkgKeys ...api.PackageKey) {
 }
 
 func expectedAnds(g *WithT, m *Model, ands ...bf.Formula) {
-	n := len(ands)
+	n := len(m.vars)
 	permutations := int(math.Pow(2, float64(n)))
 
 	for i := 0; i < permutations; i++ {
