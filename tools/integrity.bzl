@@ -8,4 +8,5 @@ INTEGRITY = {
     "linux-ppc64": "e1e66dac1024c721b1d0d832b61fbdee4f87bfdea82c886fcec5a242851f4b97",
     "linux-ppc64le": "961fa2992ab1bab16bc15320bb3d74aebc5dd94b7c015488558ec9963f74ada2",
     "linux-s390x": "a9fce33d16b9f30f45a7831b5b677b939bdc7a4723258811b0651e109156e86a",
+    "linux-riscv64": "b29ccd8b8f31f00e327da7535cd8c8bb96cc0c3eda41ebb963ad722784f8c2b2",
 }
