@@ -267,8 +267,6 @@ def _bazeldnf_extension(module_ctx):
     # dependening in this repo build the toolchain from sources
     repos = []
     for mod in module_ctx.modules:
-        legacy = True
-        name = "bazeldnf_rpms"
         registered_rpms = dict()
         for config in mod.tags.config:
             repos.append(
@@ -279,8 +277,6 @@ def _bazeldnf_extension(module_ctx):
                 ),
             )
 
-        rpms = []
-
         for rpm in mod.tags.rpm:
             rpm_repository(
                 name = rpm.name,
@@ -289,17 +285,8 @@ def _bazeldnf_extension(module_ctx):
                 integrity = rpm.integrity,
             )
 
-            if mod.is_root and legacy:
+            if mod.is_root:
                 repos.append(rpm.name)
-            else:
-                rpms.append(rpm.name)
-
-        if not legacy and rpms:
-            _alias_repository(
-                name = name,
-                rpms = ["@@%s//rpm" % x for x in rpms],
-            )
-            repos.append(name)
 
     kwargs = {}
     if bazel_features.external_deps.extension_metadata_has_reproducible:
