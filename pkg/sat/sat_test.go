@@ -1376,6 +1376,16 @@ func TestNewResolver(t *testing.T) {
 			exclude:    []string{},
 			solvable:   true,
 		},
+		{name: "second missing dependency on list should fail", packages: []*api.Package{
+			newPkg("testa", "1", []string{}, []string{"testb", "missing"}, []string{}),
+			newPkg("testb", "1", []string{}, []string{}, []string{}),
+		}, requires: []string{
+			"testa",
+		},
+			install:  []string{},
+			exclude:  []string{},
+			solvable: false,
+		},
 
 		// Multi-arch:
 		{name: "prioritize top-level: best arch & version", packages: []*api.Package{
