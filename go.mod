@@ -5,7 +5,7 @@ go 1.23.0
 toolchain go1.24.1
 
 require (
-	github.com/bazelbuild/buildtools v0.0.0-20250312151547-737aaf84facd
+	github.com/bazelbuild/buildtools v0.0.0-20250930140053-2eb4fccefb52
 	github.com/crillab/gophersat v1.4.0
 	github.com/hashicorp/go-retryablehttp v0.7.7
 	github.com/onsi/gomega v1.36.2
