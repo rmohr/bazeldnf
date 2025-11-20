@@ -8,14 +8,14 @@ local_path_override(
     path = "../..",
 )
 
-bazel_dep(name = "rules_pkg", version = "1.0.1")
+bazel_dep(name = "rules_pkg", version = "1.1.0")
 bazel_dep(name = "rules_go", version = "0.59.0", repo_name = "rules_go")
 
 go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
 go_sdk.download(version = "1.24.1")
 
-bazel_dep(name = "gazelle", version = "0.42.0")
-bazel_dep(name = "toolchains_protoc", version = "0.3.7")
+bazel_dep(name = "gazelle", version = "0.47.0")
+bazel_dep(name = "toolchains_protoc", version = "0.6.0")
 
 protoc = use_extension("@toolchains_protoc//protoc:extensions.bzl", "protoc")
 protoc.toolchain(
@@ -73,4 +73,4 @@ use_repo(
     "libvirt-libs-11.0.0-1.fc42.x86_64.rpm",
 )
 
-bazel_dep(name = "rules_cc", version = "0.1.1", dev_dependency = True)
+bazel_dep(name = "rules_cc", version = "0.2.14", dev_dependency = True)
