@@ -194,8 +194,7 @@ func TestLoader_Load(t *testing.T) {
 			expectedBest(g, model, map[string]string{"A": "0:1.0-1"})
 			expectedIgnores(g, model)
 			expectedAnds(g, model,
-				bf.Or(bf.Not(x1), bf.And(x1)),
-				bf.Or(bf.Not(x1), x1),
+				bf.True, // Nothing to install
 			)
 		})
 
@@ -211,8 +210,7 @@ func TestLoader_Load(t *testing.T) {
 			expectedBest(g, model, map[string]string{"A": "0:2.0-1"})
 			expectedIgnores(g, model)
 			expectedAnds(g, model,
-				bf.Or(bf.Not(x1), bf.And(x1)),
-				bf.Or(bf.Not(x1), x1),
+				bf.True, // Nothing to install
 			)
 		})
 
@@ -228,10 +226,7 @@ func TestLoader_Load(t *testing.T) {
 			expectedBest(g, model, map[string]string{"A": "0:2.0-1"})
 			expectedIgnores(g, model)
 			expectedAnds(g, model,
-				bf.Or(bf.Not(x1), bf.And(x1)),
-				bf.Or(bf.Not(x1), x1),
-				bf.Or(bf.Not(x2), bf.And(x2)),
-				bf.Or(bf.Not(x2), x2),
+				bf.True, // Nothing to install
 			)
 		})
 	})
@@ -269,13 +264,7 @@ func TestLoader_Load(t *testing.T) {
 			basicExpectations(model)
 			expectedIgnores(g, model, pkgKey("pkg-c", "0:1.0"))
 			expectedAnds(g, model,
-				bf.Or(bf.Not(x1), bf.And(x1)),
-				bf.Or(bf.Not(x1), bf.Not(x1)),
-				bf.Or(bf.Not(x2), bf.And(x2)),
-				bf.Or(bf.Not(x2), bf.Not(x2)),
-				bf.Or(bf.Not(x3), bf.And(x3)),
-				bf.Or(bf.Not(x3), x3),
-				x1,
+				bf.False, // Can't install any package (missing dependency `dep`).
 			)
 
 			// verify side effect
@@ -290,12 +279,7 @@ func TestLoader_Load(t *testing.T) {
 			basicExpectations(model)
 			expectedIgnores(g, model, pkgKey("pkg-b", "0:1.0"))
 			expectedAnds(g, model,
-				bf.Or(bf.Not(x1), bf.And(x1)),
-				bf.Or(bf.Not(x1), bf.Not(x1)),
-				bf.Or(bf.Not(x2), bf.And(x2)),
-				bf.Or(bf.Not(x2), x2),
-				bf.Or(bf.Not(x3), bf.And(x3)),
-				bf.Or(bf.Not(x3), x3),
+				bf.Not(x1), // Can't install package `pkg-a` (missing dependency `dep`).
 			)
 
 			// verify side effect
@@ -311,12 +295,8 @@ func TestLoader_Load(t *testing.T) {
 			basicExpectations(model)
 			expectedIgnores(g, model, pkgKey("pkg-b", "0:1.0"))
 			expectedAnds(g, model,
-				bf.Or(bf.Not(x1), bf.And(x1)),
-				bf.Or(bf.Not(x1), bf.Not(x1)),
-				bf.Or(bf.Not(x2), bf.And(x2)),
-				bf.Or(bf.Not(x2), x2),
-				bf.Or(bf.Not(x3), bf.And(x3)),
-				bf.Or(bf.Not(x3), bf.Not(x3)),
+				bf.Not(x1), // Can't install package `pkg-a` (missing dependency `dep`).
+				bf.Not(x3), // Can't install package `pkg-c` (missing dependency `dep`).
 			)
 
 			// verify side effect
@@ -332,12 +312,7 @@ func TestLoader_Load(t *testing.T) {
 			basicExpectations(model)
 			expectedIgnores(g, model, pkgKey("pkg-b", "0:1.0"), pkgKey("pkg-c", "0:1.0"))
 			expectedAnds(g, model,
-				bf.Or(bf.Not(x1), bf.And(x1)),
-				bf.Or(bf.Not(x1), bf.Not(x1)),
-				bf.Or(bf.Not(x2), bf.And(x2)),
-				bf.Or(bf.Not(x2), x2),
-				bf.Or(bf.Not(x3), bf.And(x3)),
-				bf.Or(bf.Not(x3), x3),
+				bf.Not(x1), // Can't install package `pkg-a` (missing dependency `dep`).
 			)
 
 			// verify side effect
@@ -352,12 +327,7 @@ func TestLoader_Load(t *testing.T) {
 			basicExpectations(model)
 			expectedIgnores(g, model, pkgKey("pkg-b", "0:1.0"), pkgKey("pkg-c", "0:1.0"))
 			expectedAnds(g, model,
-				bf.Or(bf.Not(x1), bf.And(x1)),
-				bf.Or(bf.Not(x1), bf.Not(x1)),
-				bf.Or(bf.Not(x2), bf.And(x2)),
-				bf.Or(bf.Not(x2), x2),
-				bf.Or(bf.Not(x3), bf.And(x3)),
-				bf.Or(bf.Not(x3), x3),
+				bf.Not(x1), // Can't install package `pkg-a` (missing dependency `dep`).
 			)
 		})
 	})
@@ -376,9 +346,9 @@ func TestLoader_Load(t *testing.T) {
 			expectedVars(
 				g,
 				model,
-				"app-0:1.0(app)",
-				"toolkit-0:2.0(toolkit)",
-				"toolkit-0:2.0(/usr/bin/tool)",
+				"app-0:1.0(app)",               // x1
+				"toolkit-0:2.0(toolkit)",       // x2
+				"toolkit-0:2.0(/usr/bin/tool)", // x3
 			)
 			expectedBest(g, model, map[string]string{
 				"app":     "0:1.0",
@@ -386,12 +356,9 @@ func TestLoader_Load(t *testing.T) {
 			})
 			expectedIgnores(g, model)
 			expectedAnds(g, model,
-				bf.Or(bf.Not(x1), bf.And(x1)),
-				bf.Or(bf.Not(x1), bf.And(bf.And(bf.Or(x3)), x1)),
-				bf.Or(bf.Not(x2), bf.And(x2, x3)),
-				bf.Or(bf.Not(x3), bf.And(x2, x3)),
-				bf.Or(bf.Not(x3), x3),
-				x1,
+				x1,                 // Install: app
+				bf.Implies(x1, x2), // Requirement: app => toolkit
+				bf.Eq(x2, x3),      // Equivalence (toolkit)
 			)
 		})
 
@@ -423,15 +390,11 @@ func TestLoader_Load(t *testing.T) {
 			})
 			expectedIgnores(g, model)
 			expectedAnds(g, model,
-				bf.Or(bf.Not(x1), bf.And(x1, x2)),
-				bf.Or(bf.Not(x2), bf.And(x1, x2)),
-				bf.Or(bf.Not(x2), x2),
-				bf.Or(bf.Not(x3), bf.And(x3)),
-				bf.Or(bf.Not(x3), bf.And(bf.And(bf.Or(x2, x5), bf.Or(bf.Not(x2), bf.Not(x5))), x3)),
-				bf.Or(bf.Not(x4), bf.And(x4, x5)),
-				bf.Or(bf.Not(x5), bf.And(x4, x5)),
-				bf.Or(bf.Not(x5), x5),
-				x3,
+				x3,                            // Install: app
+				bf.Implies(x3, bf.Or(x1, x4)), // Requirement: app => apache or nginx
+				bf.Eq(x1, x2),                 // Equivalence (apache)
+				bf.Eq(x4, x5),                 // Equivalence (nginx)
+				bf.Not(bf.And(x1, x4)),        // No more than one provider of `webserver`
 			)
 		})
 
@@ -454,12 +417,8 @@ func TestLoader_Load(t *testing.T) {
 				"C": "0:1.0",
 			})
 			expectedAnds(g, model,
-				bf.Or(bf.Not(x1), bf.And(x1)),
-				bf.Or(bf.Not(x1), bf.And(bf.And(bf.Or(x2)), x1)),
-				bf.Or(bf.Not(x2), bf.And(x2)),
-				bf.Or(bf.Not(x2), bf.And(bf.And(bf.Or(x3)), x2)),
-				bf.Or(bf.Not(x3), bf.And(x3)),
-				bf.Or(bf.Not(x3), x3),
+				bf.Implies(x1, x2), // Requirement: a => b
+				bf.Implies(x2, x3), // Requirement: b => c
 			)
 		})
 	})
@@ -485,9 +444,7 @@ func TestLoader_Load(t *testing.T) {
 			)
 			expectedIgnores(g, model)
 			expectedAnds(g, model,
-				bf.Or(bf.Not(x1), bf.And(x1, x2)),
-				bf.Or(bf.Not(x2), bf.And(x1, x2)),
-				bf.Or(bf.Not(x2), x2),
+				bf.Eq(x1, x2), // Equivalence (platform-python)
 			)
 
 			// verify side effect
@@ -508,8 +465,7 @@ func TestLoader_Load(t *testing.T) {
 			expectedVars(g, model, "A-5:1.0-2(A)")
 			expectedBest(g, model, map[string]string{"A": "5:1.0-2"})
 			expectedAnds(g, model,
-				bf.Or(bf.Not(x1), bf.And(x1)),
-				bf.Or(bf.Not(x1), x1),
+				bf.True, // Nothing to install
 			)
 		})
 
@@ -542,16 +498,13 @@ func TestLoader_Load(t *testing.T) {
 			})
 
 			expectedAnds(g, model,
-				bf.Or(bf.Not(x1), bf.And(x1, x2)),
-				bf.Or(bf.Not(x2), bf.And(x1, x2)),
-				bf.Or(bf.Not(x2), bf.And(bf.And(bf.Or(x3)), x2)),
-				bf.Or(bf.Not(x3), bf.And(x3, x4, x5)),
-				bf.Or(bf.Not(x4), bf.And(x3, x4, x5)),
-				bf.Or(bf.Not(x5), bf.And(x3, x4, x5)),
-				bf.Or(bf.Not(x5), x5),
-				bf.Or(bf.Not(x6), bf.And(x6)),
-				bf.Or(bf.Not(x6), bf.And(bf.And(bf.Or(x1, x4), bf.Or(bf.Not(x1), bf.Not(x4))), bf.And(bf.And(bf.Or(x1, x4), bf.Or(bf.Not(x1), bf.Not(x4))), x6))),
-				x6,
+				x6,                            // Install: pkgX
+				bf.Implies(x6, bf.Or(x1, x3)), // Requirement: pkgX => gcc or gcc11
+				bf.Implies(x1, x3),            // Requirement: gcc => gcc11
+				bf.Eq(x1, x2),                 // Equivalence (gcc)
+				bf.Eq(x3, x4),                 // Equivalence (gcc11)
+				bf.Eq(x3, x5),                 // Equivalence (gcc11)
+				bf.Not(bf.And(x1, x3)),        // No more than one provider of `gcc`
 			)
 
 		})
@@ -562,8 +515,7 @@ func TestLoader_Load(t *testing.T) {
 
 			expectedVars(g, model, "A-0:1.0(A)")
 			expectedAnds(g, model,
-				bf.Or(bf.Not(x1), bf.And(x1)),
-				bf.Or(bf.Not(x1), x1),
+				bf.True, // Nothing to install
 			)
 		})
 	})
@@ -578,8 +530,7 @@ func TestLoader_Load(t *testing.T) {
 			})
 			expectedVars(g, model, "A-0:1.0-1(A)")
 			expectedAnds(g, model,
-				bf.Or(bf.Not(x1), bf.And(x1)),
-				bf.Or(bf.Not(x1), bf.Not(x1)),
+				bf.Not(x1), // Can't install package `A` (missing dependency `B`).
 			)
 		})
 
@@ -639,8 +590,7 @@ func TestLoader_Load(t *testing.T) {
 				})
 				expectedIgnores(g, model)
 				expectedAnds(g, model,
-					bf.Or(bf.Not(x1), bf.And(x1)),
-					bf.Or(bf.Not(x1), x1),
+					bf.True, // Nothing to install
 				)
 			})
 		}
@@ -648,70 +598,39 @@ func TestLoader_Load(t *testing.T) {
 
 	t.Run("Version Comparison Operators", func(t *testing.T) {
 		allB := []*api.Package{}
-		for _, v := range []string{"1.0-1", "2.0-1", "2.0-2", "3.0-1"} {
+		for _, v := range []string{
+			"1.0-1", // x2
+			"2.0-1", // x3
+			"2.0-2", // x4
+			"3.0-1", // x5
+		} {
 			allB = append(allB, newSimplePackage("B", v))
 		}
 
 		eqExpectedAnds := []bf.Formula{
-			bf.Or(bf.Not(x1), bf.And(x1)),
-			bf.Or(bf.Not(x1), bf.And(bf.And(bf.Or(x4)), x1)),
-			bf.Or(bf.Not(x2), bf.And(x2)),
-			bf.Or(bf.Not(x2), x2),
-			bf.Or(bf.Not(x3), bf.And(x3)),
-			bf.Or(bf.Not(x3), x3),
-			bf.Or(bf.Not(x4), bf.And(x4)),
-			bf.Or(bf.Not(x4), x4),
-			bf.Or(bf.Not(x5), bf.And(x5)),
-			bf.Or(bf.Not(x5), x5),
+			x1,                 // Install: A
+			bf.Implies(x1, x4), // Requirement: A => B eq 2.0-2
 		}
-
 		gtExpectedAnds := []bf.Formula{
-			bf.Or(bf.Not(x1), bf.And(x1)),
-			bf.Or(bf.Not(x1), bf.And(bf.And(bf.Or(x5)), x1)),
-			bf.Or(bf.Not(x2), bf.And(x2)),
-			bf.Or(bf.Not(x2), x2),
-			bf.Or(bf.Not(x3), bf.And(x3)),
-			bf.Or(bf.Not(x3), x3),
-			bf.Or(bf.Not(x4), bf.And(x4)),
-			bf.Or(bf.Not(x4), x4),
-			bf.Or(bf.Not(x5), bf.And(x5)),
-			bf.Or(bf.Not(x5), x5),
+			x1,                 // Install: A
+			bf.Implies(x1, x5), // Requirement: A => B gt 2.0-2
 		}
 		ltExpectedAnds := []bf.Formula{
-			bf.Or(bf.Not(x1), bf.And(x1)),
-			bf.Or(bf.Not(x1), bf.And(bf.And(bf.Or(x2, x3), bf.Or(bf.Not(x2), bf.Not(x3))), x1)),
-			bf.Or(bf.Not(x2), bf.And(x2)),
-			bf.Or(bf.Not(x2), x2),
-			bf.Or(bf.Not(x3), bf.And(x3)),
-			bf.Or(bf.Not(x3), x3),
-			bf.Or(bf.Not(x4), bf.And(x4)),
-			bf.Or(bf.Not(x4), x4),
-			bf.Or(bf.Not(x5), bf.And(x5)),
-			bf.Or(bf.Not(x5), x5),
+			x1,                            // Install: A
+			bf.Implies(x1, bf.Or(x2, x3)), // Requirement: A => B lt 2.0-2
+			bf.Not(bf.And(x2, x3)),
 		}
 		geExpectedAnds := []bf.Formula{
-			bf.Or(bf.Not(x1), bf.And(x1)),
-			bf.Or(bf.Not(x1), bf.And(bf.And(bf.Or(x4, x5), bf.Or(bf.Not(x4), bf.Not(x5))), x1)),
-			bf.Or(bf.Not(x2), bf.And(x2)),
-			bf.Or(bf.Not(x2), x2),
-			bf.Or(bf.Not(x3), bf.And(x3)),
-			bf.Or(bf.Not(x3), x3),
-			bf.Or(bf.Not(x4), bf.And(x4)),
-			bf.Or(bf.Not(x4), x4),
-			bf.Or(bf.Not(x5), bf.And(x5)),
-			bf.Or(bf.Not(x5), x5),
+			x1,                            // Install: A
+			bf.Implies(x1, bf.Or(x4, x5)), // Requirement: A => B ge 2.0-2
+			bf.Not(bf.And(x4, x5)),
 		}
 		leExpectedAnds := []bf.Formula{
-			bf.Or(bf.Not(x1), bf.And(x1)),
-			bf.Or(bf.Not(x1), bf.And(bf.And(bf.Or(x2, x3, x4), bf.Or(bf.Not(x2), bf.Not(x3)), bf.Or(bf.Not(x2), bf.Not(x4)), bf.Or(bf.Not(x3), bf.Not(x4))), x1)),
-			bf.Or(bf.Not(x2), bf.And(x2)),
-			bf.Or(bf.Not(x2), x2),
-			bf.Or(bf.Not(x3), bf.And(x3)),
-			bf.Or(bf.Not(x3), x3),
-			bf.Or(bf.Not(x4), bf.And(x4)),
-			bf.Or(bf.Not(x4), x4),
-			bf.Or(bf.Not(x5), bf.And(x5)),
-			bf.Or(bf.Not(x5), x5),
+			x1,                                // Install: A
+			bf.Implies(x1, bf.Or(x2, x3, x4)), // Requirement: A => B le 2.0-2
+			bf.Not(bf.And(x2, x3)),
+			bf.Not(bf.And(x2, x4)),
+			bf.Not(bf.And(x3, x4)),
 		}
 
 		testCases := []struct {
