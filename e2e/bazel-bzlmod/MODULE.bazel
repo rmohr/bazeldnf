@@ -8,7 +8,7 @@ local_path_override(
     path = "../..",
 )
 
-bazel_dep(name = "rules_pkg", version = "1.0.1")
+bazel_dep(name = "rules_pkg", version = "1.1.0")
 
 bazeldnf = use_extension("@bazeldnf//bazeldnf:extensions.bzl", "bazeldnf")
 bazeldnf.rpm(
@@ -31,7 +31,9 @@ use_repo(
     "libvirt-libs-11.0.0-1.fc42.x86_64.rpm",
 )
 
-bazel_dep(name = "rules_cc", version = "0.1.1", dev_dependency = True)
+bazel_dep(name = "rules_cc", version = "0.2.14", dev_dependency = True)
+
+bazel_dep(name = "rules_shell", version = "0.6.1")
 
 # Tests
 repo1 = use_repo_rule("//:repo_rules.bzl", "repo1")

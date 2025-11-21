@@ -8,8 +8,8 @@ local_path_override(
     path = "../..",
 )
 
-bazel_dep(name = "rules_pkg", version = "1.0.1")
-bazel_dep(name = "toolchains_protoc", version = "0.3.2")
+bazel_dep(name = "rules_pkg", version = "1.1.0")
+bazel_dep(name = "toolchains_protoc", version = "0.6.0")
 
 bazeldnf = use_extension("@bazeldnf//bazeldnf:extensions.bzl", "bazeldnf")
 bazeldnf.toolchain(disable = True)
