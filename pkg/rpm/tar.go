@@ -110,7 +110,10 @@ func PrefixFilter(prefix, strip string, reader *tar.Reader, files []string) erro
 				return err
 			}
 		case tar.TypeSymlink:
-			linkname := strings.TrimPrefix(entry.Linkname, ".")
+			linkname := entry.Linkname
+			if strings.HasPrefix(linkname, "./") {
+				linkname = strings.TrimPrefix(linkname, "./")
+			}
 			err = os.Symlink(linkname, fileMap[name])
 			if err != nil {
 				return err
