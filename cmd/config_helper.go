@@ -95,10 +95,6 @@ func collectProviders(pkgSets ...[]*api.Package) map[string]string {
 func collectDependencies(pkg string, requires []string, providers map[string]string, ignored map[string]bool) ([]string, error) {
 	depSet := make(map[string]bool)
 	for _, req := range requires {
-		if ignored[req] {
-			logrus.Debugf("Ignoring dependency %s", req)
-			continue
-		}
 		logrus.Debugf("Resolving dependency %s", req)
 		provider, ok := providers[req]
 		if !ok {
