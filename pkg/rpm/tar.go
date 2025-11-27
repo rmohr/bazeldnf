@@ -127,6 +127,11 @@ func PrefixFilter(prefix, strip string, reader *tar.Reader, files []string) erro
 			if err := os.Symlink(rel, fileMap[name]); err != nil {
 				return err
 			}
+		case tar.TypeDir:
+			err = os.MkdirAll(fileMap[name], entry.FileInfo().Mode())
+			if err != nil {
+				return err
+			}
 		default:
 			return fmt.Errorf("can't extract %v with type %v: only links, symlinks and files can be specified", fileMap[name], entry.Typeflag)
 		}
