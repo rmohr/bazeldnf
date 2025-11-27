@@ -195,6 +195,19 @@ func TestTar2Files(t *testing.T) {
 				}},
 			},
 			prefix: "./usr/include/",
+		},
+		{
+			name:  "extract a dir from a tar archive",
+			rpm:   libvirtLibsRpm,
+			files: []string{"/usr/share/libvirt"},
+			expected: []fileInfo{
+				{Name: "usr", Children: []fileInfo{
+					{Name: "share", Children: []fileInfo{
+						{Name: "libvirt", Children: []fileInfo{}},
+					}},
+				}},
+			},
+			prefix: "./usr/share/",
 		}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
