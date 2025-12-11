@@ -155,6 +155,10 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 		if conflicts := loader.explodePackageConflicts(pkgVar); conflicts != nil {
 			ands = append(ands, bf.Implies(bf.Var(pkgVar.satVarName), bf.Not(conflicts)))
 		}
+
+		// Implicit conflicts (with the same package):
+		ands = append(ands, bf.Implies(bf.Var(pkgVar.satVarName), bf.Not(loader.explodeSamePackageConflicts(pkgVar))))
+
 		loader.m.ands = append(loader.m.ands, ands...)
 	}
 	logrus.Infof("Generated %v variables.", len(loader.m.vars))
@@ -272,6 +276,22 @@ func (loader *Loader) explodePackageConflicts(pkgVar *Var) bf.Formula {
 	}
 	if len(conflictingVars) == 0 {
 		return nil
+	}
+	return bf.Or(conflictingVars...)
+}
+
+// explodeSamePackageConflicts returns a formula indicating whether there was installed
+// a package of the same name, conflicting with one represented by `pkgVar`.
+func (loader *Loader) explodeSamePackageConflicts(pkgVar *Var) bf.Formula {
+	var conflictingVars []bf.Formula
+	for _, otherVar := range loader.m.packages[pkgVar.Package.Name] {
+		if otherVar.Package == pkgVar.Package { // itself
+			continue
+		}
+		conflictingVars = append(conflictingVars, bf.Var(otherVar.satVarName))
+	}
+	if len(conflictingVars) == 0 {
+		return bf.False
 	}
 	return bf.Or(conflictingVars...)
 }

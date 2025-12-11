@@ -226,7 +226,7 @@ func TestLoader_Load(t *testing.T) {
 			expectedBest(g, model, map[string]string{"A": "0:2.0-1"})
 			expectedIgnores(g, model)
 			expectedAnds(g, model,
-				bf.True, // Nothing to install
+				bf.Not(bf.And(x1, x2)), // No more than one `A`
 			)
 		})
 	})
@@ -607,30 +607,39 @@ func TestLoader_Load(t *testing.T) {
 			allB = append(allB, newSimplePackage("B", v))
 		}
 
+		atMostOneB := bf.Not(bf.Or(
+			bf.And(x2, x3),
+			bf.And(x2, x4),
+			bf.And(x2, x5),
+			bf.And(x3, x4),
+			bf.And(x3, x5),
+			bf.And(x4, x5),
+		))
+
 		eqExpectedAnds := []bf.Formula{
 			x1,                 // Install: A
 			bf.Implies(x1, x4), // Requirement: A => B eq 2.0-2
+			atMostOneB,
 		}
 		gtExpectedAnds := []bf.Formula{
 			x1,                 // Install: A
 			bf.Implies(x1, x5), // Requirement: A => B gt 2.0-2
+			atMostOneB,
 		}
 		ltExpectedAnds := []bf.Formula{
 			x1,                            // Install: A
 			bf.Implies(x1, bf.Or(x2, x3)), // Requirement: A => B lt 2.0-2
-			bf.Not(bf.And(x2, x3)),
+			atMostOneB,
 		}
 		geExpectedAnds := []bf.Formula{
 			x1,                            // Install: A
 			bf.Implies(x1, bf.Or(x4, x5)), // Requirement: A => B ge 2.0-2
-			bf.Not(bf.And(x4, x5)),
+			atMostOneB,
 		}
 		leExpectedAnds := []bf.Formula{
 			x1,                                // Install: A
 			bf.Implies(x1, bf.Or(x2, x3, x4)), // Requirement: A => B le 2.0-2
-			bf.Not(bf.And(x2, x3)),
-			bf.Not(bf.And(x2, x4)),
-			bf.Not(bf.And(x3, x4)),
+			atMostOneB,
 		}
 
 		testCases := []struct {
