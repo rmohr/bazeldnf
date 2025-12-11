@@ -75,16 +75,16 @@ func toConfig(install, forceIgnored []*api.Package, targets []string, cmdline []
 	return &lockFile, nil
 }
 
-func collectProviders(pkgSets ...[]*api.Package) map[string]string {
-	providers := map[string]string{}
+func collectProviders(pkgSets ...[]*api.Package) map[string][]string {
+	providers := map[string][]string{}
 	for _, pkgSet := range pkgSets {
 		for _, pkg := range pkgSet {
 			for _, entry := range pkg.Format.Provides.Entries {
-				providers[entry.Name] = pkg.Name
+				providers[entry.Name] = append(providers[entry.Name], pkg.Name)
 			}
 
 			for _, entry := range pkg.Format.Files {
-				providers[entry.Text] = pkg.Name
+				providers[entry.Text] = append(providers[entry.Text], pkg.Name)
 			}
 		}
 	}
@@ -92,20 +92,23 @@ func collectProviders(pkgSets ...[]*api.Package) map[string]string {
 	return providers
 }
 
-func collectDependencies(pkg string, requires []string, providers map[string]string, ignored map[string]bool) ([]string, error) {
+func collectDependencies(pkg string, requires []string, providers map[string][]string, ignored map[string]bool) ([]string, error) {
+	logrus.Debugf("Collecting dependencies for %s", pkg)
 	depSet := make(map[string]bool)
 	for _, req := range requires {
 		logrus.Debugf("Resolving dependency %s", req)
-		provider, ok := providers[req]
+		resolvedProviders, ok := providers[req]
 		if !ok {
 			return nil, fmt.Errorf("could not find provider for %s", req)
 		}
-		logrus.Debugf("Found provider %s for %s", provider, req)
-		if ignored[provider] {
-			logrus.Debugf("Ignoring provider %s for %s", provider, req)
-			continue
+		for _, provider := range resolvedProviders {
+			logrus.Debugf("Found provider %s for %s", provider, req)
+			if ignored[provider] {
+				logrus.Debugf("Ignoring provider %s for %s", provider, req)
+				continue
+			}
+			depSet[provider] = true
 		}
-		depSet[provider] = true
 	}
 
 	deps := sortedKeys(depSet)
