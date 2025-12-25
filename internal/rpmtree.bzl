@@ -47,6 +47,9 @@ def _rpm2tar_impl(ctx):
             selinux_labels.append(k + "=" + v)
         args.add_joined("--selinux-labels", selinux_labels, join_with = ",")
 
+    if ctx.attr.compression:
+        args.add("--compression", ctx.attr.compression)
+
     all_rpms = []
 
     for target in ctx.attr.rpms:
@@ -110,6 +113,7 @@ _rpm2tar_attrs = {
     "capabilities": attr.string_list_dict(),
     "selinux_labels": attr.string_list_dict(),
     "out": attr.output(mandatory = True),
+    "compression": attr.string(),
 }
 
 _tar2files_attrs = {
@@ -130,9 +134,19 @@ _tar2files = rule(
     toolchains = [BAZELDNF_TOOLCHAIN],
 )
 
-def rpmtree(name, **kwargs):
-    """Creates a tar file from a list of rpm files."""
-    tarname = name + ".tar"
+def rpmtree(name, compression = None, **kwargs):
+    """Creates a tar file from a list of rpm files.
+
+    Args:
+      name: The name of the target.
+      compression: The compression algorithm to use (e.g. 'gzip'). Defaults to None.
+      **kwargs: Additional keyword arguments to be passed to the _rpm2tar function (e.g. rpms, symlinks).
+    """
+    extension = ".tar"
+    if compression == "gzip":
+        extension = ".tar.gz"
+
+    tarname = name + extension
     _rpm2tar(
         name = name,
         out = tarname,

@@ -14,14 +14,15 @@ import (
 )
 
 type rpmtreeOpts struct {
-	repofiles  []string
-	workspace  string
-	toMacro    string
-	buildfile  string
-	configname string
-	lockfile   string
-	name       string
-	public     bool
+	repofiles   []string
+	workspace   string
+	toMacro     string
+	buildfile   string
+	configname  string
+	lockfile    string
+	name        string
+	public      bool
+	compression string
 }
 
 var rpmtreeopts = rpmtreeOpts{}
@@ -162,7 +163,7 @@ func NewRpmTreeCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			bazel.AddTree(rpmtreeopts.name, configname, build, install, rpmtreeopts.public)
+			bazel.AddTree(rpmtreeopts.name, configname, build, install, rpmtreeopts.public, rpmtreeopts.compression)
 
 			if err := handler.Process(install, build); err != nil {
 				return err
@@ -194,6 +195,7 @@ func NewRpmTreeCmd() *cobra.Command {
 	rpmtreeCmd.Flags().StringVar(&rpmtreeopts.configname, "configname", "rpms", "config name to use in lockfile")
 	rpmtreeCmd.Flags().StringVar(&rpmtreeopts.lockfile, "lockfile", "", "lockfile for RPMs")
 	rpmtreeCmd.Flags().StringVar(&rpmtreeopts.name, "name", "", "rpmtree rule name")
+	rpmtreeCmd.Flags().StringVar(&rpmtreeopts.compression, "compression", "", "Compression algorithm to use on resulting archive (e.g., gzip)")
 	rpmtreeCmd.MarkFlagRequired("name")
 
 	repo.AddCacheHelperFlags(rpmtreeCmd)
