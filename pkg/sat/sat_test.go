@@ -1386,6 +1386,16 @@ func TestNewResolver(t *testing.T) {
 			exclude:  []string{},
 			solvable: false,
 		},
+		{name: "don't install the same package in multiple versions", packages: []*api.Package{
+			newPkg("testa", "1", []string{}, []string{"b", "c"}, []string{}),
+			newPkg("testb", "1.1", []string{"b"}, []string{}, []string{}),
+			newPkg("testb", "1.2", []string{"c"}, []string{}, []string{}),
+		}, requires: []string{
+			"testa",
+		},
+			solvable: false,
+			nobest:   true,
+		},
 
 		// Multi-arch:
 		{name: "prioritize top-level: best arch & version", packages: []*api.Package{
