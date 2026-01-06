@@ -1396,6 +1396,27 @@ func TestNewResolver(t *testing.T) {
 			solvable: false,
 			nobest:   true,
 		},
+		{name: "install two providers (requested explicitly)", packages: []*api.Package{
+			newPkg("testa", "1", []string{}, []string{"lib"}, []string{}),
+			newPkg("libb", "1", []string{"lib"}, []string{}, []string{}),
+			newPkg("libc", "1", []string{"lib"}, []string{}, []string{}),
+		}, requires: []string{
+			"testa", "libb", "libc",
+		},
+			install:  []string{"testa-0:1", "libb-0:1", "libc-0:1"},
+			solvable: true,
+		},
+		{name: "install two providers (dependencies)", packages: []*api.Package{
+			newPkg("testa", "1", []string{}, []string{"lib"}, []string{}),
+			newPkg("testb", "1", []string{}, []string{"libb", "libc"}, []string{}),
+			newPkg("libb", "1", []string{"lib"}, []string{}, []string{}),
+			newPkg("libc", "1", []string{"lib"}, []string{}, []string{}),
+		}, requires: []string{
+			"testa", "testb",
+		},
+			install:  []string{"testa-0:1", "testb-0:1", "libb-0:1", "libc-0:1"},
+			solvable: true,
+		},
 
 		// Multi-arch:
 		{name: "prioritize top-level: best arch & version", packages: []*api.Package{
