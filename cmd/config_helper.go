@@ -59,7 +59,7 @@ func toConfig(install, forceIgnored []*api.Package, targets []string, cmdline []
 			return nil, err
 		}
 
-		pkg.SetDependencies(deps)
+		pkg.Dependencies = deps
 
 		sortedPackages = append(sortedPackages, pkg)
 	}
