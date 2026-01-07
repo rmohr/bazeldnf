@@ -228,14 +228,16 @@ def _add_rpm_repository(config, rpm, lock_file_json, registered_rpms):
         dependencies = [x.replace("+", "plus") for x in dependencies]
         dependencies = ["@{}{}//rpm".format(config.rpm_repository_prefix, x) for x in dependencies]
 
-    rpm_name = rpm.pop("name", None)
-    if not rpm_name:
+    # Older lockfiles may not have `id` field.
+    # Name was the equivalent. We need to pop both.
+    id = rpm.pop("id", rpm.pop("name", None))
+    if not id:
         urls = rpm.get("urls", [])
         if len(urls) < 1:
-            fail("invalid entry in %s for %s" % (config.lock_file, rpm_name))
-        rpm_name = urls[0].rsplit("/", 1)[-1]
+            fail("invalid entry in %s: %s" % (config.lock_file, rpm))
+        id = urls[0].rsplit("/", 1)[-1]
 
-    name = _to_rpm_repo_name(config.rpm_repository_prefix, rpm_name)
+    name = _to_rpm_repo_name(config.rpm_repository_prefix, id)
     if name in registered_rpms:
         return False
     registered_rpms[name] = 1
