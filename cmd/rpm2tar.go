@@ -2,7 +2,9 @@ package main
 
 import (
 	"archive/tar"
+	"compress/gzip"
 	"fmt"
+	"io"
 	"os"
 	"sort"
 	"strings"
@@ -19,6 +21,7 @@ type rpm2tarOpts struct {
 	symlinks       map[string]string
 	capabilities   map[string]string
 	selinuxLabels  map[string]string
+	compression    string
 }
 
 var rpm2taropts = rpm2tarOpts{}
@@ -30,11 +33,22 @@ func NewRpm2TarCmd() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			sortSymlinkKeys()
 			rpmStream := os.Stdin
-			tarStream := os.Stdout
+			var tarStream io.Writer = os.Stdout
 			if rpm2taropts.output != "" {
 				tarStream, err = os.Create(rpm2taropts.output)
 				if err != nil {
 					return fmt.Errorf("could not create tar: %v", err)
+				}
+			}
+
+			if rpm2taropts.compression != "" {
+				switch rpm2taropts.compression {
+				case "gzip":
+					gw := gzip.NewWriter(tarStream)
+					defer gw.Close()
+					tarStream = gw
+				default:
+					return fmt.Errorf("unsupported compression algorithm: %s", rpm2taropts.compression)
 				}
 			}
 			cap := map[string][]string{}
@@ -105,6 +119,7 @@ func NewRpm2TarCmd() *cobra.Command {
 	rpm2tarCmd.Flags().StringToStringVarP(&rpm2taropts.symlinks, "symlinks", "s", map[string]string{}, "symlinks to add. Relative or absolute.")
 	rpm2tarCmd.Flags().StringToStringVarP(&rpm2taropts.capabilities, "capabilities", "c", map[string]string{}, "capabilities of files (--capabilities=/bin/ls=cap_net_bind_service)")
 	rpm2tarCmd.Flags().StringToStringVar(&rpm2taropts.selinuxLabels, "selinux-labels", map[string]string{}, "selinux labels of files (--selinux-labels=/bin/ls=unconfined_u:object_r:default_t:s0)")
+	rpm2tarCmd.Flags().StringVar(&rpm2taropts.compression, "compression", "", "compression determines the compression algorithm to be used, options include gzip (defaults to none)")
 	// deprecated options
 	rpm2tarCmd.Flags().StringToStringVar(&rpm2taropts.capabilities, "capabilties", map[string]string{}, "capabilities of files (-c=/bin/ls=cap_net_bind_service)")
 	rpm2tarCmd.Flags().MarkDeprecated("capabilties", "use --capabilities instead")

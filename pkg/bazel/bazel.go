@@ -268,7 +268,7 @@ func AddTar2Files(name string, rpmtree string, buildfile *build.File, files []st
 	}
 }
 
-func AddTree(name, configname string, buildfile *build.File, pkgs []*api.Package, public bool) {
+func AddTree(name, configname string, buildfile *build.File, pkgs []*api.Package, public bool, compression string) {
 	transform := func(n string) string {
 		return "@" + n + "//rpm"
 	}
@@ -302,6 +302,11 @@ func AddTree(name, configname string, buildfile *build.File, pkgs []*api.Package
 	}
 	rule.SetName(name)
 	rule.SetRPMs(rpms)
+
+	if compression != "" {
+		rule.SetAttr("compression", &build.StringExpr{Value: compression})
+	}
+
 	if public {
 		rule.SetAttr("visibility", &build.ListExpr{List: []build.Expr{&build.StringExpr{Value: "//visibility:public"}}})
 	}
