@@ -38,7 +38,7 @@ func expectedBest(g *WithT, m *Model, pkgVersions map[string]string) {
 	g.Expect(m.bestPackages).To(HaveLen(len(pkgVersions)))
 
 	for k, version := range pkgVersions {
-		g.Expect(m.bestPackages[k].Version.String()).To(Equal(version))
+		g.Expect(m.bestPackages[BestKey{name: k}].Version.String()).To(Equal(version))
 	}
 }
 
