@@ -18,7 +18,7 @@ import (
 
 type Loader struct {
 	m         *Model
-	provides  map[string][]*Var
+	provides  map[string][]*ProvidedResource
 	varsCount int
 }
 
@@ -30,9 +30,18 @@ func NewLoader() *Loader {
 			bestPackages:                map[string]*api.Package{},
 			forceIgnoreWithDependencies: map[api.PackageKey]*api.Package{},
 		},
-		provides:  map[string][]*Var{},
+		provides:  map[string][]*ProvidedResource{},
 		varsCount: 0,
 	}
+}
+
+// ProvidedResource tells us that an api.Package under PackageVar
+// is capable of providing a Resource in version ResourceVersion.
+// Utility for SAT construction only.
+type ProvidedResource struct {
+	PackageVar      *Var
+	Resource        string
+	ResourceVersion api.Version
 }
 
 // Load takes a list of all involved packages to install, a list of regular
@@ -113,16 +122,13 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 		}
 	}
 
-	pkgProvides := map[VarContext][]*Var{}
-
 	// Generate variables
 	for _, pkg := range packages {
-		pkgVar, resourceVars := loader.explodePackageToVars(pkg)
+		pkgVar := &Var{satVarName: loader.ticket(), Package: pkg}
 		loader.m.packages[pkg.Name] = append(loader.m.packages[pkg.Name], pkgVar)
-		pkgProvides[pkgVar.Context] = resourceVars
-		for _, v := range resourceVars {
-			loader.provides[v.Context.Provides] = append(loader.provides[v.Context.Provides], v)
-			loader.m.vars[v.satVarName] = v
+		loader.m.vars[pkgVar.satVarName] = pkgVar
+		for _, provided := range loader.explodeProvidedResources(pkgVar) {
+			loader.provides[provided.Resource] = append(loader.provides[provided.Resource], provided)
 		}
 	}
 
@@ -135,84 +141,62 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 		})
 	}
 
-	logrus.Infof("Loaded %v packages.", len(pkgProvides))
-
-	pkgProvideKeys := maps.Keys(pkgProvides)
-	slices.SortFunc(pkgProvideKeys, varContextSort)
+	logrus.Infof("Loaded %v packages.", len(packages))
 
 	// Generate imply rules
-	for _, provided := range pkgProvideKeys {
-		// Create imply rules for every package and add them to the formula
-		// one provided dependency implies all dependencies from that package
-		resourceVars := pkgProvides[provided]
-		bfVar := bf.And(toBFVars(resourceVars)...)
-		var ands []bf.Formula
-		for _, res := range resourceVars {
-			ands = append(ands, bf.Implies(bf.Var(res.satVarName), bfVar))
-		}
-		pkgVar := resourceVars[len(resourceVars)-1]
-		ands = append(ands, bf.Implies(bf.Var(pkgVar.satVarName), loader.explodePackageRequires(pkgVar)))
-		if conflicts := loader.explodePackageConflicts(pkgVar); conflicts != nil {
-			ands = append(ands, bf.Implies(bf.Var(pkgVar.satVarName), bf.Not(conflicts)))
-		}
+	for _, k := range packagesKeys {
+		pkgs := loader.m.packages[k]
+		for _, pkgVar := range pkgs {
+			// Requires:
+			loader.m.ands = append(loader.m.ands,
+				bf.Implies(bf.Var(pkgVar.satVarName), loader.explodePackageRequires(pkgVar)))
 
-		// Implicit conflicts (with the same package):
-		ands = append(ands, bf.Implies(bf.Var(pkgVar.satVarName), bf.Not(loader.explodeSamePackageConflicts(pkgVar))))
+			// Conflicts:
+			if conflicts := loader.explodePackageConflicts(pkgVar); conflicts != nil {
+				loader.m.ands = append(loader.m.ands,
+					bf.Implies(bf.Var(pkgVar.satVarName), bf.Not(conflicts)))
+			}
 
-		loader.m.ands = append(loader.m.ands, ands...)
+			// Implicit conflicts (with the same package):
+			loader.m.ands = append(loader.m.ands,
+				bf.Implies(bf.Var(pkgVar.satVarName), bf.Not(loader.explodeSamePackageConflicts(pkgVar))))
+		}
 	}
 	logrus.Infof("Generated %v variables.", len(loader.m.vars))
 
 	return loader.constructRequirements(matched, archOrder)
 }
 
-func (loader *Loader) explodePackageToVars(pkg *api.Package) (pkgVar *Var, resourceVars []*Var) {
+// explodeProvidedResources collects all resources a `pkgVar` can provide (package, provides entries, files)
+// and returns them in unified form of ProvidedResource.
+func (loader *Loader) explodeProvidedResources(pkgVar *Var) (provided []*ProvidedResource) {
+	pkg := pkgVar.Package
+
+	provided = append(provided, &ProvidedResource{
+		PackageVar:      pkgVar,
+		Resource:        pkg.Name,
+		ResourceVersion: pkg.Version,
+	})
+
 	for _, p := range pkg.Format.Provides.Entries {
 		if p.Name == pkg.Name {
-			pkgVar = &Var{
-				satVarName: loader.ticket(),
-				varType:    VarTypePackage,
-				Context: VarContext{
-					PackageKey: pkg.Key(),
-					Provides:   pkg.Name,
-				},
-				Package:         pkg,
-				ResourceVersion: &pkg.Version,
-			}
-			resourceVars = append(resourceVars, pkgVar)
-		} else {
-			resVar := &Var{
-				satVarName: loader.ticket(),
-				varType:    VarTypeResource,
-				Context: VarContext{
-					PackageKey: pkg.Key(),
-					Provides:   p.Name,
-				},
-				ResourceVersion: &api.Version{
-					Rel:   p.Rel,
-					Ver:   p.Ver,
-					Epoch: p.Epoch,
-				},
-				Package: pkg,
-			}
-			resourceVars = append(resourceVars, resVar)
+			continue
 		}
+		provided = append(provided, &ProvidedResource{
+			PackageVar:      pkgVar,
+			Resource:        p.Name,
+			ResourceVersion: api.Version{p.Text, p.Epoch, p.Ver, p.Rel},
+		})
 	}
 
 	for _, f := range pkg.Format.Files {
-		resVar := &Var{
-			satVarName: loader.ticket(),
-			varType:    VarTypeFile,
-			Context: VarContext{
-				PackageKey: pkg.Key(),
-				Provides:   f.Text,
-			},
-			Package:         pkg,
-			ResourceVersion: &api.Version{},
-		}
-		resourceVars = append(resourceVars, resVar)
+		provided = append(provided, &ProvidedResource{
+			PackageVar: pkgVar,
+			Resource:   f.Text,
+		})
 	}
-	return pkgVar, resourceVars
+
+	return
 }
 
 // explodePackageRequires builds a formula that could be a right hand side operand to implication.
@@ -296,20 +280,23 @@ func (loader *Loader) explodeSamePackageConflicts(pkgVar *Var) bf.Formula {
 	return bf.Or(conflictingVars...)
 }
 
-func (loader *Loader) explodeSingleRequires(entry api.Entry, provides []*Var) (accepts []*Var, err error) {
-	provPerPkg := map[VarContext][]*Var{}
+// explodeSingleRequires filters the `provides`, keeping only those, which can satisfy the requirements of `entry`.
+// Unique set of `Var`s is returned.
+// Even if given package can satisfy the same requirement multiple times, it appears only once in the result.
+func (loader *Loader) explodeSingleRequires(entry api.Entry, provides []*ProvidedResource) (accepts []*Var, err error) {
+	acceptingPackages := map[*api.Package]struct{}{}
 	for _, prov := range provides {
-		provPerPkg[prov.Context] = append(provPerPkg[prov.Context], prov)
-	}
+		if _, alreadyAccepted := acceptingPackages[prov.PackageVar.Package]; alreadyAccepted {
+			continue
+		}
 
-	for _, pkgProv := range provPerPkg {
-		acceptsFromPkg, err := compareRequires(entry, pkgProv)
+		acceptsFromPkg, err := compareRequires(entry, prov.ResourceVersion)
 		if err != nil {
 			return nil, err
 		}
-		if len(acceptsFromPkg) > 0 {
-			// just pick one to avoid excluding each  other
-			accepts = append(accepts, acceptsFromPkg[0])
+		if acceptsFromPkg {
+			accepts = append(accepts, prov.PackageVar)
+			acceptingPackages[prov.PackageVar.Package] = struct{}{}
 		}
 	}
 
@@ -346,76 +333,65 @@ func (loader *Loader) resolveNewest(pkgName string, archOrder []string) (*Var, e
 	}
 	newest := pkgs[0]
 	for _, p := range pkgs {
-		if rpm.ComparePackage(p.Package, newest.Package, archOrder) > 0 {
+		if rpm.ComparePackage(p.PackageVar.Package, newest.PackageVar.Package, archOrder) > 0 {
 			newest = p
 		}
 	}
-	return newest, nil
+	return newest.PackageVar, nil
 }
 
-func toBFVars(vars []*Var) (bfvars []bf.Formula) {
-	for _, v := range vars {
-		bfvars = append(bfvars, bf.Var(v.satVarName))
+// compareRequires checks if an `entry` can be satisfied with a resource of version `depVer`.
+func compareRequires(entry api.Entry, depVer api.Version) (accepts bool, err error) {
+
+	entryVer := api.Version{
+		Text:  entry.Text,
+		Epoch: entry.Epoch,
+		Ver:   entry.Ver,
+		Rel:   entry.Rel,
 	}
-	return
-}
 
-func compareRequires(entry api.Entry, provides []*Var) (accepts []*Var, err error) {
-	for _, dep := range provides {
-		entryVer := api.Version{
-			Text:  entry.Text,
-			Epoch: entry.Epoch,
-			Ver:   entry.Ver,
-			Rel:   entry.Rel,
-		}
+	// Requirement "EQ 2.14" matches 2.14-5.fc33
+	if entryVer.Rel == "" {
+		depVer.Rel = ""
+	}
 
-		// Requirement "EQ 2.14" matches 2.14-5.fc33
-		depVer := *dep.ResourceVersion
-		if entryVer.Rel == "" {
-			depVer.Rel = ""
-		}
+	// Provide "EQ 2.14" matches "2.14-5.fc33"
+	if depVer.Rel == "" {
+		entryVer.Rel = ""
+	}
 
-		// Provide "EQ 2.14" matches "2.14-5.fc33"
-		if depVer.Rel == "" {
-			entryVer.Rel = ""
-		}
-
-		works := false
-		if depVer.Epoch == "" && depVer.Ver == "" && depVer.Rel == "" {
-			works = true
-		} else {
-			cmp := rpm.Compare(depVer, entryVer)
-			switch entry.Flags {
-			case "EQ":
-				if cmp == 0 {
-					works = true
-				}
-				cmp = 0
-			case "LE":
-				if cmp <= 0 {
-					works = true
-				}
-			case "GE":
-				if cmp >= 0 {
-					works = true
-				}
-			case "LT":
-				if cmp == -1 {
-					works = true
-				}
-			case "GT":
-				if cmp == 1 {
-					works = true
-				}
-			case "":
-				return provides, nil
-			default:
-				return nil, fmt.Errorf("can't interprate flags value %s", entry.Flags)
+	works := false
+	if depVer.Epoch == "" && depVer.Ver == "" && depVer.Rel == "" {
+		works = true
+	} else {
+		cmp := rpm.Compare(depVer, entryVer)
+		switch entry.Flags {
+		case "EQ":
+			if cmp == 0 {
+				works = true
 			}
-		}
-		if works {
-			accepts = append(accepts, dep)
+			cmp = 0
+		case "LE":
+			if cmp <= 0 {
+				works = true
+			}
+		case "GE":
+			if cmp >= 0 {
+				works = true
+			}
+		case "LT":
+			if cmp == -1 {
+				works = true
+			}
+		case "GT":
+			if cmp == 1 {
+				works = true
+			}
+		case "":
+			return true, nil
+		default:
+			return false, fmt.Errorf("can't interprate flags value %s", entry.Flags)
 		}
 	}
-	return accepts, nil
+	return works, nil
 }
