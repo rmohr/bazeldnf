@@ -122,6 +122,7 @@ func newSimpleRPM(name string, deps ...string) *bazeldnf.RPM {
 	}
 
 	return &bazeldnf.RPM{
+		Id:           name,
 		Name:         name,
 		URLs:         []string{""},
 		Integrity:    "sha256-",
@@ -155,6 +156,7 @@ func TestConfigTransform(t *testing.T) {
 			},
 			expectedRPMs: []*bazeldnf.RPM{
 				&bazeldnf.RPM{
+					Id:           "package0",
 					Name:         "package0",
 					Integrity:    "sha256-+HtJxReqyetIkKS1AFvMSlhnSPJ2DqEQY4LziXEppg4=",
 					URLs:         []string{"urlforrpm"},
@@ -188,6 +190,7 @@ func TestConfigTransform(t *testing.T) {
 			},
 			expectedRPMs: []*bazeldnf.RPM{
 				&bazeldnf.RPM{
+					Id:           "package0",
 					Name:         "package0",
 					Integrity:    "sha256-+HtJxReqyetIkKS1AFvMSlhnSPJ2DqEQY4LziXEppg4=",
 					URLs:         []string{"urlforrpm"},
@@ -195,6 +198,7 @@ func TestConfigTransform(t *testing.T) {
 					Dependencies: []string{},
 				},
 				&bazeldnf.RPM{
+					Id:           "package1",
 					Name:         "package1",
 					Integrity:    "sha256-kUagLtko/8pu8PEkHS2G5OmY5vcKrodXVGAf2lSVH70=",
 					URLs:         []string{"urlforrpm0"},
@@ -227,6 +231,7 @@ func TestConfigTransform(t *testing.T) {
 			},
 			expectedRPMs: []*bazeldnf.RPM{
 				&bazeldnf.RPM{
+					Id:           "package0",
 					Name:         "package0",
 					Integrity:    "sha256-+HtJxReqyetIkKS1AFvMSlhnSPJ2DqEQY4LziXEppg4=",
 					URLs:         []string{"urlforrpm"},
@@ -234,6 +239,7 @@ func TestConfigTransform(t *testing.T) {
 					Dependencies: []string{},
 				},
 				&bazeldnf.RPM{
+					Id:           "package1",
 					Name:         "package1",
 					Integrity:    "sha256-kUagLtko/8pu8PEkHS2G5OmY5vcKrodXVGAf2lSVH70=",
 					URLs:         []string{"urlforrpm0"},
