@@ -1429,7 +1429,7 @@ func TestNewResolver(t *testing.T) {
 			"testa",
 		},
 			install:  []string{"testa-0:2.x86_64"},
-			exclude:  []string{},
+			exclude:  []string{"testa-0:3.noarch"},
 			solvable: true,
 		},
 		{name: "prioritize dependency: best arch & version", packages: []*api.Package{
@@ -1443,7 +1443,7 @@ func TestNewResolver(t *testing.T) {
 			"testa",
 		},
 			install:  []string{"testa-0:1.noarch", "testb-0:2.x86_64"},
-			exclude:  []string{},
+			exclude:  []string{"testb-0:3.noarch"},
 			solvable: true,
 		},
 		{name: "cross-arch dependency (by name and by resource)", packages: []*api.Package{
@@ -1478,8 +1478,20 @@ func TestNewResolver(t *testing.T) {
 			"testa",
 		},
 			install:  []string{"testa-0:1.x86_64", "testb-0:1.x86_64"},
-			exclude:  []string{},
+			exclude:  []string{"testa-0:1.noarch", "testb-0:1.noarch"},
 			solvable: true,
+		},
+		{name: "dependency on non-primary architecture", packages: []*api.Package{
+			newPkgAP("testa", "1", "noarch", 1, []string{}, []string{"/usr/lib/libb.so"}, []string{}),
+			newPkgAP("testb", "1", "x86_64", 1, []string{"/usr/lib64/libb.so"}, []string{}, []string{}),
+			newPkgAP("testb", "1", "i686", 1, []string{"/usr/lib/libb.so"}, []string{}, []string{}),
+		}, requires: []string{
+			"testa",
+		},
+			architectures: []string{"x86_64", "i686"},
+			install:       []string{"testa-0:1.noarch", "testb-0:1.i686"},
+			exclude:       []string{"testb-0:1.x86_64"},
+			solvable:      true,
 		},
 
 		// TODO: Add test cases.
