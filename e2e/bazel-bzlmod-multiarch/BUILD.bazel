@@ -1,0 +1,31 @@
+load("@bazeldnf//bazeldnf:defs.bzl", "bazeldnf", "rpmtree", "tar2files")
+
+bazeldnf(
+    name = "bazeldnf",
+)
+
+rpmtree(
+    name = "something",
+    rpms = [
+        "@bazeldnf_rpms//bash",
+        "@bazeldnf_rpms//libcint",
+    ],
+)
+
+tar2files(
+    name = "something_binaries",
+    files = {
+        "/usr/bin": [
+            "sh",
+            "bash",
+        ],
+        "/usr/lib": [
+            "libcint.so.6",
+            "libcint.so.6.1.1",
+            "libquadmath.so.0",
+            "libquadmath.so.0.0.0",
+        ],
+    },
+    tar = ":something",
+    visibility = ["//visibility:public"],
+)
