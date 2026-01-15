@@ -133,22 +133,3 @@ def _null_rpm_rule_impl(_):
 null_rpm_rule = rule(
     implementation = _null_rpm_rule_impl,
 )
-
-_NULL_FILE_BUILD = """
-load("@bazeldnf//internal:rpm.bzl", "null_rpm_rule")
-package(default_visibility = ["//visibility:public"])
-null_rpm_rule(
-    name = "rpm",
-)
-"""
-
-def _null_rpm_impl(ctx):
-    ctx.file("WORKSPACE", "workspace(name = \"{name}\")".format(name = ctx.name))
-    ctx.file(
-        "rpm/BUILD",
-        _NULL_FILE_BUILD,
-    )
-
-null_rpm = repository_rule(
-    implementation = _null_rpm_impl,
-)
