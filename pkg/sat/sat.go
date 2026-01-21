@@ -170,19 +170,33 @@ func Resolve(model *Model) (install []*api.Package, excluded []*api.Package, for
 		installMap := map[VarContext]*api.Package{}
 		excludedMap := map[VarContext]*api.Package{}
 		forceIgnoreMap := map[VarContext]*api.Package{}
-		for k, v := range solution.Model {
+		for _, resVar := range model.vars {
+			if resVar.varType != VarTypePackage {
+				continue
+			}
+
+			satVarName, exists := satVars.pkgToSat[resVar.satVarName]
+			if !exists {
+				// A package might have not been used in the SAT formula (e.g. not requested, no requirements, conflicts, etc.)
+				// In such case we assume it's just not selected for installation.
+				excludedMap[resVar.Context] = resVar.Package
+				continue
+			}
+			modelVarId, err := strconv.Atoi(satVarName)
+			if err != nil {
+				logrus.Errorf("Invalid satVarName", satVarName)
+				continue
+			}
+
 			// Offset of `1`. The model index starts with 0, but the variable sequence starts with 1, since 0 is not allowed
-			resVar := model.Var(satVars.satToPkg[strconv.Itoa(k+1)])
-			if resVar != nil && resVar.varType == VarTypePackage {
-				if v {
-					if exists := model.ShouldIgnore(resVar.Package.Key()); !exists {
-						installMap[resVar.Context] = resVar.Package
-					} else {
-						forceIgnoreMap[resVar.Context] = resVar.Package
-					}
+			if solution.Model[modelVarId-1] {
+				if exists := model.ShouldIgnore(resVar.Package.Key()); !exists {
+					installMap[resVar.Context] = resVar.Package
 				} else {
-					excludedMap[resVar.Context] = resVar.Package
+					forceIgnoreMap[resVar.Context] = resVar.Package
 				}
+			} else {
+				excludedMap[resVar.Context] = resVar.Package
 			}
 		}
 		for _, v := range installMap {
