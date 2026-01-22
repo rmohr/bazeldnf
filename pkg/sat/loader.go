@@ -164,15 +164,15 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 
 	// Generate imply rules
 	for _, provided := range pkgProvideKeys {
-		// Create imply rules for every package and add them to the formula
-		// one provided dependency implies all dependencies from that package
-		resourceVars := pkgProvides[provided]
-		bfVar := bf.And(toBFVars(resourceVars)...)
 		var ands []bf.Formula
-		for _, res := range resourceVars {
-			ands = append(ands, bf.Implies(bf.Var(res.satVarName), bfVar))
-		}
+
+		// Synchronize all the variables for a given package to the same value.
+		resourceVars := pkgProvides[provided]
 		pkgVar := resourceVars[len(resourceVars)-1]
+		for _, res := range resourceVars {
+			ands = append(ands, bf.Eq(bf.Var(pkgVar.satVarName), bf.Var(res.satVarName)))
+		}
+
 		ands = append(ands, bf.Implies(bf.Var(pkgVar.satVarName), loader.explodePackageRequires(pkgVar)))
 		if conflicts := loader.explodePackageConflicts(pkgVar); conflicts != nil {
 			ands = append(ands, bf.Implies(bf.Var(pkgVar.satVarName), bf.Not(conflicts)))
@@ -373,13 +373,6 @@ func (loader *Loader) resolveNewest(pkgName string, archOrder []string) (*Var, e
 		}
 	}
 	return newest, nil
-}
-
-func toBFVars(vars []*Var) (bfvars []bf.Formula) {
-	for _, v := range vars {
-		bfvars = append(bfvars, bf.Var(v.satVarName))
-	}
-	return
 }
 
 func compareRequires(entry api.Entry, provides []*Var) (accepts []*Var, err error) {
