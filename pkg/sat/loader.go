@@ -319,20 +319,9 @@ func (loader *Loader) explodeSamePackageConflicts(pkgVar *Var) bf.Formula {
 }
 
 func (loader *Loader) explodeSingleRequires(entry api.Entry, provides []*Var) (accepts []*Var, err error) {
-	provPerPkg := map[VarContext][]*Var{}
-	for _, prov := range provides {
-		provPerPkg[prov.Context] = append(provPerPkg[prov.Context], prov)
-	}
-
-	for _, pkgProv := range provPerPkg {
-		acceptsFromPkg, err := compareRequires(entry, pkgProv)
-		if err != nil {
-			return nil, err
-		}
-		if len(acceptsFromPkg) > 0 {
-			// just pick one to avoid excluding each  other
-			accepts = append(accepts, acceptsFromPkg[0])
-		}
+	accepts, err = compareRequires(entry, provides)
+	if err != nil {
+		return nil, err
 	}
 
 	if len(accepts) == 0 {
