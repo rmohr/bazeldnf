@@ -56,6 +56,14 @@ func NewLoader() *Loader {
 	}
 }
 
+// Resource is a convenience abstraction over
+// `api.Entry` and `api.ProvidedFile`
+// that captures only the necessary information we need
+type Resource struct {
+	Name    string      // capability name, or file name
+	Version api.Version // empty for files
+}
+
 // Load takes a list of all involved packages to install, a list of regular
 // expressions which denote packages which should be taken into account for
 // solving the problem, but they should then be ignored together with their
@@ -139,7 +147,8 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 
 	// Generate variables
 	for _, pkg := range packages {
-		pkgVar, resourceVars := loader.explodePackageToVars(pkg)
+		providedResources := loader.explodeProvidedResources(pkg)
+		pkgVar, resourceVars := loader.explodePackageToVars(pkg, providedResources)
 		loader.m.packages[pkg.Name] = append(loader.m.packages[pkg.Name], pkgVar)
 		pkgProvides = append(pkgProvides, resourceVars)
 		for _, v := range resourceVars {
@@ -184,52 +193,46 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 	return loader.constructRequirements(matched, archOrder)
 }
 
-func (loader *Loader) explodePackageToVars(pkg *api.Package) (pkgVar *Var, resourceVars []*Var) {
+// explodeProvidedResources collects all resources a `pkg` can provide (package, capabilities, files)
+// and returns them in unified form of Resource.
+func (loader *Loader) explodeProvidedResources(pkg *api.Package) (provided []*Resource) {
+
 	for _, p := range pkg.Format.Provides.Entries {
-		if p.Name == pkg.Name {
-			pkgVar = &Var{
-				satVarName: loader.ticket(),
-				varType:    VarTypePackage,
-				Context: VarContext{
-					PackageKey: pkg.Key(),
-					Provides:   pkg.Name,
-				},
-				Package:         pkg,
-				ResourceVersion: &pkg.Version,
-			}
-			resourceVars = append(resourceVars, pkgVar)
-		} else {
-			resVar := &Var{
-				satVarName: loader.ticket(),
-				varType:    VarTypeResource,
-				Context: VarContext{
-					PackageKey: pkg.Key(),
-					Provides:   p.Name,
-				},
-				ResourceVersion: &api.Version{
-					Rel:   p.Rel,
-					Ver:   p.Ver,
-					Epoch: p.Epoch,
-				},
-				Package: pkg,
-			}
-			resourceVars = append(resourceVars, resVar)
-		}
+		provided = append(provided, &Resource{
+			Name:    p.Name,
+			Version: api.Version{p.Text, p.Epoch, p.Ver, p.Rel},
+		})
 	}
 
 	for _, f := range pkg.Format.Files {
-		resVar := &Var{
+		provided = append(provided, &Resource{
+			Name: f.Text,
+		})
+	}
+
+	return
+}
+
+func (loader *Loader) explodePackageToVars(pkg *api.Package, resources []*Resource) (pkgVar *Var, resourceVars []*Var) {
+	for _, res := range resources {
+		newVar := &Var{
 			satVarName: loader.ticket(),
-			varType:    VarTypeFile,
+			varType:    VarTypeResource,
 			Context: VarContext{
 				PackageKey: pkg.Key(),
-				Provides:   f.Text,
+				Provides:   res.Name,
 			},
+			ResourceVersion: &res.Version,
 			Package:         pkg,
-			ResourceVersion: &api.Version{},
 		}
-		resourceVars = append(resourceVars, resVar)
+
+		if res.Name == pkg.Name {
+			newVar.varType = VarTypePackage
+			pkgVar = newVar
+		}
+		resourceVars = append(resourceVars, newVar)
 	}
+
 	return pkgVar, resourceVars
 }
 
