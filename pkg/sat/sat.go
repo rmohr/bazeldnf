@@ -11,7 +11,6 @@ import (
 	"github.com/crillab/gophersat/bf"
 	"github.com/crillab/gophersat/maxsat"
 	"github.com/rmohr/bazeldnf/pkg/api"
-	"github.com/rmohr/bazeldnf/pkg/rpm"
 	"github.com/sirupsen/logrus"
 )
 
@@ -28,10 +27,6 @@ const (
 type VarContext struct {
 	PackageKey api.PackageKey
 	Provides   string
-}
-
-func varContextSort(a VarContext, b VarContext) int {
-	return rpm.ComparePackageKey(a.PackageKey, b.PackageKey)
 }
 
 type Var struct {

@@ -135,13 +135,13 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 		}
 	}
 
-	pkgProvides := map[VarContext][]*Var{}
+	pkgProvides := [][]*Var{}
 
 	// Generate variables
 	for _, pkg := range packages {
 		pkgVar, resourceVars := loader.explodePackageToVars(pkg)
 		loader.m.packages[pkg.Name] = append(loader.m.packages[pkg.Name], pkgVar)
-		pkgProvides[pkgVar.Context] = resourceVars
+		pkgProvides = append(pkgProvides, resourceVars)
 		for _, v := range resourceVars {
 			loader.provides[v.Context.Provides] = append(loader.provides[v.Context.Provides], v)
 			loader.m.vars[v.satVarName] = v
@@ -159,15 +159,11 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 
 	logrus.Infof("Loaded %v packages.", len(pkgProvides))
 
-	pkgProvideKeys := maps.Keys(pkgProvides)
-	slices.SortFunc(pkgProvideKeys, varContextSort)
-
 	// Generate imply rules
-	for _, provided := range pkgProvideKeys {
+	for _, resourceVars := range pkgProvides {
 		var ands []bf.Formula
 
 		// Synchronize all the variables for a given package to the same value.
-		resourceVars := pkgProvides[provided]
 		pkgVar := resourceVars[len(resourceVars)-1]
 		for _, res := range resourceVars {
 			ands = append(ands, bf.Eq(bf.Var(pkgVar.satVarName), bf.Var(res.satVarName)))
