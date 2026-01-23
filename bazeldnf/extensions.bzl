@@ -129,13 +129,15 @@ def _alias_repository_impl(repository_ctx):
         if repository_ctx.attr.repository_prefix:
             name = actual_name.split(repository_ctx.attr.repository_prefix, 1)[-1]
 
-        repository_ctx.file(
-            "%s/BUILD.bazel" % name,
-            _ALIAS_TEMPLATE.format(
-                name = name,
-                actual_name = actual_name,
-            ),
-        )
+        # Only create aliases for top-level targets (listed in rpms_to_install)
+        if name in repository_ctx.attr.rpms_to_install:
+            repository_ctx.file(
+                "%s/BUILD.bazel" % name,
+                _ALIAS_TEMPLATE.format(
+                    name = name,
+                    actual_name = actual_name,
+                ),
+            )
 
     if not repository_ctx.attr.rpms:
         for rpm in repository_ctx.attr.rpms_to_install:
@@ -171,6 +173,65 @@ def _get_architectures(architecture, architectures):
         fail("Can't combine `architecture` and `architectures`")
     return architectures or [(architecture or "x86_64")]
 
+def _build_rpm_lookup(rpms_list):
+    """Build a dictionary for efficient RPM lookup by name/id.
+
+    Returns a dict mapping RPM name/id to RPM data.
+    """
+    rpm_lookup = {}
+    for rpm in rpms_list:
+        # Determine the RPM identifier
+        rpm_id = rpm.get("id", rpm.get("name", None))
+        if not rpm_id:
+            # Fallback to URL-based name
+            urls = rpm.get("urls", [])
+            if len(urls) > 0:
+                rpm_id = urls[0].rsplit("/", 1)[-1]
+        if rpm_id:
+            rpm_lookup[rpm_id] = rpm
+    return rpm_lookup
+
+def _build_transitive_deps(rpm_lookup, target_name):
+    """Build transitive dependency closure for a target.
+
+    Returns a dict mapping RPM name to RPM data for all transitive dependencies.
+    Uses iterative passes to avoid recursion (not supported in Starlark).
+    """
+    visited = {}
+    to_process = {target_name: True}
+
+    # Iterate up to max depth to resolve all transitive dependencies
+    # This is a safety limit to prevent infinite loops in case of circular deps
+    for _ in range(1000):
+        if len(to_process) == 0:
+            break
+
+        # Process all current items
+        current_batch = list(to_process.keys())
+        to_process = {}
+
+        for current in current_batch:
+            # Skip if already processed
+            if current in visited:
+                continue
+
+            # Find the RPM in the lookup dict
+            rpm = rpm_lookup.get(current)
+            if not rpm:
+                continue
+
+            # Make a copy to avoid mutating the original
+            rpm_copy = dict(rpm)
+            visited[current] = rpm_copy
+
+            # Add dependencies to next batch
+            deps = rpm_copy.get("dependencies", [])
+            for dep in deps:
+                if dep not in visited:
+                    to_process[dep] = True
+
+    return visited
+
 def _handle_lock_file(config, module_ctx, registered_rpms = {}):
     if not config.lock_file:
         fail("No lock file provided for %s" % config.name)
@@ -198,8 +259,27 @@ def _handle_lock_file(config, module_ctx, registered_rpms = {}):
         content = module_ctx.read(config.lock_file)
         lock_file_json = json.decode(content)
 
-        for rpm in lock_file_json.get("rpms", []):
-            _add_rpm_repository(config, rpm, lock_file_json, registered_rpms)
+        # Build lookup dictionary for efficient RPM access
+        rpm_lookup = _build_rpm_lookup(lock_file_json.get("rpms", []))
+
+        requested_rpms = dict([(x, True) for x in config.rpms])
+
+        # Create repositories for each top-level target with suffixed dependencies
+        for target in config.rpms:
+            # Build transitive dependency closure for this target
+            target_deps = _build_transitive_deps(rpm_lookup, target)
+
+            # for every rpm file create one rpm rule repository instance which will have 2 targets in the rpm package
+            # * rpm: in the case of transitive dependencies will be empty, in the case of a target
+            #        package then it will have a flat list of dependencies for this particular target
+            # * blob: contains the blob it self
+            # given the same rpm may be a transitive dependency of a requested rpm, adn it may be possible
+            # that there's a cycle we only register those in the case they're part of the public API
+            for rpm_name, rpm_data in target_deps.items():
+                if rpm_name != target and rpm_name not in requested_rpms:
+                    _add_rpm_repository(config, rpm_data, lock_file_json, registered_rpms, dependencies = [])
+                else:
+                    _add_rpm_repository(config, rpm_data, lock_file_json, registered_rpms, dependencies = target_deps)
 
         # if there's targets without matching RPMs we need to create a null target
         # so that consumers have something consistent that they can depend on
@@ -220,13 +300,12 @@ def _handle_lock_file(config, module_ctx, registered_rpms = {}):
 
     return config.name
 
-def _add_rpm_repository(config, rpm, lock_file_json, registered_rpms):
-    dependencies = rpm.pop("dependencies", [])
-    if config.ignore_deps:
-        dependencies = []
-    else:
-        dependencies = [x.replace("+", "plus") for x in dependencies]
-        dependencies = ["@{}{}//rpm".format(config.rpm_repository_prefix, x) for x in dependencies]
+def _add_rpm_repository(config, rpm, lock_file_json, registered_rpms, dependencies = []):
+    # fix for cases like c++
+    dependencies = [x.replace("+", "plus") for x in dependencies]
+
+    # point to the actual blob
+    dependencies = ["@{}{}//rpm:blob".format(config.rpm_repository_prefix, x) for x in dependencies]
 
     # Older lockfiles may not have `id` field.
     # Name was the equivalent. We need to pop both.
@@ -238,8 +317,12 @@ def _add_rpm_repository(config, rpm, lock_file_json, registered_rpms):
         id = urls[0].rsplit("/", 1)[-1]
 
     name = _to_rpm_repo_name(config.rpm_repository_prefix, id)
+
+    # the same rpm may be in the transitive closure of an already explored rpm, but it may be
+    # a requested target, in which case we need to override the previously defined case
     if name in registered_rpms:
         return False
+
     registered_rpms[name] = 1
     repository = rpm.pop("repository")
     mirrors = lock_file_json.get("repositories", {}).get(repository, None)
@@ -251,7 +334,7 @@ def _add_rpm_repository(config, rpm, lock_file_json, registered_rpms):
         name = name,
         dependencies = dependencies,
         urls = urls,
-        **rpm
+        create_blob = True,
     )
     return True
 
