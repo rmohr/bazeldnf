@@ -167,9 +167,9 @@ func Resolve(model *Model) (install []*api.Package, excluded []*api.Package, for
 
 	if solution.Status.String() == "SAT" {
 		logrus.Infof("Solution with weight %v found.", solution.Weight)
-		installMap := map[VarContext]*api.Package{}
-		excludedMap := map[VarContext]*api.Package{}
-		forceIgnoreMap := map[VarContext]*api.Package{}
+		installSet := map[*api.Package]struct{}{}
+		excludedSet := map[*api.Package]struct{}{}
+		forceIgnoreSet := map[*api.Package]struct{}{}
 		for _, resVar := range model.vars {
 			if resVar.varType != VarTypePackage {
 				continue
@@ -179,7 +179,7 @@ func Resolve(model *Model) (install []*api.Package, excluded []*api.Package, for
 			if !exists {
 				// A package might have not been used in the SAT formula (e.g. not requested, no requirements, conflicts, etc.)
 				// In such case we assume it's just not selected for installation.
-				excludedMap[resVar.Context] = resVar.Package
+				excludedSet[resVar.Package] = struct{}{}
 				continue
 			}
 			modelVarId, err := strconv.Atoi(satVarName)
@@ -187,19 +187,18 @@ func Resolve(model *Model) (install []*api.Package, excluded []*api.Package, for
 				logrus.Errorf("Invalid satVarName", satVarName)
 				continue
 			}
-
 			// Offset of `1`. The model index starts with 0, but the variable sequence starts with 1, since 0 is not allowed
 			if solution.Model[modelVarId-1] {
 				if exists := model.ShouldIgnore(resVar.Package.Key()); !exists {
-					installMap[resVar.Context] = resVar.Package
+					installSet[resVar.Package] = struct{}{}
 				} else {
-					forceIgnoreMap[resVar.Context] = resVar.Package
+					forceIgnoreSet[resVar.Package] = struct{}{}
 				}
 			} else {
-				excludedMap[resVar.Context] = resVar.Package
+				excludedSet[resVar.Package] = struct{}{}
 			}
 		}
-		for _, v := range installMap {
+		for v := range installSet {
 			key := MakeBestKey(v)
 			bestPackage := model.BestPackage(key)
 			if bestPackage != v {
@@ -208,10 +207,10 @@ func Resolve(model *Model) (install []*api.Package, excluded []*api.Package, for
 			install = append(install, v)
 		}
 
-		for _, v := range excludedMap {
+		for v := range excludedSet {
 			excluded = append(excluded, v)
 		}
-		for _, v := range forceIgnoreMap {
+		for v := range forceIgnoreSet {
 			forceIgnoredWithDependencies = append(forceIgnoredWithDependencies, v)
 		}
 		return install, excluded, forceIgnoredWithDependencies, nil
