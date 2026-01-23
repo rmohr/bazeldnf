@@ -29,15 +29,13 @@ type VarContext struct {
 }
 
 type Var struct {
-	satVarName      string
-	varType         VarType
-	Context         VarContext
-	Package         *api.Package
-	ResourceVersion *api.Version
+	satVarName string
+	varType    VarType
+	Package    *api.Package
 }
 
 func (v Var) String() string {
-	return fmt.Sprintf("%s(%s)", v.Package.String(), v.Context.Provides)
+	return v.Package.String()
 }
 
 type Model struct {
@@ -109,7 +107,7 @@ func Resolve(model *Model) (install []*api.Package, excluded []*api.Package, for
 					satVar := match[2]
 					vars.satToPkg[satVar] = pkgVar
 					vars.pkgToSat[pkgVar] = satVar
-					if _, err := fmt.Fprintf(pwMaxSatWriter, "c %s -> %s\n", model.Var(pkgVar).Package.String(), model.Var(pkgVar).Context.Provides); err != nil {
+					if _, err := fmt.Fprintf(pwMaxSatWriter, "c %s\n", model.Var(pkgVar).Package.String()); err != nil {
 						pwMaxSatErrChan <- err
 						return
 					}

@@ -19,7 +19,7 @@ import (
 
 type Loader struct {
 	m         *Model
-	provides  map[string][]*Var
+	provides  map[string][]*ResourceVar
 	varsCount int
 }
 
@@ -51,7 +51,7 @@ func NewLoader() *Loader {
 			bestPackages:                map[BestKey]*api.Package{},
 			forceIgnoreWithDependencies: map[api.PackageKey]*api.Package{},
 		},
-		provides:  map[string][]*Var{},
+		provides:  map[string][]*ResourceVar{},
 		varsCount: 0,
 	}
 }
@@ -158,7 +158,7 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 		loader.m.packages[pkg.Name] = append(loader.m.packages[pkg.Name], pkgVar)
 		pkgProvides = append(pkgProvides, resourceVars)
 		for _, v := range resourceVars {
-			loader.provides[v.Resource.Name] = append(loader.provides[v.Resource.Name], v.Var)
+			loader.provides[v.Resource.Name] = append(loader.provides[v.Resource.Name], v)
 			loader.m.vars[v.Var.satVarName] = v.Var
 		}
 	}
@@ -224,12 +224,7 @@ func (loader *Loader) explodePackageToVars(pkg *api.Package, resources []*Resour
 		newVar := &Var{
 			satVarName: loader.ticket(),
 			varType:    VarTypeResource,
-			Context: VarContext{
-				PackageKey: pkg.Key(),
-				Provides:   res.Name,
-			},
-			ResourceVersion: &res.Version,
-			Package:         pkg,
+			Package:    pkg,
 		}
 
 		if res.Name == pkg.Name {
@@ -362,14 +357,14 @@ func (loader *Loader) resolveNewest(pkgName string, archOrder []string) (*Var, e
 	}
 	newest := pkgs[0]
 	for _, p := range pkgs {
-		if rpm.ComparePackage(p.Package, newest.Package, archOrder) > 0 {
+		if rpm.ComparePackage(p.Var.Package, newest.Var.Package, archOrder) > 0 {
 			newest = p
 		}
 	}
-	return newest, nil
+	return newest.Var, nil
 }
 
-func compareRequires(entry api.Entry, provides []*Var) (accepts []*Var, err error) {
+func compareRequires(entry api.Entry, provides []*ResourceVar) (accepts []*Var, err error) {
 	for _, dep := range provides {
 		entryVer := api.Version{
 			Text:  entry.Text,
@@ -379,7 +374,7 @@ func compareRequires(entry api.Entry, provides []*Var) (accepts []*Var, err erro
 		}
 
 		// Requirement "EQ 2.14" matches 2.14-5.fc33
-		depVer := *dep.ResourceVersion
+		depVer := dep.Resource.Version
 		if entryVer.Rel == "" {
 			depVer.Rel = ""
 		}
@@ -417,13 +412,13 @@ func compareRequires(entry api.Entry, provides []*Var) (accepts []*Var, err erro
 					works = true
 				}
 			case "":
-				return provides, nil
+				works = true
 			default:
 				return nil, fmt.Errorf("can't interprate flags value %s", entry.Flags)
 			}
 		}
 		if works {
-			accepts = append(accepts, dep)
+			accepts = append(accepts, dep.Var)
 		}
 	}
 	return accepts, nil
