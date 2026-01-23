@@ -178,9 +178,4 @@ jobs:
       run: |
         export USE_BAZEL_VERSION=8.x
         cd e2e/bzlmod-toolchain-circular-dependencies
-        bazelisk build //... || status=$?
-        if [ ${status} -ne 0 ]; then
-          echo "::warning::Optional job failed."
-          echo "optional_fail=true" >> "${GITHUB_OUTPUT}"
-          echo "optional_fail_status=${status}" >> "${GITHUB_OUTPUT}"
-        fi
+        bazelisk build //...
