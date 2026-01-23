@@ -64,6 +64,12 @@ type Resource struct {
 	Version api.Version // empty for files
 }
 
+// ResourceVar encapsulates a Resource for which we created a Var in our model.
+type ResourceVar struct {
+	Var      *Var
+	Resource Resource
+}
+
 // Load takes a list of all involved packages to install, a list of regular
 // expressions which denote packages which should be taken into account for
 // solving the problem, but they should then be ignored together with their
@@ -143,7 +149,7 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 		}
 	}
 
-	pkgProvides := [][]*Var{}
+	pkgProvides := [][]*ResourceVar{}
 
 	// Generate variables
 	for _, pkg := range packages {
@@ -152,8 +158,8 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 		loader.m.packages[pkg.Name] = append(loader.m.packages[pkg.Name], pkgVar)
 		pkgProvides = append(pkgProvides, resourceVars)
 		for _, v := range resourceVars {
-			loader.provides[v.Context.Provides] = append(loader.provides[v.Context.Provides], v)
-			loader.m.vars[v.satVarName] = v
+			loader.provides[v.Resource.Name] = append(loader.provides[v.Resource.Name], v.Var)
+			loader.m.vars[v.Var.satVarName] = v.Var
 		}
 	}
 
@@ -173,9 +179,9 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 		var ands []bf.Formula
 
 		// Synchronize all the variables for a given package to the same value.
-		pkgVar := resourceVars[len(resourceVars)-1]
+		pkgVar := resourceVars[len(resourceVars)-1].Var
 		for _, res := range resourceVars {
-			ands = append(ands, bf.Eq(bf.Var(pkgVar.satVarName), bf.Var(res.satVarName)))
+			ands = append(ands, bf.Eq(bf.Var(pkgVar.satVarName), bf.Var(res.Var.satVarName)))
 		}
 
 		ands = append(ands, bf.Implies(bf.Var(pkgVar.satVarName), loader.explodePackageRequires(pkgVar)))
@@ -213,7 +219,7 @@ func (loader *Loader) explodeProvidedResources(pkg *api.Package) (provided []*Re
 	return
 }
 
-func (loader *Loader) explodePackageToVars(pkg *api.Package, resources []*Resource) (pkgVar *Var, resourceVars []*Var) {
+func (loader *Loader) explodePackageToVars(pkg *api.Package, resources []*Resource) (pkgVar *Var, resourceVars []*ResourceVar) {
 	for _, res := range resources {
 		newVar := &Var{
 			satVarName: loader.ticket(),
@@ -230,7 +236,7 @@ func (loader *Loader) explodePackageToVars(pkg *api.Package, resources []*Resour
 			newVar.varType = VarTypePackage
 			pkgVar = newVar
 		}
-		resourceVars = append(resourceVars, newVar)
+		resourceVars = append(resourceVars, &ResourceVar{Var: newVar, Resource: *res})
 	}
 
 	return pkgVar, resourceVars
