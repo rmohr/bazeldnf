@@ -108,7 +108,7 @@ jobs:
         bazelrc: |
           import %workspace%/../../.aspect/bazelrc/ci.bazelrc
           import %workspace%/../../.github/workflows/ci.bazelrc
-    - run: cd e2e/bazel-bzlmod-toolchain-from-source && USE_BAZEL_VERSION=${{ matrix.config.version }} bazelisk build //... ${{ matrix.config.flags }}
+    - run: cd e2e/bazel-bzlmod-toolchain-from-source && USE_BAZEL_VERSION=${{ matrix.version }} bazelisk build //...
 
   e2e-repo-yaml:
     runs-on: ubuntu-latest
@@ -149,6 +149,7 @@ jobs:
           import %workspace%/../../.aspect/bazelrc/ci.bazelrc
           import %workspace%/../../.github/workflows/ci.bazelrc
     - run: |
+        export USE_BAZEL_VERSION=8.x
         cd e2e/bazel-bzlmod-lock-file-from-args && bazelisk run :bazeldnf -- fetch && bazelisk run @bazeldnf_rpms//:update-lock-file && bazelisk build ...
 
   e2e-bzlmod-toolchain-circular-dependencies:
@@ -169,11 +170,13 @@ jobs:
           import %workspace%/../../.github/workflows/ci.bazelrc
     - id: prepare
       run: |
+        export USE_BAZEL_VERSION=8.x
         cd e2e/bzlmod-toolchain-circular-dependencies
         bazelisk run @bazeldnf_rpms//:fetch-repo
         bazelisk run @bazeldnf_rpms//:update-lock-file
     - id: test
       run: |
+        export USE_BAZEL_VERSION=8.x
         cd e2e/bzlmod-toolchain-circular-dependencies
         bazelisk build //... || status=$?
         if [ ${status} -ne 0 ]; then
