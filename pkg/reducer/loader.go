@@ -2,12 +2,15 @@ package reducer
 
 import (
 	"encoding/xml"
+	"fmt"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/rmohr/bazeldnf/pkg/api"
 	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 	"github.com/rmohr/bazeldnf/pkg/repo"
+	"github.com/sirupsen/logrus"
 )
 
 type ReducerPackageLoader interface {
@@ -62,6 +65,12 @@ func (r RepoLoader) Load() (*packageInfo, error) {
 	for _, loaded := range cachedRepos {
 		for i, p := range loaded.Repo.Packages {
 			if skip(p.Arch, r.architectures) {
+				continue
+			}
+			if excluded, err := exclude(&p, loaded.Spec); err != nil {
+				return nil, err
+			} else if excluded {
+				logrus.Infof("Excluding %s", p.String())
 				continue
 			}
 			packageInfo.packages = append(packageInfo.packages, loaded.Repo.Packages[i])
@@ -119,4 +128,16 @@ func skip(arch string, arches []string) bool {
 		}
 	}
 	return skip
+}
+
+func exclude(p *api.Package, spec *bazeldnf.Repository) (bool, error) {
+	name := p.MatchableString()
+	for _, rex := range spec.Exclude {
+		if match, err := regexp.MatchString(rex, name); err != nil {
+			return false, fmt.Errorf("failed to match package with regex '%v': %v", rex, err)
+		} else if match {
+			return true, nil
+		}
+	}
+	return false, nil
 }

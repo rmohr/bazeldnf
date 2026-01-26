@@ -286,3 +286,36 @@ func TestLoaderCaptureProvides(t *testing.T) {
 	g.Expect(packageInfo.packages).Should(ConsistOf(repoPackages[0]))
 	g.Expect(packageInfo.provides).Should(BeComparableTo(expectedProvides))
 }
+
+func TestLoaderRepositoryExcludes(t *testing.T) {
+	g := NewGomegaWithT(t)
+
+	packageInfo, err := load(
+		t,
+		nil,
+		[]string{"x86_64"},
+		MockCacheHelper{
+			loaded: []repo.LoadedPrimary{
+				{
+					&bazeldnf.Repository{
+						Exclude: []string{"foo"},
+					},
+					&api.Repository{
+						Packages: newPackageList("foo", "bir"),
+					},
+				},
+				{
+					&bazeldnf.Repository{
+						Exclude: []string{"bor"},
+					},
+					&api.Repository{
+						Packages: newPackageList("bar", "bor"),
+					},
+				},
+			},
+		},
+	)
+
+	g.Expect(err).Should(BeNil())
+	g.Expect(packageInfo.packages).Should(ConsistOf(newPackageList("bir", "bar")))
+}
