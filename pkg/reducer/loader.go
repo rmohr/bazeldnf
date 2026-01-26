@@ -59,12 +59,12 @@ func (r RepoLoader) Load() (*packageInfo, error) {
 	if err != nil {
 		return packageInfo, err
 	}
-	for _, rpmrepo := range cachedRepos {
-		for i, p := range rpmrepo.Packages {
+	for _, loaded := range cachedRepos {
+		for i, p := range loaded.Repo.Packages {
 			if skip(p.Arch, r.architectures) {
 				continue
 			}
-			packageInfo.packages = append(packageInfo.packages, rpmrepo.Packages[i])
+			packageInfo.packages = append(packageInfo.packages, loaded.Repo.Packages[i])
 		}
 	}
 

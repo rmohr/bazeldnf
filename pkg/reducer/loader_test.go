@@ -17,16 +17,16 @@ type ErrorCacheHelper struct {
 	err error
 }
 
-func (h ErrorCacheHelper) CurrentPrimaries(_ *bazeldnf.Repositories, _ []string) (primaries []*api.Repository, err error) {
+func (h ErrorCacheHelper) CurrentPrimaries(_ *bazeldnf.Repositories, _ []string) (primaries []repo.LoadedPrimary, err error) {
 	return nil, h.err
 }
 
 type MockCacheHelper struct {
-	repos []*api.Repository
+	loaded []repo.LoadedPrimary
 }
 
-func (h MockCacheHelper) CurrentPrimaries(_ *bazeldnf.Repositories, _ []string) (primaries []*api.Repository, err error) {
-	return h.repos, nil
+func (h MockCacheHelper) CurrentPrimaries(_ *bazeldnf.Repositories, _ []string) (primaries []repo.LoadedPrimary, err error) {
+	return h.loaded, nil
 }
 
 func load(t *testing.T, repos []api.Repository, architectures []string, cacheHelper repo.RepoCache) (*packageInfo, error) {
@@ -198,9 +198,10 @@ func TestLoaderHasCachedPrimaries(t *testing.T) {
 		[]api.Repository{},
 		[]string{"x86_64"},
 		MockCacheHelper{
-			repos: []*api.Repository{
+			loaded: []repo.LoadedPrimary{{
+				&bazeldnf.Repository{},
 				&api.Repository{Packages: packages},
-			},
+			}},
 		},
 	)
 
@@ -223,9 +224,10 @@ func TestLoaderCachedVsRealRepo(t *testing.T) {
 		},
 		[]string{"x86_64"},
 		MockCacheHelper{
-			repos: []*api.Repository{
+			loaded: []repo.LoadedPrimary{{
+				&bazeldnf.Repository{},
 				&api.Repository{Packages: repoBPackages},
-			},
+			}},
 		},
 	)
 

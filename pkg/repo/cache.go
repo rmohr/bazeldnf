@@ -21,8 +21,16 @@ import (
 	"github.com/ulikunitz/xz"
 )
 
+type LoadedPrimary struct {
+	Spec *bazeldnf.Repository
+	Repo *api.Repository
+}
 type RepoCache interface {
-	CurrentPrimaries(repos *bazeldnf.Repositories, architectures []string) (primaries []*api.Repository, err error)
+	// CurrentPrimaries resolves `bazeldnf.Repository` respository specification
+	// into complete `api.Repository` repository content.
+	// LoadedPrimary tuples are returned to match input with output repository.
+	// Implementation may skip some repositories beacause of filtering.
+	CurrentPrimaries(repos *bazeldnf.Repositories, architectures []string) (primaries []LoadedPrimary, err error)
 }
 
 // this provides a shim around xz.Reader to simulate a ReadCloser
@@ -289,7 +297,7 @@ func (r *CacheHelper) CurrentFilelistsForPackages(repo *bazeldnf.Repository, arc
 	return filelistpkgs, remaining, nil
 }
 
-func (r *CacheHelper) CurrentPrimaries(repos *bazeldnf.Repositories, architectures []string) (primaries []*api.Repository, err error) {
+func (r *CacheHelper) CurrentPrimaries(repos *bazeldnf.Repositories, architectures []string) (primaries []LoadedPrimary, err error) {
 	for i, repo := range repos.Repositories {
 		if repo.Arch != "" && !slices.Contains(architectures, repo.Arch) {
 			logrus.Infof("Ignoring primary for %s - %s", repo.Name, repo.Arch)
@@ -299,7 +307,7 @@ func (r *CacheHelper) CurrentPrimaries(repos *bazeldnf.Repositories, architectur
 		if err != nil {
 			return nil, err
 		}
-		primaries = append(primaries, primary)
+		primaries = append(primaries, LoadedPrimary{&repo, primary})
 	}
 	return primaries, err
 }
