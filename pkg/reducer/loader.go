@@ -7,11 +7,8 @@ import (
 
 	"github.com/rmohr/bazeldnf/pkg/api"
 	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
+	"github.com/rmohr/bazeldnf/pkg/repo"
 )
-
-type RepoCache interface {
-	CurrentPrimaries(repos *bazeldnf.Repositories, architectures []string) (primaries []*api.Repository, err error)
-}
 
 type ReducerPackageLoader interface {
 	Load() (*packageInfo, error)
@@ -30,7 +27,7 @@ type RepoLoader struct {
 	repoFiles     []string
 	architectures []string
 	repos         *bazeldnf.Repositories
-	cacheHelper   RepoCache
+	cacheHelper   repo.RepoCache
 }
 
 func (r RepoLoader) Load() (*packageInfo, error) {

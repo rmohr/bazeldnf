@@ -10,6 +10,7 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/rmohr/bazeldnf/pkg/api"
 	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
+	"github.com/rmohr/bazeldnf/pkg/repo"
 )
 
 type ErrorCacheHelper struct {
@@ -28,7 +29,7 @@ func (h MockCacheHelper) CurrentPrimaries(_ *bazeldnf.Repositories, _ []string) 
 	return h.repos, nil
 }
 
-func load(t *testing.T, repos []api.Repository, architectures []string, cacheHelper RepoCache) (*packageInfo, error) {
+func load(t *testing.T, repos []api.Repository, architectures []string, cacheHelper repo.RepoCache) (*packageInfo, error) {
 	tempdir := t.TempDir()
 	repoFiles := []string{}
 

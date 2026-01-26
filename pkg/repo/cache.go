@@ -21,6 +21,10 @@ import (
 	"github.com/ulikunitz/xz"
 )
 
+type RepoCache interface {
+	CurrentPrimaries(repos *bazeldnf.Repositories, architectures []string) (primaries []*api.Repository, err error)
+}
+
 // this provides a shim around xz.Reader to simulate a ReadCloser
 // as the available xz implementation that doesn't require cgo
 // doesn't support this
