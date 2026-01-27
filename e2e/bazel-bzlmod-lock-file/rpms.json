@@ -5,21 +5,21 @@
             "name": "libvirt-libs",
             "integrity": "sha256-qsJyoqzhNLXvYKQeZiTeskMx55x2aZ72zvDcoi2UrH4=",
             "urls": [
-		"libvirt/11.0.0/1.fc42/x86_64/libvirt-libs-11.0.0-1.fc42.x86_64.rpm"
+                "libvirt/11.0.0/1.fc42/x86_64/libvirt-libs-11.0.0-1.fc42.x86_64.rpm"
             ],
-	    "repository": "foo"
+            "repository": "foo"
         },
         {
             "integrity": "sha256-26N7vleQOv5JtWZvF4HrUAAbqoGvRYSzVdsLair62fo=",
             "urls": [
-		"libvirt/11.0.0/1.fc42/x86_64/libvirt-devel-11.0.0-1.fc42.x86_64.rpm"
+                "libvirt/11.0.0/1.fc42/x86_64/libvirt-devel-11.0.0-1.fc42.x86_64.rpm"
             ],
-	    "repository": "foo"
+            "repository": "foo"
         }
     ],
     "repositories": {
-	"foo":  [
-	    "https://kojipkgs.fedoraproject.org/packages"
-	]
+        "foo": [
+            "https://kojipkgs.fedoraproject.org/packages"
+        ]
     }
 }
