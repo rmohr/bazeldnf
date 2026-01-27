@@ -26,25 +26,16 @@ jobs:
         disk-cache: true
         # Share repository cache between workflows.
         repository-cache: true
-        # enable some flags for CI
-        bazelrc: |
-          import %workspace%/.aspect/bazelrc/ci.bazelrc
-          import %workspace%/.github/workflows/ci.bazelrc
         # keep a cache for MODULE.bazel repos
         external-cache: true
-    - run: bazelisk build //... && bazelisk test //...
+    - run: bazelisk build --config=ci //... && bazelisk test --config=ci //...
 
   e2e-workspace-matrix:
     strategy:
       matrix:
         version:
           - version: 6.x
-            bazelrc: |
-              import %workspace%/../../.aspect/bazelrc/bazel6.bazelrc
           - version: 7.x
-            bazelrc: |
-              import %workspace%/../../.aspect/bazelrc/bazel7.bazelrc
-              import %workspace%/../../.aspect/bazelrc/bazel6.bazelrc
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -56,12 +47,7 @@ jobs:
         disk-cache: true
         # Share repository cache between workflows.
         repository-cache: true
-        # enable some flags for CI
-        bazelrc: |
-          import %workspace%/../../.aspect/bazelrc/ci.bazelrc
-          import %workspace%/../../.github/workflows/ci.bazelrc
-          ${{ matrix.version.bazelrc }}
-    - run: cd e2e/bazel-workspace && USE_BAZEL_VERSION=${{ matrix.version.version }} bazelisk build //...
+    - run: cd e2e/bazel-workspace && USE_BAZEL_VERSION=${{ matrix.version.version }} bazelisk build --config=ci //...
 
   e2e-bzlmod-matrix:
     strategy:
@@ -82,11 +68,7 @@ jobs:
         disk-cache: true
         # Share repository cache between workflows.
         repository-cache: true
-        # enable some flags for CI
-        bazelrc: |
-          import %workspace%/../../.aspect/bazelrc/ci.bazelrc
-          import %workspace%/../../.github/workflows/ci.bazelrc
-    - run: cd e2e/${{ matrix.path }} && USE_BAZEL_VERSION=${{ matrix.version }} bazelisk build //...
+    - run: cd e2e/${{ matrix.path }} && USE_BAZEL_VERSION=${{ matrix.version }} bazelisk build --config=ci //...
 
   e2e-bzlmod-build-toolchain-matrix:
     strategy:
@@ -104,11 +86,7 @@ jobs:
         disk-cache: true
         # Share repository cache between workflows.
         repository-cache: true
-        # enable some flags for CI
-        bazelrc: |
-          import %workspace%/../../.aspect/bazelrc/ci.bazelrc
-          import %workspace%/../../.github/workflows/ci.bazelrc
-    - run: cd e2e/bazel-bzlmod-toolchain-from-source && USE_BAZEL_VERSION=${{ matrix.version }} bazelisk build //...
+    - run: cd e2e/bazel-bzlmod-toolchain-from-source && USE_BAZEL_VERSION=${{ matrix.version }} bazelisk build --config=ci //...
 
   e2e-repo-yaml:
     runs-on: ubuntu-latest
@@ -122,15 +100,11 @@ jobs:
         disk-cache: true
         # Share repository cache between workflows.
         repository-cache: true
-        # enable some flags for CI
-        bazelrc: |
-          import %workspace%/.aspect/bazelrc/ci.bazelrc
-          import %workspace%/.github/workflows/ci.bazelrc
     - run: |
         export USE_BAZEL_VERSION=7.x
-        bazelisk run //cmd -- init --fc 41 --output $(pwd)/repo.yaml
-        bazelisk run //cmd -- fetch --repofile $(pwd)/repo.yaml
-        bazelisk run //cmd -- resolve --repofile $(pwd)/repo.yaml bash
+        bazelisk run --config=ci //cmd -- init --fc 41 --output $(pwd)/repo.yaml
+        bazelisk run --config=ci //cmd -- fetch --repofile $(pwd)/repo.yaml
+        bazelisk run --config=ci //cmd -- resolve --repofile $(pwd)/repo.yaml bash
 
   e2e-bzlmod-lock-file-from-args:
     runs-on: ubuntu-latest
@@ -145,12 +119,13 @@ jobs:
         # Share repository cache between workflows.
         repository-cache: true
         # enable some flags for CI
-        bazelrc: |
-          import %workspace%/../../.aspect/bazelrc/ci.bazelrc
-          import %workspace%/../../.github/workflows/ci.bazelrc
     - run: |
         export USE_BAZEL_VERSION=8.x
-        cd e2e/bazel-bzlmod-lock-file-from-args && bazelisk run :bazeldnf -- fetch && bazelisk run @bazeldnf_rpms//:update-lock-file && bazelisk build ...
+        set -eou pipefail
+        cd e2e/bazel-bzlmod-lock-file-from-args
+        bazelisk run  --config=ci :bazeldnf -- fetch
+        bazelisk run  --config=ci @bazeldnf_rpms//:update-lock-file
+        bazelisk build --config=ci  ...
 
   e2e-bzlmod-toolchain-circular-dependencies:
     runs-on: ubuntu-latest
@@ -164,18 +139,14 @@ jobs:
         disk-cache: true
         # Share repository cache between workflows.
         repository-cache: true
-        # enable some flags for CI
-        bazelrc: |
-          import %workspace%/../../.aspect/bazelrc/ci.bazelrc
-          import %workspace%/../../.github/workflows/ci.bazelrc
     - id: prepare
       run: |
         export USE_BAZEL_VERSION=8.x
         cd e2e/bzlmod-toolchain-circular-dependencies
-        bazelisk run @bazeldnf_rpms//:fetch-repo
-        bazelisk run @bazeldnf_rpms//:update-lock-file
+        bazelisk run --config=ci @bazeldnf_rpms//:fetch-repo
+        bazelisk run --config=ci @bazeldnf_rpms//:update-lock-file
     - id: test
       run: |
         export USE_BAZEL_VERSION=8.x
         cd e2e/bzlmod-toolchain-circular-dependencies
-        bazelisk build //...
+        bazelisk build --config=ci //...
