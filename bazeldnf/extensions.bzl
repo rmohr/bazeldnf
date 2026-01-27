@@ -262,10 +262,18 @@ def _handle_lock_file(config, module_ctx, registered_rpms = {}):
         # Build lookup dictionary for efficient RPM access
         rpm_lookup = _build_rpm_lookup(lock_file_json.get("rpms", []))
 
-        requested_rpms = dict([(x, True) for x in config.rpms])
+        requested_rpms = config.rpms
+
+        if not config.rpms:
+            # buildifier: disable=print
+            print("WARNING: bazeldnf config module will make rpms argument mandatory in future releases")
+            requested_rpms = rpm_lookup.keys()
+            repository_args["rpms_to_install"] = requested_rpms
+
+        requested_rpms = dict([(x, True) for x in requested_rpms])
 
         # Create repositories for each top-level target with suffixed dependencies
-        for target in config.rpms:
+        for target in requested_rpms.keys():
             # Build transitive dependency closure for this target
             target_deps = _build_transitive_deps(rpm_lookup, target)
 
