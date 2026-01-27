@@ -63,9 +63,6 @@ bazeldnf.config(
     lock_file = "//:rpms.json",
     nobest = True,
     repofile = "//:repo.yaml",
-    rpms = [
-        "libvirt-devel",
-    ],
 )
 bazeldnf.config(
     name = "bazeldnf-others",
