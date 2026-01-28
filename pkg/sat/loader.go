@@ -247,7 +247,7 @@ func (loader *Loader) explodePackageRequires(pkgVar *Var) bf.Formula {
 	var requirements [][]*Var
 	ok := true
 	for _, req := range pkgVar.Package.Format.Requires.Entries {
-		satisfies, err := loader.explodeSingleRequires(req, loader.provides[req.Name])
+		satisfies, err := loader.explodeSingleRequires(req)
 		if err != nil {
 			logrus.Warnf("Package %s requires %s, but only got %+v", pkgVar.Package, req, loader.provides[req.Name])
 			ok = false
@@ -279,7 +279,7 @@ func (loader *Loader) explodePackageRequires(pkgVar *Var) bf.Formula {
 func (loader *Loader) explodePackageConflicts(pkgVar *Var) bf.Formula {
 	conflictingVars := []bf.Formula{}
 	for _, req := range pkgVar.Package.Format.Conflicts.Entries {
-		conflicts, err := loader.explodeSingleRequires(req, loader.provides[req.Name])
+		conflicts, err := loader.explodeSingleRequires(req)
 		if err != nil {
 			// if a conflicting resource does not exist, we don't care
 			continue
@@ -318,8 +318,8 @@ func (loader *Loader) explodeSamePackageConflicts(pkgVar *Var) bf.Formula {
 	return bf.Or(conflictingVars...)
 }
 
-func (loader *Loader) explodeSingleRequires(entry api.Entry, provides []*Var) (accepts []*Var, err error) {
-	accepts, err = compareRequires(entry, provides)
+func (loader *Loader) explodeSingleRequires(entry api.Entry) (accepts []*Var, err error) {
+	accepts, err = compareRequires(entry, loader.provides[entry.Name])
 	if err != nil {
 		return nil, err
 	}
