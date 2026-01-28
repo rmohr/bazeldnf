@@ -49,33 +49,49 @@ def _rpm_rule_impl(ctx):
     for dep in ctx.attr.deps:
         deps_list.append(dep[RpmInfo].deps)
 
+    files = [ctx.file.file] if ctx.file.file else []
+
     rpm_info = RpmInfo(
         file = ctx.file.file,
-        deps = depset(direct = [ctx.file.file], transitive = deps_list),
+        deps = depset(direct = files, transitive = deps_list),
     )
 
     return [
         rpm_info,
         DefaultInfo(
-            files = depset(direct = [ctx.file.file], transitive = deps_list),
+            files = depset(direct = files, transitive = deps_list),
         ),
     ]
 
 rpm_rule = rule(
     implementation = _rpm_rule_impl,
     attrs = {
-        "file": attr.label(allow_single_file = True, mandatory = True),
+        "file": attr.label(allow_single_file = True),
         "deps": attr.label_list(providers = [RpmInfo]),
     },
 )
 
-_HTTP_FILE_BUILD = """
+_HTTP_FILE_BUILD_NO_BLOB = """
 load("@bazeldnf//internal:rpm.bzl", "rpm_rule")
 package(default_visibility = ["//visibility:public"])
 rpm_rule(
     name = "rpm",
     file = "{downloaded_file_path}",
     deps = [{deps}],
+)
+"""
+
+_HTTP_FILE_BUILD_WITH_BLOB = """
+load("@bazeldnf//internal:rpm.bzl", "rpm_rule")
+package(default_visibility = ["//visibility:public"])
+rpm_rule(
+    name = "rpm",
+    deps = [{deps}],
+)
+rpm_rule(
+    name = "blob",
+    deps = [],
+    file = "{downloaded_file_path}",
 )
 """
 
@@ -96,13 +112,23 @@ def _rpm_impl(ctx):
     else:
         fail("urls must be specified")
     ctx.file("WORKSPACE", "workspace(name = \"{name}\")".format(name = ctx.name))
-    ctx.file(
-        "rpm/BUILD",
-        _HTTP_FILE_BUILD.format(
-            downloaded_file_path = downloaded_file_path,
-            deps = ", ".join(["\"%s\"" % dep for dep in ctx.attr.dependencies]),
-        ),
-    )
+
+    if not ctx.attr.create_blob:
+        ctx.file(
+            "rpm/BUILD",
+            _HTTP_FILE_BUILD_NO_BLOB.format(
+                downloaded_file_path = downloaded_file_path,
+                deps = ", ".join(["\"%s\"" % dep for dep in ctx.attr.dependencies]),
+            ),
+        )
+    else:
+        ctx.file(
+            "rpm/BUILD",
+            _HTTP_FILE_BUILD_WITH_BLOB.format(
+                downloaded_file_path = downloaded_file_path,
+                deps = ", ".join(["\"%s\"" % dep for dep in ctx.attr.dependencies]),
+            ),
+        )
     return update_attrs(ctx.attr, _rpm_attrs.keys(), args)
 
 _rpm_attrs = {
@@ -114,6 +140,7 @@ _rpm_attrs = {
         providers = [RpmInfo],
     ),
     "auth_patterns": attr.string_dict(),
+    "create_blob": attr.bool(),
 }
 
 rpm = repository_rule(

@@ -64,6 +64,7 @@ bazeldnf.config(
     lock_file = "//:bazeldnf-lock.json",
     repofile = "//:repos.yaml",
     rpms = [
+        "bash",
         "git",
         "glibc",
     ],
