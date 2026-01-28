@@ -13,7 +13,11 @@ import (
 
 // makeId creates an opaque, deterministic string identifier, unique for each package present in the config.
 func makeId(pkg *api.Package) string {
-	return pkg.Name
+	id := pkg.Name
+	if pkg.Arch != "" {
+		id += "." + pkg.Arch
+	}
+	return id
 }
 
 func sortedKeys[K cmp.Ordered, V any](m map[K]V) []K {
@@ -58,6 +62,7 @@ func toConfig(install, forceIgnored []*api.Package, targets []string, cmdline []
 		allPackages[installPackage] = &bazeldnf.RPM{
 			Id:           makeId(installPackage),
 			Name:         installPackage.Name,
+			Arch:         installPackage.Arch,
 			Integrity:    integrity,
 			URLs:         []string{installPackage.Location.Href},
 			Repository:   installPackage.Repository.Name,

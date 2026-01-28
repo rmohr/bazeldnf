@@ -193,6 +193,7 @@ def _handle_lock_file(config, module_ctx, registered_rpms = {}):
     # - package – just an RPM package name (optional – lock file may be missing it)
     # - id – some unique identifier for the config
     # - repo_name – apparent repo name where the .rpm file is downloaded to
+    # - arch – the architecture (optional)
     packages_metadata = {}
 
     if module_ctx.path(config.lock_file).exists:
@@ -238,6 +239,8 @@ def _add_rpm_repository(config, rpm, lock_file_json, registered_rpms):
             fail("invalid entry in %s: %s" % (config.lock_file, rpm))
         id = urls[0].rsplit("/", 1)[-1]
 
+    arch = rpm.pop("arch", None)
+
     name = _to_rpm_repo_name(config.rpm_repository_prefix, id)
     if name in registered_rpms:
         return registered_rpms[name]
@@ -261,6 +264,8 @@ def _add_rpm_repository(config, rpm, lock_file_json, registered_rpms):
     }
     if package:
         metadata["package"] = package
+    if arch:
+        metadata["arch"] = arch
     registered_rpms[name] = metadata
     return metadata
 

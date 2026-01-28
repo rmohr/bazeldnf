@@ -14,7 +14,7 @@ def default(name, rpms, visibility = ["//visibility:public"]):
     Args:
       name: default target name
       rpms: list of RPM metadata; each one is a dict consisting of:
-        package (optional), id, repo_name
+        package (optional), id, repo_name, arch (optional)
         Consult `bazeldnf/extension.bzl`'s `packages_metadata` variable for more datails.
       visibility: visibility for aliases
     """
@@ -26,8 +26,13 @@ def default(name, rpms, visibility = ["//visibility:public"]):
             visibility = visibility,
         )
 
-    if len(rpms) > 1:
-        fail("Package resolved multiple times, not implemented.")
+    for rpm in rpms:
+        if "arch" not in rpm or "package" not in rpm:
+            continue
+        alias(
+            name = rpm["package"] + "." + rpm["arch"],
+            rpm = rpm,
+        )
 
     if len(rpms) == 1:
         rpm = rpms[0]
