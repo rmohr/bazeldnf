@@ -18,8 +18,7 @@ type VarType string
 
 const (
 	VarTypePackage  = "Package"
-	VarTypeResource = "Resource"
-	VarTypeFile     = "File"
+	VarTypeResource = "Resource" // includes files
 )
 
 // VarContext contains all information to create a unique identifyable hash key which can be traced back to a package
