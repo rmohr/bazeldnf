@@ -10,25 +10,26 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/rmohr/bazeldnf/pkg/api"
 	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
+	"github.com/rmohr/bazeldnf/pkg/repo"
 )
 
 type ErrorCacheHelper struct {
 	err error
 }
 
-func (h ErrorCacheHelper) CurrentPrimaries(_ *bazeldnf.Repositories, _ []string) (primaries []*api.Repository, err error) {
+func (h ErrorCacheHelper) CurrentPrimaries(_ *bazeldnf.Repositories, _ []string) (primaries []repo.LoadedPrimary, err error) {
 	return nil, h.err
 }
 
 type MockCacheHelper struct {
-	repos []*api.Repository
+	loaded []repo.LoadedPrimary
 }
 
-func (h MockCacheHelper) CurrentPrimaries(_ *bazeldnf.Repositories, _ []string) (primaries []*api.Repository, err error) {
-	return h.repos, nil
+func (h MockCacheHelper) CurrentPrimaries(_ *bazeldnf.Repositories, _ []string) (primaries []repo.LoadedPrimary, err error) {
+	return h.loaded, nil
 }
 
-func load(t *testing.T, repos []api.Repository, architectures []string, cacheHelper RepoCache) (*packageInfo, error) {
+func load(t *testing.T, repos []api.Repository, architectures []string, cacheHelper repo.RepoCache) (*packageInfo, error) {
 	tempdir := t.TempDir()
 	repoFiles := []string{}
 
@@ -197,9 +198,10 @@ func TestLoaderHasCachedPrimaries(t *testing.T) {
 		[]api.Repository{},
 		[]string{"x86_64"},
 		MockCacheHelper{
-			repos: []*api.Repository{
+			loaded: []repo.LoadedPrimary{{
+				&bazeldnf.Repository{},
 				&api.Repository{Packages: packages},
-			},
+			}},
 		},
 	)
 
@@ -222,9 +224,10 @@ func TestLoaderCachedVsRealRepo(t *testing.T) {
 		},
 		[]string{"x86_64"},
 		MockCacheHelper{
-			repos: []*api.Repository{
+			loaded: []repo.LoadedPrimary{{
+				&bazeldnf.Repository{},
 				&api.Repository{Packages: repoBPackages},
-			},
+			}},
 		},
 	)
 
@@ -282,4 +285,37 @@ func TestLoaderCaptureProvides(t *testing.T) {
 	g.Expect(err).Should(BeNil())
 	g.Expect(packageInfo.packages).Should(ConsistOf(repoPackages[0]))
 	g.Expect(packageInfo.provides).Should(BeComparableTo(expectedProvides))
+}
+
+func TestLoaderRepositoryExcludes(t *testing.T) {
+	g := NewGomegaWithT(t)
+
+	packageInfo, err := load(
+		t,
+		nil,
+		[]string{"x86_64"},
+		MockCacheHelper{
+			loaded: []repo.LoadedPrimary{
+				{
+					&bazeldnf.Repository{
+						Exclude: []string{"foo"},
+					},
+					&api.Repository{
+						Packages: newPackageList("foo", "bir"),
+					},
+				},
+				{
+					&bazeldnf.Repository{
+						Exclude: []string{"bor"},
+					},
+					&api.Repository{
+						Packages: newPackageList("bar", "bor"),
+					},
+				},
+			},
+		},
+	)
+
+	g.Expect(err).Should(BeNil())
+	g.Expect(packageInfo.packages).Should(ConsistOf(newPackageList("bir", "bar")))
 }

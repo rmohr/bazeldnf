@@ -2,16 +2,16 @@ package reducer
 
 import (
 	"encoding/xml"
+	"fmt"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/rmohr/bazeldnf/pkg/api"
 	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
+	"github.com/rmohr/bazeldnf/pkg/repo"
+	"github.com/sirupsen/logrus"
 )
-
-type RepoCache interface {
-	CurrentPrimaries(repos *bazeldnf.Repositories, architectures []string) (primaries []*api.Repository, err error)
-}
 
 type ReducerPackageLoader interface {
 	Load() (*packageInfo, error)
@@ -30,7 +30,7 @@ type RepoLoader struct {
 	repoFiles     []string
 	architectures []string
 	repos         *bazeldnf.Repositories
-	cacheHelper   RepoCache
+	cacheHelper   repo.RepoCache
 }
 
 func (r RepoLoader) Load() (*packageInfo, error) {
@@ -62,12 +62,18 @@ func (r RepoLoader) Load() (*packageInfo, error) {
 	if err != nil {
 		return packageInfo, err
 	}
-	for _, rpmrepo := range cachedRepos {
-		for i, p := range rpmrepo.Packages {
+	for _, loaded := range cachedRepos {
+		for i, p := range loaded.Repo.Packages {
 			if skip(p.Arch, r.architectures) {
 				continue
 			}
-			packageInfo.packages = append(packageInfo.packages, rpmrepo.Packages[i])
+			if excluded, err := exclude(&p, loaded.Spec); err != nil {
+				return nil, err
+			} else if excluded {
+				logrus.Infof("Excluding %s", p.String())
+				continue
+			}
+			packageInfo.packages = append(packageInfo.packages, loaded.Repo.Packages[i])
 		}
 	}
 
@@ -122,4 +128,16 @@ func skip(arch string, arches []string) bool {
 		}
 	}
 	return skip
+}
+
+func exclude(p *api.Package, spec *bazeldnf.Repository) (bool, error) {
+	name := p.MatchableString()
+	for _, rex := range spec.Exclude {
+		if match, err := regexp.MatchString(rex, name); err != nil {
+			return false, fmt.Errorf("failed to match package with regex '%v': %v", rex, err)
+		} else if match {
+			return true, nil
+		}
+	}
+	return false, nil
 }
