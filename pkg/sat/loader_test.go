@@ -170,7 +170,6 @@ func TestLoader_Load(t *testing.T) {
 	x3 := bf.Var("x3")
 	x4 := bf.Var("x4")
 	x5 := bf.Var("x5")
-	x6 := bf.Var("x6")
 
 	t.Run("Trivial Loading", func(t *testing.T) {
 		model, _ := doSimpleLoad([]*api.Package{}, false)
@@ -190,7 +189,7 @@ func TestLoader_Load(t *testing.T) {
 			expectedPackages(g, model, map[string][]string{
 				"A": []string{"0:1.0-1"},
 			})
-			expectedVars(g, model, "A-0:1.0-1(A)")
+			expectedVars(g, model, "A-0:1.0-1")
 			expectedBest(g, model, map[string]string{"A": "0:1.0-1"})
 			expectedIgnores(g, model)
 			expectedAnds(g, model,
@@ -206,7 +205,7 @@ func TestLoader_Load(t *testing.T) {
 			expectedPackages(g, model, map[string][]string{
 				"A": []string{"0:2.0-1"},
 			})
-			expectedVars(g, model, "A-0:2.0-1(A)")
+			expectedVars(g, model, "A-0:2.0-1")
 			expectedBest(g, model, map[string]string{"A": "0:2.0-1"})
 			expectedIgnores(g, model)
 			expectedAnds(g, model,
@@ -222,7 +221,7 @@ func TestLoader_Load(t *testing.T) {
 			expectedPackages(g, model, map[string][]string{
 				"A": []string{"0:1.0-1", "0:2.0-1"},
 			})
-			expectedVars(g, model, "A-0:1.0-1(A)", "A-0:2.0-1(A)")
+			expectedVars(g, model, "A-0:1.0-1", "A-0:2.0-1")
 			expectedBest(g, model, map[string]string{"A": "0:2.0-1"})
 			expectedIgnores(g, model)
 			expectedAnds(g, model,
@@ -245,9 +244,9 @@ func TestLoader_Load(t *testing.T) {
 			expectedVars(
 				g,
 				m,
-				"pkg-a-0:1.0(pkg-a)",
-				"pkg-b-0:1.0(pkg-b)",
-				"pkg-c-0:1.0(pkg-c)",
+				"pkg-a-0:1.0",
+				"pkg-b-0:1.0",
+				"pkg-c-0:1.0",
 			)
 			expectedBest(g, m, map[string]string{
 				"pkg-a": "0:1.0",
@@ -346,9 +345,8 @@ func TestLoader_Load(t *testing.T) {
 			expectedVars(
 				g,
 				model,
-				"app-0:1.0(app)",               // x1
-				"toolkit-0:2.0(toolkit)",       // x2
-				"toolkit-0:2.0(/usr/bin/tool)", // x3
+				"app-0:1.0",     // x1
+				"toolkit-0:2.0", // x2
 			)
 			expectedBest(g, model, map[string]string{
 				"app":     "0:1.0",
@@ -358,7 +356,6 @@ func TestLoader_Load(t *testing.T) {
 			expectedAnds(g, model,
 				x1,                 // Install: app
 				bf.Implies(x1, x2), // Requirement: app => toolkit
-				bf.Eq(x2, x3),      // Equivalence (toolkit)
 			)
 		})
 
@@ -377,11 +374,9 @@ func TestLoader_Load(t *testing.T) {
 			expectedVars(
 				g,
 				model,
-				"apache-0:2.4(apache)",
-				"apache-0:2.4(webserver)",
-				"app-0:1.0(app)",
-				"nginx-0:1.2(nginx)",
-				"nginx-0:1.2(webserver)",
+				"apache-0:2.4", // x1
+				"app-0:1.0",    // x2
+				"nginx-0:1.2",  // x3
 			)
 			expectedBest(g, model, map[string]string{
 				"app":    "0:1.0",
@@ -390,10 +385,8 @@ func TestLoader_Load(t *testing.T) {
 			})
 			expectedIgnores(g, model)
 			expectedAnds(g, model,
-				x3,                            // Install: app
-				bf.Implies(x3, bf.Or(x1, x4)), // Requirement: app => apache or nginx
-				bf.Eq(x1, x2),                 // Equivalence (apache)
-				bf.Eq(x4, x5),                 // Equivalence (nginx)
+				x2,                            // Install: app
+				bf.Implies(x2, bf.Or(x1, x3)), // Requirement: app => apache or nginx
 			)
 		})
 
@@ -409,7 +402,7 @@ func TestLoader_Load(t *testing.T) {
 				"B": []string{"0:1.0"},
 				"C": []string{"0:1.0"},
 			})
-			expectedVars(g, model, "A-0:1.0(A)", "B-0:1.0(B)", "C-0:1.0(C)")
+			expectedVars(g, model, "A-0:1.0", "B-0:1.0", "C-0:1.0")
 			expectedBest(g, model, map[string]string{
 				"A": "0:1.0",
 				"B": "0:1.0",
@@ -433,8 +426,7 @@ func TestLoader_Load(t *testing.T) {
 			expectedVars(
 				g,
 				model,
-				"platform-python-0:3.6(platform-python)",
-				"platform-python-0:3.6(/usr/libexec/platform-python)",
+				"platform-python-0:3.6",
 			)
 			expectedBest(
 				g,
@@ -443,7 +435,7 @@ func TestLoader_Load(t *testing.T) {
 			)
 			expectedIgnores(g, model)
 			expectedAnds(g, model,
-				bf.Eq(x1, x2), // Equivalence (platform-python)
+				bf.True, // Nothing to install
 			)
 
 			// verify side effect
@@ -461,7 +453,7 @@ func TestLoader_Load(t *testing.T) {
 			expectedPackages(g, model, map[string][]string{
 				"A": []string{"5:1.0-2"},
 			})
-			expectedVars(g, model, "A-5:1.0-2(A)")
+			expectedVars(g, model, "A-5:1.0-2")
 			expectedBest(g, model, map[string]string{"A": "5:1.0-2"})
 			expectedAnds(g, model,
 				bf.True, // Nothing to install
@@ -483,12 +475,9 @@ func TestLoader_Load(t *testing.T) {
 			expectedVars(
 				g,
 				model,
-				"gcc-0:11.0(gcc)",     // x1
-				"gcc-0:11.0(gcc)",     // x2
-				"gcc11-0:11.0(gcc11)", // x3
-				"gcc11-0:11.0(gcc)",   // x4
-				"gcc11-0:11.0(gcc11)", // x5
-				"pkgX-0:1.0(pkgX)",    // x6
+				"gcc-0:11.0",   // x1
+				"gcc11-0:11.0", // x2
+				"pkgX-0:1.0",   // x3
 			)
 			expectedBest(g, model, map[string]string{
 				"gcc":   "0:11.0",
@@ -497,12 +486,9 @@ func TestLoader_Load(t *testing.T) {
 			})
 
 			expectedAnds(g, model,
-				x6,                            // Install: pkgX
-				bf.Implies(x6, bf.Or(x1, x3)), // Requirement: pkgX => gcc or gcc11
-				bf.Implies(x1, x3),            // Requirement: gcc => gcc11
-				bf.Eq(x1, x2),                 // Equivalence (gcc)
-				bf.Eq(x3, x4),                 // Equivalence (gcc11)
-				bf.Eq(x3, x5),                 // Equivalence (gcc11)
+				x3,                            // Install: pkgX
+				bf.Implies(x3, bf.Or(x1, x2)), // Requirement: pkgX => gcc or gcc11
+				bf.Implies(x1, x2),            // Requirement: gcc => gcc11
 			)
 
 		})
@@ -511,7 +497,7 @@ func TestLoader_Load(t *testing.T) {
 			pkgA := newPackage("A", "1.0", nil, nil, []string{"A"}, nil)
 			model, _ := doLoad([]*api.Package{pkgA}, nil, nil, nil, false)
 
-			expectedVars(g, model, "A-0:1.0(A)")
+			expectedVars(g, model, "A-0:1.0")
 			expectedAnds(g, model,
 				bf.True, // Nothing to install
 			)
@@ -526,7 +512,7 @@ func TestLoader_Load(t *testing.T) {
 			expectedPackages(g, model, map[string][]string{
 				"A": []string{"0:1.0-1"},
 			})
-			expectedVars(g, model, "A-0:1.0-1(A)")
+			expectedVars(g, model, "A-0:1.0-1")
 			expectedAnds(g, model,
 				bf.Not(x1), // Can't install package `A` (missing dependency `B`).
 			)
@@ -582,7 +568,7 @@ func TestLoader_Load(t *testing.T) {
 				expectedPackages(g, model, map[string][]string{
 					"X": []string{selectedVersion},
 				})
-				expectedVars(g, model, "X-"+selectedVersion+"(X)")
+				expectedVars(g, model, "X-"+selectedVersion)
 				expectedBest(g, model, map[string]string{
 					"X": selectedVersion,
 				})
