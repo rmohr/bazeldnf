@@ -36,19 +36,6 @@ use_repo(
     "org_golang_x_exp",
 )
 
-bazel_dep(name = "toolchains_protoc", version = "0.6.0")
-
-protoc = use_extension("@toolchains_protoc//protoc:extensions.bzl", "protoc")
-protoc.toolchain(
-    google_protobuf = "com_google_protobuf",
-    version = "v27.3",
-)
-use_repo(protoc, "com_google_protobuf", "toolchains_protoc_hub")
-
-register_toolchains(
-    "@toolchains_protoc_hub//:all",
-    dev_dependency = True,
-)
 
 bazeldnf = use_extension("@bazeldnf//bazeldnf:extensions.bzl", "bazeldnf")
 bazeldnf.config(
@@ -89,3 +76,5 @@ use_repo(
 )
 
 bazel_dep(name = "rules_cc", version = "0.2.14", dev_dependency = True)
+
+bazel_dep(name = "protobuf", version = "33.4")

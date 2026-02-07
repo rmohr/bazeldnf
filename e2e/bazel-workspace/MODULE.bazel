@@ -1,0 +1,5 @@
+module(
+    name = "bazeldnf-workspace",
+)
+
+bazel_dep(name = "bazelrc-preset.bzl", version = "1.9.2")

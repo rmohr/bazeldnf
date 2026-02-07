@@ -64,12 +64,4 @@ use_repo(
     "bazeldnf_rpms",
 )
 
-bazel_dep(name = "toolchains_protoc", version = "0.6.0", dev_dependency = True)
-
-protoc = use_extension("@toolchains_protoc//protoc:extensions.bzl", "protoc", dev_dependency = True)
-use_repo(protoc, "toolchains_protoc_hub")
-
-register_toolchains(
-    "@toolchains_protoc_hub//:all",
-    dev_dependency = True,
-)
+bazel_dep(name = "protobuf", version = "33.4")

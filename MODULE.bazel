@@ -17,9 +17,9 @@ use_repo(
 register_toolchains("@bazeldnf_toolchains//:all")
 
 # bazeldnf starlark dependenies
-bazel_dep(name = "bazel_skylib", version = "1.8.0")
+bazel_dep(name = "bazel_skylib", version = "1.9.0")
 bazel_dep(name = "platforms", version = "1.0.0")
-bazel_dep(name = "bazel_features", version = "1.38.0")
+bazel_dep(name = "bazel_features", version = "1.41.0")
 
 # if someone wants to build the bazeldnf toolchain from sources needs this set of dependencies
 bazel_dep(name = "gazelle", version = "0.47.0")
@@ -87,32 +87,14 @@ use_repo(
     "bazeldnf_internal_libvirt-libs",
 )
 
-bazel_dep(name = "protobuf", version = "33.1", dev_dependency = True)
-bazel_dep(name = "toolchains_protoc", version = "0.6.0", dev_dependency = True)
-
-protoc = use_extension("@toolchains_protoc//protoc:extensions.bzl", "protoc", dev_dependency = True)
-use_repo(protoc, "toolchains_protoc_hub")
+bazel_dep(name = "protobuf", version = "33.4", dev_dependency = True)
 
 # deps only needed for the repo internals
-bazel_dep(name = "bazel_skylib_gazelle_plugin", version = "1.8.2", dev_dependency = True)
-bazel_dep(name = "aspect_bazel_lib", version = "2.21.2", dev_dependency = True)
-bazel_dep(name = "buildifier_prebuilt", version = "8.2.1", dev_dependency = True)
-bazel_dep(name = "rules_pkg", version = "1.1.0", dev_dependency = True)
-bazel_dep(name = "stardoc", version = "0.8.0", dev_dependency = True)
-bazel_dep(name = "rules_proto", version = "7.1.0", dev_dependency = True)
-bazel_dep(name = "rules_java", version = "9.0.3", dev_dependency = True)
-
-protobuf_java = use_extension("//bazeldnf:extensions.bzl", "protobuf_java", dev_dependency = True)
-use_repo(protobuf_java, "protobuf-java")
-
-register_toolchains(
-    "//tools/toolchains:all",
-    dev_dependency = True,
-)
-
-register_toolchains(
-    "@toolchains_protoc_hub//:all",
-    dev_dependency = True,
-)
-
-bazel_dep(name = "rules_cc", version = "0.2.14", dev_dependency = True)
+bazel_dep(name = "bazel_skylib_gazelle_plugin", version = "1.9.0", dev_dependency = True)
+bazel_dep(name = "bazel_lib", version = "3.2.0", dev_dependency = True)
+bazel_dep(name = "bazelrc-preset.bzl", version = "1.9.2", dev_dependency = True)
+bazel_dep(name = "buildifier_prebuilt", version = "8.2.1.2", dev_dependency = True)
+bazel_dep(name = "rules_pkg", version = "1.2.0", dev_dependency = True)
+bazel_dep(name = "stardoc", version = "0.8.1", dev_dependency = True)
+bazel_dep(name = "rules_java", version = "9.3.0", dev_dependency = True)
+bazel_dep(name = "rules_cc", version = "0.2.16", dev_dependency = True)

@@ -25,7 +25,7 @@ e2e-workspace:
 	done
 
 e2e-bzlmod:
-	@for version in 7.x 8.x; do \
+	@for version in 7.x 8.x 9.x; do \
 		( \
 			cd e2e/bazel-bzlmod && \
 			echo "Testing $$version with bzlmod" > /dev/stderr && \
@@ -34,7 +34,7 @@ e2e-bzlmod:
 	done
 
 e2e-bazel-bzlmod-lock-file:
-	@for version in 7.x 8.x; do \
+	@for version in 7.x 8.x 9.x; do \
 		( \
 			cd e2e/bazel-bzlmod-lock-file && \
 			echo "Testing $$version with bzlmod with lock file" > /dev/stderr && \
@@ -43,7 +43,7 @@ e2e-bazel-bzlmod-lock-file:
 	done
 
 e2e-bzlmod-build-toolchain:
-	@for version in 7.x 8.x; do \
+	@for version in 7.x 8.x 9.x; do \
 		( \
 			cd e2e/bazel-bzlmod-toolchain-from-source && \
 			echo "Testing $$version with bzlmod build toolchain" > /dev/stderr && \
@@ -52,7 +52,7 @@ e2e-bzlmod-build-toolchain:
 	done
 
 e2e-bazel-bzlmod-lock-file-from-args:
-	@for version in 7.x 8.x; do \
+	@for version in 7.x 8.x 9.x; do \
 		( \
 			cd e2e/bazel-bzlmod-lock-file-from-args && \
 			echo "Testing $$version bzlmod lock file from args" > /dev/stderr && \
@@ -61,7 +61,7 @@ e2e-bazel-bzlmod-lock-file-from-args:
 	done
 
 e2e-bzlmod-toolchain-circular-dependencies:
-	@for version in 7.x 8.x; do \
+	@for version in 7.x 8.x 9.x; do \
 		( \
 			cd e2e/bzlmod-toolchain-circular-dependencies && \
 			echo "Testing $$version bzlmod lock file from args" > /dev/stderr && \

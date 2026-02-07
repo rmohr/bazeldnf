@@ -2,6 +2,13 @@ load("@bazeldnf//bazeldnf:defs.bzl", "bazeldnf", "rpmtree", "tar2files")
 load("@rules_cc//cc:defs.bzl", "cc_library")
 load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 
+load("@bazelrc-preset.bzl", "bazelrc_preset")
+
+bazelrc_preset(
+    name = "presets",
+    tags = ["manual"]
+)
+
 bazeldnf(
     name = "bazeldnf",
 )
