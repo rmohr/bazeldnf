@@ -25,6 +25,10 @@ func NewCollector() *Collector {
 	}
 }
 
+func (c *Collector) AddPath(path string) {
+	c.createdPaths[path] = struct{}{}
+}
+
 func (c *Collector) RPMToTar(rpmReader io.Reader, tarWriter *tar.Writer, noSymlinksAndDirs bool, capabilities map[string][]string, selinuxLabels map[string]string) error {
 	rpm, err := rpmutils.ReadRpm(rpmReader)
 	if err != nil {
