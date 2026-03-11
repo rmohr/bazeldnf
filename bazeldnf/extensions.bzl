@@ -64,7 +64,7 @@ bazeldnf_toolchain = module_extension(
 )
 
 _ALIAS_TEMPLATE = """\
-load("@bazeldnf//bazeldnf:alias_macros.bzl", aliases="default")
+load("{macro_file}", aliases="{macro_name}")
 
 aliases(
     name = "{name}",
@@ -123,10 +123,13 @@ def _alias_repository_impl(repository_ctx):
         ),
     )
 
+    macro_file, macro_name = repository_ctx.attr.alias_macro.split("%", 1)
     for name, metadata in repository_ctx.attr.packages_metadata.items():
         repository_ctx.file(
             "%s/BUILD.bazel" % name,
             _ALIAS_TEMPLATE.format(
+                macro_file = macro_file,
+                macro_name = macro_name,
                 name = name,
                 data = metadata,
             ),
@@ -153,6 +156,7 @@ _alias_repository = repository_rule(
         "nobest": attr.bool(default = False),
         "cache_dir": attr.string(),
         "architectures": attr.string_list(),
+        "alias_macro": attr.string(),
     },
 )
 
@@ -179,6 +183,7 @@ def _handle_lock_file(config, module_ctx, registered_rpms = {}):
         "repository_prefix": config.rpm_repository_prefix,
         "nobest": config.nobest,
         "architectures": _get_architectures(config.architecture, config.architectures),
+        "alias_macro": config.alias_macro,
     }
 
     module_ctx.watch(config.lock_file)
@@ -412,6 +417,13 @@ The lock file content is as:
                 Can use more than one. The list defines architectures priority –
                 with the first one having the highest priority.
                 `noarch` is implicitly added at the end (if not present on the list).""",
+        ),
+        "alias_macro": attr.string(
+            default = "@bazeldnf//bazeldnf:alias_macros.bzl%default",
+            doc = """Implementation of a macro generating aliases in the generated proxy repository.
+
+                Specify it in format: <.bzl file label>%<macro name>
+                Explore the default implementation and the meaning of args in `bazeldnf/alias_macros.bzl`.""",
         ),
     },
 )
