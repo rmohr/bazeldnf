@@ -1493,6 +1493,33 @@ func TestNewResolver(t *testing.T) {
 			exclude:       []string{"testb-0:1.x86_64"},
 			solvable:      true,
 		},
+		{name: "package needed in two architectures, and referenced by name", packages: []*api.Package{
+			newPkgAP("testa", "1", "i686", 1, []string{}, []string{"/usr/lib/libfoo.so"}, []string{}),
+			newPkgAP("testb", "1", "x86_64", 1, []string{}, []string{"/usr/lib64/libfoo.so"}, []string{}),
+			newPkgAP("testc", "1", "noarch", 1, []string{}, []string{"foo"}, []string{}),
+			newPkgAP("foo", "1", "i686", 1, []string{"/usr/lib/libfoo.so"}, []string{}, []string{}),
+			newPkgAP("foo", "1", "x86_64", 1, []string{"/usr/lib64/libfoo.so"}, []string{}, []string{}),
+		}, requires: []string{
+			"testa", "testb", "testc",
+		},
+			architectures: []string{"x86_64", "i686"},
+			install:       []string{"testa-0:1.i686", "testb-0:1.x86_64", "testc-0:1.noarch", "foo-0:1.i686", "foo-0:1.x86_64"},
+			exclude:       []string{},
+			solvable:      true,
+		},
+		{name: "package needed in two architectures, and referenced by file", packages: []*api.Package{
+			newPkgAP("testa", "1", "i686", 1, []string{}, []string{"/usr/lib/libfoo.so"}, []string{}),
+			newPkgAP("testb", "1", "x86_64", 1, []string{}, []string{"/usr/lib64/libfoo.so"}, []string{}),
+			newPkgAP("foo", "1", "i686", 1, []string{"/usr/lib/libfoo.so"}, []string{}, []string{}),
+			newPkgAP("foo", "1", "x86_64", 1, []string{"/usr/lib64/libfoo.so"}, []string{}, []string{}),
+		}, requires: []string{
+			"testa", "testb",
+		},
+			architectures: []string{"x86_64", "i686"},
+			install:       []string{"testa-0:1.i686", "testb-0:1.x86_64", "foo-0:1.i686", "foo-0:1.x86_64"},
+			exclude:       []string{},
+			solvable:      true,
+		},
 
 		// TODO: Add test cases.
 	}
