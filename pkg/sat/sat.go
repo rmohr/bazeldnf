@@ -48,7 +48,7 @@ type Model struct {
 	// vars contain as key an exact identifier for a provided resource and the actual SAT variable as value
 	vars map[string]*Var
 
-	bestPackages map[BestKey]*api.Package
+	bestPackages map[api.InstallKey]*api.Package
 
 	ands                        []bf.Formula
 	forceIgnoreWithDependencies map[api.PackageKey]*api.Package
@@ -62,7 +62,7 @@ func (m *Model) Var(v string) *Var {
 	return m.vars[v]
 }
 
-func (m *Model) BestPackage(k BestKey) *api.Package {
+func (m *Model) BestPackage(k api.InstallKey) *api.Package {
 	return m.bestPackages[k]
 }
 
@@ -193,7 +193,7 @@ func Resolve(model *Model) (install []*api.Package, excluded []*api.Package, for
 			}
 		}
 		for v := range installSet {
-			key := MakeBestKey(v)
+			key := v.InstallKey()
 			bestPackage := model.BestPackage(key)
 			if bestPackage != v {
 				logrus.Infof("Picking %v instead of best candiate %v", v, bestPackage)

@@ -1,7 +1,6 @@
 package sat
 
 import (
-	"cmp"
 	"fmt"
 	"regexp"
 	"sort"
@@ -23,32 +22,12 @@ type Loader struct {
 	varsCount int
 }
 
-// BestKey groups packages for the purpose of `--nobest` option disabled,
-// so that for each set of packages sharing this key, only the "best" package will be preserved
-// (best in terms of repo priority, version criteria).
-type BestKey struct {
-	name string
-	arch string
-}
-
-// CompareBestKey provides an arbitrary, deterministic, total order on BestKey
-func CompareBestKey(k1 BestKey, k2 BestKey) int {
-	return cmp.Or(
-		cmp.Compare(k1.name, k2.name),
-		cmp.Compare(k1.arch, k2.arch),
-	)
-}
-
-func MakeBestKey(pkg *api.Package) BestKey {
-	return BestKey{name: pkg.Name, arch: pkg.Arch}
-}
-
 func NewLoader() *Loader {
 	return &Loader{
 		m: &Model{
 			packages:                    map[string][]*Var{},
 			vars:                        map[string]*Var{},
-			bestPackages:                map[BestKey]*api.Package{},
+			bestPackages:                map[api.InstallKey]*api.Package{},
 			forceIgnoreWithDependencies: map[api.PackageKey]*api.Package{},
 		},
 		provides:  map[string][]*Var{},
@@ -126,7 +105,7 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 
 	// Create an index to pick the best candidates
 	for _, pkg := range packages {
-		key := MakeBestKey(pkg)
+		key := pkg.InstallKey()
 		if loader.m.bestPackages[key] == nil {
 			loader.m.bestPackages[key] = pkg
 		} else if rpm.ComparePackage(pkg, loader.m.bestPackages[key], archOrder) > 0 {
@@ -137,7 +116,7 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 	if !nobest {
 		packages = nil
 		bestPackagesKeys := maps.Keys(loader.m.bestPackages)
-		slices.SortFunc(bestPackagesKeys, CompareBestKey)
+		slices.SortFunc(bestPackagesKeys, api.CompareInstallKey)
 		for _, v := range bestPackagesKeys {
 			packages = append(packages, loader.m.bestPackages[v])
 		}

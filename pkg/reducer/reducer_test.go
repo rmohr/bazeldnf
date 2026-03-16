@@ -338,3 +338,31 @@ func TestSpecifyArch(t *testing.T) {
 	g.Expect(matched).Should(ConsistOf("foo", "bar"))
 	g.Expect(involved).Should(ConsistOf(&packages[0], &packages[3]))
 }
+
+func TestPinningArchExplicit(t *testing.T) {
+	// Requesting a package with a given architecture should not prevent
+	// involvement of other architectures, if needed.
+	g := NewGomegaWithT(t)
+	packages := withRepository([]api.Package{
+		newPackageWithDeps("foo", []string{"bar"}, nil),
+		newPackage("foo"),
+		newPackage("foo"),
+		newPackageWithDeps("bar", []string{"/foo.ppc"}, nil),
+	})
+	packages[0].Arch = "x86_64"
+	packages[1].Arch = "aarch64"
+	packages[2].Arch = "ppc"
+	packages[3].Arch = "noarch"
+	packageInfo := packageInfo{
+		packages: packages,
+		provides: map[string][]*api.Package{
+			"/foo.ppc": {&packages[2]},
+			"bar":      {&packages[3]},
+		},
+	}
+
+	matched, involved, err := resolve(&packageInfo, []string{"foo.x86_64"}, []string{}, false)
+	g.Expect(err).Should(BeNil())
+	g.Expect(matched).Should(ConsistOf("foo"))
+	g.Expect(involved).Should(ConsistOf(&packages[0], &packages[2], &packages[3]))
+}

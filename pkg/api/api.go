@@ -1,6 +1,7 @@
 package api
 
 import (
+	"cmp"
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/xml"
@@ -339,6 +340,29 @@ type PackageKey struct {
 
 func (p *Package) Key() PackageKey {
 	return PackageKey{p.Name, p.Version, p.Arch}
+}
+
+// InstallKey identifies a package and can be used as a map key.
+// It should be equal iff. we believe two packages cannot be installed simultaneously
+// (e.g. different version of the same package).
+// It groups packages for the purpose of `--nobest` option disabled,
+// so that for each set of packages sharing this key, only the "best" package will be preserved
+// (best in terms of repo priority, version criteria).
+type InstallKey struct {
+	Name string
+	Arch string
+}
+
+// CompareInstallKey provides an arbitrary, deterministic, total order on BestKey
+func CompareInstallKey(k1 InstallKey, k2 InstallKey) int {
+	return cmp.Or(
+		cmp.Compare(k1.Name, k2.Name),
+		cmp.Compare(k1.Arch, k2.Arch),
+	)
+}
+
+func (p *Package) InstallKey() InstallKey {
+	return InstallKey{Name: p.Name, Arch: p.Arch}
 }
 
 type Repository struct {
