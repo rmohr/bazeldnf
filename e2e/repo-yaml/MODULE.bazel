@@ -1,0 +1,9 @@
+"example MODULE.bazel to test repo.yaml initialization"
+
+module(name = "repo-yaml")
+
+bazel_dep(name = "bazeldnf")
+local_path_override(
+    module_name = "bazeldnf",
+    path = "../..",
+)

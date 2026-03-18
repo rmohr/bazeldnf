@@ -1,0 +1,21 @@
+name: 'Test Report'
+on:
+  workflow_run:
+    workflows: ['build and test'] # runs after our CI workflow for the given MR
+    types:
+      - completed
+permissions:
+  contents: read
+  actions: read
+  checks: write
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: dorny/test-reporter@v2
+      with:
+        artifact: test-results # artifact name
+        name: Bazel Test results
+        path: '**/test.xml'    # Path to test results (inside artifact .zip)
+        reporter: java-junit
+        fail-on-error: 'false' # If allowed to fail tests fail then don't block the MR

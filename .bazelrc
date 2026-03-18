@@ -1,12 +1,20 @@
 # Import Aspect bazelrc presets
-import %workspace%/.aspect/bazelrc/bazel7.bazelrc # will only work in bazel7+
+import %workspace%/.aspect/bazelrc/bazel7.bazelrc
 import %workspace%/.aspect/bazelrc/convenience.bazelrc
 import %workspace%/.aspect/bazelrc/correctness.bazelrc
 import %workspace%/.aspect/bazelrc/debug.bazelrc
 import %workspace%/.aspect/bazelrc/performance.bazelrc
 
+# Prevent Bazel from treating e2e child workspace BUILD files as packages
+# When adding a new e2e test then `bazel run @rules_bazel_integration_test//tools:update_deleted_packages`
+# needs to be executed
+common --deleted_packages=e2e/bazel-bzlmod,e2e/bazel-bzlmod-lock-file,e2e/bazel-bzlmod-lock-file-from-args,e2e/bazel-bzlmod-toolchain-from-source,e2e/bazel-bzlmod-toolchain-from-source-lock-file,e2e/bazel-workspace,e2e/bzlmod-toolchain-circular-dependencies,e2e/repo-yaml
+
 # Specific project flags go here if we have some
+
+# use prebuilt protoc
 common --incompatible_enable_proto_toolchain_resolution
+common --@protobuf//bazel/toolchains:prefer_prebuilt_protoc
 
 # inside the rules project we build from source
 common --extra_toolchains=//cmd:bazeldnf-host-toolchain
@@ -14,6 +22,9 @@ common --@protobuf//bazel/toolchains:prefer_prebuilt_protoc
 
 # make sure bazel doesn't complain on hosts without java
 common --java_runtime_version=remotejdk_21
+
+test --test_tag_filters=-allowed-to-fail
+test --test_env=GO_TEST_WRAP_TESTV=1
 
 # Load any settings & overrides specific to the current user from `.bazelrc.user`.
 # This file should appear in `.gitignore` so that settings are not shared with team members. This

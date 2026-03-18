@@ -1,6 +1,12 @@
 load("@bazel_lib//:bzl_library.bzl", "bzl_library")
 load("//bazeldnf/private:resolved_bazeldnf_toolchain.bzl", "resolved_bazeldnf_toolchain")
 
+filegroup(
+    name = "all_files",
+    srcs = glob(["**"]),
+    visibility = ["//:__pkg__"],
+)
+
 # this directory contains the public API from bazeldnf, anything on this directory
 # should be buildable withtout dev dependencies
 #

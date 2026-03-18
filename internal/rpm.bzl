@@ -49,60 +49,105 @@ def _rpm_rule_impl(ctx):
     for dep in ctx.attr.deps:
         deps_list.append(dep[RpmInfo].deps)
 
+    files = [ctx.file.file] if ctx.file.file else []
+
     rpm_info = RpmInfo(
         file = ctx.file.file,
-        deps = depset(direct = [ctx.file.file], transitive = deps_list),
+        deps = depset(direct = files, transitive = deps_list),
     )
 
     return [
         rpm_info,
         DefaultInfo(
-            files = depset(direct = [ctx.file.file], transitive = deps_list),
+            files = depset(direct = files, transitive = deps_list),
         ),
     ]
 
 rpm_rule = rule(
     implementation = _rpm_rule_impl,
     attrs = {
-        "file": attr.label(allow_single_file = True, mandatory = True),
+        "file": attr.label(allow_single_file = True),
         "deps": attr.label_list(providers = [RpmInfo]),
     },
 )
 
-_HTTP_FILE_BUILD = """
+_HTTP_FILE_LEGACY_MODE = """
 load("@bazeldnf//internal:rpm.bzl", "rpm_rule")
 package(default_visibility = ["//visibility:public"])
 rpm_rule(
     name = "rpm",
+    deps = [{deps}],
     file = "{downloaded_file_path}",
+)
+
+"""
+
+_HTTP_FILE_BUILD_NO_BLOB = """
+load("@bazeldnf//internal:rpm.bzl", "rpm_rule")
+package(default_visibility = ["//visibility:public"])
+rpm_rule(
+    name = "rpm",
     deps = [{deps}],
 )
 """
 
+_HTTP_FILE_BUILD_WITH_BLOB = """
+load("@bazeldnf//internal:rpm.bzl", "rpm_rule")
+package(default_visibility = ["//visibility:public"])
+rpm_rule(
+    name = "blob",
+    deps = [],
+    file = "{downloaded_file_path}",
+)
+"""
+
 def _rpm_impl(ctx):
+    args = {}
+
     if ctx.attr.urls:
         downloaded_file_path = ctx.attr.urls[0].split("/")[-1]
-        args = {}
+
+        target_path = "blob/" if ctx.attr.blob_mode and ctx.attr.create_blob else "rpm/"
+
         if ctx.attr.integrity:
             args["integrity"] = ctx.attr.integrity
         if ctx.attr.sha256:
             args["sha256"] = ctx.attr.sha256
         ctx.download(
             url = ctx.attr.urls,
-            output = "rpm/" + downloaded_file_path,
+            output = target_path + downloaded_file_path,
             auth = _get_auth(ctx, ctx.attr.urls),
             **args
         )
-    else:
+        if ctx.attr.blob_mode and ctx.attr.create_blob:  # actual blob when in blob mode
+            ctx.file(
+                "blob/BUILD",
+                _HTTP_FILE_BUILD_WITH_BLOB.format(
+                    downloaded_file_path = downloaded_file_path,
+                ),
+            )
+
+    elif not ctx.attr.blob_mode or ctx.attr.create_blob:
         fail("urls must be specified")
+
     ctx.file("WORKSPACE", "workspace(name = \"{name}\")".format(name = ctx.name))
-    ctx.file(
-        "rpm/BUILD",
-        _HTTP_FILE_BUILD.format(
-            downloaded_file_path = downloaded_file_path,
-            deps = ", ".join(["\"%s\"" % dep for dep in ctx.attr.dependencies]),
-        ),
-    )
+
+    if ctx.attr.blob_mode and not ctx.attr.create_blob:  # publicly available rpm on new blob mode
+        ctx.file(
+            "rpm/BUILD",
+            _HTTP_FILE_BUILD_NO_BLOB.format(
+                deps = ", ".join(["\"%s\"" % dep for dep in ctx.attr.dependencies]),
+            ),
+        )
+    elif not ctx.attr.blob_mode:  # legacy mode
+        ctx.file(
+            "rpm/BUILD",
+            _HTTP_FILE_LEGACY_MODE.format(
+                deps = ", ".join(["\"%s\"" % dep for dep in ctx.attr.dependencies]),
+                downloaded_file_path = ctx.attr.urls[0].split("/")[-1],
+            ),
+        )
+
     return update_attrs(ctx.attr, _rpm_attrs.keys(), args)
 
 _rpm_attrs = {
@@ -114,6 +159,8 @@ _rpm_attrs = {
         providers = [RpmInfo],
     ),
     "auth_patterns": attr.string_dict(),
+    "blob_mode": attr.bool(default = False),
+    "create_blob": attr.bool(),
 }
 
 rpm = repository_rule(
