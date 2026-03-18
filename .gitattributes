@@ -5,6 +5,8 @@ docs/*.md linguist-generated=true
 # Exclude a bunch of paths to save some disk space
 e2e/bazel-bzlmod-* export-ignore
 e2e/bazel-workspace* export-ignore
+e2e/.bazelrc export-ignore
 .github export-ignore
 pkg/*/testdata export-ignore
 tools/release export-ignore
+REPO.bazel export-ignore

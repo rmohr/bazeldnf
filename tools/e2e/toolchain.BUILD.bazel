@@ -1,0 +1,22 @@
+"Fake BUILD.bazel we will have in the prebuilt toolchain"
+
+load("@bazeldnf//bazeldnf:toolchain.bzl", "bazeldnf_toolchain")
+
+alias(
+    name = "cmd.binary",
+    actual = select({
+        "@platforms//os:windows": "cmd.exe",
+        "//conditions:default": "cmd",
+    }),
+)
+
+bazeldnf_toolchain(
+    name = "bazeldnf_toolchain",
+    tool = ":cmd.binary",
+)
+
+toolchain(
+    name = "toolchain",
+    toolchain = ":bazeldnf_toolchain",
+    toolchain_type = "@bazeldnf//bazeldnf:toolchain_type",
+)

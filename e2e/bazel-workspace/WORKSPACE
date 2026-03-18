@@ -22,14 +22,9 @@ load("@bazeldnf//bazeldnf:defs.bzl", "rpm")
 load(
     "@bazeldnf//bazeldnf:repositories.bzl",
     "bazeldnf_dependencies",
-    "bazeldnf_register_toolchains",
 )
 
 bazeldnf_dependencies()
-
-bazeldnf_register_toolchains(
-    name = "bazeldnf_prebuilt",
-)
 
 rpm(
     name = "libvirt-devel-11.0.0-1.fc42.x86_64.rpm",

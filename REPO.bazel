@@ -1,0 +1,6 @@
+"list of directories the top level bazel shouldn't dive into"
+
+ignore_directories([
+    ".git",
+    "e2e/*/bazel-*",
+])

@@ -1,9 +1,8 @@
 # Import Aspect bazelrc presets
-try-import %workspace%/../../.aspect/bazelrc/bazel7.bazelrc
-import %workspace%/../../.aspect/bazelrc/convenience.bazelrc
-import %workspace%/../../.aspect/bazelrc/correctness.bazelrc
-import %workspace%/../../.aspect/bazelrc/debug.bazelrc
-import %workspace%/../../.aspect/bazelrc/performance.bazelrc
+import %workspace%/../../.aspect/bazelrc/bazel7.bazelrc
+
+# Include our e2e shared config
+try-import %workspace%/../.bazelrc
 
 common --enable_bzlmod
 

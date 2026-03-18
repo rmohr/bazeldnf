@@ -1,0 +1,44 @@
+"Create a toolchain tar archive we can pass as input to the e2e tests"
+
+load("@aspect_bazel_lib//lib:copy_file.bzl", "copy_file")
+
+# copy the binary into our target folder
+copy_file(
+    name = "binary-non-win",
+    src = "//cmd",
+    out = "output/cmd",
+    is_executable = True,
+)
+
+copy_file(
+    name = "binary-win",
+    src = "//cmd",
+    out = "output/cmd.exe",
+    is_executable = True,
+    target_compatible_with = [
+        "@platforms//os:windows",
+    ],
+)
+
+alias(
+    name = "binary",
+    actual = select({
+        "@platforms//os:windows": ":binary-win",
+        "//conditions:default": "binary-non-win",
+    }),
+)
+
+copy_file(
+    name = "toolchain-build",
+    src = "toolchain.BUILD.bazel",
+    out = "output/BUILD.bazel",
+)
+
+filegroup(
+    name = "toolchain",
+    srcs = [
+        ":binary",
+        ":toolchain-build",
+    ],
+    visibility = ["//:__pkg__"],
+)
