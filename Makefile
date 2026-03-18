@@ -16,66 +16,25 @@ gofmt:
 	gofmt -w pkg/.. cmd/..
 
 e2e-workspace:
-	@for version in 6.x 7.x; do \
-		( \
-			cd e2e/bazel-workspace && \
-			echo "Testing $$version in workspace mode" > /dev/stderr && \
-			USE_BAZEL_VERSION=$$version bazelisk --batch build //...\
-		) \
-	done
+	bazel test e2e:workspace
 
 e2e-bzlmod:
-	@for version in 7.x 8.x; do \
-		( \
-			cd e2e/bazel-bzlmod && \
-			echo "Testing $$version with bzlmod" > /dev/stderr && \
-			USE_BAZEL_VERSION=$$version bazelisk --batch build //...\
-		) \
-	done
+	bazel test e2e:bzlmod
 
 e2e-bazel-bzlmod-lock-file:
-	@for version in 7.x 8.x; do \
-		( \
-			cd e2e/bazel-bzlmod-lock-file && \
-			echo "Testing $$version with bzlmod with lock file" > /dev/stderr && \
-			USE_BAZEL_VERSION=$$version bazelisk --batch build //...\
-		) \
-	done
+	bazel test e2e:bzlmod-lock-file
 
 e2e-bzlmod-build-toolchain:
-	@for version in 7.x 8.x; do \
-		( \
-			cd e2e/bazel-bzlmod-toolchain-from-source && \
-			echo "Testing $$version with bzlmod build toolchain" > /dev/stderr && \
-			USE_BAZEL_VERSION=$$version bazelisk --batch build //... --incompatible_enable_proto_toolchain_resolution \
-		) \
-	done
+	bazel test e2e:bzlmod-toolchain-from-source
 
 e2e-bazel-bzlmod-lock-file-from-args:
-	@for version in 7.x 8.x; do \
-		( \
-			cd e2e/bazel-bzlmod-lock-file-from-args && \
-			echo "Testing $$version bzlmod lock file from args" > /dev/stderr && \
-			USE_BAZEL_VERSION=$$version bazelisk --batch build //... --incompatible_enable_proto_toolchain_resolution \
-		) \
-	done
+	bazel test e2e:lock-file-from-args
 
 e2e-bzlmod-toolchain-circular-dependencies:
-	@for version in 7.x 8.x; do \
-		( \
-			cd e2e/bzlmod-toolchain-circular-dependencies && \
-			echo "Testing $$version bzlmod lock file from args" > /dev/stderr && \
-			USE_BAZEL_VERSION=$$version bazelisk --batch build //... --incompatible_enable_proto_toolchain_resolution \
-		) \
-	done
+	bazel test e2e:circular-deps
 
-
-e2e: e2e-workspace \
-	e2e-bzlmod \
-	e2e-bzlmod-build-toolchain \
-	e2e-bazel-bzlmod-lock-file \
-	e2e-bazel-bzlmod-lock-file-from-args \
-	e2e-bzlmod-toolchain-circular-dependencies
+e2e:
+	bazel test e2e
 
 fmt: gofmt buildifier
 

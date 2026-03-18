@@ -1,8 +1,5 @@
-# Import Aspect bazelrc presets
-import %workspace%/../../.aspect/bazelrc/convenience.bazelrc
-import %workspace%/../../.aspect/bazelrc/correctness.bazelrc
-import %workspace%/../../.aspect/bazelrc/debug.bazelrc
-import %workspace%/../../.aspect/bazelrc/performance.bazelrc
+# Include our e2e shared config
+try-import %workspace%/../.bazelrc
 
 # Specific project flags go here if we have some
 

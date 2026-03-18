@@ -26,10 +26,7 @@ def default(name, rpms, visibility = ["//visibility:public"]):
             visibility = visibility,
         )
 
-    if len(rpms) > 1:
-        fail("Package resolved multiple times, not implemented.")
-
-    if len(rpms) == 1:
+    if len(rpms):
         rpm = rpms[0]
         alias(
             name = name,

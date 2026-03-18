@@ -101,7 +101,7 @@ func initRootCmd() {
 		setLogLevel(rootopts.logLevel)
 	}
 
-	if chrootPath, hasIt := os.LookupEnv("BUILD_WORKING_DIRECTORY"); hasIt {
+	if chrootPath, hasIt := os.LookupEnv("BUILD_WORKSPACE_DIRECTORY"); hasIt {
 		os.Chdir(chrootPath)
 	}
 

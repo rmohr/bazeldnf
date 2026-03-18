@@ -1,0 +1,5 @@
+load("@bazeldnf//bazeldnf:defs.bzl", "bazeldnf")
+
+bazeldnf(
+    name = "bazeldnf",
+)

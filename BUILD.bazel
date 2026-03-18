@@ -15,6 +15,7 @@ gazelle_binary(
 )
 
 # gazelle:exclude .bazelbsp
+# gazelle:exclude e2e/*/*
 # gazelle:prefix github.com/rmohr/bazeldnf
 # gazelle:resolve go github.com/bazelbuild/buildtools/build @com_github_bazelbuild_buildtools//build:go_default_library
 # gazelle:resolve go github.com/bazelbuild/buildtools/edit @com_github_bazelbuild_buildtools//edit:go_default_library
@@ -95,3 +96,23 @@ bzl_library(
 )
 
 # gazelle:exclude deps.bzl
+
+# Aggregates all parent workspace files so that child workspaces using
+# local_path_override(path = "../..") can resolve the full module.
+filegroup(
+    name = "local_repository_files",
+    srcs = [
+        "MODULE.bazel",
+        "WORKSPACE",
+        "//:.github/workflows/ci.bazelrc",
+        "//.aspect/bazelrc:all_files",
+        "//bazeldnf:all_files",
+        "//bazeldnf/private:all_files",
+        "//internal:all_files",
+        "//tools:all_files",
+        "//tools/e2e:toolchain",
+    ],
+    visibility = [
+        "//e2e:__subpackages__",
+    ],
+)
