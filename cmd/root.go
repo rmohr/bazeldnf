@@ -20,6 +20,13 @@ var rootCmd = &cobra.Command{
 	Use:   "bazeldnf",
 	Short: "bazeldnf is a tool which can query RPM repos and determine package dependencies",
 	Long:  `The tool allows resolving package dependencies mainly for the purpose to create custom-built SCRATCH containers consisting of RPMs, trimmed down to the absolute necessary`,
+	// Cobra treats runtime errors and parse errors the same. Setting
+	// SilenceUsage: true here would result in the help message not printing on
+	// command parsing errors. To preserve standard behavior, we set this flag
+	// only after parsing has occurred in the hook below.
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		cmd.SilenceUsage = true
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 	},
 }
@@ -87,7 +94,7 @@ func Execute() {
 	rootCmd.AddCommand(NewVerifyCmd())
 
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
+		// We don't print the error message here as it's already printed by Cobra
 		os.Exit(1)
 	}
 }
