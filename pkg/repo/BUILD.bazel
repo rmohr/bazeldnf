@@ -34,6 +34,7 @@ go_test(
     embed = [":repo"],
     deps = [
         "//pkg/api",
+        "//pkg/api/bazeldnf",
         "@com_github_hashicorp_go_retryablehttp//:go-retryablehttp",
     ],
 )
