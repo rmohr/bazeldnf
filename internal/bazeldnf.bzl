@@ -19,9 +19,12 @@ def _bazeldnf_impl(ctx):
     args.extend(ctx.attr.libs)
 
     toolchain = ctx.toolchains[BAZELDNF_TOOLCHAIN]
+    rlocation_path = (
+        toolchain._tool.short_path[3:] if toolchain._tool.short_path.startswith("../") else "%s/%s" % (ctx.workspace_name, toolchain._tool.short_path)
+    )
 
     substitutions = {
-        "@@BAZELDNF_SHORT_PATH@@": "%s/%s" % (ctx.workspace_name, toolchain._tool.short_path),
+        "@@BAZELDNF_SHORT_PATH@@": rlocation_path,
         "@@ARGS@@": shell.array_literal(args),
     }
     ctx.actions.expand_template(

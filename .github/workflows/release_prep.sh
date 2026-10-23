@@ -52,7 +52,7 @@ tar --file $ARCHIVE_TMP --delete ${PREFIX}/MODULE.bazel
 csplit MODULE.bazel "/# DEV DEPENDENCIES/" '{*}'
 mv xx00 ${PREFIX}/MODULE.bazel
 
-sed -i -e "s/\"v0.0.0\"/\"${GITHUB_REF_NAME}\"/" ${PREFIX}/MODULE.bazel
+sed -i -e "s/\"0.0.0\"/\"${GITHUB_REF_NAME#v}\"/" ${PREFIX}/MODULE.bazel
 
 tar --file $ARCHIVE_TMP --append ${PREFIX}/MODULE.bazel
 

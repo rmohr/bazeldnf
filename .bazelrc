@@ -1,16 +1,11 @@
-# Import Aspect bazelrc presets
-import %workspace%/.aspect/bazelrc/bazel7.bazelrc # will only work in bazel7+
-import %workspace%/.aspect/bazelrc/convenience.bazelrc
-import %workspace%/.aspect/bazelrc/correctness.bazelrc
-import %workspace%/.aspect/bazelrc/debug.bazelrc
-import %workspace%/.aspect/bazelrc/performance.bazelrc
+# Import default settings
+import %workspace%/tools/preset.bazelrc
 
-# Specific project flags go here if we have some
-common --incompatible_enable_proto_toolchain_resolution
+# Allows tests to run bazelisk-in-bazel, since this is the cache folder used
+common:ci --test_env=XDG_CACHE_HOME
 
 # inside the rules project we build from source
 common --extra_toolchains=//cmd:bazeldnf-host-toolchain
-common --@protobuf//bazel/toolchains:prefer_prebuilt_protoc
 
 # make sure bazel doesn't complain on hosts without java
 common --java_runtime_version=remotejdk_21

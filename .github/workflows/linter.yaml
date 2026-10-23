@@ -30,12 +30,9 @@ jobs:
           disk-cache: true
           # Share repository cache between workflows.
           repository-cache: true
-          bazelrc: |
-            import %workspace%/.aspect/bazelrc/ci.bazelrc
-            import %workspace%/.github/workflows/ci.bazelrc
           # keep a cache for MODULE.bazel repos
           external-cache: true
       - name: buildifier
-        run: bazel run //:buildifier.check
+        run: bazel run --config=ci //:buildifier.check
       - name: gazelle
-        run: bazel run //:gazelle.check
+        run: bazel run --config=ci //:gazelle.check

@@ -3,14 +3,22 @@
         {
             "integrity": "sha256-qsJyoqzhNLXvYKQeZiTeskMx55x2aZ72zvDcoi2UrH4=",
             "urls": [
-		"libvirt/11.0.0/1.fc42/x86_64/libvirt-libs-11.0.0-1.fc42.x86_64.rpm"
+                "libvirt/11.0.0/1.fc42/x86_64/libvirt-libs-11.0.0-1.fc42.x86_64.rpm"
             ],
-	    "repository": "foo"
+            "repository": "foo"
+        },
+        {
+            "name": "libcom_err-devel",
+            "sha256": "24c516e824d7ca4909441233ce855f3c81dc2524c28608bc1a0d7e478341f074",
+            "urls": [
+                "http://127.0.0.1:1/dead-mirror/libcom_err-devel-1.47.2-3.fc42.x86_64.rpm",
+                "https://kojipkgs.fedoraproject.org/packages/e2fsprogs/1.47.2/3.fc42/x86_64/libcom_err-devel-1.47.2-3.fc42.x86_64.rpm"
+            ]
         }
     ],
     "repositories": {
-	"foo":  [
-	    "https://kojipkgs.fedoraproject.org/packages"
-	]
+        "foo": [
+            "https://kojipkgs.fedoraproject.org/packages"
+        ]
     }
 }

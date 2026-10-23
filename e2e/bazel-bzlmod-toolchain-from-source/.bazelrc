@@ -1,17 +1,9 @@
-# Import Aspect bazelrc presets
-try-import %workspace%/../../.aspect/bazelrc/bazel7.bazelrc
-import %workspace%/../../.aspect/bazelrc/convenience.bazelrc
-import %workspace%/../../.aspect/bazelrc/correctness.bazelrc
-import %workspace%/../../.aspect/bazelrc/debug.bazelrc
-import %workspace%/../../.aspect/bazelrc/performance.bazelrc
+import %workspace%/../../tools/preset.bazelrc
 
-# Specific project flags go here if we have some
+# Allows tests to run bazelisk-in-bazel, since this is the cache folder used
+common:ci --test_env=XDG_CACHE_HOME
+
 common --enable_bzlmod
 common --extra_toolchains=@bazeldnf//cmd:bazeldnf-host-toolchain
-common --incompatible_enable_proto_toolchain_resolution
 
-# Load any settings & overrides specific to the current user from `.bazelrc.user`.
-# This file should appear in `.gitignore` so that settings are not shared with team members. This
-# should be last statement in this config so the user configuration is able to overwrite flags from
-# this file. See https://bazel.build/configure/best-practices#bazelrc-file.
 try-import %workspace%/../../.bazelrc.user

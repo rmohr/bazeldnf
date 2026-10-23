@@ -8,11 +8,13 @@ local_path_override(
     path = "../..",
 )
 
-bazel_dep(name = "rules_pkg", version = "1.1.0")
-bazel_dep(name = "toolchains_protoc", version = "0.6.0")
+bazel_dep(name = "rules_pkg", version = "1.2.0")
+bazel_dep(name = "protobuf", version = "33.5")
+
+bazeldnf_toolchain = use_extension("@bazeldnf//bazeldnf:extensions.bzl", "bazeldnf_toolchain")
+bazeldnf_toolchain.register(disable = True)
 
 bazeldnf = use_extension("@bazeldnf//bazeldnf:extensions.bzl", "bazeldnf")
-bazeldnf.toolchain(disable = True)
 bazeldnf.config(
     name = "bazeldnf_rpms",
     lock_file = "//:bazeldnf-lock.json",
