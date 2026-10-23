@@ -49,8 +49,37 @@ func RPMToCPIO(rpmReader io.Reader) (*cpio.CpioStream, error) {
 	return cpio.NewCpioStream(payloadReader), nil
 }
 
-func PrefixFilter(prefix, strip string, reader *tar.Reader, files []string) error {
-	prefix = strings.TrimPrefix(prefix, ".")
+var usrMergeDirs = []string{"/bin", "/sbin", "/lib", "/lib64"}
+
+func isUsrMergeRoot(p string) bool {
+	cleaned := strings.TrimSuffix(p, "/")
+	for _, dir := range usrMergeDirs {
+		if cleaned == dir {
+			return true
+		}
+	}
+	return false
+}
+
+func normalizeUsrMerge(p string) string {
+	for _, dir := range usrMergeDirs {
+		if p == dir || strings.HasPrefix(p, dir+"/") {
+			return "/usr" + p
+		}
+	}
+	return p
+}
+
+func normalizeTarPath(p string) string {
+	p = strings.TrimPrefix(p, ".")
+	if p != "" && !strings.HasPrefix(p, "/") {
+		p = "/" + p
+	}
+	return p
+}
+
+func PrefixFilter(prefix, strip string, usrmerge bool, reader *tar.Reader, files []string) error {
+	prefix = normalizeTarPath(prefix)
 
 	fileMap := map[string]string{}
 	for _, file := range files {
@@ -67,9 +96,16 @@ func PrefixFilter(prefix, strip string, reader *tar.Reader, files []string) erro
 		if !strings.HasPrefix(key, "/") {
 			key = "/" + key
 		}
+		if usrmerge {
+			key = normalizeUsrMerge(key)
+		}
 
 		log.Tracef("Mapped file %v -> %v", key, file)
 		fileMap[key] = file
+	}
+
+	if usrmerge {
+		prefix = normalizeUsrMerge(prefix)
 	}
 
 	for {
@@ -77,13 +113,17 @@ func PrefixFilter(prefix, strip string, reader *tar.Reader, files []string) erro
 		if err == io.EOF {
 			break
 		}
+		if err != nil {
+			return err
+		}
 		if len(fileMap) == 0 {
 			break
 		}
-		name := strings.TrimPrefix(entry.Name, ".")
-		if strings.HasPrefix(name, prefix) {
-		} else if prefix == "/usr/lib64" && strings.HasPrefix(name, "/lib64") {
-		} else {
+		name := normalizeTarPath(entry.Name)
+		if usrmerge && !(entry.Typeflag == tar.TypeSymlink && isUsrMergeRoot(name)) {
+			name = normalizeUsrMerge(name)
+		}
+		if !strings.HasPrefix(name, prefix) {
 			continue
 		}
 
@@ -122,7 +162,13 @@ func PrefixFilter(prefix, strip string, reader *tar.Reader, files []string) erro
 			// In the hard link case, entry.Name will be something like ./usr/include/foo.h, so we
 			// just want to get a relative path to the target (entry.Linkname) unlike the symlink case
 			// where we just reproduce the entry.Linkname verbatim.
-			rel, err := filepath.Rel(filepath.Dir(entry.Name), entry.Linkname)
+			linkSrc := normalizeTarPath(entry.Name)
+			linkTarget := normalizeTarPath(entry.Linkname)
+			if usrmerge {
+				linkSrc = normalizeUsrMerge(linkSrc)
+				linkTarget = normalizeUsrMerge(linkTarget)
+			}
+			rel, err := filepath.Rel(filepath.Dir(linkSrc), linkTarget)
 			if err != nil {
 				return err
 			}
