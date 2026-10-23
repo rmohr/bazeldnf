@@ -137,7 +137,7 @@ def _alias_repository_impl(repository_ctx):
             repository_ctx.file(
                 "%s/BUILD.bazel" % rpm,
                 _UPDATE_LOCK_FILE_TEMPLATE.format(
-                    repo = repository_ctx.name.rsplit("~", 1)[-1],
+                    repo = repository_ctx.name.rsplit("+", 1)[-1].rsplit("~", 1)[-1],
                 ),
             )
 
@@ -156,9 +156,17 @@ _alias_repository = repository_rule(
     },
 )
 
+def _sanitize_repo_name(rpm_name):
+    return (
+        rpm_name
+            .replace("+", "plus")
+            .replace("~", "tilde")
+            .replace(":", "__")
+            .replace("^", "caret")
+    )
+
 def _to_rpm_repo_name(prefix, rpm_name):
-    name = rpm_name.replace("+", "plus")
-    return "{}{}".format(prefix, name)
+    return "{}{}".format(prefix, _sanitize_repo_name(rpm_name))
 
 def _get_architectures(architecture, architectures):
     """ Create effective list of architectures based on user input """
@@ -224,8 +232,10 @@ def _add_rpm_repository(config, rpm, lock_file_json, registered_rpms):
     if config.ignore_deps:
         dependencies = []
     else:
-        dependencies = [x.replace("+", "plus") for x in dependencies]
-        dependencies = ["@{}{}//rpm".format(config.rpm_repository_prefix, x) for x in dependencies]
+        dependencies = [
+            "@{}{}//rpm".format(config.rpm_repository_prefix, _sanitize_repo_name(x))
+            for x in dependencies
+        ]
 
     # Older lockfiles may not have `id` field.
     # Name was the equivalent. We need to pop both.
@@ -241,12 +251,15 @@ def _add_rpm_repository(config, rpm, lock_file_json, registered_rpms):
     if name in registered_rpms:
         return registered_rpms[name]
 
-    repository = rpm.pop("repository")
-    mirrors = lock_file_json.get("repositories", {}).get(repository, None)
-    if mirrors == None:
-        fail("couldn't resolve %s in %s" % (repository, lock_file_json["repositories"]))
-    href = rpm.pop("urls")[0]
-    urls = ["%s/%s" % (x, href) for x in mirrors]
+    repository = rpm.pop("repository", None)
+    if repository != None:
+        mirrors = lock_file_json.get("repositories", {}).get(repository, None)
+        if mirrors == None:
+            fail("couldn't resolve %s in %s" % (repository, lock_file_json["repositories"]))
+        href = rpm.pop("urls")[0]
+        urls = ["%s/%s" % (x, href) for x in mirrors]
+    else:
+        urls = rpm.pop("urls")
     rpm_repository(
         name = name,
         dependencies = dependencies,

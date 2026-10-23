@@ -7,9 +7,11 @@ import (
 )
 
 type pruneOpts struct {
-	workspace string
-	toMacro   string
-	buildfile string
+	workspace  string
+	toMacro    string
+	lockfile   string
+	configname string
+	buildfile  string
 }
 
 var pruneopts = pruneOpts{}
@@ -25,7 +27,19 @@ func NewPruneCmd() *cobra.Command {
 				return err
 			}
 
-			if pruneopts.toMacro == "" {
+			if pruneopts.lockfile != "" {
+				config, err := bazel.LoadLockFile(pruneopts.lockfile)
+				if err != nil {
+					return err
+				}
+				if err := bazel.PruneConfigRPMs(build, pruneopts.configname, config); err != nil {
+					return err
+				}
+				err = bazel.WriteLockFile(config, pruneopts.lockfile)
+				if err != nil {
+					return err
+				}
+			} else if pruneopts.toMacro == "" {
 				workspace, err := bazel.LoadWorkspace(pruneopts.workspace)
 				if err != nil {
 					return err
@@ -62,6 +76,8 @@ func NewPruneCmd() *cobra.Command {
 
 	pruneCmd.Flags().StringVarP(&pruneopts.workspace, "workspace", "w", "WORKSPACE", "Bazel workspace file")
 	pruneCmd.Flags().StringVarP(&pruneopts.toMacro, "to-macro", "", "", "Tells bazeldnf to write the RPMs to a macro in the given bzl file instead of the WORKSPACE file. The expected format is: macroFile%defName")
+	pruneCmd.Flags().StringVar(&pruneopts.lockfile, "lockfile", "", "lockfile for RPMs")
+	pruneCmd.Flags().StringVar(&pruneopts.configname, "configname", "", "config name used in rpmtree labels (defaults to name in lockfile)")
 	pruneCmd.Flags().StringVarP(&pruneopts.buildfile, "buildfile", "b", "rpm/BUILD.bazel", "Build file for RPMs")
 	return pruneCmd
 }
