@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"os"
 
 	"github.com/bazelbuild/buildtools/build"
@@ -103,18 +104,33 @@ type LockFileHandler struct {
 	config   *bazeldnf.Config
 }
 
-func NewLockFileHandler(configname, filename string) (Handler, error) {
-	return &LockFileHandler{
-		filename: filename,
-		config: &bazeldnf.Config{
+func NewLockFileHandler(configname, filename string) (*LockFileHandler, error) {
+	config, err := bazel.LoadLockFile(filename)
+	if err != nil {
+		if !errors.Is(err, os.ErrNotExist) {
+			return nil, err
+		}
+		config = &bazeldnf.Config{
 			Name: configname,
 			RPMs: []*bazeldnf.RPM{},
-		},
+		}
+	}
+	if configname != "" {
+		config.Name = configname
+	} else if config.Name == "" {
+		config.Name = "rpms"
+	}
+	return &LockFileHandler{
+		filename: filename,
+		config:   config,
 	}, nil
 }
 
 func (h *LockFileHandler) Process(pkgs []*api.Package, buildfile *build.File) error {
-	return bazel.AddConfigRPMs(h.config, pkgs)
+	if err := bazel.AddConfigRPMs(h.config, pkgs); err != nil {
+		return err
+	}
+	return bazel.PruneConfigRPMs(buildfile, h.config.Name, h.config)
 }
 
 func (h *LockFileHandler) Write() error {
@@ -130,7 +146,10 @@ func newHandler() (Handler, string, error) {
 			rpmtreeopts.configname,
 			rpmtreeopts.lockfile,
 		)
-		return handler, rpmtreeopts.configname, err
+		if err != nil {
+			return nil, "", err
+		}
+		return handler, handler.config.Name, nil
 	}
 
 	handler, err := NewWorkspaceHandler(rpmtreeopts.workspace)
@@ -191,7 +210,7 @@ func NewRpmTreeCmd() *cobra.Command {
 	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.workspace, "workspace", "w", "WORKSPACE", "Bazel workspace file")
 	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.toMacro, "to-macro", "", "", "Tells bazeldnf to write the RPMs to a macro in the given bzl file instead of the WORKSPACE file. The expected format is: macroFile%defName")
 	rpmtreeCmd.Flags().StringVarP(&rpmtreeopts.buildfile, "buildfile", "b", "rpm/BUILD.bazel", "Build file for RPMs")
-	rpmtreeCmd.Flags().StringVar(&rpmtreeopts.configname, "configname", "rpms", "config name to use in lockfile")
+	rpmtreeCmd.Flags().StringVar(&rpmtreeopts.configname, "configname", "", "config name to use in lockfile (defaults to name in lockfile, or \"rpms\" when creating a new lockfile)")
 	rpmtreeCmd.Flags().StringVar(&rpmtreeopts.lockfile, "lockfile", "", "lockfile for RPMs")
 	rpmtreeCmd.Flags().StringVar(&rpmtreeopts.name, "name", "", "rpmtree rule name")
 	rpmtreeCmd.MarkFlagRequired("name")

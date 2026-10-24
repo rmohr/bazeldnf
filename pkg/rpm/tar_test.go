@@ -2,6 +2,7 @@ package rpm
 
 import (
 	"archive/tar"
+	"bytes"
 	"io"
 	"io/ioutil"
 	"os"
@@ -238,11 +239,177 @@ func TestTar2Files(t *testing.T) {
 				files = append(files, filepath.Join(tmpdir, file))
 			}
 
-			err = PrefixFilter(tt.prefix, tmpdir, tar.NewReader(pipeReader), files)
+			err = PrefixFilter(tt.prefix, tmpdir, true, tar.NewReader(pipeReader), files)
 			g.Expect(err).ToNot(HaveOccurred())
 			discoveredHeaders, err := collectFileInfo(tmpdir)
 			g.Expect(err).ToNot(HaveOccurred())
 			g.Expect(discoveredHeaders).To(ConsistOf(tt.expected))
+		})
+	}
+}
+
+type tarTestEntry struct {
+	name     string
+	typeflag byte
+	body     string
+	linkname string
+}
+
+func buildTestTar(t *testing.T, entries []tarTestEntry) *bytes.Buffer {
+	t.Helper()
+	var buf bytes.Buffer
+	tw := tar.NewWriter(&buf)
+	for _, e := range entries {
+		hdr := &tar.Header{
+			Name:     e.name,
+			Typeflag: e.typeflag,
+			Mode:     0o755,
+			Size:     int64(len(e.body)),
+			Linkname: e.linkname,
+		}
+		if err := tw.WriteHeader(hdr); err != nil {
+			t.Fatalf("tw.WriteHeader(%q): %v", e.name, err)
+		}
+		if len(e.body) > 0 {
+			if _, err := tw.Write([]byte(e.body)); err != nil {
+				t.Fatalf("tw.Write(%q): %v", e.name, err)
+			}
+		}
+	}
+	if err := tw.Close(); err != nil {
+		t.Fatalf("tw.Close(): %v", err)
+	}
+	return &buf
+}
+
+func TestPrefixFilterUsrMerge(t *testing.T) {
+	const payload = "elf-binary-payload"
+	payloadLen := int64(len(payload))
+
+	tests := []struct {
+		name     string
+		prefix   string
+		usrmerge bool
+		entries  []tarTestEntry
+		files    []string
+		expected []fileInfo
+		wantErr  bool
+	}{
+		{
+			name:     "lib64_in_tar_extracted_under_usr_lib64_before_root_symlink",
+			prefix:   "/usr/lib64",
+			usrmerge: true,
+			entries: []tarTestEntry{
+				{name: "./lib64/libtirpc.so.3", typeflag: tar.TypeSymlink, linkname: "libtirpc.so.3.0.0"},
+				{name: "./lib64/libtirpc.so.3.0.0", typeflag: tar.TypeReg, body: payload},
+				{name: "./lib64", typeflag: tar.TypeSymlink, linkname: "usr/lib64"},
+			},
+			files: []string{
+				"/usr/lib64/libtirpc.so.3",
+				"/usr/lib64/libtirpc.so.3.0.0",
+			},
+			expected: []fileInfo{
+				{Name: "usr", Children: []fileInfo{
+					{Name: "lib64", Children: []fileInfo{
+						{Name: "libtirpc.so.3", Link: "libtirpc.so.3.0.0", Size: int64(len("libtirpc.so.3.0.0"))},
+						{Name: "libtirpc.so.3.0.0", Size: payloadLen},
+					}},
+				}},
+			},
+		},
+		{
+			name:     "lib64_in_tar_extracted_under_usr_lib64_after_root_symlink",
+			prefix:   "/usr/lib64",
+			usrmerge: true,
+			entries: []tarTestEntry{
+				{name: "./lib64", typeflag: tar.TypeSymlink, linkname: "usr/lib64"},
+				{name: "./lib64/libtirpc.so.3.0.0", typeflag: tar.TypeReg, body: payload},
+			},
+			files: []string{"/usr/lib64/libtirpc.so.3.0.0"},
+			expected: []fileInfo{
+				{Name: "usr", Children: []fileInfo{
+					{Name: "lib64", Children: []fileInfo{
+						{Name: "libtirpc.so.3.0.0", Size: payloadLen},
+					}},
+				}},
+			},
+		},
+		{
+			name:     "hardlink_across_bin_and_usr_bin",
+			prefix:   "/usr/bin",
+			usrmerge: true,
+			entries: []tarTestEntry{
+				{name: "./usr/bin/gawk", typeflag: tar.TypeReg, body: payload},
+				{name: "./bin/awk", typeflag: tar.TypeLink, linkname: "./usr/bin/gawk"},
+			},
+			files: []string{
+				"/usr/bin/awk",
+				"/usr/bin/gawk",
+			},
+			expected: []fileInfo{
+				{Name: "usr", Children: []fileInfo{
+					{Name: "bin", Children: []fileInfo{
+						{Name: "awk", Link: "gawk", Size: int64(len("gawk"))},
+						{Name: "gawk", Size: payloadLen},
+					}},
+				}},
+			},
+		},
+		{
+			name:     "usrmerge_disabled_does_not_match_lib64_for_usr_lib64",
+			prefix:   "/usr/lib64",
+			usrmerge: false,
+			entries: []tarTestEntry{
+				{name: "./lib64/libtirpc.so.3.0.0", typeflag: tar.TypeReg, body: payload},
+			},
+			files:   []string{"/usr/lib64/libtirpc.so.3.0.0"},
+			wantErr: true,
+		},
+		{
+			name:     "entries_and_prefix_without_leading_dot_slash",
+			prefix:   "usr/bin",
+			usrmerge: true,
+			entries: []tarTestEntry{
+				{name: "usr/bin/gawk", typeflag: tar.TypeReg, body: payload},
+				{name: "bin/awk", typeflag: tar.TypeLink, linkname: "usr/bin/gawk"},
+			},
+			files: []string{
+				"/usr/bin/awk",
+				"/usr/bin/gawk",
+			},
+			expected: []fileInfo{
+				{Name: "usr", Children: []fileInfo{
+					{Name: "bin", Children: []fileInfo{
+						{Name: "awk", Link: "gawk", Size: int64(len("gawk"))},
+						{Name: "gawk", Size: payloadLen},
+					}},
+				}},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g := NewGomegaWithT(t)
+			tmpdir := t.TempDir()
+
+			var outFiles []string
+			for _, f := range tt.files {
+				fullPath := filepath.Join(tmpdir, f)
+				g.Expect(os.MkdirAll(filepath.Dir(fullPath), 0o755)).To(Succeed())
+				outFiles = append(outFiles, fullPath)
+			}
+
+			tarBuf := buildTestTar(t, tt.entries)
+			err := PrefixFilter(tt.prefix, tmpdir, tt.usrmerge, tar.NewReader(tarBuf), outFiles)
+			if tt.wantErr {
+				g.Expect(err).To(HaveOccurred())
+				return
+			}
+			g.Expect(err).ToNot(HaveOccurred())
+			got, err := collectFileInfo(tmpdir)
+			g.Expect(err).ToNot(HaveOccurred())
+			g.Expect(got).To(ConsistOf(tt.expected))
 		})
 	}
 }

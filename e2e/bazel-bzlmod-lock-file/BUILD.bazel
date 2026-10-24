@@ -12,6 +12,7 @@ rpmtree(
         "@bazeldnf-rpms//libvirt-libs",
         "@bazeldnf-rpms//libvirt-devel-11.0.0-1.fc42.x86_64.rpm",
         "@bazeldnf-others//libvirt-libs-11.0.0-1.fc42.x86_64.rpm",
+        "@bazeldnf-others//libcom_err-devel",
     ],
 )
 
@@ -19,6 +20,18 @@ tar2files(
     name = "something_libs",
     files = {
         "/usr/lib64": [
+            "libvirt.so.0",
+            "libvirt.so.0.11000.0",
+        ],
+    },
+    tar = ":something",
+    visibility = ["//visibility:public"],
+)
+
+tar2files(
+    name = "something_usrmerge_libs",
+    files = {
+        "/lib64": [
             "libvirt.so.0",
             "libvirt.so.0.11000.0",
         ],

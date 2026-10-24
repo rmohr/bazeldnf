@@ -3,8 +3,8 @@
 bcr_test_module:
   module_path: "e2e/bazel-bzlmod"
   matrix:
-    platform: ["debian10", "macos", "ubuntu2004"]
-    bazel: [6.x, 7.x]
+    platform: ["debian11", "macos", "ubuntu2204"]
+    bazel: [7.x, 8.x, 9.x]
   tasks:
     build_tests:
       name: "Build test module"

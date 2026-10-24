@@ -28,12 +28,17 @@ def _collect_lockfile_args(ctx):
 
     return lockfile_args
 
+def _rlocation_path(ctx, file):
+    if file.short_path.startswith("../"):
+        return file.short_path[3:]
+    return ctx.workspace_name + "/" + file.short_path
+
 def _generic_bazeldnf_cmd_impl(ctx, substitutions):
     out_file = ctx.actions.declare_file(ctx.label.name + ".bash")
 
     bazeldnf = ctx.toolchains[BAZELDNF_TOOLCHAIN]
 
-    substitutions["@@BAZELDNF_SHORT_PATH@@"] = bazeldnf._tool.short_path
+    substitutions["@@BAZELDNF_RLOCATION@@"] = _rlocation_path(ctx, bazeldnf._tool)
 
     ctx.actions.expand_template(
         template = ctx.file._runner,
@@ -55,7 +60,6 @@ def _generic_bazeldnf_cmd_impl(ctx, substitutions):
 def _update_lock_file_impl(ctx):
     substitutions = {
         "@@LOCK_FILE@@": shell.quote(ctx.attr.lock_file),
-        "@@REPO_NAME@@": ctx.workspace_name,
         "@@LOCKFILE_ARGS@@": " ".join(_collect_lockfile_args(ctx)),
     }
 
@@ -81,7 +85,6 @@ update_lock_file = rule(
 
 def _fetch_dnf_repo_impl(ctx):
     substitutions = {
-        "@@REPO_NAME@@": ctx.workspace_name,
         "@@REPO_FILE@@": shell.quote(ctx.attr.repofile),
     }
 

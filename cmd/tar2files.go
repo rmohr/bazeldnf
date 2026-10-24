@@ -13,6 +13,7 @@ type tar2filesOpts struct {
 	filePrefix  string
 	stripPrefix string
 	tarFile     string
+	usrmerge    bool
 }
 
 var tar2filesopts = tar2filesOpts{}
@@ -29,12 +30,13 @@ func NewTar2FilesCmd() *cobra.Command {
 				if err != nil {
 					return fmt.Errorf("could not open rpm at %s: %v", tar2filesopts.tarFile, err)
 				}
-				err = rpm.PrefixFilter(tar2filesopts.filePrefix, tar2filesopts.stripPrefix, tar.NewReader(tarStream), args)
+				defer tarStream.Close()
+				err = rpm.PrefixFilter(tar2filesopts.filePrefix, tar2filesopts.stripPrefix, tar2filesopts.usrmerge, tar.NewReader(tarStream), args)
 				if err != nil {
 					return fmt.Errorf("could not convert rpm at %s: %v", tar2filesopts.tarFile, err)
 				}
 			} else {
-				err = rpm.PrefixFilter(tar2filesopts.filePrefix, tar2filesopts.stripPrefix, tar.NewReader(tarStream), args)
+				err = rpm.PrefixFilter(tar2filesopts.filePrefix, tar2filesopts.stripPrefix, tar2filesopts.usrmerge, tar.NewReader(tarStream), args)
 				if err != nil {
 					return fmt.Errorf("could not convert rpm : %v", err)
 				}
@@ -46,5 +48,6 @@ func NewTar2FilesCmd() *cobra.Command {
 	tar2filesCmd.Flags().StringVarP(&tar2filesopts.tarFile, "input", "i", "", "location from where to read the tar file (defaults to stdin)")
 	tar2filesCmd.Flags().StringVar(&tar2filesopts.filePrefix, "file-prefix", "", "only keep files with this directory prefix")
 	tar2filesCmd.Flags().StringVar(&tar2filesopts.stripPrefix, "strip-prefix", "", "strip prefix from provided files")
+	tar2filesCmd.Flags().BoolVar(&tar2filesopts.usrmerge, "usrmerge", true, "normalize /bin, /sbin, /lib, and /lib64 paths to /usr equivalents")
 	return tar2filesCmd
 }

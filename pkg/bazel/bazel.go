@@ -79,12 +79,24 @@ func WriteBzl(dryRun bool, bzl *build.File, path string) error {
 	return os.WriteFile(path, build.Format(bzl), 0644)
 }
 
+func LoadLockFile(path string) (*bazeldnf.Config, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	config := &bazeldnf.Config{}
+	if err := json.Unmarshal(data, config); err != nil {
+		return nil, fmt.Errorf("failed to parse lockfile %s: %w", path, err)
+	}
+	return config, nil
+}
+
 func WriteLockFile(config *bazeldnf.Config, path string) error {
 	configJson, err := json.MarshalIndent(config, "", "\t")
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(path, configJson, 0644)
+	return os.WriteFile(path, append(configJson, '\n'), 0644)
 }
 
 // ParseMacro parses a macro expression of the form macroFile%defName and returns the bzl file and the def name.
@@ -336,6 +348,34 @@ func PruneWorkspaceRPMs(buildfile *build.File, workspace *build.File) {
 	}
 }
 
+func PruneConfigRPMs(buildfile *build.File, configname string, config *bazeldnf.Config) error {
+	if configname == "" {
+		configname = config.Name
+	}
+	if configname == "" {
+		return fmt.Errorf("lockfile config name must not be empty")
+	}
+	referenced := map[string]struct{}{}
+	for _, pkg := range buildfile.Rules("rpmtree") {
+		tree := &rpmTree{pkg}
+		for _, rpm := range tree.RPMs() {
+			referenced[rpm] = struct{}{}
+		}
+	}
+	kept := []*bazeldnf.RPM{}
+	for _, rpm := range config.RPMs {
+		name := rpm.Name
+		if name == "" {
+			name = rpm.Id
+		}
+		if _, exists := referenced["@"+configname+"//"+name]; exists {
+			kept = append(kept, rpm)
+		}
+	}
+	config.RPMs = kept
+	return nil
+}
+
 func PruneBzlfileRPMs(buildfile *build.File, bzlfile *build.File, defName string) {
 	defStmt, err := findDefStmt(bzlfile.Stmt, defName)
 	if err != nil {
@@ -506,32 +546,49 @@ func (r *tar2Files) SetFiles(dirs []string, fileMap map[string][]string) {
 }
 
 func AddConfigRPMs(config *bazeldnf.Config, pkgs []*api.Package) error {
+	rpms := map[string]*bazeldnf.RPM{}
+	for _, rpm := range config.RPMs {
+		rpms[rpm.Name] = rpm
+	}
+
 	for _, pkg := range pkgs {
-		URLs := []string{}
-
-		for _, mirror := range pkg.Repository.Mirrors {
-			u, err := url.Parse(mirror)
-			if err != nil {
-				return err
-			}
-			u = u.JoinPath(pkg.Location.Href)
-			URLs = append(URLs, u.String())
-		}
-
+		name := pkgName(pkg)
 		integrity, err := pkg.Checksum.Integrity()
 		if err != nil {
-			return fmt.Errorf("Unable to load package %s integrity: %w", pkg.String(), err)
+			return fmt.Errorf("unable to load package %s integrity: %w", pkg.String(), err)
 		}
 
-		config.RPMs = append(
-			config.RPMs,
-			&bazeldnf.RPM{
-				Name:      pkgName(pkg),
-				Integrity: integrity,
-				URLs:      URLs,
-			},
-		)
+		entry := rpms[name]
+		if entry == nil {
+			entry = &bazeldnf.RPM{Name: name}
+			rpms[name] = entry
+		}
+
+		checksumMatches := entry.Integrity == integrity || (entry.SHA256 != "" && entry.SHA256 == pkg.Checksum.Text)
+		if len(entry.URLs) == 0 || !checksumMatches {
+			urls := []string{}
+			for _, mirror := range pkg.Repository.Mirrors {
+				u, err := url.Parse(mirror)
+				if err != nil {
+					return err
+				}
+				urls = append(urls, u.JoinPath(pkg.Location.Href).String())
+			}
+			entry.URLs = urls
+			entry.Repository = ""
+		}
+		entry.Integrity = integrity
+		entry.SHA256 = ""
 	}
+
+	sorted := make([]*bazeldnf.RPM, 0, len(rpms))
+	for _, rpm := range rpms {
+		sorted = append(sorted, rpm)
+	}
+	sort.SliceStable(sorted, func(i, j int) bool {
+		return sorted[i].Name < sorted[j].Name
+	})
+	config.RPMs = sorted
 
 	return nil
 }

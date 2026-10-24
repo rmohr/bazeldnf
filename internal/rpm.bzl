@@ -85,7 +85,7 @@ def _rpm_impl(ctx):
         args = {}
         if ctx.attr.integrity:
             args["integrity"] = ctx.attr.integrity
-        if ctx.attr.sha256:
+        elif ctx.attr.sha256:
             args["sha256"] = ctx.attr.sha256
         ctx.download(
             url = ctx.attr.urls,

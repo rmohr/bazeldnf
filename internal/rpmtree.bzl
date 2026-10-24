@@ -91,6 +91,8 @@ def _tar2files_impl(ctx):
         "--input",
         ctx.files.tar[0],
     ])
+    if not ctx.attr.usrmerge:
+        args.add("--usrmerge=false")
     args.add_all([ctx.outputs.out], map_each = _expand_path)
 
     ctx.actions.run(
@@ -115,6 +117,7 @@ _rpm2tar_attrs = {
 _tar2files_attrs = {
     "tar": attr.label(allow_single_file = True),
     "prefix": attr.string(),
+    "usrmerge": attr.bool(default = True),
     "out": attr.output_list(mandatory = True),
 }
 

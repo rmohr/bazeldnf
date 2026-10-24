@@ -66,11 +66,16 @@ toolchain(
 
 go_test(
     name = "cmd_test",
-    srcs = ["config_helper_test.go"],
+    srcs = [
+        "config_helper_test.go",
+        "lockfile_verify_test.go",
+    ],
     embed = [":cmd_lib"],
     deps = [
         "//pkg/api",
         "//pkg/api/bazeldnf",
+        "//pkg/bazel",
+        "@com_github_bazelbuild_buildtools//build:go_default_library",
         "@com_github_onsi_gomega//:gomega",
     ],
 )

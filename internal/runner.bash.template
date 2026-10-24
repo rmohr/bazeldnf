@@ -4,7 +4,7 @@ set -euo pipefail
 
 BAZELDNF_SHORT_PATH="${BASH_SOURCE[0]}.runfiles/@@BAZELDNF_SHORT_PATH@@"
 ARGS=@@ARGS@@
-bazeldnf_short_path=$(readlink "$BAZELDNF_SHORT_PATH")
+bazeldnf_short_path=$(realpath "$BAZELDNF_SHORT_PATH")
 
 if [ ! -z "${BUILD_WORKSPACE_DIRECTORY-}" ]; then
   cd ${BUILD_WORKSPACE_DIRECTORY}
