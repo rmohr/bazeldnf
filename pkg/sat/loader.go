@@ -4,7 +4,6 @@ import (
 	"cmp"
 	"fmt"
 	"regexp"
-	"sort"
 	"strconv"
 	"strings"
 
@@ -19,7 +18,7 @@ import (
 
 type Loader struct {
 	m         *Model
-	provides  map[string][]*Var
+	provides  map[string][]*ResourceVar
 	varsCount int
 }
 
@@ -51,7 +50,7 @@ func NewLoader() *Loader {
 			bestPackages:                map[BestKey]*api.Package{},
 			forceIgnoreWithDependencies: map[api.PackageKey]*api.Package{},
 		},
-		provides:  map[string][]*Var{},
+		provides:  map[string][]*ResourceVar{},
 		varsCount: 0,
 	}
 }
@@ -62,6 +61,12 @@ func NewLoader() *Loader {
 type Resource struct {
 	Name    string      // capability name, or file name
 	Version api.Version // empty for files
+}
+
+// ResourceVar encapsulates a Resource for which we created a Var in our model.
+type ResourceVar struct {
+	Var      *Var
+	Resource Resource
 }
 
 // Load takes a list of all involved packages to install, a list of regular
@@ -143,40 +148,28 @@ func (loader *Loader) Load(packages []*api.Package, matched, ignoreRegex, allowR
 		}
 	}
 
-	pkgProvides := [][]*Var{}
+	pkgVars := []*Var{}
 
 	// Generate variables
 	for _, pkg := range packages {
-		providedResources := loader.explodeProvidedResources(pkg)
-		pkgVar, resourceVars := loader.explodePackageToVars(pkg, providedResources)
+		// Single variable for SAT formula (whether to pick that package or not):
+		pkgVar := &Var{satVarName: loader.ticket(), Package: pkg}
 		loader.m.packages[pkg.Name] = append(loader.m.packages[pkg.Name], pkgVar)
-		pkgProvides = append(pkgProvides, resourceVars)
-		for _, v := range resourceVars {
-			loader.provides[v.Context.Provides] = append(loader.provides[v.Context.Provides], v)
-			loader.m.vars[v.satVarName] = v
+		loader.m.vars[pkgVar.satVarName] = pkgVar
+		pkgVars = append(pkgVars, pkgVar)
+
+		// Links between packages (individual resources), only for the loader:
+		for _, resource := range loader.explodeProvidedResources(pkgVar.Package) {
+			prVar := &ResourceVar{Var: pkgVar, Resource: *resource}
+			loader.provides[resource.Name] = append(loader.provides[resource.Name], prVar)
 		}
 	}
 
-	packagesKeys := maps.Keys(loader.m.packages)
-	slices.Sort(packagesKeys)
-
-	for _, x := range packagesKeys {
-		sort.SliceStable(loader.m.packages[x], func(i, j int) bool {
-			return rpm.ComparePackage(loader.m.packages[x][i].Package, loader.m.packages[x][j].Package, archOrder) < 0
-		})
-	}
-
-	logrus.Infof("Loaded %v packages.", len(pkgProvides))
+	logrus.Infof("Loaded %v packages.", len(pkgVars))
 
 	// Generate imply rules
-	for _, resourceVars := range pkgProvides {
+	for _, pkgVar := range pkgVars {
 		var ands []bf.Formula
-
-		// Synchronize all the variables for a given package to the same value.
-		pkgVar := resourceVars[len(resourceVars)-1]
-		for _, res := range resourceVars {
-			ands = append(ands, bf.Eq(bf.Var(pkgVar.satVarName), bf.Var(res.satVarName)))
-		}
 
 		ands = append(ands, bf.Implies(bf.Var(pkgVar.satVarName), loader.explodePackageRequires(pkgVar)))
 		if conflicts := loader.explodePackageConflicts(pkgVar); conflicts != nil {
@@ -211,29 +204,6 @@ func (loader *Loader) explodeProvidedResources(pkg *api.Package) (provided []*Re
 	}
 
 	return
-}
-
-func (loader *Loader) explodePackageToVars(pkg *api.Package, resources []*Resource) (pkgVar *Var, resourceVars []*Var) {
-	for _, res := range resources {
-		newVar := &Var{
-			satVarName: loader.ticket(),
-			varType:    VarTypeResource,
-			Context: VarContext{
-				PackageKey: pkg.Key(),
-				Provides:   res.Name,
-			},
-			ResourceVersion: &res.Version,
-			Package:         pkg,
-		}
-
-		if res.Name == pkg.Name {
-			newVar.varType = VarTypePackage
-			pkgVar = newVar
-		}
-		resourceVars = append(resourceVars, newVar)
-	}
-
-	return pkgVar, resourceVars
 }
 
 // explodePackageRequires builds a formula that could be a right hand side operand to implication.
@@ -356,14 +326,14 @@ func (loader *Loader) resolveNewest(pkgName string, archOrder []string) (*Var, e
 	}
 	newest := pkgs[0]
 	for _, p := range pkgs {
-		if rpm.ComparePackage(p.Package, newest.Package, archOrder) > 0 {
+		if rpm.ComparePackage(p.Var.Package, newest.Var.Package, archOrder) > 0 {
 			newest = p
 		}
 	}
-	return newest, nil
+	return newest.Var, nil
 }
 
-func compareRequires(entry api.Entry, provides []*Var) (accepts []*Var, err error) {
+func compareRequires(entry api.Entry, provides []*ResourceVar) (accepts []*Var, err error) {
 	for _, dep := range provides {
 		entryVer := api.Version{
 			Text:  entry.Text,
@@ -373,7 +343,7 @@ func compareRequires(entry api.Entry, provides []*Var) (accepts []*Var, err erro
 		}
 
 		// Requirement "EQ 2.14" matches 2.14-5.fc33
-		depVer := *dep.ResourceVersion
+		depVer := dep.Resource.Version
 		if entryVer.Rel == "" {
 			depVer.Rel = ""
 		}
@@ -411,13 +381,13 @@ func compareRequires(entry api.Entry, provides []*Var) (accepts []*Var, err erro
 					works = true
 				}
 			case "":
-				return provides, nil
+				works = true
 			default:
 				return nil, fmt.Errorf("can't interprate flags value %s", entry.Flags)
 			}
 		}
 		if works {
-			accepts = append(accepts, dep)
+			accepts = append(accepts, dep.Var)
 		}
 	}
 	return accepts, nil
