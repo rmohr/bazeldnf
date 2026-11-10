@@ -2,17 +2,24 @@ package repo
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"encoding/base64"
+	"encoding/hex"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"path"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/hashicorp/go-retryablehttp"
+	"github.com/rmohr/bazeldnf/pkg/api"
+	"github.com/rmohr/bazeldnf/pkg/api/bazeldnf"
 )
 
 const retryAttempts = 5
@@ -159,4 +166,139 @@ password %s`, user, password)
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("We've set NETRC so the server should reply with 200 but got %d", resp.StatusCode)
 	}
+}
+
+func newPassthroughClient() *retryablehttp.Client {
+	c := retryablehttp.NewClient()
+	c.RetryMax = 0
+	c.ErrorHandler = retryablehttp.PassthroughErrorHandler
+	return c
+}
+
+func hijackConnection(t *testing.T, rw http.ResponseWriter) net.Conn {
+	t.Helper()
+	hj, ok := rw.(http.Hijacker)
+	if !ok {
+		t.Fatal("server doesn't support hijacking")
+	}
+	conn, bufrw, err := hj.Hijack()
+	if err != nil {
+		t.Fatalf("hijack: %v", err)
+	}
+	bufrw.WriteString("HTTP/1.1 200 OK\r\nContent-Length: 10000\r\n\r\npartial")
+	bufrw.Flush()
+	return conn
+}
+
+func newTestFetcher(serverURL, cacheDir string) (*RepoFetcherImpl, *url.URL) {
+	mirror, _ := url.Parse(serverURL + "/repo/")
+	return &RepoFetcherImpl{
+		Getter:      &getterImpl{client: newPassthroughClient()},
+		CacheHelper: NewCacheHelper(cacheDir),
+	}, mirror
+}
+
+func TestFetchFileRetry(t *testing.T) {
+	content := []byte("test repository content")
+	sum := sha256.Sum256(content)
+	checksum := hex.EncodeToString(sum[:])
+
+	repomd := func() *api.Repomd {
+		d := api.Data{}
+		d.Type = api.PrimaryFileType
+		d.Checksum.Text = checksum
+		d.Checksum.Type = "sha256"
+		d.Location.Href = "repodata/primary.xml.gz"
+		return &api.Repomd{Data: []api.Data{d}}
+	}()
+
+	repo := &bazeldnf.Repository{Name: "test-repo"}
+
+	transferErrors := []struct {
+		error     string
+		closeConn func(net.Conn)
+	}{
+		{"unexpected EOF", func(c net.Conn) { c.Close() }},
+		{"connection reset", func(c net.Conn) { c.(*net.TCPConn).SetLinger(0); c.Close() }},
+	}
+
+	for _, tc := range transferErrors {
+		t.Run("retries on "+tc.error, func(t *testing.T) {
+			calls := 0
+			s := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+				calls++
+				if calls == 1 {
+					tc.closeConn(hijackConnection(t, rw))
+					return
+				}
+				rw.Write(content)
+			}))
+			defer s.Close()
+
+			fetcher, mirror := newTestFetcher(s.URL, t.TempDir())
+			if err := fetcher.fetchFile(api.PrimaryFileType, repo, repomd, mirror); err != nil {
+				t.Fatalf("expected success after retry, got: %v", err)
+			}
+			if calls != 2 {
+				t.Fatalf("expected 2 calls, got %d", calls)
+			}
+		})
+	}
+
+	for _, tc := range transferErrors {
+		t.Run("exhausted retries on "+tc.error, func(t *testing.T) {
+			calls := 0
+			s := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+				calls++
+				tc.closeConn(hijackConnection(t, rw))
+			}))
+			defer s.Close()
+
+			fetcher, mirror := newTestFetcher(s.URL, t.TempDir())
+			err := fetcher.fetchFile(api.PrimaryFileType, repo, repomd, mirror)
+			if err == nil {
+				t.Fatal("expected error after exhausted retries, got nil")
+			}
+			if calls != transferRetries+1 {
+				t.Fatalf("expected %d calls, got %d", transferRetries+1, calls)
+			}
+			if !strings.Contains(err.Error(), tc.error) {
+				t.Fatalf("expected error to mention %q, got: %v", tc.error, err)
+			}
+		})
+	}
+
+	t.Run("no retry on 4xx", func(t *testing.T) {
+		calls := 0
+		s := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+			calls++
+			rw.WriteHeader(http.StatusNotFound)
+		}))
+		defer s.Close()
+
+		fetcher, mirror := newTestFetcher(s.URL, t.TempDir())
+		if err := fetcher.fetchFile(api.PrimaryFileType, repo, repomd, mirror); err == nil {
+			t.Fatal("expected error, got nil")
+		}
+		if calls != 1 {
+			t.Fatalf("expected 1 call (no retry), got %d", calls)
+		}
+	})
+
+	t.Run("no retry on filesystem error", func(t *testing.T) {
+		calls := 0
+		s := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+			calls++
+			rw.Write(content)
+		}))
+		defer s.Close()
+
+		fetcher, mirror := newTestFetcher(s.URL, "/dev/null/impossible")
+		if err := fetcher.fetchFile(api.PrimaryFileType, repo, repomd, mirror); err == nil {
+			t.Fatal("expected error, got nil")
+		}
+		if calls != 1 {
+			t.Fatalf("expected 1 call (no retry), got %d", calls)
+		}
+	})
 }

@@ -18,6 +18,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"syscall"
 
 	retryablehttp "github.com/hashicorp/go-retryablehttp"
 	"github.com/jdx/go-netrc"
@@ -176,6 +177,8 @@ func (r *RepoFetcherImpl) resolveRepomd(repo *bazeldnf.Repository, repomdURLs []
 	return repomd, mirror, nil
 }
 
+const transferRetries = 3
+
 func (r *RepoFetcherImpl) fetchFile(fileType string, repo *bazeldnf.Repository, repomd *api.Repomd, mirror *url.URL) (err error) {
 	file := repomd.File(fileType)
 	if file == nil {
@@ -192,31 +195,58 @@ func (r *RepoFetcherImpl) fetchFile(fileType string, repo *bazeldnf.Repository, 
 		mirrorCopy.Path = path.Join(mirror.Path, file.Location.Href)
 		fileURL = mirrorCopy.String()
 	}
+
+	var lastErr error
+	for attempt := range transferRetries + 1 {
+		if attempt > 0 {
+			log.Warnf("Retrying %s file transfer from %s (attempt %d/%d): %v", fileType, fileURL, attempt+1, transferRetries+1, lastErr)
+		}
+
+		retryable, err := r.doTransfer(fileType, fileURL, fileName, repo, file)
+		if err == nil {
+			return nil
+		}
+		if !retryable {
+			return err
+		}
+		lastErr = err
+	}
+	return lastErr
+}
+
+func (r *RepoFetcherImpl) doTransfer(fileType, fileURL, fileName string, repo *bazeldnf.Repository, file *api.Data) (retryable bool, _ error) {
 	log.Infof("Loading %s file from %s", fileType, fileURL)
 	resp, err := r.Getter.Get(fileURL)
 	if err != nil {
-		return fmt.Errorf("Failed to load primary repository file from %s: %v", fileURL, err)
+		// Getter.Get uses retryablehttp internally; if it failed, retries are already exhausted.
+		return false, fmt.Errorf("Failed to load primary repository file from %s: %v", fileURL, err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		return fmt.Errorf("Failed to download %s: %v ", fileURL, fmt.Errorf("status : %v", resp.StatusCode))
+		return false, fmt.Errorf("Failed to download %s: %v ", fileURL, fmt.Errorf("status : %v", resp.StatusCode))
 	}
 	sha, shasum, err := chooseHashType(file)
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	body := io.TeeReader(resp.Body, sha)
 	err = r.CacheHelper.WriteToRepoDir(repo, body, fileName)
 	if err != nil {
-		return fmt.Errorf("Failed to write file.xml from %s to file: %v", fileURL, err)
+		return isTransientTransferError(err), fmt.Errorf("Failed to write file.xml from %s to file: %v", fileURL, err)
 	}
 
 	if shasum != toHex(sha) {
-		return fmt.Errorf("Expected sha sum %s, but got %s", shasum, toHex(sha))
+		return false, fmt.Errorf("Expected sha sum %s, but got %s", shasum, toHex(sha))
 	}
 
-	return nil
+	return false, nil
+}
+
+func isTransientTransferError(err error) bool {
+	return errors.Is(err, io.ErrUnexpectedEOF) ||
+		errors.Is(err, syscall.ECONNRESET) ||
+		errors.Is(err, syscall.ECONNABORTED)
 }
 
 type Getter interface {

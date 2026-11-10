@@ -93,16 +93,16 @@ func (r *CacheHelper) WriteToRepoDir(repo *bazeldnf.Repository, body io.Reader, 
 
 	err := os.MkdirAll(dir, 0770)
 	if err != nil && !os.IsExist(err) {
-		return fmt.Errorf("failed to create cache directory for %s: %v", repo.Name, err)
+		return fmt.Errorf("failed to create cache directory for %s: %w", repo.Name, err)
 	}
 	f, err := os.Create(file)
 	if err != nil {
-		return fmt.Errorf("failed to open file %s: %v", file, err)
+		return fmt.Errorf("failed to open file %s: %w", file, err)
 	}
 	defer f.Close()
 	_, err = io.Copy(f, body)
 	if err != nil {
-		return fmt.Errorf("failed to write file %s: %v", file, err)
+		return fmt.Errorf("failed to write file %s: %w", file, err)
 	}
 	return nil
 }
