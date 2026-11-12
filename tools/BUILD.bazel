@@ -4,6 +4,7 @@ load(":preset.bzl", "EXTRA_PRESET_FLAGS")
 
 bazelrc_preset(
     name = "preset",
+    doc_link_template = "https://registry.build/flag/bazel/?filter={flag}",
     extra_presets = EXTRA_PRESET_FLAGS,
 )
 
